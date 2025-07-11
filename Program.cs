@@ -1,4 +1,3 @@
-
 using ClientDashboard_API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +17,8 @@ namespace ClientDashboard_API
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            var app = builder.Build();
 
+            var app = builder.Build();
 
             app.Run();
         }
