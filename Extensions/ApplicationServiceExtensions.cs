@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Extensions
         {
             // Add services to the container.
             services.AddControllers();
-            services.AddDbContext<ClientDataDbContext>(opt =>
+            services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
@@ -21,6 +21,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IClientDataRepository, ClientDataRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataParser>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
         }

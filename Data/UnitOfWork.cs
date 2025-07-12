@@ -1,9 +1,8 @@
 ﻿using ClientDashboard_API.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class UnitOfWork(DbContext context, IClientDataRepository clientDataRepository) : IUnitOfWork
+    public class UnitOfWork(DataContext context, IClientDataRepository clientDataRepository) : IUnitOfWork
     {
         public IClientDataRepository ClientDataRepository => clientDataRepository;
 

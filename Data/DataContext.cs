@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class ClientDataDbContext(DbContextOptions options) : DbContext(options)
+    public class DataContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<WorkoutData> Data { get; set; }
 

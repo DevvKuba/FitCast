@@ -22,6 +22,6 @@ namespace ClientDashboard_API
 
 // add cors
 // implement seeding data from .csv to database for testing purposes
-// create a mapping class, use Mapper
+// create a mapping class, use AutoMapper
 
 

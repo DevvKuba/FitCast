@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ClientDashboard_API.Data.Migrations
 {
-    [DbContext(typeof(ClientDataDbContext))]
+    [DbContext(typeof(DataContext))]
     [Migration("20250711202640_SqlInitial")]
     partial class SqlInitial
     {
