@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ClientDashboard_API.Entities
+﻿namespace ClientDashboard_API.Dto_s
 {
-    public class WorkoutData
+    public class WorkoutSessionDto
     {
-        [Key]
         public required string Title { get; set; }
 
         public required DateTime SessionDate { get; set; }
@@ -14,7 +11,5 @@ namespace ClientDashboard_API.Entities
         public int TotalBlockSessions { get; set; }
 
         public int ExerciseCount { get; set; }
-
-        // potentially add more data that can be stored 
     }
 }

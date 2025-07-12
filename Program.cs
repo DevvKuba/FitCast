@@ -1,5 +1,4 @@
-using ClientDashboard_API.Data;
-using Microsoft.EntityFrameworkCore;
+using ClientDashboard_API.Extensions;
 
 namespace ClientDashboard_API
 {
@@ -8,15 +7,7 @@ namespace ClientDashboard_API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            builder.Services.AddDbContext<ClientDataDbContext>(opt =>
-            {
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
+            builder.Services.AddApplicationServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -24,3 +15,13 @@ namespace ClientDashboard_API
         }
     }
 }
+
+// program should fetch data from hevy api and populate the database accordingly 
+
+// the the ClientDataController contains specific requests for that data within the db
+
+// add cors
+// implement seeding data from .csv to database for testing purposes
+// create a mapping class, use Mapper
+
+
