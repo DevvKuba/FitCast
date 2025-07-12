@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using Client_Session_Tracker_C_.Models;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionDataParser
+    public class HevySessionDataParser : ISessionDataParser
     {
         public string Api_Key { get; } = "7a610df4-9944-4f6f-ad60-bcb0450f5682";
 
@@ -28,7 +29,7 @@ namespace ClientDashboard_API.Services
             return workoutDetails;
         }
 
-        public async Task<List<WorkoutSummaryDto>> CallHevyApi()
+        public async Task<List<WorkoutSummaryDto>> CallApi()
         {
             DateTime todaysDate = DateTime.Now;
 

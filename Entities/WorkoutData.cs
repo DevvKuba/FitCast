@@ -4,7 +4,6 @@ namespace ClientDashboard_API.Entities
 {
     public class WorkoutData
     {
-        // potentially set an autoIncrement Id as a primary key or don't utilise one
         [Key]
         public required string Title { get; set; }
 
@@ -15,5 +14,7 @@ namespace ClientDashboard_API.Entities
         public int TotalBlockSessions { get; set; }
 
         public int ExerciseCount { get; set; }
+
+        // potentially add more data that can be stored 
     }
 }

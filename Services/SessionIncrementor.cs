@@ -5,6 +5,7 @@ namespace ClientDashboard_API.Services
 {
     public class SessionIncrementor
     {
+        // refactor for DB
         public List<WorkoutSummaryDto> DailyClientWorkouts { get; set; }
 
         public string Path { get; set; }
