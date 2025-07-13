@@ -1,14 +1,17 @@
 ﻿
+using AutoMapper;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class ClientDataController() : BaseAPIController
+    public class ClientDataController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
     {
         [HttpGet]
         public async Task<List<WorkoutDataDto>> GetAllDailyClientSessions(string clientName)
         {
+            //var clientSessions = unitOfWork.ClientDataRepository.Get
             throw new NotImplementedException();
         }
 

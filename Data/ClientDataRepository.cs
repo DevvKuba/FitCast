@@ -12,6 +12,12 @@ namespace ClientDashboard_API.Data
             return clientData;
         }
 
+        public async Task<List<WorkoutData>> GetClientRecordsByDate(DateOnly date)
+        {
+            var clientData = await context.Data.Where(x => x.SessionDate == date).ToListAsync();
+            return clientData;
+        }
+
         public async Task<List<string>> GetClientsOnNewBlock()
         {
             var clients = await context.Data.Where(x => x.CurrentBlockSession == 0).Select(x => x.Title).ToListAsync();

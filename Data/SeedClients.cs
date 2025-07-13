@@ -13,10 +13,11 @@ namespace ClientDashboard_API.Data
 
             foreach (var clientRecord in clientData)
             {
+                var dateTime = DateTime.Now;
                 var client = new WorkoutData
                 {
                     Title = clientRecord[0],
-                    SessionDate = DateTime.Now,
+                    SessionDate = DateOnly.FromDateTime(dateTime),
                     CurrentBlockSession = int.Parse(clientRecord[1]),
                     TotalBlockSessions = int.Parse(clientRecord[2]),
                     ExerciseCount = random.Next(6, 12)

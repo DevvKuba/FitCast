@@ -4,7 +4,7 @@
     {
         public required string Title { get; set; }
 
-        public required DateTime SessionDate { get; set; }
+        public required DateOnly SessionDate { get; set; }
 
         public int ExerciseCount { get; set; }
     }
