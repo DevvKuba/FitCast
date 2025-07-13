@@ -1,15 +1,21 @@
+using ClientDashboard_API.Data;
 using ClientDashboard_API.Extensions;
 
 namespace ClientDashboard_API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddApplicationServices(builder.Configuration);
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+                await SeedClients.Seed(context);
+            }
 
             app.Run();
         }
@@ -18,10 +24,16 @@ namespace ClientDashboard_API
 
 // program should fetch data from hevy api and populate the database accordingly 
 
+// implement more more advanced seeding reading current csv file and seeding that info
+
 // the the ClientDataController contains specific requests for that data within the db
 
+// testing
+
+// use HevyApiCalls to fill database
+
 // add cors
-// implement seeding data from .csv to database for testing purposes
-// create a mapping class, use AutoMapper
+
+
 
 

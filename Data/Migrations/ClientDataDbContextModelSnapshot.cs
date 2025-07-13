@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.17")
+                .HasAnnotation("ProductVersion", "9.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -41,7 +41,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasKey("Title");
 
-                    b.ToTable("Data");
+                    b.ToTable("Data", (string)null);
                 });
 #pragma warning restore 612, 618
         }
