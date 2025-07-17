@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<string>> GetClientsOnFirstSession()
         {
-            var clients = await context.Data.Where(x => x.CurrentBlockSession == 0).Select(x => x.Title).ToListAsync();
+            var clients = await context.Data.Where(x => x.CurrentBlockSession == 1).Select(x => x.Title).ToListAsync();
             return clients;
         }
 

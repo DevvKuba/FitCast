@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Controllers
     public class ClientDataController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
     {
         [HttpGet]
-        public async Task<List<WorkoutDataDto>> GetAllDailyClientSessions(string clientName, string date)
+        public async Task<List<WorkoutDataDto>> GetAllDailyClientSessions(string date)
         {
             var clientSessions = await unitOfWork.ClientDataRepository.GetClientRecordsByDate(DateOnly.Parse(date));
             var clientMappedSessions = new List<WorkoutDataDto>();
@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("{clientName}/current")]
         public async Task<int> GetCurrentClientBlockSession(string clientName)
         {
             var clientSession = await unitOfWork.ClientDataRepository.GetClientRecordByName(clientName);
@@ -36,7 +36,7 @@ namespace ClientDashboard_API.Controllers
             return clientSession.CurrentBlockSession;
         }
 
-        [HttpGet]
+        [HttpGet("{clientName}/lastDate")]
         public async Task<DateOnly> GetLatestClientSessionDate(string clientName)
         {
             var clientSession = await unitOfWork.ClientDataRepository.GetClientRecordByName(clientName);
@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("onLastLast")]
         public async Task<List<string>> GetClientsOnLastBlockSession()
         {
             var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnLastSession();
@@ -56,7 +56,7 @@ namespace ClientDashboard_API.Controllers
             return clientSessions;
         }
 
-        [HttpGet]
+        [HttpGet("onFirstSession")]
         public async Task<List<string>> GetClientsOnFirstBlockSession()
         {
             var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnFirstSession();

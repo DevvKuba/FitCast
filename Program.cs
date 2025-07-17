@@ -1,5 +1,6 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Extensions;
+using Microsoft.OpenApi.Models;
 
 namespace ClientDashboard_API
 {
@@ -8,7 +9,15 @@ namespace ClientDashboard_API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // Add services to the container.
+            builder.Services.AddControllers();
             builder.Services.AddApplicationServices(builder.Configuration);
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ClientDashboard API", Version = "v1" });
+            });
 
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
@@ -17,14 +26,27 @@ namespace ClientDashboard_API
                 await SeedClients.Seed(context);
             }
 
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClientDashboard API v1");
+                    c.RoutePrefix = string.Empty; // Swagger UI at root
+                });
+            }
+
+            app.UseHttpsRedirection();
+            app.UseAuthorization();
+            app.MapControllers();
             app.Run();
         }
     }
 }
 
-// program should fetch data from hevy api and populate the database accordingly 
 
-// the the ClientDataController contains specific requests for that data within the db
+// program should fetch data from hevy api and populate the database accordingly 
 
 // testing
 
