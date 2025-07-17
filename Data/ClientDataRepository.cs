@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Data
             return clientData;
         }
 
-        public async Task<List<string>> GetClientsOnNewBlock()
+        public async Task<List<string>> GetClientsOnFirstSession()
         {
             var clients = await context.Data.Where(x => x.CurrentBlockSession == 0).Select(x => x.Title).ToListAsync();
             return clients;

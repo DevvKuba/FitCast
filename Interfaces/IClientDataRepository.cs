@@ -9,8 +9,10 @@ namespace ClientDashboard_API.Interfaces
 
         Task<WorkoutData> GetClientRecordByName(string name);
 
+        Task<List<WorkoutData>> GetClientRecordsByDate(DateOnly date);
+
         Task<List<string>> GetClientsOnLastSession();
 
-        Task<List<string>> GetClientsOnNewBlock();
+        Task<List<string>> GetClientsOnFirstSession();
     }
 }

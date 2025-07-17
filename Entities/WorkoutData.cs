@@ -9,6 +9,8 @@ namespace ClientDashboard_API.Entities
 
         public required DateOnly SessionDate { get; set; }
 
+        // add TimeOnly SessionTime
+
         public int CurrentBlockSession { get; set; }
 
         public int TotalBlockSessions { get; set; }
