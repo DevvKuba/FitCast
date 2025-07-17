@@ -22,7 +22,7 @@ namespace ClientDashboard_API.Services
                 .Select(x => new WorkoutSummaryDto
                 {
                     Title = x.Workout.Title,
-                    SessionDate = DateTime.Parse(x.Workout.Start_Time),
+                    SessionDate = DateOnly.Parse(x.Workout.Start_Time),
                     ExerciseCount = x.Workout.Exercises.Count,
                 }).ToList();
 

@@ -2,9 +2,9 @@
 {
     public class WorkoutDataDto
     {
-        public required string Name { get; set; }
+        public required string Title { get; set; }
 
-        public required DateTime SessionDate { get; set; }
+        public required DateOnly SessionDate { get; set; }
 
         public int CurrentBlockSession { get; set; }
 

@@ -7,7 +7,9 @@ namespace ClientDashboard_API.Entities
         [Key]
         public required string Title { get; set; }
 
-        public required DateTime SessionDate { get; set; }
+        public required DateOnly SessionDate { get; set; }
+
+        // add TimeOnly SessionTime
 
         public int CurrentBlockSession { get; set; }
 
