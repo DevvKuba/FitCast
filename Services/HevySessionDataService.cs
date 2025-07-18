@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
-using Client_Session_Tracker_C_.Models;
+﻿using Client_Session_Tracker_C_.Models;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Interfaces;
+using System.Text.Json;
 
 namespace ClientDashboard_API.Services
 {
-    public class HevySessionDataParser : ISessionDataParser
+    public class HevySessionDataService : ISessionDataParser
     {
         public string Api_Key { get; } = "7a610df4-9944-4f6f-ad60-bcb0450f5682";
 

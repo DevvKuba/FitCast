@@ -1,23 +1,16 @@
-﻿using ClientDashboard_API.Dto_s;
-using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class HevyApiController(IUnitOfWork unitOfWork, ISessionDataParser parser) : BaseAPIController
+    public class HevyApiController(ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
     {
         [HttpPost]
-        public async Task<ActionResult> GatherAndStoreDailyClientSesions()
+        public async Task<ActionResult> GatherAndUpdateDailySessions()
         {
-            List<WorkoutSummaryDto> workoutSummaries = await parser.CallApi();
-
-            // gather each of the clients from the workoutSummaries
-            var client = unitOfWork.ClientDataRepository.GetClientRecordByName("");
-            return Ok();
-
-
+            var result = await syncService.SyncDailySessions(hevyDataParser);
+            if (!result) return BadRequest("incorrect process to gather & update daily sessions");
+            return Ok(result);
         }
-
-
     }
 }
