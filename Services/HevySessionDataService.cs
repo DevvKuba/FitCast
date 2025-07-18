@@ -13,16 +13,18 @@ namespace ClientDashboard_API.Services
         {
             string json = await response.Content.ReadAsStringAsync();
 
+            // add if workouts are empty...
+
             // need to enable insensitivity so mapping can be done without worrying about casing
             var workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (workoutsInfo == null) throw new Exception("workouts not mapped correctly into models");
 
-            // if type is "updated" proceed to tap into workout
+            // check issue with Parsing string "1970-01-01T00:00:00Z" to a DateOnly "1970-01-01"
             var workoutDetails = workoutsInfo.Events
                 .Select(x => new WorkoutSummaryDto
                 {
                     Title = x.Workout.Title,
-                    SessionDate = DateOnly.Parse(x.Workout.Start_Time),
+                    SessionDate = DateOnly.Parse(x.Workout.Start_Time[0..10]),
                     ExerciseCount = x.Workout.Exercises.Count,
                 }).ToList();
 
@@ -33,8 +35,8 @@ namespace ClientDashboard_API.Services
         {
             DateTime todaysDate = DateTime.Now;
 
-            // TESTING change logic later
-            DateTime yesterdaysDate = todaysDate.AddDays(-1);
+            // TESTING change logic later - may need to have the time always be static to retrieve consistent results
+            DateTime yesterdaysDate = todaysDate.AddDays(-3);
             // custom date formatter
             string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
             Console.WriteLine(desiredDate);
