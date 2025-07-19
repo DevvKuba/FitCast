@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Data
     {
         public IClientDataRepository ClientDataRepository => clientDataRepository;
 
-        public async Task<bool> Complete()
+        public async Task<bool> DbUpdateComplete()
         {
             return await context.SaveChangesAsync() > 0;
         }

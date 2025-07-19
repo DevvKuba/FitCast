@@ -3,7 +3,7 @@ using ClientDashboard_API.Dto_s;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionIncrementor
+    public class SessionIncrementorService
     {
         // refactor for DB
         public List<WorkoutSummaryDto> DailyClientWorkouts { get; set; }
@@ -12,7 +12,7 @@ namespace ClientDashboard_API.Services
 
         public List<string> ClientList { get; set; } = [];
 
-        public SessionIncrementor(List<WorkoutSummaryDto> dailyWorkouts, string path)
+        public SessionIncrementorService(List<WorkoutSummaryDto> dailyWorkouts, string path)
         {
             DailyClientWorkouts = dailyWorkouts;
             Path = path;
@@ -36,7 +36,6 @@ namespace ClientDashboard_API.Services
                     }
                 }
             }
-
         }
 
         public async Task ConstructClientList()

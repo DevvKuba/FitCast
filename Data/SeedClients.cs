@@ -16,6 +16,7 @@ namespace ClientDashboard_API.Data
                 var dateTime = DateTime.Now;
                 var client = new WorkoutData
                 {
+                    // potentially seed name as lower case
                     Title = clientRecord[0],
                     SessionDate = DateOnly.FromDateTime(dateTime),
                     CurrentBlockSession = int.Parse(clientRecord[1]),

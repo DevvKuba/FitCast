@@ -4,7 +4,7 @@
     {
         IClientDataRepository ClientDataRepository { get; }
 
-        Task<bool> Complete();
+        Task<bool> DbUpdateComplete();
 
         bool HasChanges();
     }

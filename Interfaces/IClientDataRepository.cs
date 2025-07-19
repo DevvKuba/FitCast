@@ -1,5 +1,4 @@
-﻿
-using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -7,12 +6,19 @@ namespace ClientDashboard_API.Interfaces
     {
         // think of methods necessary to gather client data, within the ClientDataController
 
-        Task<WorkoutData> GetClientRecordByName(string name);
+        Task<WorkoutData> GetClientsLastSessionAsync(string name);
 
-        Task<List<WorkoutData>> GetClientRecordsByDate(DateOnly date);
+        Task<List<WorkoutData>> GetClientRecordsByDateAsync(DateOnly date);
 
-        Task<List<string>> GetClientsOnLastSession();
+        Task<List<string>> GetClientsOnLastSessionAsync();
 
-        Task<List<string>> GetClientsOnFirstSession();
+        Task<List<string>> GetClientsOnFirstSessionAsync();
+
+        Task UpdateClientCurrentSessionAsync(string clientName);
+
+        Task AddNewClientAsync(string clientName, DateOnly sessionDate);
+
+        Task<bool> CheckIfClientExistsAsync(string clientName);
+
     }
 }
