@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet]
         public async Task<List<WorkoutDataDto>> GetAllDailyClientSessions(string date)
         {
-            var clientSessions = await unitOfWork.ClientDataRepository.GetClientRecordsByDate(DateOnly.Parse(date));
+            var clientSessions = await unitOfWork.ClientDataRepository.GetClientRecordsByDateAsync(DateOnly.Parse(date));
             var clientMappedSessions = new List<WorkoutDataDto>();
 
             if (clientSessions == null) throw new Exception($"No client sessions found on specificed date: {date}");
@@ -29,7 +29,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("{clientName}/current")]
         public async Task<int> GetCurrentClientBlockSession(string clientName)
         {
-            var clientSession = await unitOfWork.ClientDataRepository.GetClientRecordByName(clientName);
+            var clientSession = await unitOfWork.ClientDataRepository.GetClientsLastSessionAsync(clientName);
 
             if (clientSession == null) throw new Exception($"{clientName} was not found");
 
@@ -39,7 +39,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("{clientName}/lastDate")]
         public async Task<DateOnly> GetLatestClientSessionDate(string clientName)
         {
-            var clientSession = await unitOfWork.ClientDataRepository.GetClientRecordByName(clientName);
+            var clientSession = await unitOfWork.ClientDataRepository.GetClientsLastSessionAsync(clientName);
 
             if (clientSession == null) throw new Exception($"{clientName} was not found");
             return clientSession.SessionDate;
@@ -50,7 +50,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("onLastLast")]
         public async Task<List<string>> GetClientsOnLastBlockSession()
         {
-            var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnLastSession();
+            var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnLastSessionAsync();
 
             if (clientSessions == null) throw new Exception("No clients currently on their last block session");
             return clientSessions;
@@ -59,7 +59,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("onFirstSession")]
         public async Task<List<string>> GetClientsOnFirstBlockSession()
         {
-            var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnFirstSession();
+            var clientSessions = await unitOfWork.ClientDataRepository.GetClientsOnFirstSessionAsync();
 
             if (clientSessions == null) throw new Exception("No clients currently on their first block session");
             return clientSessions;

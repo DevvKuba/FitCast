@@ -36,7 +36,6 @@ namespace ClientDashboard_API.Services
                     }
                 }
             }
-
         }
 
         public async Task ConstructClientList()

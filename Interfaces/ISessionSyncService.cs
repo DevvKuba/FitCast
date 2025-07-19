@@ -2,6 +2,6 @@
 {
     public interface ISessionSyncService
     {
-        Task<bool> SyncDailySessions(ISessionDataParser hevyParser);
+        Task<bool> SyncDailySessions();
     }
 }

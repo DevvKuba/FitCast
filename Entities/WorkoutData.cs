@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Entities
 
         public int CurrentBlockSession { get; set; }
 
-        public int TotalBlockSessions { get; set; }
+        public int? TotalBlockSessions { get; set; }
 
         public int ExerciseCount { get; set; }
 

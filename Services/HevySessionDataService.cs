@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Services
         {
             string json = await response.Content.ReadAsStringAsync();
 
-            // add if workouts are empty...
+            // add if workouts are empty... maybe check string length - if there are no workouts the strin will be / not be a specific length
 
             // need to enable insensitivity so mapping can be done without worrying about casing
             var workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -36,7 +36,7 @@ namespace ClientDashboard_API.Services
             DateTime todaysDate = DateTime.Now;
 
             // TESTING change logic later - may need to have the time always be static to retrieve consistent results
-            DateTime yesterdaysDate = todaysDate.AddDays(-3);
+            DateTime yesterdaysDate = todaysDate.AddDays(-1);
             // custom date formatter
             string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
             Console.WriteLine(desiredDate);
