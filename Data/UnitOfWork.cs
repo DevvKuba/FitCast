@@ -2,11 +2,13 @@
 
 namespace ClientDashboard_API.Data
 {
-    public class UnitOfWork(DataContext context, IClientDataRepository clientDataRepository) : IUnitOfWork
+    public class UnitOfWork(DataContext context, IClientRepository clientRepository, IWorkoutRepository workoutRepository) : IUnitOfWork
     {
-        public IClientDataRepository ClientDataRepository => clientDataRepository;
+        public IClientRepository ClientRepository => clientRepository;
 
-        public async Task<bool> DbUpdateComplete()
+        public IWorkoutRepository WorkoutRepository => workoutRepository;
+
+        public async Task<bool> Complete()
         {
             return await context.SaveChangesAsync() > 0;
         }

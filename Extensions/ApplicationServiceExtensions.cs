@@ -19,7 +19,8 @@ namespace ClientDashboard_API.Extensions
             // whenever you need the Interface pass the class instead / utilise dependency injection, 
             // e.g. passing in IUserRepositary userRepository => allows for UserRepository functionality
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IClientDataRepository, ClientDataRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

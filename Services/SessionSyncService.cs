@@ -16,16 +16,16 @@ namespace ClientDashboard_API.Services
             foreach (var workout in dailyWorkouts)
             {
                 string clientName = workout.Title.Split(' ')[0];
-                if (await unitOfWork.ClientDataRepository.CheckIfClientExistsAsync(clientName))
+                if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                 {
-                    await unitOfWork.ClientDataRepository.UpdateClientCurrentSessionAsync(clientName);
+                    await unitOfWork.ClientRepository.UpdateClientCurrentSessionAsync(clientName);
 
                 }
                 else
                 {
-                    await unitOfWork.ClientDataRepository.AddNewClientAsync(clientName, workout.SessionDate);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName);
                 }
-                await unitOfWork.DbUpdateComplete();
+                await unitOfWork.Complete();
             }
             return true;
         }
