@@ -2,11 +2,11 @@
 {
     public interface IUnitOfWork
     {
-        IClientDataRepository ClientDataRepository { get; }
+        IClientRepository ClientDataRepository { get; }
 
         IWorkoutRepository WorkoutRepository { get; }
 
-        Task<bool> DbUpdateComplete();
+        Task<bool> Complete();
 
         bool HasChanges();
     }

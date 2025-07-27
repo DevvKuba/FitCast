@@ -6,7 +6,11 @@ namespace ClientDashboard_API.Controllers
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
 
-
+        /// <summary>
+        /// Client method allowing for the retrieval of the clients
+        /// current session, within their respective block -
+        /// endpoint: "/{clientName}/currentSession" from [ClientController]
+        /// </summary>
         [HttpGet("{clientName}/currentSession")]
         public async Task<int> GetCurrentClientBlockSession(string clientName)
         {
@@ -17,6 +21,12 @@ namespace ClientDashboard_API.Controllers
             return clientSession.CurrentBlockSession;
         }
 
+
+        /// <summary>
+        /// Client method allowing for the retrieval of all clients,
+        /// on their last block session -
+        /// endpoint: "/onLastSession" from [ClientController]
+        /// </summary>
         [HttpGet("/onLastSession")]
         public async Task<List<string>> GetClientsOnLastBlockSession()
         {
@@ -26,6 +36,11 @@ namespace ClientDashboard_API.Controllers
             return clientSessions;
         }
 
+        /// <summary>
+        /// Client method allowing for the retrieval of all clients,
+        /// on their first block session -
+        /// endpoint: "/onFirstSession" from [ClientController]
+        /// </summary>
         [HttpGet("/onFirstSession")]
         public async Task<List<string>> GetClientsOnFirstBlockSession()
         {

@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Interfaces
 {
-    public interface IClientDataRepository
+    public interface IClientRepository
     {
         // think of methods necessary to gather client data, within the ClientDataController
         Task<Client> GetClientByNameAsync(string clientName);
@@ -18,6 +18,10 @@ namespace ClientDashboard_API.Interfaces
         Task AddNewClientAsync(string clientName);
 
         Task<bool> CheckIfClientExistsAsync(string clientName);
+
+        Task AddWorkoutAsync(Workout workout);
+
+        Task RemoveWorkout(Workout workout);
 
     }
 }

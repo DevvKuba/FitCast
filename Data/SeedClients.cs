@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Data
                     Name = clientRecord[0].ToLower(),
                     CurrentBlockSession = int.Parse(clientRecord[1]),
                     TotalBlockSessions = int.Parse(clientRecord[2]),
-                    ClientWorkouts = new List<Workout>()
+                    Workouts = new List<Workout>()
                 };
 
                 if (!context.Client.Contains(client))

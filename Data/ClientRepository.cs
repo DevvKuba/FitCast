@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class ClientDataRepository(DataContext context, IMapper mapper) : IClientDataRepository
+    public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
     {
         public async Task UpdateClientCurrentSessionAsync(string clientName)
         {
@@ -63,5 +63,17 @@ namespace ClientDashboard_API.Data
             return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
 
+        public async Task AddWorkoutAsync(Workout workout)
+        {
+            var clientData = await GetClientByNameAsync(workout.ClientName);
+            clientData.Workouts.Add(workout);
+
+        }
+
+        public async Task RemoveWorkout(Workout workout)
+        {
+            var clientData = await GetClientByNameAsync(workout.ClientName);
+            clientData.Workouts.Remove(workout);
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Data
             base.OnModelCreating(builder);
 
             builder.Entity<Client>()
-                .HasMany(e => e.ClientWorkouts)
+                .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
                 .HasForeignKey(e => e.ClientName)
                 .IsRequired();
