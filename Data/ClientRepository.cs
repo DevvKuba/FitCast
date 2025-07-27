@@ -53,9 +53,14 @@ namespace ClientDashboard_API.Data
             await context.Client.AddAsync(new Client
             {
                 Name = clientName.ToLower(),
-                CurrentBlockSession = 1,
+                CurrentBlockSession = 0,
                 TotalBlockSessions = null
             });
+        }
+
+        public void RemoveClient(Client client)
+        {
+            context.Client.Remove(client);
         }
 
         public async Task<bool> CheckIfClientExistsAsync(string clientName)

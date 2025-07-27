@@ -46,14 +46,14 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for removing a specific workout via client name & date
         /// </summary>
-        [HttpDelete("{clientName}/{sessionDate}/Delete")]
+        [HttpDelete("{clientName}/{sessionDate}")]
         public async Task<ActionResult> DeleteClientWorkout(string clientName, DateOnly sessionDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(sessionDate, clientName);
 
             if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
 
-            await unitOfWork.ClientDataRepository.RemoveWorkout(clientWorkout);
+            await unitOfWork.ClientRepository.RemoveWorkout(clientWorkout);
 
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
             return BadRequest("Removing client unsuccessful");
@@ -64,10 +64,10 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client
         /// </summary>
-        [HttpPost("{clientName}/Add")]
+        [HttpPost("{clientName}")]
         public async Task<ActionResult> AddNewClientWorkout(Workout workout, string clientName)
         {
-            var client = await unitOfWork.ClientDataRepository.GetClientByNameAsync(clientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
             if (client == null) return NotFound($"Client: {clientName} not found");
             client.Workouts.Add(workout);

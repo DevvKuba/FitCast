@@ -2,7 +2,7 @@
 {
     public interface IUnitOfWork
     {
-        IClientRepository ClientDataRepository { get; }
+        IClientRepository ClientRepository { get; }
 
         IWorkoutRepository WorkoutRepository { get; }
 

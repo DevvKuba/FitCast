@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task AddNewClientAsync(string clientName);
 
+        void RemoveClient(Client client);
+
         Task<bool> CheckIfClientExistsAsync(string clientName);
 
         Task AddWorkoutAsync(Workout workout);
