@@ -5,10 +5,9 @@ namespace ClientDashboard_API.Interfaces
     public interface IClientDataRepository
     {
         // think of methods necessary to gather client data, within the ClientDataController
+        Task<Client> GetClientByNameAsync(string clientName);
 
-        Task<WorkoutData> GetClientsLastSessionAsync(string name);
-
-        Task<List<WorkoutData>> GetClientRecordsByDateAsync(DateOnly date);
+        Task<int> GetClientsCurrentSessionAsync(string name);
 
         Task<List<string>> GetClientsOnLastSessionAsync();
 
@@ -16,7 +15,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task UpdateClientCurrentSessionAsync(string clientName);
 
-        Task AddNewClientAsync(string clientName, DateOnly sessionDate);
+        Task AddNewClientAsync(string clientName);
 
         Task<bool> CheckIfClientExistsAsync(string clientName);
 

@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.Dto_s
 {
-    public class WorkoutUpdateDto
+    public class ClientUpdateDTO
     {
         public int CurrentBlockSession { get; set; }
 

@@ -20,6 +20,7 @@ namespace ClientDashboard_API.Extensions
             // e.g. passing in IUserRepositary userRepository => allows for UserRepository functionality
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IClientDataRepository, ClientDataRepository>();
+            services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

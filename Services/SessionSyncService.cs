@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Services
                 }
                 else
                 {
-                    await unitOfWork.ClientDataRepository.AddNewClientAsync(clientName, workout.SessionDate);
+                    await unitOfWork.ClientDataRepository.AddNewClientAsync(clientName);
                 }
                 await unitOfWork.DbUpdateComplete();
             }

@@ -10,51 +10,49 @@ namespace ClientDashboard_API.Data
     {
         public async Task UpdateClientCurrentSessionAsync(string clientName)
         {
-            var clientData = await GetClientsLastSessionAsync(clientName);
-            int newCurrentSession = clientData.CurrentBlockSession + 1;
-            if (newCurrentSession > clientData.TotalBlockSessions) newCurrentSession = 1;
+            var clientInfo = await GetClientByNameAsync(clientName);
+            int newCurrentSession = clientInfo.CurrentBlockSession + 1;
+            if (newCurrentSession > clientInfo.TotalBlockSessions) newCurrentSession = 1;
 
-            var updatedData = new WorkoutUpdateDto
+            var updatedData = new ClientUpdateDTO
             {
                 CurrentBlockSession = newCurrentSession,
             };
 
-            mapper.Map(updatedData, clientData);
-
+            mapper.Map(updatedData, clientInfo);
 
         }
-
-        public async Task<WorkoutData> GetClientsLastSessionAsync(string clientName)
+        public async Task<Client> GetClientByNameAsync(string clientName)
         {
-            var clientData = await context.Data.OrderByDescending(x => x.SessionDate).Where(x => x.Title == clientName).FirstOrDefaultAsync();
+            var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).FirstOrDefaultAsync();
             return clientData;
         }
 
-        public async Task<List<WorkoutData>> GetClientRecordsByDateAsync(DateOnly date)
+        public async Task<int> GetClientsCurrentSessionAsync(string clientName)
         {
-            var clientData = await context.Data.Where(x => x.SessionDate == date).ToListAsync();
+            var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
             return clientData;
         }
+
 
         public async Task<List<string>> GetClientsOnFirstSessionAsync()
         {
-            var clients = await context.Data.Where(x => x.CurrentBlockSession == 1).Select(x => x.Title).ToListAsync();
+            var clients = await context.Client.Where(x => x.CurrentBlockSession == 1).Select(x => x.Name.ToLower()).ToListAsync();
             return clients;
         }
 
         public async Task<List<string>> GetClientsOnLastSessionAsync()
         {
-            var clients = await context.Data.Where(x => x.CurrentBlockSession == x.TotalBlockSessions).Select(x => x.Title).ToListAsync();
+            var clients = await context.Client.Where(x => x.CurrentBlockSession == x.TotalBlockSessions).Select(x => x.Name.ToLower()).ToListAsync();
             return clients;
         }
 
-        public async Task AddNewClientAsync(string clientName, DateOnly sessionDate)
+        public async Task AddNewClientAsync(string clientName)
         {
             // entity state? can you just add it
-            await context.Data.AddAsync(new WorkoutData
+            await context.Client.AddAsync(new Client
             {
-                Title = clientName,
-                SessionDate = sessionDate,
+                Name = clientName.ToLower(),
                 CurrentBlockSession = 1,
                 TotalBlockSessions = null
             });
@@ -62,7 +60,8 @@ namespace ClientDashboard_API.Data
 
         public async Task<bool> CheckIfClientExistsAsync(string clientName)
         {
-            return await context.Data.AnyAsync(record => record.Title == clientName);
+            return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
+
     }
 }

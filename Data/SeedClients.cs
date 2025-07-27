@@ -14,19 +14,18 @@ namespace ClientDashboard_API.Data
             foreach (var clientRecord in clientData)
             {
                 var dateTime = DateTime.Now;
-                var client = new WorkoutData
+                var client = new Client
                 {
                     // potentially seed name as lower case
-                    Title = clientRecord[0],
-                    SessionDate = DateOnly.FromDateTime(dateTime),
+                    Name = clientRecord[0].ToLower(),
                     CurrentBlockSession = int.Parse(clientRecord[1]),
                     TotalBlockSessions = int.Parse(clientRecord[2]),
-                    ExerciseCount = random.Next(6, 12)
+                    ClientWorkouts = new List<Workout>()
                 };
 
-                if (!context.Data.Contains(client))
+                if (!context.Client.Contains(client))
                 {
-                    context.Data.Add(client);
+                    context.Client.Add(client);
                 }
             }
 
