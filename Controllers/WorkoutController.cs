@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for the retrieval of a specific client's last workout
         /// </summary>
         [HttpGet("{clientName}/lastDate")]
-        public async Task<Workout> GetLatestClientWorkout([FromHeader] string clientName)
+        public async Task<Workout> GetLatestClientWorkout(string clientName)
         {
             var latestWorkoutInfo = await unitOfWork.WorkoutRepository.GetLatestClientWorkoutAsync(clientName);
 
@@ -64,16 +64,17 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client
         /// </summary>
-        [HttpPost("{clientName}")]
-        public async Task<ActionResult> AddNewClientWorkout(Workout workout, string clientName)
+        [HttpPost("/newWorkout")]
+        public async Task<ActionResult> AddNewClientWorkout([FromBody] Workout workout)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            // may need to look into specific api response a bit more, use fields to actually create that workout object to add
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(workout.ClientName);
 
-            if (client == null) return NotFound($"Client: {clientName} not found");
+            if (client == null) return NotFound($"Client: {workout.ClientName} not found");
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(workout);
             await unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client.Name);
 
-            if (await unitOfWork.Complete()) return Ok($"Workout added for client: {clientName}");
+            if (await unitOfWork.Complete()) return Ok($"Workout added for client: {client.Name}");
             return BadRequest("Adding client unsuccessful");
 
         }
