@@ -59,13 +59,13 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
-        public async Task AddNewClientAsync(string clientName)
+        public async Task AddNewClientAsync(string clientName, int? blockSessions)
         {
             await context.Client.AddAsync(new Client
             {
                 Name = clientName.ToLower(),
                 CurrentBlockSession = 0,
-                TotalBlockSessions = null
+                TotalBlockSessions = blockSessions
             });
         }
 

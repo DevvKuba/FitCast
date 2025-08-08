@@ -49,9 +49,9 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult> AddNewClient(string clientName)
+        public async Task<ActionResult> AddNewClient(string clientName, int? blockSessions)
         {
-            await unitOfWork.ClientRepository.AddNewClientAsync(clientName);
+            await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions);
             if (await unitOfWork.Complete()) return Ok($"Client: {clientName} added");
 
             return BadRequest($"Client {clientName} not added");

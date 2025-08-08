@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Services
                 }
                 else
                 {
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null);
                 }
                 await unitOfWork.Complete();
             }
