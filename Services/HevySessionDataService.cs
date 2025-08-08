@@ -16,8 +16,17 @@ namespace ClientDashboard_API.Services
             // add if workouts are empty... maybe check string length - if there are no workouts the strin will be / not be a specific length
 
             // need to enable insensitivity so mapping can be done without worrying about casing
-            var workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (workoutsInfo == null) throw new Exception("workouts not mapped correctly into models");
+            ApiSessionResponse? workoutsInfo = null;
+            try
+            {
+                workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"No workouts present when gathering from the Hevy Api");
+            }
+
+            if (workoutsInfo == null) return [];
 
             // check issue with Parsing string "1970-01-01T00:00:00Z" to a DateOnly "1970-01-01"
             var workoutDetails = workoutsInfo.Events
