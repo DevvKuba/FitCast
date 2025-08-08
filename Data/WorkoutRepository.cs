@@ -4,34 +4,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class WorkoutRepository(DataContext context) : IWorkoutRepository
+    public class WorkoutRepository(DataContext context, IClientRepository clientRepository) : IWorkoutRepository
     {
         public async Task<Workout> GetSpecificClientWorkoutAsync(DateOnly workoutDate, string clientName)
         {
-            var clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName && x.SessionDate == workoutDate).FirstOrDefaultAsync();
+            Workout? clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName && x.SessionDate == workoutDate).FirstOrDefaultAsync();
             return clientWorkout;
         }
         public async Task<List<Workout>> GetClientWorkoutsByDateAsync(DateOnly workoutDate)
         {
-            var clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();
+            List<Workout?> clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();
             return clientData;
         }
 
         public async Task<Workout> GetLatestClientWorkoutAsync(string clientName)
         {
-            var clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName.ToLower()).FirstOrDefaultAsync();
+            Workout? clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName.ToLower()).FirstOrDefaultAsync();
             return clientWorkout;
         }
 
-        // call within the controller , search for given client then add the workout to their list of workouts
-        //public async Task Add(Workout workout, string clientName)
-        //{
-        //    context.Workouts.Add(workout);
-        //}
+        public async Task AddWorkoutAsync(Workout workout)
+        {
+            var clientData = await clientRepository.GetClientByNameAsync(workout.ClientName);
+            clientData.Workouts.Add(workout);
+        }
 
-        //public async Task Remove(Workout workout)
-        //{
-        //    context.Workouts.Remove(workout);
-        //}
+        public async Task RemoveWorkoutAsync(Workout workout)
+        {
+            var clientData = await clientRepository.GetClientByNameAsync(workout.ClientName);
+            clientData.Workouts.Remove(workout);
+        }
     }
 }

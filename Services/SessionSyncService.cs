@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Services
                 string clientName = workout.Title.Split(' ')[0];
                 if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                 {
-                    await unitOfWork.ClientRepository.UpdateClientCurrentSessionAsync(clientName);
+                    await unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(clientName);
 
                 }
                 else

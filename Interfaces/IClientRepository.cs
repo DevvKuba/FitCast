@@ -13,7 +13,9 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<string>> GetClientsOnFirstSessionAsync();
 
-        Task UpdateClientCurrentSessionAsync(string clientName);
+        Task UpdateAddingClientCurrentSessionAsync(string clientName);
+
+        Task UpdateDeletingClientCurrentSessionAsync(string clientName);
 
         Task AddNewClientAsync(string clientName);
 
@@ -21,9 +23,6 @@ namespace ClientDashboard_API.Interfaces
 
         Task<bool> CheckIfClientExistsAsync(string clientName);
 
-        Task AddWorkoutAsync(Workout workout);
-
-        Task RemoveWorkoutAsync(Workout workout);
 
     }
 }

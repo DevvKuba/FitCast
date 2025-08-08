@@ -53,12 +53,12 @@ namespace ClientDashboard_API.Controllers
 
             if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
 
-            await unitOfWork.ClientRepository.RemoveWorkoutAsync(clientWorkout);
+            await unitOfWork.WorkoutRepository.RemoveWorkoutAsync(clientWorkout);
+            await unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientName);
 
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
             return BadRequest("Removing client unsuccessful");
 
-            // should update the clients current session after added -1
         }
 
         /// <summary>
@@ -70,15 +70,13 @@ namespace ClientDashboard_API.Controllers
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
             if (client == null) return NotFound($"Client: {clientName} not found");
-            client.Workouts.Add(workout);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(workout);
+            await unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client.Name);
 
             if (await unitOfWork.Complete()) return Ok($"Workout added for client: {clientName}");
             return BadRequest("Adding client unsuccessful");
 
-            // should update the clients current session after added +1
-
         }
-
 
     }
 }

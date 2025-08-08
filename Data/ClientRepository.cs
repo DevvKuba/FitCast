@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Data
 {
     public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
     {
-        public async Task UpdateClientCurrentSessionAsync(string clientName)
+        public async Task UpdateAddingClientCurrentSessionAsync(string clientName)
         {
             var clientInfo = await GetClientByNameAsync(clientName);
             int newCurrentSession = clientInfo.CurrentBlockSession + 1;
@@ -18,10 +18,22 @@ namespace ClientDashboard_API.Data
             {
                 CurrentBlockSession = newCurrentSession,
             };
-
             mapper.Map(updatedData, clientInfo);
 
         }
+
+        public async Task UpdateDeletingClientCurrentSessionAsync(string clientName)
+        {
+            var clientInfo = await GetClientByNameAsync(clientName);
+            int newCurrentSession = clientInfo.CurrentBlockSession - 1;
+
+            var updatedData = new ClientUpdateDTO
+            {
+                CurrentBlockSession = newCurrentSession,
+            };
+            mapper.Map(updatedData, clientInfo);
+        }
+
         public async Task<Client> GetClientByNameAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).FirstOrDefaultAsync();
@@ -67,17 +79,5 @@ namespace ClientDashboard_API.Data
             return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
 
-        public async Task AddWorkoutAsync(Workout workout)
-        {
-            var clientData = await GetClientByNameAsync(workout.ClientName);
-            clientData.Workouts.Add(workout);
-
-        }
-
-        public async Task RemoveWorkoutAsync(Workout workout)
-        {
-            var clientData = await GetClientByNameAsync(workout.ClientName);
-            clientData.Workouts.Remove(workout);
-        }
     }
 }
