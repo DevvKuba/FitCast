@@ -11,13 +11,14 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of all daily client sessions
         /// </summary>
-        [HttpGet("{date}/GetAllClientSessions")]
-        public async Task<List<WorkoutDataDto>> GetAllDailyClientWorkouts(string date)
+        [HttpGet("{date}/GetAllDailySessions")]
+        public async Task<List<WorkoutDataDto>> GetAllDailyClientWorkouts()
         {
-            var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsByDateAsync(DateOnly.Parse(date));
+            var tadaysDateString = DateTime.Now.Date.ToString();
+            var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsAtDateAsync(DateOnly.Parse(tadaysDateString));
             var clientMappedSessions = new List<WorkoutDataDto>();
 
-            if (clientSessions == null) throw new Exception($"No client sessions found on specificed date: {date}");
+            if (clientSessions == null) throw new Exception($"No client sessions found on specificed date: {tadaysDateString}");
 
             foreach (var clientSession in clientSessions)
             {
@@ -28,6 +29,14 @@ namespace ClientDashboard_API.Controllers
             return clientMappedSessions;
 
         }
+
+        // does this client have a workout on x date ? true : false
+        [HttpGet("{date}/GetWorkoutAtDate")]
+
+
+        // give me a list of this clients workouts from x date []
+        [HttpGet("{date}/GetWorkoutsFromDate")]
+
 
         /// <summary>
         /// Workout request for the retrieval of a specific client's last workout
