@@ -49,7 +49,6 @@ namespace ClientDashboard_API.Data
 
         public async Task AddNewClientAsync(string clientName)
         {
-            // entity state? can you just add it
             await context.Client.AddAsync(new Client
             {
                 Name = clientName.ToLower(),
@@ -75,7 +74,7 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public async Task RemoveWorkout(Workout workout)
+        public async Task RemoveWorkoutAsync(Workout workout)
         {
             var clientData = await GetClientByNameAsync(workout.ClientName);
             clientData.Workouts.Remove(workout);

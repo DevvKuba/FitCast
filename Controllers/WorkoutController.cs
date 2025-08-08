@@ -53,7 +53,7 @@ namespace ClientDashboard_API.Controllers
 
             if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
 
-            await unitOfWork.ClientRepository.RemoveWorkout(clientWorkout);
+            await unitOfWork.ClientRepository.RemoveWorkoutAsync(clientWorkout);
 
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
             return BadRequest("Removing client unsuccessful");

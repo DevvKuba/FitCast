@@ -5,7 +5,6 @@ namespace ClientDashboard_API.Controllers
 {
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-
         /// <summary>
         /// Client method allowing for the retrieval of the clients current session,
         /// within their respective block
@@ -45,6 +44,10 @@ namespace ClientDashboard_API.Controllers
             return clientSessions;
         }
 
+
+        /// <summary>
+        /// Client method for adding a new Client to the database
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult> AddNewClient(string clientName)
         {
@@ -54,6 +57,9 @@ namespace ClientDashboard_API.Controllers
             return BadRequest($"Client {clientName} not added");
         }
 
+        /// <summary>
+        /// Client method for removing an existing Client from the database
+        /// </summary>
         [HttpDelete]
         public async Task<ActionResult> RemoveClient(string clientName)
         {

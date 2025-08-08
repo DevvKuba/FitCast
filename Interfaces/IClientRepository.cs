@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task AddWorkoutAsync(Workout workout);
 
-        Task RemoveWorkout(Workout workout);
+        Task RemoveWorkoutAsync(Workout workout);
 
     }
 }
