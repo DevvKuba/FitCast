@@ -14,11 +14,11 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("{date}/GetAllDailySessions")]
         public async Task<List<WorkoutDataDto>> GetAllDailyClientWorkouts()
         {
-            var tadaysDateString = DateTime.Now.Date.ToString();
-            var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsAtDateAsync(DateOnly.Parse(tadaysDateString));
+            var todaysDateString = DateTime.Now.Date.ToString();
+            var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsAtDateAsync(DateOnly.Parse(todaysDateString));
             var clientMappedSessions = new List<WorkoutDataDto>();
 
-            if (clientSessions == null) throw new Exception($"No client sessions found on specificed date: {tadaysDateString}");
+            if (clientSessions == null) throw new Exception($"No client sessions found on specificed date: {todaysDateString}");
 
             foreach (var clientSession in clientSessions)
             {
@@ -30,13 +30,33 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        // does this client have a workout on x date ? true : false
+        /// <summary>
+        /// Workout request for retrieving a specific client workout, at a given date
+        /// </summary>
         [HttpGet("{date}/GetWorkoutAtDate")]
+        public async Task<Workout> GetClientWorkoutAtDate(string clientName, DateOnly date)
+        {
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, date);
+
+            if (clientWorkout == null) throw new Exception($"Client: {clientName}'s workout at {date} was not found.");
+
+            return clientWorkout;
+        }
 
 
-        // give me a list of this clients workouts from x date []
+        /// <summary>
+        /// Workout request for retrieving a list of client workouts,
+        /// from a given date
+        /// </summary>
         [HttpGet("{date}/GetWorkoutsFromDate")]
+        public async Task<List<Workout>> GetClientWorkoutsFromDate(DateOnly date)
+        {
+            var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsFromDateAsync(date);
 
+            if (clientWorkouts == null) throw new Exception($"No client sessions found on specificed date: {date}");
+
+            return clientWorkouts;
+        }
 
         /// <summary>
         /// Workout request for the retrieval of a specific client's last workout

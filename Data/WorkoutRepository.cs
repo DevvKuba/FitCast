@@ -17,6 +17,12 @@ namespace ClientDashboard_API.Data
             return clientData;
         }
 
+        public async Task<Workout> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
+        {
+            Workout? clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate && x.ClientName == clientName.ToLower()).FirstOrDefaultAsync();
+            return clientData;
+        }
+
         public async Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
         {
             List<Workout?> clientData = await context.Workouts.Where(x => x.SessionDate >= workoutDate).ToListAsync();
