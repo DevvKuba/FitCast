@@ -11,9 +11,9 @@ namespace ClientDashboard_API.Controllers
         /// within their respective block
         /// </summary>
         [HttpGet("{clientName}/currentSession")]
-        public async Task<IActionResult> GetCurrentClientBlockSession(string clientName)
+        public async Task<ActionResult<Client>> GetCurrentClientBlockSession(string clientName)
         {
-            Client client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
             if (client == null) return NotFound($"{clientName} was not found");
 
@@ -25,9 +25,9 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing for the retrieval of all clients, on their last block session
         /// </summary>
         [HttpGet("/onLastSession")]
-        public async Task<IActionResult> GetClientsOnLastBlockSession()
+        public async Task<ActionResult<List<string>>> GetClientsOnLastBlockSession()
         {
-            List<string> clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
+            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
 
             if (clientSessions == null) return NotFound("No clients currently on their last block session");
             return Ok(clientSessions);
@@ -37,9 +37,9 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
         [HttpGet("/onFirstSession")]
-        public async Task<IActionResult> GetClientsOnFirstBlockSession()
+        public async Task<ActionResult<List<string>>> GetClientsOnFirstBlockSession()
         {
-            List<string> clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
+            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
 
             if (clientSessions == null) return NotFound("No clients currently on their first block session");
             return Ok(clientSessions);
