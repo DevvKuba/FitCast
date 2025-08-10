@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Client, WorkoutDataDto>();
+            CreateMap<Client, WorkoutDto>();
             CreateMap<ClientUpdateDTO, Client>();
         }
     }

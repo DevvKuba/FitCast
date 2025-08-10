@@ -8,30 +8,32 @@ namespace ClientDashboard_API.Data
 {
     public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
     {
-        public async Task UpdateAddingClientCurrentSessionAsync(string clientName)
+        public void UpdateAddingClientCurrentSessionAsync(Client client)
         {
-            var clientInfo = await GetClientByNameAsync(clientName);
-            int newCurrentSession = clientInfo.CurrentBlockSession + 1;
-            if (newCurrentSession > clientInfo.TotalBlockSessions) newCurrentSession = 1;
+            int newCurrentSession = client.CurrentBlockSession + 1;
+            if (newCurrentSession > client.TotalBlockSessions)
+            {
+                newCurrentSession = 1;
+            }
 
             var updatedData = new ClientUpdateDTO
             {
                 CurrentBlockSession = newCurrentSession,
+                TotalBlockSessions = client.TotalBlockSessions
             };
-            mapper.Map(updatedData, clientInfo);
+            mapper.Map(updatedData, client);
 
         }
 
-        public async Task UpdateDeletingClientCurrentSessionAsync(string clientName)
+        public void UpdateDeletingClientCurrentSessionAsync(Client client)
         {
-            var clientInfo = await GetClientByNameAsync(clientName);
-            int newCurrentSession = clientInfo.CurrentBlockSession - 1;
+            int newCurrentSession = client.CurrentBlockSession - 1;
 
             var updatedData = new ClientUpdateDTO
             {
                 CurrentBlockSession = newCurrentSession,
             };
-            mapper.Map(updatedData, clientInfo);
+            mapper.Map(updatedData, client);
         }
 
         public async Task<Client> GetClientByNameAsync(string clientName)
@@ -59,13 +61,13 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
-        public async Task AddNewClientAsync(string clientName)
+        public async Task AddNewClientAsync(string clientName, int? blockSessions)
         {
             await context.Client.AddAsync(new Client
             {
                 Name = clientName.ToLower(),
                 CurrentBlockSession = 0,
-                TotalBlockSessions = null
+                TotalBlockSessions = blockSessions
             });
         }
 

@@ -16,12 +16,13 @@ namespace ClientDashboard_API.Services
                 string clientName = workout.Title.Split(' ')[0];
                 if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                 {
-                    await unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(clientName);
-
+                    var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+                    unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
                 }
                 else
                 {
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null);
                 }
                 await unitOfWork.Complete();
             }

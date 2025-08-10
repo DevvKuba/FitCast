@@ -11,9 +11,21 @@ namespace ClientDashboard_API.Data
             Workout? clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName && x.SessionDate == workoutDate).FirstOrDefaultAsync();
             return clientWorkout;
         }
-        public async Task<List<Workout>> GetClientWorkoutsByDateAsync(DateOnly workoutDate)
+        public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
             List<Workout?> clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();
+            return clientData;
+        }
+
+        public async Task<Workout> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
+        {
+            Workout? clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate && x.ClientName == clientName.ToLower()).FirstOrDefaultAsync();
+            return clientData;
+        }
+
+        public async Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
+        {
+            List<Workout?> clientData = await context.Workouts.Where(x => x.SessionDate >= workoutDate).ToListAsync();
             return clientData;
         }
 
@@ -23,10 +35,20 @@ namespace ClientDashboard_API.Data
             return clientWorkout;
         }
 
-        public async Task AddWorkoutAsync(Workout workout)
+        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
-            var clientData = await clientRepository.GetClientByNameAsync(workout.ClientName);
-            clientData.Workouts.Add(workout);
+            await context.Workouts.AddAsync(new Workout
+            {
+                ClientName = client.Name,
+                WorkoutTitle = workoutTitle,
+                SessionDate = workoutDate,
+                // don't need to be updated here since we handle
+                // that in the client Update sessions method
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = client.TotalBlockSessions,
+                ExerciseCount = exerciseCount,
+                Client = client
+            });
         }
 
         public async Task RemoveWorkoutAsync(Workout workout)

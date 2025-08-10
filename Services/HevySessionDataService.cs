@@ -45,7 +45,7 @@ namespace ClientDashboard_API.Services
             DateTime todaysDate = DateTime.Now;
 
             // TESTING change logic later - may need to have the time always be static to retrieve consistent results
-            DateTime yesterdaysDate = todaysDate.AddDays(-1);
+            DateTime yesterdaysDate = todaysDate.AddDays(-3);
             // custom date formatter
             string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
             Console.WriteLine(desiredDate);
