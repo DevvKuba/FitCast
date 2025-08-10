@@ -11,11 +11,15 @@ namespace ClientDashboard_API.Data
         public void UpdateAddingClientCurrentSessionAsync(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession + 1;
-            if (newCurrentSession > client.TotalBlockSessions) newCurrentSession = 1;
+            if (newCurrentSession > client.TotalBlockSessions)
+            {
+                newCurrentSession = 1;
+            }
 
             var updatedData = new ClientUpdateDTO
             {
                 CurrentBlockSession = newCurrentSession,
+                TotalBlockSessions = client.TotalBlockSessions
             };
             mapper.Map(updatedData, client);
 
