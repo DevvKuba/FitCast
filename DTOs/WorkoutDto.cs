@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.Dto_s
 {
-    public class WorkoutDataDto
+    public class WorkoutDto
     {
         public required string Title { get; set; }
 

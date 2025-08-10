@@ -17,13 +17,13 @@ namespace ClientDashboard_API.Controllers
             var todaysDateString = DateTime.Now.Date.ToString();
 
             var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsAtDateAsync(DateOnly.Parse(todaysDateString));
-            var clientMappedSessions = new List<WorkoutDataDto>();
+            var clientMappedSessions = new List<WorkoutDto>();
 
             if (clientSessions == null) return NotFound($"No client sessions found on specificed date: {todaysDateString}");
 
             foreach (var clientSession in clientSessions)
             {
-                var clientDataDto = mapper.Map<WorkoutDataDto>(clientSession);
+                var clientDataDto = mapper.Map<WorkoutDto>(clientSession);
                 clientMappedSessions.Add(clientDataDto);
 
             }
@@ -35,11 +35,11 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for retrieving a specific client workout, at a given date
         /// </summary>
         [HttpGet("{date}/GetWorkoutAtDate")]
-        public async Task<ActionResult<Workout>> GetClientWorkoutAtDate(string clientName, DateOnly date)
+        public async Task<ActionResult<Workout>> GetClientWorkoutAtDate(string clientName, DateOnly workoutDate)
         {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, date);
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
 
-            if (clientWorkout == null) return NotFound($"Client: {clientName}'s workout at {date} was not found.");
+            if (clientWorkout == null) return NotFound($"Client: {clientName}'s workout at {workoutDate} was not found.");
 
             return Ok(clientWorkout);
         }
@@ -50,11 +50,11 @@ namespace ClientDashboard_API.Controllers
         /// from a given date
         /// </summary>
         [HttpGet("{date}/GetWorkoutsFromDate")]
-        public async Task<ActionResult<List<Workout>>> GetClientWorkoutsFromDate(DateOnly date)
+        public async Task<ActionResult<List<Workout>>> GetClientWorkoutsFromDate(DateOnly workoutDate)
         {
-            var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsFromDateAsync(date);
+            var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsFromDateAsync(workoutDate);
 
-            if (clientWorkouts == null) return NotFound($"No client sessions found on specificed date: {date}");
+            if (clientWorkouts == null) return NotFound($"No client sessions found on specificed date: {workoutDate}");
 
             return Ok(clientWorkouts);
         }
@@ -77,16 +77,17 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for adding a workout for a specific client
         /// </summary>
         [HttpPost("/newWorkout")]
-        public async Task<IActionResult> AddNewClientWorkout([FromBody] Workout workout)
+        public async Task<IActionResult> AddNewClientWorkout(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
             // may need to look into specific api response a bit more, use fields to actually create that workout object to add
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(workout.ClientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
-            if (client == null) return NotFound($"Client: {workout.ClientName} not found");
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(workout);
-            await unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client.Name);
+            if (client == null) return NotFound($"Client: {clientName} not found");
 
-            if (await unitOfWork.Complete()) return Ok($"Workout added for client: {client.Name}");
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount);
+            unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+
+            if (await unitOfWork.Complete()) return Ok($"Workout added for client: {clientName}");
             return BadRequest("Adding client unsuccessful");
 
         }
@@ -95,16 +96,16 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for removing a specific workout via client name & date
         /// </summary>
         [HttpDelete("{clientName}/{sessionDate}")]
-        public async Task<IActionResult> DeleteClientWorkout(string clientName, DateOnly sessionDate)
+        public async Task<IActionResult> DeleteClientWorkout(string clientName, DateOnly workoutDate)
         {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(sessionDate, clientName);
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(workoutDate, clientName);
 
-            if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
+            if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {workoutDate}");
 
             await unitOfWork.WorkoutRepository.RemoveWorkoutAsync(clientWorkout);
-            await unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientName);
+            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientWorkout.Client);
 
-            if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
+            if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {workoutDate} has been removed");
             return BadRequest("Removing client unsuccessful");
 
         }
