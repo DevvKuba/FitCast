@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
@@ -10,13 +11,13 @@ namespace ClientDashboard_API.Controllers
         /// within their respective block
         /// </summary>
         [HttpGet("{clientName}/currentSession")]
-        public async Task<int> GetCurrentClientBlockSession(string clientName)
+        public async Task<IActionResult> GetCurrentClientBlockSession(string clientName)
         {
-            var clientSession = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            Client client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
-            if (clientSession == null) throw new Exception($"{clientName} was not found");
+            if (client == null) return NotFound($"{clientName} was not found");
 
-            return clientSession.CurrentBlockSession;
+            return Ok(client);
         }
 
 
@@ -24,24 +25,24 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing for the retrieval of all clients, on their last block session
         /// </summary>
         [HttpGet("/onLastSession")]
-        public async Task<List<string>> GetClientsOnLastBlockSession()
+        public async Task<IActionResult> GetClientsOnLastBlockSession()
         {
-            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
+            List<string> clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
 
-            if (clientSessions == null) throw new Exception("No clients currently on their last block session");
-            return clientSessions;
+            if (clientSessions == null) return NotFound("No clients currently on their last block session");
+            return Ok(clientSessions);
         }
 
         /// <summary>
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
         [HttpGet("/onFirstSession")]
-        public async Task<List<string>> GetClientsOnFirstBlockSession()
+        public async Task<IActionResult> GetClientsOnFirstBlockSession()
         {
-            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
+            List<string> clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
 
-            if (clientSessions == null) throw new Exception("No clients currently on their first block session");
-            return clientSessions;
+            if (clientSessions == null) return NotFound("No clients currently on their first block session");
+            return Ok(clientSessions);
         }
 
 
@@ -49,7 +50,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult> AddNewClient(string clientName, int? blockSessions)
+        public async Task<IActionResult> AddNewClient(string clientName, int? blockSessions)
         {
             await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions);
             if (await unitOfWork.Complete()) return Ok($"Client: {clientName} added");
@@ -61,7 +62,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method for removing an existing Client from the database
         /// </summary>
         [HttpDelete]
-        public async Task<ActionResult> RemoveClient(string clientName)
+        public async Task<IActionResult> RemoveClient(string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 

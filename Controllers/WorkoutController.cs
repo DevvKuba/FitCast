@@ -73,24 +73,6 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Workout request for removing a specific workout via client name & date
-        /// </summary>
-        [HttpDelete("{clientName}/{sessionDate}")]
-        public async Task<ActionResult> DeleteClientWorkout(string clientName, DateOnly sessionDate)
-        {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(sessionDate, clientName);
-
-            if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
-
-            await unitOfWork.WorkoutRepository.RemoveWorkoutAsync(clientWorkout);
-            await unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientName);
-
-            if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
-            return BadRequest("Removing client unsuccessful");
-
-        }
-
-        /// <summary>
         /// Workout request for adding a workout for a specific client
         /// </summary>
         [HttpPost("/newWorkout")]
@@ -105,6 +87,24 @@ namespace ClientDashboard_API.Controllers
 
             if (await unitOfWork.Complete()) return Ok($"Workout added for client: {client.Name}");
             return BadRequest("Adding client unsuccessful");
+
+        }
+
+        /// <summary>
+        /// Workout request for removing a specific workout via client name & date
+        /// </summary>
+        [HttpDelete("{clientName}/{sessionDate}")]
+        public async Task<ActionResult> DeleteClientWorkout(string clientName, DateOnly sessionDate)
+        {
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(sessionDate, clientName);
+
+            if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {sessionDate}");
+
+            await unitOfWork.WorkoutRepository.RemoveWorkoutAsync(clientWorkout);
+            await unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientName);
+
+            if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {sessionDate} has been removed");
+            return BadRequest("Removing client unsuccessful");
 
         }
 
