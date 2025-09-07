@@ -10,14 +10,12 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate);
 
-        Task<Workout> GetSpecificClientWorkoutAsync(DateOnly workoutDate, string clientName);
-
         Task<Workout> GetLatestClientWorkoutAsync(string clientName);
 
         Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount);
 
         // to be changed possibly
-        Task RemoveWorkoutAsync(Workout workout);
+        void RemoveWorkout(Workout workout);
 
         // expand in future - more fields in Workout will allow for 
         // further data retrieval 

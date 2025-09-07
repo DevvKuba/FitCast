@@ -98,12 +98,12 @@ namespace ClientDashboard_API.Controllers
         [HttpDelete("{clientName}/{sessionDate}")]
         public async Task<IActionResult> DeleteClientWorkout(string clientName, DateOnly workoutDate)
         {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetSpecificClientWorkoutAsync(workoutDate, clientName);
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
 
             if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {workoutDate}");
 
             unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientWorkout.Client);
-            await unitOfWork.WorkoutRepository.RemoveWorkoutAsync(clientWorkout);
+            unitOfWork.WorkoutRepository.RemoveWorkout(clientWorkout);
 
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {workoutDate} has been removed");
             return BadRequest("Removing client unsuccessful");
