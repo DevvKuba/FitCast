@@ -12,7 +12,7 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for the retrieval of all daily client sessions
         /// </summary>
         [HttpGet("{date}/GetAllDailySessions")]
-        public async Task<ActionResult<List<Workout>>> GetAllDailyClientWorkouts()
+        public async Task<ActionResult<List<Workout>>> GetAllDailyClientWorkoutsAsync()
         {
             var todaysDateString = DateTime.Now.Date.ToString();
 

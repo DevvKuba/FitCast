@@ -3,8 +3,6 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Entities;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace ClientDashboard_API_Tests.RepositoryTests
 {
@@ -37,7 +35,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestAddsCorrectClientAsync()
+        public async Task TestAddingCorrectClientAsync()
         {
             var testClient = new Client { Name = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
 
@@ -52,7 +50,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestRemoveClientCorrectlyAsync()
+        public async Task TestRemovingClientCorrectlyAsync()
         {
             await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8);
             await _unitOfWork.Complete();
@@ -65,7 +63,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestCheckIfExistingClientExistsAsync()
+        public async Task TestCheckingIfExistingClientExistsAsync()
         {
             await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8);
             await _unitOfWork.Complete();
@@ -77,7 +75,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGetAllClientsOnLastSessionsAsync()
+        public async Task TestGettingAllClientsOnLastSessionsAsync()
         {
             await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
             await _context.AddAsync(new Client { Name = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
@@ -90,7 +88,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGetAllClientsOnFirstSessionsAsync()
+        public async Task TestGettingAllClientsOnFirstSessionsAsync()
         {
             await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _context.AddAsync(new Client { Name = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
@@ -103,7 +101,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGetClientsCurrentSessionAsync()
+        public async Task TestGettingClientsCurrentSessionAsync()
         {
             await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
@@ -115,7 +113,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGetClientByNameAsync()
+        public async Task TestGettingClientByNameAsync()
         {
             await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
