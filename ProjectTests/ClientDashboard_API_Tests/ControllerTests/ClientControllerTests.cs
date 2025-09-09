@@ -3,6 +3,7 @@ using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API_Tests.ControllerTests
@@ -69,13 +70,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 8, TotalBlockSessions = 8 });
             await _unitOfWork.Complete();
 
-            var clientsOnLastSession = await _clientController.GetClientsOnLastBlockSessionAsync();
+            var actionResult = await _clientController.GetClientsOnLastBlockSessionAsync();
+            var okResult = actionResult.Result as ObjectResult;
+            var clientSessions = okResult!.Value as List<string> ?? new List<string>();
 
-            var clientOne = await _clientRepository.GetClientByNameAsync("rob");
-            var clientTwo = await _clientRepository.GetClientByNameAsync("mat");
+            Assert.Equal(2, clientSessions.Count());
 
-            Assert.Contains(clientOne.Name, "rob");
-            Assert.Contains(clientTwo.Name, "mat");
         }
 
         [Fact]
@@ -97,13 +97,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 1, TotalBlockSessions = 8 });
             await _unitOfWork.Complete();
 
-            var clientsOnFirstSession = await _clientController.GetClientsOnFirstBlockSessionAsync();
+            var actionResult = await _clientController.GetClientsOnFirstBlockSessionAsync();
+            var okResult = actionResult.Result as ObjectResult;
+            var clientSessions = okResult!.Value as List<string> ?? new List<string>();
 
-            var clientOne = await _clientRepository.GetClientByNameAsync("rob");
-            var clientTwo = await _clientRepository.GetClientByNameAsync("mat");
-
-            Assert.Contains(clientOne.Name, "rob");
-            Assert.Contains(clientTwo.Name, "mat");
+            Assert.Equal(2, clientSessions.Count());
         }
 
         [Fact]

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ClientDashboard_API_Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8d175b67b62051dc728d1f6dfebb594832ac7b6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+82ce8fbd7513403d3cb261f5ba19045946d27a01")]
 [assembly: System.Reflection.AssemblyProductAttribute("ClientDashboard_API_Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ClientDashboard_API_Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
