@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of all daily client sessions
         /// </summary>
-        [HttpGet("{date}/GetAllDailySessions")]
+        [HttpGet("/GetAllDailySessions")]
         public async Task<ActionResult<List<Workout>>> GetAllDailyClientWorkoutsAsync()
         {
             var todaysDateString = DateTime.Now.Date.ToString();
@@ -27,7 +27,6 @@ namespace ClientDashboard_API.Controllers
             //{
             //    var clientDataDto = mapper.Map<WorkoutDto>(clientSession);
             //    clientMappedSessions.Add(clientDataDto);
-
             //}
             return Ok(clientSessions);
 
@@ -36,7 +35,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for retrieving a specific client workout, at a given date
         /// </summary>
-        [HttpGet("{date}/GetWorkoutAtDate")]
+        [HttpGet("{clientName}/{workoutDate}/GetWorkoutAtDate")]
         public async Task<ActionResult<Workout>> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
@@ -51,7 +50,7 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for retrieving a list of client workouts,
         /// from a given date
         /// </summary>
-        [HttpGet("{date}/GetWorkoutsFromDate")]
+        [HttpGet("{workoutDate}/GetWorkoutsFromDate")]
         public async Task<ActionResult<List<Workout>>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
         {
             var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsFromDateAsync(workoutDate);
@@ -72,7 +71,6 @@ namespace ClientDashboard_API.Controllers
             if (latestWorkoutInfo == null) return NotFound($"{clientName} has no workouts recorded");
 
             return Ok(latestWorkoutInfo);
-
         }
 
         /// <summary>
