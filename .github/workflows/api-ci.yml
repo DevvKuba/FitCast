@@ -18,6 +18,7 @@ on:
       - '.github/workflows/api-ci.yml'
   push:
     branches: [ main ]  # Optional: also run on merge to main
+  workflow_dispatch:
 
 jobs:
   build-test:
