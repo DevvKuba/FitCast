@@ -15,10 +15,8 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "accountSid": "ACfc9c7bdecec6f2349fd5156d560bdbe8",
-        "authToken": "65175b7c1566e0ec7cce8094b7e35287",
-        "senderPhoneNumber": "+447366323139",
-        "receiverPhoneNumber": "+447850320047"
+        "API_KEY": "7a610df4-9944-4f6f-ad60-bcb0450f5682",
+        "API_URL": "https://localhost:7217/api/HevyApi"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7217;http://localhost:5114"

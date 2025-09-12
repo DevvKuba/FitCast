@@ -1,0 +1,42 @@
+name: Daily API Task
+
+on:
+  schedule:
+    - cron: '15 23 * * *'  # UTC
+  workflow_dispatch:
+
+concurrency:
+  group: api-daily
+  cancel-in-progress: false
+
+jobs:
+  invoke-endpoint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:      
+      # Only API connection details needed
+      API_KEY: ${{ secrets.API_KEY }}
+      API_URL: ${{ secrets.API_URL }}  # https://your-deployed-api.com/api/HevyApi
+      
+    steps:
+      - name: Call HevyApi endpoint
+        run: |
+          echo "Calling ${API_URL}"
+          http_code=$(curl -sS -o /tmp/response_body -w "%{http_code}" \
+               --retry 5 --retry-delay 10 \
+               -X PUT \
+               -H "x-api-key: ${API_KEY}" \
+               -H "Content-Type: application/json" \
+               "${API_URL}")
+          
+          echo "HTTP Status: ${http_code}"
+          echo "Response Body:"
+          cat /tmp/response_body
+          
+          if [[ "${http_code}" -lt 200 || "${http_code}" -ge 300 ]]; then
+            echo "API call failed with status ${http_code}"
+            exit 1
+          fi
+          
+          echo "Daily sync completed successfully"

@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Services
 {
     public class HevySessionDataService : ISessionDataParser
     {
-        public string Api_Key { get; } = "7a610df4-9944-4f6f-ad60-bcb0450f5682";
+        public string API_KEY { set; get; } = Environment.GetEnvironmentVariable("API_KEY")!;
 
         public async Task<List<WorkoutSummaryDto>> RetrieveWorkouts(HttpResponseMessage response)
         {
@@ -57,7 +57,7 @@ namespace ClientDashboard_API.Services
 
             // Provide appropriate headers 
             client.DefaultRequestHeaders.Add("accept", "application/json");
-            client.DefaultRequestHeaders.Add("api-key", Api_Key);
+            client.DefaultRequestHeaders.Add("api-key", API_KEY);
 
             // call get request and retrieve response
             HttpResponseMessage response = await client.GetAsync(url);
