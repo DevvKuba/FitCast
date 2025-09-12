@@ -102,7 +102,7 @@ namespace ClientDashboard_API.Controllers
 
             if (clientWorkout == null) return BadRequest($"Cannot find specified client: {clientName}'s workout at {workoutDate}");
 
-            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSessionAsync(clientWorkout.Client);
+            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(clientWorkout.Client);
             unitOfWork.WorkoutRepository.RemoveWorkout(clientWorkout);
 
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s workout at {workoutDate} has been removed");

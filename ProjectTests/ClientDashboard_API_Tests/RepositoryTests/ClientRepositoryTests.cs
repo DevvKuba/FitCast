@@ -158,7 +158,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var updatedClientSessions = 1;
-            _clientRepository.UpdateDeletingClientCurrentSessionAsync(client!);
+            _clientRepository.UpdateDeletingClientCurrentSession(client!);
 
             Assert.Equal(client!.CurrentBlockSession, updatedClientSessions);
         }

@@ -44,6 +44,22 @@ namespace ClientDashboard_API.Controllers
             return Ok(clientSessions);
         }
 
+        /// <summary>
+        /// Client method allowing update of ones total sessions
+        /// </summary>
+        [HttpPut("{clientName}/{totalSessions}")]
+        public async Task<IActionResult> ChangeClientTotalSessions(string clientName, int totalSessions)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+
+            if (client == null) return NotFound($"No client with the name {clientName} found");
+
+            unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, totalSessions);
+            if (await unitOfWork.Complete()) return Ok($"{clientName}'s total block sessions have now been updated to {totalSessions}");
+
+            return BadRequest($"Problem occuring while saving {clientName}'s new total block sessions");
+        }
+
 
         /// <summary>
         /// Client method for adding a new Client to the database

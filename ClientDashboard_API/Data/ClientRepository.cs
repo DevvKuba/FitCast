@@ -25,13 +25,22 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateDeletingClientCurrentSessionAsync(Client client)
+        public void UpdateDeletingClientCurrentSession(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession - 1;
 
             var updatedData = new ClientUpdateDTO
             {
                 CurrentBlockSession = newCurrentSession,
+            };
+            mapper.Map(updatedData, client);
+        }
+
+        public void UpdateClientTotalBlockSession(Client client, int? blockSessions)
+        {
+            var updatedData = new ClientUpdateDTO
+            {
+                TotalBlockSessions = blockSessions
             };
             mapper.Map(updatedData, client);
         }
