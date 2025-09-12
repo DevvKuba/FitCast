@@ -23,6 +23,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
+            services.AddScoped<IMessageService, TwillioMessageService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

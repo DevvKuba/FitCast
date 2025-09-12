@@ -45,13 +45,6 @@ namespace ClientDashboard_API
     }
 }
 
-
-// program should fetch data from hevy api and populate the database accordingly 
-
-// fetch data conditionals to check specific client by name - update their sessions
-
-// use HevyApiCalls to fill database
-
 // add cors
 
 

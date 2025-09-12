@@ -20,14 +20,6 @@ namespace ClientDashboard_API.Controllers
 
             if (clientSessions == null) return NotFound($"No client sessions found on specificed date: {todaysDateString}");
 
-            // revisting mapping part, does this need to be done upon processing daily ones?
-            // if it's only used in the session sync service we can create a seperate method
-            //var clientMappedSessions = new List<WorkoutDto>();
-            //foreach (var clientSession in clientSessions)
-            //{
-            //    var clientDataDto = mapper.Map<WorkoutDto>(clientSession);
-            //    clientMappedSessions.Add(clientDataDto);
-            //}
             return Ok(clientSessions);
 
         }

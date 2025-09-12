@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService) : ISessionSyncService
     {
         public async Task<bool> SyncDailySessions()
         {
@@ -19,12 +19,19 @@ namespace ClientDashboard_API.Services
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
                     await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                    await unitOfWork.Complete();
+
+                    // indicating that their block is finished
+                    if (client.CurrentBlockSession == client.TotalBlockSessions)
+                    {
+                        messageService.SendClientBlockCompletionReminder(client.Name);
+                    }
                 }
                 else
                 {
                     await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null);
+                    await unitOfWork.Complete();
                 }
-                await unitOfWork.Complete();
             }
             return true;
         }
