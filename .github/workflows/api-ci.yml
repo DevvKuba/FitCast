@@ -25,6 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      # Force UK culture for consistent date parsing
+      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: false
+      LC_ALL: en_GB.UTF-8
+      LANG: en_GB.UTF-8
 
     steps:
       - uses: actions/checkout@v4
