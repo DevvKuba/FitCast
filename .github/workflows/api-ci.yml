@@ -4,20 +4,20 @@ on:
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'Controllers/**'
-      - 'Data/**'
-      - 'Services/**'
-      - 'Entities/**'
-      - 'Interfaces/**'
-      - 'Extensions/**'
-      - 'Dto_s/**'
+      - 'ClientDashboard_API/Controllers/**'
+      - 'ClientDashboard_API/Data/**'
+      - 'ClientDashboard_API/Services/**'
+      - 'ClientDashboard_API/Entities/**'
+      - 'ClientDashboard_API/Interfaces/**'
+      - 'ClientDashboard_API/Extensions/**'
+      - 'ClientDashboard_API/Dto_s/**'
       - 'ProjectTests/**'
       - '*.sln'
       - '**/*.csproj'
-      - 'appsettings*.json'
+      - 'ClientDashboard_API/appsettings*.json'
       - '.github/workflows/api-ci.yml'
   push:
-    branches: [ main ]  # Optional: also run on merge to main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -43,10 +43,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore ClientDashboard_API.csproj
+        run: dotnet restore ./ClientDashboard_API/ClientDashboard_API.csproj
 
       - name: Build solution
-        run: dotnet build ClientDashboard_API.csproj --configuration Release --no-restore
+        run: dotnet build ./ClientDashboard_API/ClientDashboard_API.csproj --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
