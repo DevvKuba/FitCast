@@ -43,13 +43,15 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore ./ClientDashboard_API/ClientDashboard_API.csproj
+        run: |
+          dotnet restore ./ClientDashboard_API/ClientDashboard_API.csproj
+          dotnet restore ./ProjectTests/ClientDashboard_API_Tests/ClientDashboard_API_Tests.csproj
 
-      - name: Build solution
+      - name: Build main project
         run: dotnet build ./ClientDashboard_API/ClientDashboard_API.csproj --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
+        run: dotnet test ./ProjectTests/ClientDashboard_API_Tests/ClientDashboard_API_Tests.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
 
       - name: Upload test results
         if: always()
