@@ -2,7 +2,7 @@ name: API CI
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
     paths:
       - 'ClientDashboard_API/Controllers/**'
       - 'ClientDashboard_API/Data/**'
