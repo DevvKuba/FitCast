@@ -17,7 +17,7 @@ on:
       - 'ClientDashboard_API/appsettings*.json'
       - '.github/workflows/api-ci.yml'
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
