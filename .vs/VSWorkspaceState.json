@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ClientDashboard_API"
+    "\\.github",
+    "\\.github\\workflows",
+    "\\ClientDashboard_API",
+    "\\ClientDashboard_API\\Controllers",
+    "\\ClientDashboard_API\\Services"
   ],
   "SelectedNode": "\\ClientDashboard_API\\ClientDashboard_API.sln",
   "PreviewInSolutionExplorer": false
