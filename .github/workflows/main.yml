@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/chechout@v3 ( defines specific use )
+      - uses: actions/chechout@v3
 
       - name: Setup .NET
         uses: actions/seyup-dotnet@v3
