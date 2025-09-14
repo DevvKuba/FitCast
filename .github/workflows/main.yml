@@ -4,6 +4,11 @@ on:
   push:
     branches:
     - main
+
+env:
+  AZURE_WEBAPP_NAME: ClientDashboardApp
+  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -23,4 +28,11 @@ jobs:
         run: dotnet build ./ClientDashboard_API/ClientDashboard_API.sln --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./ClientDashboard_API/ClientDashboard_API.sln --configuration Release --no-build
+        run: dotnet publish ./ClientDashboard_API/ClientDashboard_API.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+
+      - name: Deployment
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ''
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
