@@ -37,6 +37,9 @@ namespace ClientDashboard_API
                 });
             }
 
+            // Enable serving static files from wwwroot
+            app.UseStaticFiles();
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
