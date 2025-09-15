@@ -13,6 +13,14 @@ namespace ClientDashboard_API
             builder.Services.AddControllers();
             builder.Services.AddApplicationServices(builder.Configuration);
 
+            // CORS necessary when calling API from your GUI/domain
+            // need to adjust origins later
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", b =>
+                    b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -26,14 +34,19 @@ namespace ClientDashboard_API
                 await SeedClients.Seed(context);
             }
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            // captures the bool set to EnableSwagger on azure
+            // allowing or disallowing swagger in production
+
+            var enableSwagger = app.Environment.IsDevelopment() ||
+                builder.Configuration.GetValue<bool>("EnableSwagger");
+
+            if (enableSwagger)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClientDashboard API v1");
-                    c.RoutePrefix = string.Empty; // Swagger UI at root
+                    c.RoutePrefix = app.Environment.IsDevelopment() ? string.Empty : "swagger";
                 });
             }
 
@@ -41,6 +54,7 @@ namespace ClientDashboard_API
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
@@ -48,7 +62,6 @@ namespace ClientDashboard_API
     }
 }
 
-// add cors
 
 
 
