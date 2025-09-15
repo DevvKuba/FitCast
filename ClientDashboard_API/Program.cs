@@ -1,5 +1,6 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace ClientDashboard_API
@@ -9,8 +10,7 @@ namespace ClientDashboard_API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // Add services to the container.
-            builder.Services.AddControllers();
+            //builder.Services.AddControllers();
             builder.Services.AddApplicationServices(builder.Configuration);
 
             // CORS necessary when calling API from your GUI/domain
@@ -31,12 +31,22 @@ namespace ClientDashboard_API
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+                var hasMigrations = context.Database.GetMigrations().Any();
+                if (hasMigrations)
+                {
+                    await context.Database.MigrateAsync(); // applies pending, creates DB if needed
+                }
+                else
+                {
+                    await context.Database.EnsureCreatedAsync(); // bootstrap database schema when no migrations exist
+                }
+
                 await SeedClients.Seed(context);
             }
 
             // captures the bool set to EnableSwagger on azure
             // allowing or disallowing swagger in production
-
             var enableSwagger = app.Environment.IsDevelopment() ||
                 builder.Configuration.GetValue<bool>("EnableSwagger");
 
@@ -52,7 +62,6 @@ namespace ClientDashboard_API
 
             // Enable serving static files from wwwroot
             app.UseStaticFiles();
-
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
             app.UseAuthorization();

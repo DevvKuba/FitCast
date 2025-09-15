@@ -6,9 +6,10 @@ namespace ClientDashboard_API.Data
     {
         public static async Task Seed(DataContext context)
         {
-            var csvData = await File.ReadAllLinesAsync("clientSession.csv");
-            Random random = new Random();
+            const string fileName = "clientSessions.csv";
+            if (!File.Exists(fileName)) return; // no seed file in production.publish; skip
 
+            var csvData = await File.ReadAllLinesAsync(fileName);
             var clientData = csvData.Select(x => x.Split(",")).ToList().Skip(1);
 
             foreach (var clientRecord in clientData)
