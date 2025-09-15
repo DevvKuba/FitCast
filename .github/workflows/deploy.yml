@@ -22,13 +22,13 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore
-        run: dotnet restore ./ClientDashboard_API/ClientDashboard_API.sln
+        run: dotnet restore ./ClientDashboard_API/ClientDashboard_API.csproj
 
       - name: Build
-        run: dotnet build ./ClientDashboard_API/ClientDashboard_API.sln --configuration Release --no-restore
+        run: dotnet build ./ClientDashboard_API/ClientDashboard_API.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./ClientDashboard_API/ClientDashboard_API.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+        run: dotnet publish ./ClientDashboard_API/ClientDashboard_API.csproj --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 
       - name: Deployment
         uses: azure/webapps-deploy@v2
