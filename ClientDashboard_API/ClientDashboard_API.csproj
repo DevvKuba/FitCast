@@ -25,4 +25,9 @@
   <ItemGroup>
     <Folder Include="Models\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="wwwroot\google45f9e3f493489c5e.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
