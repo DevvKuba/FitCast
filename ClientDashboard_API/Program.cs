@@ -28,10 +28,6 @@ namespace ClientDashboard_API
             });
 
             var app = builder.Build();
-
-            app.MapGet("/google45f9e3f493489c5e.html",
-                () => Results.Content("google-site-verification: google45f9e3f493489c5e.html", "text/plain"));
-
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
