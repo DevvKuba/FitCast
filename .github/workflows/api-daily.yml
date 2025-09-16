@@ -17,7 +17,7 @@ jobs:
     env:      
       # Only API connection details needed
       API_KEY: ${{ secrets.API_KEY }}
-      API_URL: ${{ secrets.API_URL }}  # https://your-deployed-api.com/api/HevyApi
+      API_URL: ${{ secrets.HEVY_RETRIEVE_URL }}
       
     steps:
       - name: Call HevyApi endpoint
