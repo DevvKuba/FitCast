@@ -54,6 +54,15 @@ namespace ClientDashboard_API.Data
             mapper.Map(updatedData, client);
         }
 
+        public void UpdateClientName(Client client, string name)
+        {
+            var updatedData = new ClientUpdateDTO
+            {
+                Name = name
+            };
+            mapper.Map(updatedData, client);
+        }
+
         public async Task<Client> GetClientByNameAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).FirstOrDefaultAsync();
@@ -98,5 +107,6 @@ namespace ClientDashboard_API.Data
         {
             return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
+
     }
 }

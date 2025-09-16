@@ -21,6 +21,8 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateClientCurrentSession(Client client, int? currentSession);
 
+        void UpdateClientName(Client client, string name);
+
         Task AddNewClientAsync(string clientName, int? blockSessions);
 
         void RemoveClient(Client client);

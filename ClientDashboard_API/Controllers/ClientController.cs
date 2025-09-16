@@ -76,6 +76,22 @@ namespace ClientDashboard_API.Controllers
             return BadRequest($"Problem occuring while saving {clientName}'s new current session");
         }
 
+        /// <summary>
+        /// Client method allowing update of client's given name
+        /// </summary>
+        [HttpPut("{currentName}/{newName}/newClientName")]
+        public async Task<IActionResult> ChangeClientName(string currentName, string newName)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(currentName);
+
+            if (client == null) return NotFound($"No client with the name {currentName} found");
+
+            unitOfWork.ClientRepository.UpdateClientName(client, newName);
+            if (await unitOfWork.Complete()) return Ok($"{client.Name}'s name is now updated to {newName}");
+
+            return BadRequest($"Problem occuring while saving {client.Name}'s new name");
+        }
+
 
         /// <summary>
         /// Client method for adding a new Client to the database
