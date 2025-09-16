@@ -12,31 +12,49 @@ concurrency:
 jobs:
   invoke-endpoint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
-    env:      
-      # Only API connection details needed
+    env:
       API_KEY: ${{ secrets.API_KEY }}
       API_URL: ${{ secrets.HEVY_RETRIEVE_URL }}
-      
+
     steps:
+      - name: Validate configuration
+        run: |
+          set -euo pipefail
+          if [[ -z "${API_URL:-}" ]]; then
+            echo "API_URL is not set. Define repository secret HEVY_RETRIEVE_URL."
+            exit 1
+          fi
+          if [[ -z "${API_KEY:-}" ]]; then
+            echo "API_KEY is not set. Define repository secret API_KEY."
+            exit 1
+          fi
+          if ! [[ "${API_URL}" =~ ^https?:// ]]; then
+            echo "API_URL must start with http:// or https://"
+            exit 1
+          fi
+          echo "Config OK (API_URL length: ${#API_URL})"
+
       - name: Call HevyApi endpoint
         run: |
-          echo "Calling ${API_URL}"
           http_code=$(curl -sS -o /tmp/response_body -w "%{http_code}" \
-               --retry 5 --retry-delay 10 \
                -X PUT \
                -H "x-api-key: ${API_KEY}" \
                -H "Content-Type: application/json" \
+               --retry 5 --retry-delay 10 --retry-connrefused \
+               --connect-timeout 15 --max-time 180 \
+               --fail-with-body -L \
                "${API_URL}")
-          
+
           echo "HTTP Status: ${http_code}"
           echo "Response Body:"
           cat /tmp/response_body
-          
+
           if [[ "${http_code}" -lt 200 || "${http_code}" -ge 300 ]]; then
             echo "API call failed with status ${http_code}"
             exit 1
           fi
-          
+
           echo "Daily sync completed successfully"
