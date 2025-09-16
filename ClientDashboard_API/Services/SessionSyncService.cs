@@ -30,6 +30,8 @@ namespace ClientDashboard_API.Services
                 else
                 {
                     await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null);
+                    var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
                     await unitOfWork.Complete();
                 }
             }
