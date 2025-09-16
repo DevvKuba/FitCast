@@ -3,6 +3,7 @@
     public class Workout
     {
         public int Id { get; set; }
+        public int ClientId { get; set; }
         public required string ClientName { get; set; }
         public required string WorkoutTitle { get; set; }
 

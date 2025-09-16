@@ -60,6 +60,8 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDTO
             {
+                TotalBlockSessions = client.TotalBlockSessions,
+                CurrentBlockSession = client.CurrentBlockSession,
                 NewName = name
             };
             mapper.Map(updatedData, client);
