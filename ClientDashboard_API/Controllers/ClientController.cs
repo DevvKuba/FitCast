@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update of ones total sessions
         /// </summary>
-        [HttpPut("{clientName}/{totalSessions}")]
+        [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
         public async Task<IActionResult> ChangeClientTotalSessions(string clientName, int totalSessions)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
@@ -58,6 +58,22 @@ namespace ClientDashboard_API.Controllers
             if (await unitOfWork.Complete()) return Ok($"{clientName}'s total block sessions have now been updated to {totalSessions}");
 
             return BadRequest($"Problem occuring while saving {clientName}'s new total block sessions");
+        }
+
+        /// <summary>
+        /// Client method allowing update of ones current session
+        /// </summary>
+        [HttpPut("{clientName}/{currentSession}/newCurrentSession")]
+        public async Task<IActionResult> ChangeClientCurrentSession(string clientName, int currentSession)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+
+            if (client == null) return NotFound($"No client with the name {clientName} found");
+
+            unitOfWork.ClientRepository.UpdateClientCurrentSession(client, currentSession);
+            if (await unitOfWork.Complete()) return Ok($"{clientName}'s current session has now been updated to {currentSession}");
+
+            return BadRequest($"Problem occuring while saving {clientName}'s new current session");
         }
 
 

@@ -2,7 +2,7 @@
 {
     public class ClientUpdateDTO
     {
-        public int CurrentBlockSession { get; set; }
+        public int? CurrentBlockSession { get; set; }
 
         public int? TotalBlockSessions { get; set; }
     }
