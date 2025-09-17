@@ -39,7 +39,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSucessfullyAddingNewClientWorkoutAsync()
+        public async Task TestSuccessfullyAddingNewClientWorkoutAsync()
         {
             // check current session should be increased
             var clientName = "rob";
@@ -61,7 +61,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsucessfullyAddingNewClientWorkoutAsync()
+        public async Task TestUnsuccessfullyAddingNewClientWorkoutAsync()
         {
             // check current session should not be increased
             var clientName = "rob";
@@ -77,7 +77,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSucessfullyDeletingClientWorkoutAsync()
+        public async Task TestSuccessfullyDeletingClientWorkoutAsync()
         {
             // check current session should be reduced
             var clientName = "rob";
@@ -97,7 +97,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsucessfullyDeletingClientWorkoutAsync()
+        public async Task TestUnsuccessfullyDeletingClientWorkoutAsync()
         {
             // check current session should be not be reduced
             var clientName = "rob";
@@ -154,7 +154,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSucessfullyGettingClientWorkoutsFromDateAsync()
+        public async Task TestSuccessfullyGettingClientWorkoutsFromDateAsync()
         {
             var clientName = "rob";
             var workoutTitle = "workout 1";
@@ -175,7 +175,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsucessfullyGettingClientWorkoutsFromDateAsync()
+        public async Task TestUnsuccessfullyGettingClientWorkoutsFromDateAsync()
         {
             var clientName = "rob";
             var workoutTitle = "workout 1";
@@ -195,7 +195,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSucessfullyGettingClientWorkoutAtDateAsync()
+        public async Task TestSuccessfullyGettingClientWorkoutAtDateAsync()
         {
             var clientName = "rob";
             var workoutTitle = "workout 1";
@@ -216,7 +216,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsucessfullyGettingClientWorkoutAtDateAsync()
+        public async Task TestUnsuccessfullyGettingClientWorkoutAtDateAsync()
         {
             var clientName = "rob";
             var workoutTitle = "workout 1";
@@ -235,7 +235,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSucessfullyGettingDailyClientWorkoutsAsync()
+        public async Task TestSuccessfullyGettingDailyClientWorkoutsAsync()
         {
             var todaysDateString = DateTime.Now.Date.ToString();
 
@@ -258,7 +258,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsucessfullyGettingDailyClientWorkoutsAsync()
+        public async Task TestUnsuccessfullyGettingDailyClientWorkoutsAsync()
         {
             var date = DateOnly.Parse("19/06/2025");
 
