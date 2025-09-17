@@ -18,6 +18,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDTO
             {
+                Name = client.Name,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions
             };
@@ -40,6 +41,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDTO
             {
+                Name = client.Name,
                 TotalBlockSessions = blockSessions,
                 CurrentBlockSession = client.CurrentBlockSession
             };
@@ -50,6 +52,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDTO
             {
+                Name = client.Name,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = currentSession
             };
@@ -60,9 +63,9 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDTO
             {
+                Name = name,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = client.CurrentBlockSession,
-                NewName = name
             };
             mapper.Map(updatedData, client);
         }

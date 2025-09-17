@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class WorkoutRepository(DataContext context, IClientRepository clientRepository) : IWorkoutRepository
+    public class WorkoutRepository(DataContext context) : IWorkoutRepository
     {
         public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
@@ -34,11 +34,10 @@ namespace ClientDashboard_API.Data
         {
             await context.Workouts.AddAsync(new Workout
             {
+                ClientId = client.Id,
                 ClientName = client.Name,
                 WorkoutTitle = workoutTitle,
                 SessionDate = workoutDate,
-                // don't need to be updated here since we handle
-                // that in the client Update sessions method
                 CurrentBlockSession = client.CurrentBlockSession,
                 TotalBlockSessions = client.TotalBlockSessions,
                 ExerciseCount = exerciseCount,

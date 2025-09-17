@@ -71,7 +71,6 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("/newWorkout")]
         public async Task<IActionResult> AddNewClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
-            // may need to look into specific api response a bit more, use fields to actually create that workout object to add ?
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
             if (client == null) return NotFound($"Client: {clientName} not found");

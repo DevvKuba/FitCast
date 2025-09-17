@@ -32,7 +32,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _context = new DataContext(optionsBuilder.Options);
             _clientRepository = new ClientRepository(_context, _mapper);
-            _workoutRepository = new WorkoutRepository(_context, _clientRepository);
+            _workoutRepository = new WorkoutRepository(_context);
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository);
             _clientController = new ClientController(_unitOfWork);
         }

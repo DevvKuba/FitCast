@@ -18,7 +18,6 @@
         // navigration properties
         public Client Client { get; set; } = null!;
 
-
         // potentially add more data that can be stored 
 
     }
