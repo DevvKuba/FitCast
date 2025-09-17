@@ -12,6 +12,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Workout> GetLatestClientWorkoutAsync(string clientName);
 
+        //Task<bool> CheckIfWorkoutAlreadyExistsAsync(Workout workout);
+
         Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount);
 
         // to be changed possibly

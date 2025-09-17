@@ -30,6 +30,7 @@ namespace ClientDashboard_API.Data
             return clientWorkout;
         }
 
+
         public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
             await context.Workouts.AddAsync(new Workout
@@ -49,5 +50,6 @@ namespace ClientDashboard_API.Data
         {
             context.Workouts.Remove(workout);
         }
+
     }
 }
