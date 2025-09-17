@@ -117,7 +117,125 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSuccesfullyAddingNewClientAsync()
+        public async Task TestSuccessfullyChangingClientTotalSessionsAsync()
+        {
+            var clientName = "rob";
+            var currentBlockSession = 1;
+            var oldTotalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = currentBlockSession, TotalBlockSessions = oldTotalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newTotalSessions = 8;
+            await _clientController.ChangeClientTotalSessions(client!.Name, newTotalSessions);
+
+            Assert.Equal(newTotalSessions, client.TotalBlockSessions);
+            Assert.Equal(currentBlockSession, client.CurrentBlockSession);
+            Assert.Equal(clientName, client.Name);
+        }
+
+        [Fact]
+        public async Task TestUnsuccessfullyChangingClientTotalSessionsAsync()
+        {
+            var clientName = "rob";
+            var currentBlockSession = 1;
+            var oldTotalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = currentBlockSession, TotalBlockSessions = oldTotalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newTotalSessions = 8;
+            await _clientController.ChangeClientTotalSessions("mat", newTotalSessions);
+
+            Assert.NotEqual(newTotalSessions, client!.TotalBlockSessions);
+            Assert.Equal(oldTotalBlockSessions, client.TotalBlockSessions);
+            Assert.Equal(currentBlockSession, client.CurrentBlockSession);
+            Assert.Equal(clientName, client.Name);
+        }
+
+        [Fact]
+        public async Task TestSuccessfullyChangingClientCurrentSessionAsync()
+        {
+            var clientName = "rob";
+            var oldCurrentSession = 1;
+            var totalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = oldCurrentSession, TotalBlockSessions = totalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newCurrentSession = 4;
+            await _clientController.ChangeClientTotalSessions(client!.Name, newCurrentSession);
+
+            Assert.Equal(newCurrentSession, client.TotalBlockSessions);
+            Assert.Equal(oldCurrentSession, client.CurrentBlockSession);
+            Assert.Equal(clientName, client.Name);
+        }
+
+        [Fact]
+        public async Task TestUnsuccessfullyChangingClientCurrentSessionAsync()
+        {
+            var clientName = "rob";
+            var oldCurrentSession = 1;
+            var totalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = oldCurrentSession, TotalBlockSessions = totalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newCurrentSession = 4;
+            await _clientController.ChangeClientTotalSessions("mat", newCurrentSession);
+
+            Assert.NotEqual(newCurrentSession, client!.CurrentBlockSession);
+            Assert.Equal(oldCurrentSession, client.CurrentBlockSession);
+            Assert.Equal(totalBlockSessions, client.TotalBlockSessions);
+            Assert.Equal(clientName, client.Name);
+        }
+
+        [Fact]
+        public async Task TestSuccessfullyChangingClientNameAsync()
+        {
+            var oldClientName = "rob";
+            var currentSession = 1;
+            var totalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = oldClientName, CurrentBlockSession = currentSession, TotalBlockSessions = totalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newClientName = "mat";
+            await _clientController.ChangeClientName(client!.Name, newClientName);
+
+            Assert.Equal(newClientName, client.Name);
+            Assert.Equal(currentSession, client.CurrentBlockSession);
+            Assert.Equal(totalBlockSessions, client.TotalBlockSessions);
+        }
+
+        [Fact]
+        public async Task TestUnsuccessfullyChangingClientNameAsync()
+        {
+            var oldClientName = "rob";
+            var currentSession = 1;
+            var totalBlockSessions = 4;
+
+            await _context.Client.AddAsync(new Client { Name = oldClientName, CurrentBlockSession = currentSession, TotalBlockSessions = totalBlockSessions });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newClientName = "mat";
+            await _clientController.ChangeClientName("robert", newClientName);
+
+            Assert.NotEqual(newClientName, client!.Name);
+            Assert.Equal(oldClientName, client.Name);
+            Assert.Equal(currentSession, client.CurrentBlockSession);
+            Assert.Equal(totalBlockSessions, client.TotalBlockSessions);
+        }
+
+
+        [Fact]
+        public async Task TestSuccessfullyAddingNewClientAsync()
         {
             var clientName = "rob";
             var blockSessions = 4;
@@ -131,7 +249,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsuccesfullyAddingNewClientAsync()
+        public async Task TestUnsuccessfullyAddingNewClientAsync()
         {
             var duplicateClient = new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 2, Workouts = [] };
 
@@ -142,7 +260,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSuccesfullyRemovingClientAsync()
+        public async Task TestSuccessfullyRemovingClientAsync()
         {
             var clientName = "rob";
             var blockSessions = 4;
@@ -154,7 +272,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsuccesfullyRemovingClientAsync()
+        public async Task TestUnsuccessfullyRemovingClientAsync()
         {
             var clientName = "rob";
             var blockSessions = 4;
