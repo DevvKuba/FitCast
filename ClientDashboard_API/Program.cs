@@ -27,9 +27,6 @@ namespace ClientDashboard_API
 
             var app = builder.Build();
 
-            app.UseCors("AllowSelectiveOrigins");
-            //app.UseCors(x => x.AllowAnyMethod().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
-
             app.MapGet("/google45f9e3f493489c5e.html",
                 () => Results.Content("google-site-verification: google45f9e3f493489c5e.html", "text/plain"));
 
@@ -68,8 +65,8 @@ namespace ClientDashboard_API
             // Enable serving static files from wwwroot
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
             app.UseAuthorization();
+            app.UseCors("AllowSelectiveOrigins");
             app.MapControllers();
             app.Run();
         }
