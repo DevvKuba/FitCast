@@ -1,0 +1,82 @@
+{
+  "hash": "4f2a0dc0",
+  "configHash": "a25c8e7d",
+  "lockfileHash": "68744395",
+  "browserHash": "859e8510",
+  "optimized": {
+    "@angular/common/http": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "302f2eae",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "bcbec219",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "41d2f4fb",
+      "needsInterop": false
+    },
+    "@angular/platform-browser/animations": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/animations.mjs",
+      "file": "@angular_platform-browser_animations.js",
+      "fileHash": "c3022884",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "34152eb5",
+      "needsInterop": false
+    },
+    "primeng/api": {
+      "src": "../../../../../../node_modules/primeng/fesm2022/primeng-api.mjs",
+      "file": "primeng_api.js",
+      "fileHash": "c1b539dd",
+      "needsInterop": false
+    },
+    "primeng/button": {
+      "src": "../../../../../../node_modules/primeng/fesm2022/primeng-button.mjs",
+      "file": "primeng_button.js",
+      "fileHash": "308aa899",
+      "needsInterop": false
+    },
+    "zone.js": {
+      "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
+      "file": "zone__js.js",
+      "fileHash": "74b1bbfb",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-2STJB74N": {
+      "file": "chunk-2STJB74N.js"
+    },
+    "chunk-3SMORNEX": {
+      "file": "chunk-3SMORNEX.js"
+    },
+    "chunk-QADI44UE": {
+      "file": "chunk-QADI44UE.js"
+    },
+    "chunk-22CDEMSS": {
+      "file": "chunk-22CDEMSS.js"
+    },
+    "chunk-R4RTF4HQ": {
+      "file": "chunk-R4RTF4HQ.js"
+    },
+    "chunk-ROQYUHYX": {
+      "file": "chunk-ROQYUHYX.js"
+    },
+    "chunk-CIJWSUOA": {
+      "file": "chunk-CIJWSUOA.js"
+    },
+    "chunk-GOMI4DH3": {
+      "file": "chunk-GOMI4DH3.js"
+    }
+  }
+}

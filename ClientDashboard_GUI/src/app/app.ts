@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Navbar } from "./navbar/navbar";
+import { Navbar } from './navbar/navbar';
 
 @Component({
   selector: 'app-root',
