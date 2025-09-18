@@ -40,7 +40,7 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-32LJIEDH.js";
+} from "./chunk-JA4MOYI2.js";
 
 // node_modules/@angular/common/fesm2022/xhr.mjs
 function parseCookieValue(cookieStr, name) {
@@ -705,6 +705,17 @@ var HttpRequest = class _HttpRequest {
    */
   redirect;
   /**
+   * The referrer of the request, which can be used to indicate the origin of the request.
+   * This is useful for security and analytics purposes.
+   * Value is a same-origin URL, "about:client", or the empty string, to set request's referrer.
+   */
+  referrer;
+  /**
+   * The integrity metadata of the request, which can be used to ensure the request is made with the expected content.
+   * A cryptographic hash of the resource to be fetched by request
+   */
+  integrity;
+  /**
    * The expected response type of the server.
    *
    * This is used to parse the response appropriately before returning it to
@@ -775,7 +786,7 @@ var HttpRequest = class _HttpRequest {
       }
       if (typeof options.timeout === "number") {
         if (options.timeout < 1 || !Number.isInteger(options.timeout)) {
-          throw new Error(ngDevMode ? "`timeout` must be a positive integer value" : "");
+          throw new RuntimeError(2822, ngDevMode ? "`timeout` must be a positive integer value" : "");
         }
         this.timeout = options.timeout;
       }
@@ -784,6 +795,12 @@ var HttpRequest = class _HttpRequest {
       }
       if (options.redirect) {
         this.redirect = options.redirect;
+      }
+      if (options.integrity) {
+        this.integrity = options.integrity;
+      }
+      if (options.referrer) {
+        this.referrer = options.referrer;
       }
       this.transferCache = options.transferCache;
     }
@@ -862,6 +879,8 @@ var HttpRequest = class _HttpRequest {
     const mode = update.mode || this.mode;
     const redirect = update.redirect || this.redirect;
     const credentials = update.credentials || this.credentials;
+    const referrer = update.referrer || this.referrer;
+    const integrity = update.integrity || this.integrity;
     const transferCache = update.transferCache ?? this.transferCache;
     const timeout = update.timeout ?? this.timeout;
     const body = update.body !== void 0 ? update.body : this.body;
@@ -890,7 +909,9 @@ var HttpRequest = class _HttpRequest {
       timeout,
       mode,
       redirect,
-      credentials
+      credentials,
+      referrer,
+      integrity
     });
   }
 };
@@ -931,6 +952,12 @@ var HttpResponseBase = class {
    */
   type;
   /**
+   * Indicates whether the HTTP response was redirected during the request.
+   * This property is only available when using the Fetch API using `withFetch()`
+   * When using the default XHR Request this property will be `undefined`
+   */
+  redirected;
+  /**
    * Super-constructor for all responses.
    *
    * The single parameter accepted is an initialization hash. Any properties
@@ -941,6 +968,7 @@ var HttpResponseBase = class {
     this.status = init.status !== void 0 ? init.status : defaultStatus;
     this.statusText = init.statusText || defaultStatusText;
     this.url = init.url || null;
+    this.redirected = init.redirected;
     this.ok = this.status >= 200 && this.status < 300;
   }
 };
@@ -984,7 +1012,8 @@ var HttpResponse = class _HttpResponse extends HttpResponseBase {
       headers: update.headers || this.headers,
       status: update.status !== void 0 ? update.status : this.status,
       statusText: update.statusText || this.statusText,
-      url: update.url || this.url || void 0
+      url: update.url || this.url || void 0,
+      redirected: update.redirected ?? this.redirected
     });
   }
 };
@@ -1084,12 +1113,16 @@ function addBody(options, body) {
     reportProgress: options.reportProgress,
     responseType: options.responseType,
     withCredentials: options.withCredentials,
+    credentials: options.credentials,
     transferCache: options.transferCache,
+    timeout: options.timeout,
     keepalive: options.keepalive,
     priority: options.priority,
     cache: options.cache,
     mode: options.mode,
-    redirect: options.redirect
+    redirect: options.redirect,
+    integrity: options.integrity,
+    referrer: options.referrer
   };
 }
 var HttpClient = class _HttpClient {
@@ -1158,7 +1191,10 @@ var HttpClient = class _HttpClient {
         cache: options.cache,
         mode: options.mode,
         redirect: options.redirect,
-        credentials: options.credentials
+        credentials: options.credentials,
+        referrer: options.referrer,
+        integrity: options.integrity,
+        timeout: options.timeout
       });
     }
     const events$ = of(req).pipe(concatMap((req2) => this.handler.handle(req2)));
@@ -1433,7 +1469,7 @@ var FetchBackend = class _FetchBackend {
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
         const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? "";
-        body = this.parseBody(request, chunksAll, contentType);
+        body = this.parseBody(request, chunksAll, contentType, status);
       } catch (error) {
         observer.error(new HttpErrorResponse({
           error,
@@ -1449,13 +1485,15 @@ var FetchBackend = class _FetchBackend {
       status = body ? HTTP_STATUS_CODE_OK : 0;
     }
     const ok = status >= 200 && status < 300;
+    const redirected = response.redirected;
     if (ok) {
       observer.next(new HttpResponse({
         body,
         headers,
         status,
         statusText,
-        url
+        url,
+        redirected
       }));
       observer.complete();
     } else {
@@ -1464,15 +1502,26 @@ var FetchBackend = class _FetchBackend {
         headers,
         status,
         statusText,
-        url
+        url,
+        redirected
       }));
     }
   }
-  parseBody(request, binContent, contentType) {
+  parseBody(request, binContent, contentType, status) {
     switch (request.responseType) {
       case "json":
         const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX$1, "");
-        return text === "" ? null : JSON.parse(text);
+        if (text === "") {
+          return null;
+        }
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          if (status < 200 || status >= 300) {
+            return text;
+          }
+          throw e;
+        }
       case "text":
         return new TextDecoder().decode(binContent);
       case "blob":
@@ -1510,7 +1559,9 @@ var FetchBackend = class _FetchBackend {
       cache: req.cache,
       priority: req.priority,
       mode: req.mode,
-      redirect: req.redirect
+      redirect: req.redirect,
+      referrer: req.referrer,
+      integrity: req.integrity
     };
   }
   concatChunks(chunks, totalLength) {
@@ -1837,12 +1888,20 @@ function validateXhrCompatibility(req) {
     property: "credentials",
     errorCode: 2818
     /* RuntimeErrorCode.CREDENTIALS_NOT_SUPPORTED_WITH_XHR */
+  }, {
+    property: "integrity",
+    errorCode: 2820
+    /* RuntimeErrorCode.INTEGRITY_NOT_SUPPORTED_WITH_XHR */
+  }, {
+    property: "referrer",
+    errorCode: 2821
+    /* RuntimeErrorCode.REFERRER_NOT_SUPPORTED_WITH_XHR */
   }];
   for (const {
     property,
     errorCode
   } of unsupportedOptions) {
-    if (property in req) {
+    if (req[property]) {
       console.warn(formatRuntimeError(errorCode, `Angular detected that a \`HttpClient\` request with the \`${property}\` option was sent using XHR, which does not support it. To use the \`${property}\` option, enable Fetch API support by passing \`withFetch()\` as an argument to \`provideHttpClient()\`.`));
     }
   }
@@ -2444,6 +2503,8 @@ function normalizeRequest(request, responseType) {
     context: unwrappedRequest.context,
     transferCache: unwrappedRequest.transferCache,
     credentials: unwrappedRequest.credentials,
+    referrer: unwrappedRequest.referrer,
+    integrity: unwrappedRequest.integrity,
     timeout: unwrappedRequest.timeout
   });
 }
@@ -2514,6 +2575,12 @@ var HttpResourceImpl = class extends ResourceImpl {
       return promise;
     }, defaultValue, equal, injector);
     this.client = injector.get(HttpClient);
+  }
+  set(value) {
+    super.set(value);
+    this._headers.set(void 0);
+    this._progress.set(void 0);
+    this._statusCode.set(void 0);
   }
 };
 var HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken(ngDevMode ? "HTTP_TRANSFER_CACHE_ORIGIN_MAP" : "");
@@ -2657,7 +2724,7 @@ function appendMissingHeadersDetection(url, headers, headersToInclude) {
         if (!headersToInclude.includes(headerName) && !warningProduced.has(key)) {
           warningProduced.add(key);
           const truncatedUrl = truncateMiddle(url);
-          console.warn(formatRuntimeError(2802, `Angular detected that the \`${headerName}\` header is accessed, but the value of the header was not transferred from the server to the client by the HttpTransferCache. To include the value of the \`${headerName}\` header for the \`${truncatedUrl}\` request, use the \`includeHeaders\` list. The \`includeHeaders\` can be defined either on a request level by adding the \`transferCache\` parameter, or on an application level by adding the \`httpCacheTransfer.includeHeaders\` argument to the \`provideClientHydration()\` call. `));
+          console.warn(formatRuntimeError(-2802, `Angular detected that the \`${headerName}\` header is accessed, but the value of the header was not transferred from the server to the client by the HttpTransferCache. To include the value of the \`${headerName}\` header for the \`${truncatedUrl}\` request, use the \`includeHeaders\` list. The \`includeHeaders\` can be defined either on a request level by adding the \`transferCache\` parameter, or on an application level by adding the \`httpCacheTransfer.includeHeaders\` argument to the \`provideClientHydration()\` call. `));
         }
         return value.apply(target, [headerName]);
       };
@@ -2714,9 +2781,9 @@ export {
 @angular/common/fesm2022/module.mjs:
 @angular/common/fesm2022/http.mjs:
   (**
-   * @license Angular v20.1.0-rc.0
+   * @license Angular v20.3.1
    * (c) 2010-2025 Google LLC. https://angular.io/
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-HEORNWCP.js.map
+//# sourceMappingURL=chunk-IOVKGUSO.js.map

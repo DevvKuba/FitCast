@@ -2,7 +2,7 @@ import {
   XhrFactory,
   parseCookieValue,
   withHttpTransferCache
-} from "./chunk-HEORNWCP.js";
+} from "./chunk-IOVKGUSO.js";
 import {
   APP_ID,
   ApplicationModule,
@@ -23,6 +23,7 @@ import {
   IMAGE_CONFIG_DEFAULTS,
   INJECTOR_SCOPE,
   INTERNAL_APPLICATION_ERROR_HANDLER,
+  IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   Inject,
   Injectable,
   InjectionToken,
@@ -61,6 +62,7 @@ import {
   _global,
   _sanitizeHtml,
   _sanitizeUrl,
+  allLeavingAnimations,
   allowSanitizationBypassAndThrow,
   booleanAttribute,
   bypassSanitizationTrustHtml,
@@ -101,7 +103,7 @@ import {
   ɵɵinject,
   ɵɵinjectAttribute,
   ɵɵstyleProp
-} from "./chunk-32LJIEDH.js";
+} from "./chunk-JA4MOYI2.js";
 
 // node_modules/@angular/common/fesm2022/location.mjs
 var _DOM = null;
@@ -1308,7 +1310,7 @@ function timeZoneGetter(width) {
           return (zone >= 0 ? "+" : "") + padNumber(hours, 2, minusSign) + ":" + padNumber(Math.abs(zone % 60), 2, minusSign);
         }
       default:
-        throw new RuntimeError(2302, ngDevMode && `Unknown zone width "${width}"`);
+        throw new RuntimeError(2310, ngDevMode && `Unknown zone width "${width}"`);
     }
   };
 }
@@ -1638,7 +1640,7 @@ function toDate(value) {
   }
   const date = new Date(value);
   if (!isDate(date)) {
-    throw new RuntimeError(2302, ngDevMode && `Unable to convert "${value}" into a date`);
+    throw new RuntimeError(2311, ngDevMode && `Unable to convert "${value}" into a date`);
   }
   return date;
 }
@@ -2355,7 +2357,7 @@ var NgForOf = class _NgForOf {
    */
   set ngForTrackBy(fn) {
     if ((typeof ngDevMode === "undefined" || ngDevMode) && fn != null && typeof fn !== "function") {
-      console.warn(`trackBy must be a function, but received ${JSON.stringify(fn)}. See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
+      console.warn(`trackBy must be a function, but received ${JSON.stringify(fn)}. See https://angular.dev/api/common/NgForOf#change-propagation for more information.`);
     }
     this._trackByFn = fn;
   }
@@ -3719,7 +3721,7 @@ var PlatformNavigation = class _PlatformNavigation {
 
 // node_modules/@angular/common/fesm2022/common.mjs
 var PLATFORM_BROWSER_ID = "browser";
-var VERSION = new Version("20.1.0-rc.0");
+var VERSION = new Version("20.3.1");
 var ViewportScroller = class _ViewportScroller {
   // De-sugared tree-shakable injection
   // See #23917
@@ -5697,7 +5699,9 @@ var NoneEncapsulationDomRenderer = class extends DefaultDomRenderer2 {
     if (!this.removeStylesOnCompDestroy) {
       return;
     }
-    this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
+    if (allLeavingAnimations.size === 0) {
+      this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
+    }
   }
 };
 var EmulatedEncapsulationDomRenderer2 = class extends NoneEncapsulationDomRenderer {
@@ -6049,10 +6053,18 @@ var KeyEventsPlugin = class _KeyEventsPlugin extends EventManagerPlugin {
     }]
   }], null);
 })();
-function bootstrapApplication(rootComponent, options) {
-  return internalCreateApplication(__spreadValues({
-    rootComponent
-  }, createProvidersConfig(options)));
+function bootstrapApplication(rootComponent, options, context) {
+  const config = __spreadValues({
+    rootComponent,
+    platformRef: context?.platformRef
+  }, createProvidersConfig(options));
+  if (false) {
+    return resolveComponentResources(fetch).catch((error) => {
+      console.error(error);
+      return Promise.resolve();
+    }).then(() => internalCreateApplication(config));
+  }
+  return internalCreateApplication(config);
 }
 function createApplication(options) {
   return internalCreateApplication(createProvidersConfig(options));
@@ -6879,6 +6891,22 @@ function provideZoneJsCompatibilityDetector() {
     multi: true
   }];
 }
+function provideEnabledBlockingInitialNavigationDetector() {
+  return [{
+    provide: ENVIRONMENT_INITIALIZER,
+    useValue: () => {
+      const isEnabledBlockingInitialNavigation = inject(IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, {
+        optional: true
+      });
+      if (isEnabledBlockingInitialNavigation) {
+        const console2 = inject(Console);
+        const message = formatRuntimeError(5001, "Configuration error: found both hydration and enabledBlocking initial navigation in the same application, which is a contradiction.");
+        console2.warn(message);
+      }
+    },
+    multi: true
+  }];
+}
 function provideClientHydration(...features) {
   const providers = [];
   const featuresKind = /* @__PURE__ */ new Set();
@@ -6893,11 +6921,11 @@ function provideClientHydration(...features) {
   }
   const hasHttpTransferCacheOptions = featuresKind.has(HydrationFeatureKind.HttpTransferCacheOptions);
   if (typeof ngDevMode !== "undefined" && ngDevMode && featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
-    throw new Error("Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.");
+    throw new RuntimeError(5001, "Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.");
   }
-  return makeEnvironmentProviders([typeof ngDevMode !== "undefined" && ngDevMode ? provideZoneJsCompatibilityDetector() : [], withDomHydration(), featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions ? [] : withHttpTransferCache({}), providers]);
+  return makeEnvironmentProviders([typeof ngDevMode !== "undefined" && ngDevMode ? provideZoneJsCompatibilityDetector() : [], typeof ngDevMode !== "undefined" && ngDevMode ? provideEnabledBlockingInitialNavigationDetector() : [], withDomHydration(), featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions ? [] : withHttpTransferCache({}), providers]);
 }
-var VERSION2 = new Version("20.1.0-rc.0");
+var VERSION2 = new Version("20.3.1");
 
 export {
   getDOM,
@@ -6953,9 +6981,9 @@ export {
 @angular/platform-browser/fesm2022/browser.mjs:
 @angular/platform-browser/fesm2022/platform-browser.mjs:
   (**
-   * @license Angular v20.1.0-rc.0
+   * @license Angular v20.3.1
    * (c) 2010-2025 Google LLC. https://angular.io/
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-NVZPKXUU.js.map
+//# sourceMappingURL=chunk-PY7NKOU4.js.map
