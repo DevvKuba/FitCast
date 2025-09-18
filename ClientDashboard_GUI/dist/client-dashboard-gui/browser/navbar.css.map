@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/navbar/navbar.css"],
-  "sourcesContent": ["nav {\r\n  background-color: #f8f9fa;\r\n  padding: 1rem;\r\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\r\n}\r\n\r\nnav h2 {\r\n  margin: 0;\r\n  color: #333;\r\n}\r\n\r\nnav ul {\r\n  list-style: none;\r\n  padding: 0;\r\n  margin: 1rem 0 0 0;\r\n  display: flex;\r\n  gap: 2rem;\r\n}\r\n\r\nnav ul li a {\r\n  text-decoration: none;\r\n  color: #007bff;\r\n  padding: 0.5rem 1rem;\r\n  border-radius: 4px;\r\n  transition: background-color 0.2s;\r\n}\r\n\r\nnav ul li a:hover {\r\n  background-color: #e9ecef;\r\n}"],
-  "mappings": ";AAAA;AACE,oBAAkB;AAClB,WAAS;AACT,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAC,CAAC,EAAC,CAAC,EAAC;AACnC;AAEA,IAAI;AACF,UAAQ;AACR,SAAO;AACT;AAEA,IAAI;AACF,cAAY;AACZ,WAAS;AACT,UAAQ,KAAK,EAAE,EAAE;AACjB,WAAS;AACT,OAAK;AACP;AAEA,IAAI,GAAG,GAAG;AACR,mBAAiB;AACjB,SAAO;AACP,WAAS,OAAO;AAChB,iBAAe;AACf,cAAY,iBAAiB;AAC/B;AAEA,IAAI,GAAG,GAAG,CAAC;AACT,oBAAkB;AACpB;",
-  "names": []
-}

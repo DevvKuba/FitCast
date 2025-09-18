@@ -426,3 +426,34 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Angular cache directory
+ClientDashboard_GUI/.angular/
+ClientDashboard_GUI/.angular/cache/
+
+# Node modules (if not already ignored)
+ClientDashboard_GUI/node_modules/
+
+# Build outputs
+ClientDashboard_GUI/dist/
+ClientDashboard_GUI/tmp/
+
+# Environment files
+ClientDashboard_GUI/.env
+ClientDashboard_GUI/.env.local
+ClientDashboard_GUI/.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
