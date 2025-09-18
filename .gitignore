@@ -427,9 +427,16 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# VS local cache (ensure root .vs is ignored)
+ /.vs/
+ /.vs/slnx.sqlite
+
 # Angular cache directory
 ClientDashboard_GUI/.angular/
 ClientDashboard_GUI/.angular/cache/
+
+# TypeScript incremental build info
+ **/*.tsbuildinfo
 
 # Node modules (if not already ignored)
 ClientDashboard_GUI/node_modules/
