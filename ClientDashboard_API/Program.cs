@@ -10,16 +10,14 @@ namespace ClientDashboard_API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //builder.Services.AddControllers();
             builder.Services.AddApplicationServices(builder.Configuration);
 
-            // CORS necessary when calling API from your GUI/domain
-            // need to adjust origins later
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", b =>
-                    b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("AllowSelectiveOrigins", b =>
+                    b.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200"));
             });
+
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -28,6 +26,9 @@ namespace ClientDashboard_API
             });
 
             var app = builder.Build();
+
+            app.UseCors("AllowSelectiveOrigins");
+            //app.UseCors(x => x.AllowAnyMethod().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
             app.MapGet("/google45f9e3f493489c5e.html",
                 () => Results.Content("google-site-verification: google45f9e3f493489c5e.html", "text/plain"));

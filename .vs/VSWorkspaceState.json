@@ -8,6 +8,6 @@
     "\\ClientDashboard_API\\Services",
     "\\ClientDashboard_API\\wwwroot"
   ],
-  "SelectedNode": "\\.github\\workflows\\api-daily.yml",
+  "SelectedNode": "\\ClientDashboard_API\\ClientDashboard_API.sln",
   "PreviewInSolutionExplorer": false
 }
