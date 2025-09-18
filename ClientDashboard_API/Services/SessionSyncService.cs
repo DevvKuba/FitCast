@@ -17,9 +17,6 @@ namespace ClientDashboard_API.Services
                 if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                 {
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-                    // check for duplicate
-                    // would be checked by the workout having the same date and workout title, even exercise count..
-                    // only one would be able to go through daily
 
                     var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client.Name, workout.SessionDate);
                     // if workout is not a duplicate / not yet added
