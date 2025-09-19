@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-// import { Customer } from '@/domain/customer';
-// import { CustomerService } from '@/service/customerservice';
+import { Component, inject, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { Workout } from '../models/workout';
+import { WorkoutService } from '../services/workout.service';
 
 @Component({
   selector: 'app-client-workouts',
@@ -12,40 +12,39 @@ import { ButtonModule } from 'primeng/button';
   styleUrl: './client-workouts.css'
 })
 export class ClientWorkouts {
-  // customers!: Customer[];
+  workouts!: Workout[];
+  private workoutService = inject(WorkoutService);
 
-  //   first = 0;
+    first = 0;
+    rows = 10;
 
-  //   rows = 10;
+    ngOnInit() {
+      // calls api call here from the workout service
+        // this.customerService.getCustomersLarge().then((workouts: Workout[]) => (this.workouts = workouts));
+    }
 
-  //   constructor(private customerService: CustomerService) {}
+    next() {
+        this.first = this.first + this.rows;
+    }
 
-  //   ngOnInit() {
-  //       this.customerService.getCustomersLarge().then((customers) => (this.customers = customers));
-  //   }
+    prev() {
+        this.first = this.first - this.rows;
+    }
 
-  //   next() {
-  //       this.first = this.first + this.rows;
-  //   }
+    reset() {
+        this.first = 0;
+    }
 
-  //   prev() {
-  //       this.first = this.first - this.rows;
-  //   }
+    pageChange(event: { first: number; rows: number; }) {
+        this.first = event.first;
+        this.rows = event.rows;
+    }
 
-  //   reset() {
-  //       this.first = 0;
-  //   }
+    isLastPage(): boolean {
+        return this.workouts ? this.first + this.rows >= this.workouts.length : true;
+    }
 
-  //   pageChange(event: { first: number; rows: number; }) {
-  //       this.first = event.first;
-  //       this.rows = event.rows;
-  //   }
-
-  //   isLastPage(): boolean {
-  //       return this.customers ? this.first + this.rows >= this.customers.length : true;
-  //   }
-
-  //   isFirstPage(): boolean {
-  //       return this.customers ? this.first === 0 : true;
-  //   }
+    isFirstPage(): boolean {
+        return this.workouts ? this.first === 0 : true;
+    }
 }
