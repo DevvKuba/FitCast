@@ -8,7 +8,19 @@ namespace ClientDashboard_API.Controllers
     public class WorkoutController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
     {
         /// <summary>
-        /// Workout request for the retrieval of all daily client sessions
+        /// Workout request for the retrieval of paginated workouts
+        /// </summary>
+        [HttpGet("/GetPaginatedWorkouts")]
+        public async Task<ActionResult<List<Workout>>> GetPaginatedWorkouts([FromQuery] int first, [FromQuery] int rows)
+        {
+            var paginatedWorkouts = await unitOfWork.WorkoutRepository.GetPaginatedWorkoutsAsync(first, rows);
+
+            if (!paginatedWorkouts.Any()) return NotFound("No workout's found");
+            return Ok(paginatedWorkouts);
+        }
+
+        /// <summary>
+        /// Workout request for the retrieval of all daily workouts
         /// </summary>
         [HttpGet("/GetAllDailySessions")]
         public async Task<ActionResult<List<Workout>>> GetAllDailyClientWorkoutsAsync()
