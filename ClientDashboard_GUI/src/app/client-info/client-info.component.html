@@ -1,1 +1,18 @@
-<p>client-info works!</p>
+<div class="table-container">
+  <p-table [value]="clients" [tableStyle]="{ 'min-width': '50rem' }">
+      <ng-template #header>
+          <tr>
+              <th style="width: 33%">Client Name</th>
+              <th style="width: 33%">Current Session</th>
+              <th style="width: 33%">Block Sessions</th>
+          </tr>
+      </ng-template>
+      <ng-template #body let-client>
+          <tr>
+              <td>{{ client.name }}</td>
+              <td>{{ client.currentSession }}</td>
+              <td>{{ client.totalBlockSessions }}</td>
+          </tr>
+      </ng-template>
+  </p-table>
+</div>
