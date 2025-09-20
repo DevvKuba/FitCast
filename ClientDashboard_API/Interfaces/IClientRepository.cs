@@ -5,6 +5,7 @@ namespace ClientDashboard_API.Interfaces
     public interface IClientRepository
     {
         // think of methods necessary to gather client data, within the ClientDataController
+        Task<List<Client>> GetAllClientDataAsync();
         Task<Client> GetClientByNameAsync(string clientName);
 
         Task<int> GetClientsCurrentSessionAsync(string name);

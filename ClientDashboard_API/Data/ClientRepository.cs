@@ -8,6 +8,11 @@ namespace ClientDashboard_API.Data
 {
     public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
     {
+        public async Task<List<Client>> GetAllClientDataAsync()
+        {
+            var clients = await context.Client.ToListAsync();
+            return clients;
+        }
         public void UpdateAddingClientCurrentSessionAsync(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession + 1;

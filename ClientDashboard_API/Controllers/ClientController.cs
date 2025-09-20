@@ -1,10 +1,21 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
+
+        [HttpGet("/allClients")]
+        public async Task<ActionResult<List<Client>>> GetAllClientsAsync()
+        {
+            var clients = await unitOfWork.ClientRepository.GetAllClientDataAsync();
+
+            if (!clients.Any()) return NotFound($"No clients found");
+
+            return Ok(clients);
+        }
         /// <summary>
         /// Client method allowing for the retrieval of the clients current session,
         /// within their respective block
