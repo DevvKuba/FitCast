@@ -12,16 +12,22 @@ import { WorkoutService } from '../services/workout.service';
   styleUrl: './client-workouts.css'
 })
 export class ClientWorkouts {
-  workouts!: Workout[];
+  workouts: Workout[] = [];
   private workoutService = inject(WorkoutService);
 
-    first = 0;
-    rows = 10;
+    first = 0; // offset
+    rows = 10; // pageSize
 
     ngOnInit() {
-      // calls api call here from the workout service
-        // this.customerService.getCustomersLarge().then((workouts: Workout[]) => (this.workouts = workouts));
+        this.workoutService.retrievePaginatedWorkouts(this.first, this.rows).subscribe({
+            next: (data) => {
+                this.workouts = data;
+            }
+        });
     }
+
+    // apart from the initial initialisation of paginated workouts
+    // add further method that can filter the results accordingly *potentially
 
     next() {
         this.first = this.first + this.rows;

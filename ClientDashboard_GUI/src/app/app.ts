@@ -15,11 +15,11 @@ export class App implements OnInit {
   clients: any;
 
   ngOnInit(): void {
-  this.http.get('https://localhost:7217/onFirstSession').subscribe({
-    next: response => this.clients = response,
-    error: error => console.log(error),
-    complete: () => console.log('Request has completed')
-  })
+  // this.http.get('https://localhost:7217/onFirstSession').subscribe({
+  //   next: response => this.clients = response,
+  //   error: error => console.log(error),
+  //   complete: () => console.log('Request has completed')
+  // })
 }
 }
 
