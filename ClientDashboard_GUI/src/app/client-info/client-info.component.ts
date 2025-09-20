@@ -10,11 +10,20 @@ import { Client } from '../models/client';
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
-export class ClientInfoComponent {
+export class ClientInfoComponent implements OnInit {
   clients: Client[] = [];
-    private workoutService = inject(ClientService);
+  private clientService = inject(ClientService);
 
-    ngOnInit() {
-        // populate clients with data
-    }
+  ngOnInit() {
+      this.getClients();
+  }
+
+  getClients(){
+    this.clientService.getAllClients().subscribe({
+      next: (data) => {
+        this.clients = data;
+      }
+    })
+  }
+
 }

@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Client } from '../models/client';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +9,7 @@ import { inject, Injectable } from '@angular/core';
 export class ClientService {
   http = inject(HttpClient);
 
-  getAllClients(){
-    
+  getAllClients() : Observable<Client[]>{
+    return this.http.get<Client[]>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/allClients")
   }
 }
