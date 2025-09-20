@@ -20,6 +20,11 @@ export class Navbar implements OnInit {
                 icon: 'pi pi-home'
             },
             {
+                label: 'Client Info',
+                routerLink: '/client-info',
+                icon: 'pi pi-user'
+            },
+            {
                 label: 'Client Workouts',
                 routerLink: '/client-workouts',
                 icon: 'pi pi-table'

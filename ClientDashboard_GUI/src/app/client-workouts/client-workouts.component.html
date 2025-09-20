@@ -1,0 +1,41 @@
+
+<div class="table-container">
+    <div class="mb-4">
+        <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+        <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+        <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+    </div>
+    <p-table
+        [value]="workouts"
+        [paginator]="true"
+        [rows]="5"
+        [first]="first"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'width': '100%' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        (onPage)="pageChange($event)"
+        [rowsPerPageOptions]="[10, 20, 30]"
+    >
+        <ng-template #header>
+            <tr>
+                <th style="width:25px">Workout Title</th>
+                <th style="width:20%">Client Name</th>
+                <th style="width:15%">Current Session</th>
+                <th style="width:15%">Total Sessions</th>
+                <th style="width:15%">Session Date</th>
+                <th style="width:10%">Exercises</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-workout>
+            <tr>
+                <td>{{ workout.workoutTitle }}</td>
+                <td>{{ workout.clientName }}</td>
+                <td>{{ workout.currentBlockSession }}</td>
+                <td>{{ workout.totalBlockSessions }}</td>
+                <td>{{ workout.sessionDate }}</td>
+                <td>{{ workout.exerciseCount }}</td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
+</div>

@@ -15,6 +15,7 @@ export class App implements OnInit {
   clients: any;
 
   ngOnInit(): void {
+  // general structure
   // this.http.get('https://localhost:7217/onFirstSession').subscribe({
   //   next: response => this.clients = response,
   //   error: error => console.log(error),
