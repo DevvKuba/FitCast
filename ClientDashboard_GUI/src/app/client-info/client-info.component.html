@@ -1,18 +1,64 @@
 <div class="table-container">
-  <p-table [value]="clients" [tableStyle]="{ 'min-width': '50rem' }">
+  <p-table [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
           <tr>
-              <th style="width: 33%">Client Name</th>
-              <th style="width: 33%">Current Session</th>
-              <th style="width: 33%">Block Sessions</th>
+              <th pSortableColumn="name" style="width:33%">
+                    Client Name <p-sortIcon field="name" />
+              </th>
+              <th pSortableColumn="currentBlockSession" style="width:33%">
+                    Current Session <p-sortIcon field="currentBlockSession" />
+              </th>
+              <th pSortableColumn="totalBlockSessions" style="width:33%">
+                    Block Sessions <p-sortIcon field="totalBlockSessions" />
+              </th>
           </tr>
       </ng-template>
-      <ng-template #body let-client>
-          <tr>
+      <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
+          <tr [pEditableRow]="client">
               <td>{{ client.name }}</td>
               <td>{{ client.currentBlockSession }}</td>
               <td>{{ client.totalBlockSessions }}</td>
-          </tr>
+              <td>
+                <div class="flex items-center justify-center gap-2">
+                    <button
+                        *ngIf="!editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pInitEditableRow
+                        icon="pi pi-pencil"
+                        (click)="onRowEditInit(client)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                    <button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pSaveEditableRow
+                        icon="pi pi-check"
+                        (click)="onRowEditSave(client)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                    <button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pCancelEditableRow
+                        icon="pi pi-times"
+                        (click)="onRowEditCancel(client, ri)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                </div>
+            </td>
+        </tr>
       </ng-template>
   </p-table>
 </div>
