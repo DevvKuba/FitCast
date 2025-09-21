@@ -58,13 +58,14 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update all client information
         /// </summary>
-        [HttpPut("{client}/newClientInformation")]
+        [HttpPut("/newClientInformation")]
         public async Task<IActionResult> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
             var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
 
-            unitOfWork.ClientRepository.UpdateClientDetails(oldClient, updatedClient.Name, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
-            return Ok(updatedClient);
+            unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.Name, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
+            if (await unitOfWork.Complete()) return Ok($"{updatedClient.Name}'s details have been updated successfuly");
+            return BadRequest($"Failed to update {updatedClient.Name}'s details");
         }
 
         /// <summary>
