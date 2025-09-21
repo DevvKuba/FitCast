@@ -1,11 +1,11 @@
 import {
-  Badge,
-  BadgeModule
-} from "./chunk-AQLGQY4M.js";
-import {
   Tooltip,
   TooltipModule
 } from "./chunk-MVFHLOB4.js";
+import {
+  Badge,
+  BadgeModule
+} from "./chunk-AQLGQY4M.js";
 import {
   Ripple
 } from "./chunk-DX2NE7CU.js";
@@ -20,6 +20,14 @@ import {
 import {
   BaseComponent
 } from "./chunk-NQRKQHOW.js";
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-T7LVAAVI.js";
+import "./chunk-TM4XZ3TD.js";
+import "./chunk-QN5N25J2.js";
+import "./chunk-KS4LJBZ2.js";
 import {
   BaseStyle
 } from "./chunk-KVYL7ILS.js";
@@ -36,14 +44,6 @@ import {
   resolve,
   uuid
 } from "./chunk-J5FX77RK.js";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-NH2AD6SN.js";
-import "./chunk-KVUXCZYO.js";
-import "./chunk-KS4LJBZ2.js";
-import "./chunk-QN5N25J2.js";
 import {
   CommonModule,
   NgClass,

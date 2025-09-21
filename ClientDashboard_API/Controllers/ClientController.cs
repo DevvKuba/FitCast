@@ -56,10 +56,22 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
+        /// Client method allowing update all client information
+        /// </summary>
+        [HttpPut("{client}/newClientInformation")]
+        public async Task<IActionResult> ChangeClientInformationAsync([FromBody] Client updatedClient)
+        {
+            var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
+
+            unitOfWork.ClientRepository.UpdateClientDetails(oldClient, updatedClient.Name, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
+            return Ok(updatedClient);
+        }
+
+        /// <summary>
         /// Client method allowing update of ones total sessions
         /// </summary>
         [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
-        public async Task<IActionResult> ChangeClientTotalSessions(string clientName, int totalSessions)
+        public async Task<IActionResult> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
@@ -75,7 +87,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing update of ones current session
         /// </summary>
         [HttpPut("{clientName}/{currentSession}/newCurrentSession")]
-        public async Task<IActionResult> ChangeClientCurrentSession(string clientName, int currentSession)
+        public async Task<IActionResult> ChangeClientCurrentSessionAsync(string clientName, int currentSession)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
@@ -91,7 +103,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing update of client's given name
         /// </summary>
         [HttpPut("{currentName}/{newName}/newClientName")]
-        public async Task<IActionResult> ChangeClientName(string currentName, string newName)
+        public async Task<IActionResult> ChangeClientNameAsync(string currentName, string newName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(currentName);
 

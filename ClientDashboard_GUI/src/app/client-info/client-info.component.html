@@ -15,9 +15,42 @@
       </ng-template>
       <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
           <tr [pEditableRow]="client">
-              <td>{{ client.name }}</td>
-              <td>{{ client.currentBlockSession }}</td>
-              <td>{{ client.totalBlockSessions }}</td>
+              <td>
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]= "client.name" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{client.name}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]= "client.currentBlockSession" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{client.currentBlockSession}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]= "client.totalBlockSessions" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{client.totalBlockSessions}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
               <td>
                 <div class="flex items-center justify-center gap-2">
                     <button

@@ -9,10 +9,11 @@ import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule],
+  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
@@ -29,21 +30,21 @@ export class ClientInfoComponent implements OnInit {
         this.clonedClients[client.id as number] = { ...client };
     }
 
-    onRowEditSave(client: Client) {
-        if (client.currentBlockSession > 0 && client.totalBlockSession > 0) {
-            delete this.clonedClients[client.id as number];
-            console.log("successfully updated")
-            // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Client updated' });
-        } else {
-          console.log("Unsuccessfully trying to update")
-            // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Sessions' });
-        }
-    }
+  onRowEditSave(client: Client) {
+      if (client.currentBlockSession > 0 && client.totalBlockSession > 0) {
+          delete this.clonedClients[client.id as number];
+          console.log("successfully updated")
+          // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Client updated' });
+      } else {
+        console.log("Unsuccessfully trying to update")
+          // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Sessions' });
+      }
+  }
 
-    onRowEditCancel(client: Client, index: number) {
-        this.clients[index] = this.clonedClients[client.id as number];
-        delete this.clonedClients[client.id as number];
-    }
+  onRowEditCancel(client: Client, index: number) {
+      this.clients[index] = this.clonedClients[client.id as number];
+      delete this.clonedClients[client.id as number];
+  }
 
 
   getClients(){

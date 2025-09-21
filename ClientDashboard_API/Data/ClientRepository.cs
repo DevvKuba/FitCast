@@ -13,6 +13,7 @@ namespace ClientDashboard_API.Data
             var clients = await context.Client.ToListAsync();
             return clients;
         }
+
         public void UpdateAddingClientCurrentSessionAsync(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession + 1;
@@ -29,6 +30,17 @@ namespace ClientDashboard_API.Data
             };
             mapper.Map(updatedData, client);
 
+        }
+
+        public void UpdateClientDetails(Client client, string newClientName, int newCurrentSession, int newTotalSessions)
+        {
+            var updatedData = new ClientUpdateDTO
+            {
+                Name = newClientName,
+                CurrentBlockSession = newCurrentSession,
+                TotalBlockSessions = newTotalSessions
+            };
+            mapper.Map(updatedData, client);
         }
 
         public void UpdateDeletingClientCurrentSession(Client client)
@@ -78,6 +90,12 @@ namespace ClientDashboard_API.Data
         public async Task<Client> GetClientByNameAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).FirstOrDefaultAsync();
+            return clientData;
+        }
+
+        public async Task<Client> GetClientByIdAsync(int id)
+        {
+            var clientData = await context.Client.Where(x => x.Id == id).FirstOrDefaultAsync();
             return clientData;
         }
 

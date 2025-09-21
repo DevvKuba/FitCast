@@ -8,11 +8,15 @@ namespace ClientDashboard_API.Interfaces
         Task<List<Client>> GetAllClientDataAsync();
         Task<Client> GetClientByNameAsync(string clientName);
 
+        Task<Client> GetClientByIdAsync(int id);
+
         Task<int> GetClientsCurrentSessionAsync(string name);
 
         Task<List<string>> GetClientsOnLastSessionAsync();
 
         Task<List<string>> GetClientsOnFirstSessionAsync();
+
+        void UpdateClientDetails(Client client, string newClientName, int? newCurrentSession, int? newTotalSessions);
 
         void UpdateAddingClientCurrentSessionAsync(Client client);
 
