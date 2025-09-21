@@ -128,7 +128,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newTotalSessions = 8;
-            await _clientController.ChangeClientTotalSessions(client!.Name, newTotalSessions);
+            await _clientController.ChangeClientTotalSessionsAsync(client!.Name, newTotalSessions);
 
             Assert.Equal(newTotalSessions, client.TotalBlockSessions);
             Assert.Equal(currentBlockSession, client.CurrentBlockSession);
@@ -147,7 +147,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newTotalSessions = 8;
-            await _clientController.ChangeClientTotalSessions("mat", newTotalSessions);
+            await _clientController.ChangeClientTotalSessionsAsync("mat", newTotalSessions);
 
             Assert.NotEqual(newTotalSessions, client!.TotalBlockSessions);
             Assert.Equal(oldTotalBlockSessions, client.TotalBlockSessions);
@@ -167,7 +167,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newCurrentSession = 4;
-            await _clientController.ChangeClientTotalSessions(client!.Name, newCurrentSession);
+            await _clientController.ChangeClientTotalSessionsAsync(client!.Name, newCurrentSession);
 
             Assert.Equal(newCurrentSession, client.TotalBlockSessions);
             Assert.Equal(oldCurrentSession, client.CurrentBlockSession);
@@ -186,7 +186,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newCurrentSession = 4;
-            await _clientController.ChangeClientTotalSessions("mat", newCurrentSession);
+            await _clientController.ChangeClientTotalSessionsAsync("mat", newCurrentSession);
 
             Assert.NotEqual(newCurrentSession, client!.CurrentBlockSession);
             Assert.Equal(oldCurrentSession, client.CurrentBlockSession);
@@ -206,7 +206,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newClientName = "mat";
-            await _clientController.ChangeClientName(client!.Name, newClientName);
+            await _clientController.ChangeClientNameAsync(client!.Name, newClientName);
 
             Assert.Equal(newClientName, client.Name);
             Assert.Equal(currentSession, client.CurrentBlockSession);
@@ -225,7 +225,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = await _context.Client.FirstOrDefaultAsync();
             var newClientName = "mat";
-            await _clientController.ChangeClientName("robert", newClientName);
+            await _clientController.ChangeClientNameAsync("robert", newClientName);
 
             Assert.NotEqual(newClientName, client!.Name);
             Assert.Equal(oldClientName, client.Name);
