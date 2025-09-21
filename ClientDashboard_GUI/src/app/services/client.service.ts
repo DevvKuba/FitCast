@@ -12,4 +12,8 @@ export class ClientService {
   getAllClients() : Observable<Client[]>{
     return this.http.get<Client[]>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/allClients")
   }
+
+  updateClient(newClient : Client) : Observable<any>{
+    return this.http.put("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/newClientInformation", newClient);
+  }
 }

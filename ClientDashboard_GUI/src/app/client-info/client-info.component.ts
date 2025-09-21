@@ -30,13 +30,21 @@ export class ClientInfoComponent implements OnInit {
         this.clonedClients[client.id as number] = { ...client };
     }
 
-  onRowEditSave(client: Client) {
-      if (client.currentBlockSession > 0 && client.totalBlockSession > 0) {
-          delete this.clonedClients[client.id as number];
-          console.log("successfully updated")
+  onRowEditSave(newClient: Client) {
+      if (newClient.currentBlockSession > 0 && newClient.totalBlockSessions > 0) {
+          delete this.clonedClients[newClient.id as number];
+          this.clientService.updateClient(newClient).subscribe({
+            next: (response) => {
+              console.log('Client updated successfully', response);
+            },
+            error: (error) => {
+              console.log('Update Failed', error);
+            }
+          })
+          
           // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Client updated' });
       } else {
-        console.log("Unsuccessfully trying to update")
+        console.log("Input values are not valid")
           // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Sessions' });
       }
   }

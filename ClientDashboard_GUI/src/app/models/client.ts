@@ -4,6 +4,6 @@ export interface Client {
   id: number,
   name: string,
   currentBlockSession: number,
-  totalBlockSession: number,
+  totalBlockSessions: number,
   workouts: Workout[],
 }
