@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<string>> GetClientsOnFirstSessionAsync();
 
-        void UpdateClientDetails(Client client, string newClientName, int? newCurrentSession, int? newTotalSessions);
+        void UpdateClientDetailsAsync(Client client, string newClientName, int? newCurrentSession, int? newTotalSessions);
 
         void UpdateAddingClientCurrentSessionAsync(Client client);
 
