@@ -121,7 +121,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddNewClientAsync(string clientName, int? blockSessions)
+        public async Task<IActionResult> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions)
         {
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
 
@@ -134,10 +134,11 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Client method for removing an existing Client from the database
+        /// Client method for removing an existing Client from the database via name
         /// </summary>
         [HttpDelete]
-        public async Task<IActionResult> RemoveClientAsync(string clientName)
+        // eventually change to by Name
+        public async Task<IActionResult> RemoveClientAsync([FromQuery] string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
             if (client == null) return NotFound($"Client {clientName} not found in the database");
@@ -146,6 +147,22 @@ namespace ClientDashboard_API.Controllers
             if (await unitOfWork.Complete()) return Ok($"Client: {clientName} removed");
 
             return BadRequest($"Client {clientName} not removed");
+        }
+
+        /// <summary>
+        /// Client method for removing an existing Client from the database via id
+        /// </summary>
+        [HttpDelete]
+        // eventually change to by Name
+        public async Task<IActionResult> RemoveClientByIdAsync([FromQuery] int clientId)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client == null) return NotFound($"Client with id: {clientId} not found in the database");
+
+            unitOfWork.ClientRepository.RemoveClient(client);
+            if (await unitOfWork.Complete()) return Ok($"Client with id: {clientId} removed");
+
+            return BadRequest($"Client with id: {clientId} not removed");
         }
 
     }

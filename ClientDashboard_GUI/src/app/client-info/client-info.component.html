@@ -89,6 +89,19 @@
                         rounded
                         severity="secondary"
                     ></button>
+
+                    <button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pCancelEditableRow
+                        icon="pi pi-trash"
+                        (click)="onRowDelete(client.name)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
                 </div>
             </td>
         </tr>

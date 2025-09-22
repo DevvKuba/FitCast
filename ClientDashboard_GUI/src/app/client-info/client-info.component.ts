@@ -10,6 +10,8 @@ import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
+import { PrimeIcons, MenuItem } from 'primeng/api';
+import { concatWith } from 'rxjs';
 
 @Component({
   selector: 'app-client-info',
@@ -19,11 +21,23 @@ import { FormsModule } from '@angular/forms';
 })
 export class ClientInfoComponent implements OnInit {
   clients: Client[] = [];
+  items!: MenuItem[];
   clonedClients: { [s: string]: Client } = {}
   private clientService = inject(ClientService);
 
   ngOnInit() {
       this.getClients();
+
+      this.items = [
+        {
+          label: 'New',
+          icon: PrimeIcons.PLUS,
+        },
+        {
+          label: 'Delete',
+          icon: PrimeIcons.TRASH,
+        }
+      ];
   }
 
   onRowEditInit(client: Client) {
@@ -52,6 +66,17 @@ export class ClientInfoComponent implements OnInit {
   onRowEditCancel(client: Client, index: number) {
       this.clients[index] = this.clonedClients[client.id as number];
       delete this.clonedClients[client.id as number];
+  }
+
+  onRowDelete(clientName: string){
+    this.clientService.deleteClient(clientName).subscribe({
+      next: (response) => {
+        console.log(`Successfully deleted client: ${clientName} ` + response)
+      },
+      error: (error) => {
+        console.log(`Error deleting client: ${clientName} ` + error)
+      }
+    })
   }
 
 
