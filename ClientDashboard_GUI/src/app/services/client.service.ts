@@ -17,7 +17,7 @@ export class ClientService {
     return this.http.put("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/newClientInformation", newClient);
   }
 
-  deleteClient(clientName: string) : Observable<any>{
-    return this.http.delete(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net?clientName=${clientName}`);
+  deleteClient(clientId: number) : Observable<any>{
+    return this.http.delete(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net?clientId=${clientId}`);
   }
 }

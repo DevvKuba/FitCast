@@ -68,13 +68,13 @@ export class ClientInfoComponent implements OnInit {
       delete this.clonedClients[client.id as number];
   }
 
-  onRowDelete(clientName: string){
-    this.clientService.deleteClient(clientName).subscribe({
+  onRowDelete(clientId: number){
+    this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
-        console.log(`Successfully deleted client: ${clientName} ` + response)
+        console.log(`Successfully deleted client with id: ${clientId} ` + response)
       },
       error: (error) => {
-        console.log(`Error deleting client: ${clientName} ` + error)
+        console.log(`Error deleting client with id: ${clientId} ` + error)
       }
     })
   }
