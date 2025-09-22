@@ -18,6 +18,6 @@ export class ClientService {
   }
 
   deleteClient(clientId: number) : Observable<any>{
-    return this.http.delete(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net?clientId=${clientId}`);
+    return this.http.delete(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/ById?clientId=${clientId}`);
   }
 }

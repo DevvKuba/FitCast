@@ -136,7 +136,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via name
         /// </summary>
-        [HttpDelete]
+        [HttpDelete("/ByName")]
         // eventually change to by Name
         public async Task<IActionResult> RemoveClientAsync([FromQuery] string clientName)
         {
@@ -152,7 +152,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via id
         /// </summary>
-        [HttpDelete]
+        [HttpDelete("/ById")]
         // eventually change to by Name
         public async Task<IActionResult> RemoveClientByIdAsync([FromQuery] int clientId)
         {
