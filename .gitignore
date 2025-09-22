@@ -22,36 +22,18 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-
-[Dd]ebug/x64/
-[Dd]ebugPublic/x64/
-[Rr]elease/x64/
-[Rr]eleases/x64/
-bin/x64/
-obj/x64/
-
-[Dd]ebug/x86/
-[Dd]ebugPublic/x86/
-[Rr]elease/x86/
-[Rr]eleases/x86/
-bin/x86/
-obj/x86/
-
+x64/
+x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 [Aa][Rr][Mm]64[Ee][Cc]/
 bld/
+[Bb]in/
 [Oo]bj/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
-
-# Build results on 'Bin' directories
-**/[Bb]in/*
-# Uncomment if you have tasks that rely on *.refresh files to move binaries
-# (https://github.com/github/gitignore/pull/3736)
-#!**/[Bb]in/*.refresh
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -70,9 +52,6 @@ Generated\ Files/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
-
-# Approval Tests result files
-*.received.*
 
 # Build Results of an ATL Project
 [Dd]ebugPS/
@@ -312,7 +291,6 @@ FakesAssemblies/
 
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
-node_modules/
 
 # Visual Studio 6 build log
 *.plg
@@ -406,19 +384,164 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# VS Code files for those working on multiple tools
-.vscode/*
+#############################################################################
+# Angular 19 and Node.js specific ignores
+#############################################################################
+
+# Dependencies
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Angular build outputs
+**/dist/
+**/tmp/
+
+# Angular cache - THIS IS KEY FOR YOUR ISSUE
+**/.angular/
+**/.angular/cache/
+
+# Angular and TypeScript compiled outputs
+**/*.js.map
+**/*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Angular e2e test outputs
+**/e2e/results/
+**/e2e/reports/
+
+# Coverage directory used by tools like istanbul
+**/coverage/
+**/.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+#############################################################################
+# IDE and Editor files
+#############################################################################
+
+# VS Code
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+# JetBrains IDEs
+.idea/
+*.swp
+*.swo
+
 # Local History for Visual Studio Code
 .history/
+.ionide/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+#############################################################################
+# OS generated files
+#############################################################################
+
+# Windows
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+#############################################################################
+# Additional project-specific ignores
+#############################################################################
 
 # Windows Installer files from build outputs
 *.cab
@@ -427,41 +550,11 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# VS local cache (ensure root .vs is ignored)
-/.vs/
-/.vs/slnx.sqlite
-/.vs/*.sqlite
+# Database files (if you don't want to track local dev databases)
+*.db
+*.sqlite
+*.sqlite3
 
-# Angular cache directory
-ClientDashboard_GUI/.angular/
-ClientDashboard_GUI/.angular/cache/
-
-# TypeScript incremental build info
-**/*.tsbuildinfo
-
-# Node modules (if not already ignored)
-ClientDashboard_GUI/node_modules/
-
-# Build outputs
-ClientDashboard_GUI/dist/
-ClientDashboard_GUI/tmp/
-
-# Environment files
-ClientDashboard_GUI/.env
-ClientDashboard_GUI/.env.local
-ClientDashboard_GUI/.env.*.local
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# User secrets and sensitive configuration
+**/appsettings.Development.json
+**/appsettings.Local.json
