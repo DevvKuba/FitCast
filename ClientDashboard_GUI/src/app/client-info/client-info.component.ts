@@ -13,10 +13,11 @@ import { FormsModule } from '@angular/forms';
 import { PrimeIcons, MenuItem } from 'primeng/api';
 import { concatWith } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
+import { SpinnerComponent } from "../spinner/spinner.component";
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog],
+  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })

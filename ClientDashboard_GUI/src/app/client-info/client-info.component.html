@@ -1,5 +1,8 @@
-
-<div class="table-container">
+@if(clients.length === 0){
+  <app-spinner></app-spinner>
+}
+@else {
+  <div class="table-container">
   <p-table [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
         <div class="card flex justify-center">
@@ -127,3 +130,4 @@
       </ng-template>
   </p-table>
 </div>
+}

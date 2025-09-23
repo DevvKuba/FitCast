@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Workout } from '../models/workout';
 import { WorkoutService } from '../services/workout.service';
+import { SpinnerComponent } from "../spinner/spinner.component";
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent],
   templateUrl: './client-workouts.component.html',
   styleUrl: './client-workouts.component.css'
 })

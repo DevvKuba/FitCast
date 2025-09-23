@@ -1,5 +1,8 @@
-
-<div class="table-container">
+@if(workouts.length === 0){
+    <app-spinner></app-spinner>
+}
+@else {
+    <div class="table-container">
     <p-table
         [value]="workouts"
         [paginator]="true"
@@ -51,3 +54,5 @@
         
     </p-table>
 </div>
+
+}
