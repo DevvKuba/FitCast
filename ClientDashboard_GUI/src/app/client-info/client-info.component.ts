@@ -68,6 +68,7 @@ export class ClientInfoComponent implements OnInit {
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
         console.log(`Successfully deleted client with id: ${clientId} ` + response)
+        this.getClients();
       },
       error: (error) => {
         console.log(`Error deleting client with id: ${clientId} ` + error)
@@ -82,8 +83,18 @@ export class ClientInfoComponent implements OnInit {
       totalBlockSessions: totalBlockSessions,
       workouts: [],
     }
-    this.clientService.addClient(newClient)
-    this.visible = false;
+    this.clientService.addClient(newClient).subscribe({
+      next: (response) => {
+        console.log(`Success added client: ${clientName} `, response)
+        // success toast
+        this.visible = false;
+        this.getClients();
+      },
+      error: (error) => {
+        console.log(`Error adding client: ${clientName} `, error)
+        // error toast
+      }
+    })
   }
 
 

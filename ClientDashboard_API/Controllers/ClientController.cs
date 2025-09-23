@@ -144,9 +144,9 @@ namespace ClientDashboard_API.Controllers
             if (clientExists != null) return BadRequest($"Client {client.Name} already exists in the database");
 
             await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions);
-            if (await unitOfWork.Complete()) return Ok($"Client: {client.Name} added");
+            if (await unitOfWork.Complete()) return Ok(new { message = "$Client: {client.Name} added", success = true });
 
-            return BadRequest($"Client {client.Name} not added");
+            return BadRequest(new { message = $"Client {client.Name} not added", success = false });
         }
 
         /// <summary>
@@ -160,9 +160,9 @@ namespace ClientDashboard_API.Controllers
             if (client == null) return NotFound($"Client {clientName} not found in the database");
 
             unitOfWork.ClientRepository.RemoveClient(client);
-            if (await unitOfWork.Complete()) return Ok($"Client: {clientName} removed");
+            if (await unitOfWork.Complete()) return Ok(new { message = $"Client: {clientName} removed", success = true });
 
-            return BadRequest($"Client {clientName} not removed");
+            return BadRequest(new { message = $"Client {clientName} not removed", success = false });
         }
 
         /// <summary>
