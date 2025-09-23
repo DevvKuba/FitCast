@@ -12,10 +12,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { PrimeIcons, MenuItem } from 'primeng/api';
 import { concatWith } from 'rxjs';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule],
+  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
@@ -23,9 +24,16 @@ export class ClientInfoComponent implements OnInit {
   clients: Client[] = [];
   clonedClients: { [s: string]: Client } = {}
   private clientService = inject(ClientService);
+  visible: boolean = false;
+  newClientName : string = "";
+  newTotalBlockSessions : number = 0;
 
   ngOnInit() {
       this.getClients();
+  }
+
+  showDialog(){
+    this.visible = true;
   }
 
   onRowEditInit(client: Client) {
@@ -75,6 +83,7 @@ export class ClientInfoComponent implements OnInit {
       workouts: [],
     }
     this.clientService.addClient(newClient)
+    this.visible = false;
   }
 
 

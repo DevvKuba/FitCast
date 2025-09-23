@@ -22,6 +22,6 @@ export class ClientService {
   }
 
   addClient(client: Client): Observable<Client>{
-    return this.http.post<Client>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net`, client);
+    return this.http.post<Client>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/ByBody`, client);
   }
 }
