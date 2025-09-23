@@ -1,7 +1,7 @@
 <div class="table-container">
   <p-table [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
-        <p-button icon="pi pi-plus" label="New" severity="secondary"></p-button>
+        <p-button icon="pi pi-plus" label="New" severity="secondary" (onClick)="addNewClient('clientName', 4)"></p-button>
           <tr>
               <th pSortableColumn="name" style="width:33%">
                     Client Name <p-sortIcon field="name" />

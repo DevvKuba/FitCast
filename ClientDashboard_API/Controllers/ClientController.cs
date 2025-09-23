@@ -118,9 +118,9 @@ namespace ClientDashboard_API.Controllers
 
 
         /// <summary>
-        /// Client method for adding a new Client to the database
+        /// Client method for adding a new Client to the database via client params
         /// </summary>
-        [HttpPost]
+        [HttpPost("/ByParams")]
         public async Task<IActionResult> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions)
         {
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
@@ -131,6 +131,22 @@ namespace ClientDashboard_API.Controllers
             if (await unitOfWork.Complete()) return Ok($"Client: {clientName} added");
 
             return BadRequest($"Client {clientName} not added");
+        }
+
+        /// <summary>
+        /// Client method for adding a new Client to the database via client object body
+        /// </summary>
+        [HttpPost("/ByBody")]
+        public async Task<IActionResult> AddNewClientObjectAsync([FromBody] Client client)
+        {
+            var clientExists = await unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
+
+            if (clientExists != null) return BadRequest($"Client {client.Name} already exists in the database");
+
+            await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions);
+            if (await unitOfWork.Complete()) return Ok($"Client: {client.Name} added");
+
+            return BadRequest($"Client {client.Name} not added");
         }
 
         /// <summary>
