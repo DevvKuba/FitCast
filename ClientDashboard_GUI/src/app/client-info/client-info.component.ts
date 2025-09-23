@@ -21,23 +21,11 @@ import { concatWith } from 'rxjs';
 })
 export class ClientInfoComponent implements OnInit {
   clients: Client[] = [];
-  items!: MenuItem[];
   clonedClients: { [s: string]: Client } = {}
   private clientService = inject(ClientService);
 
   ngOnInit() {
       this.getClients();
-
-      this.items = [
-        {
-          label: 'New',
-          icon: PrimeIcons.PLUS,
-        },
-        {
-          label: 'Delete',
-          icon: PrimeIcons.TRASH,
-        }
-      ];
   }
 
   onRowEditInit(client: Client) {
@@ -77,6 +65,16 @@ export class ClientInfoComponent implements OnInit {
         console.log(`Error deleting client with id: ${clientId} ` + error)
       }
     })
+  }
+
+  addNewClient(clientName: string, totalBlockSessions: number){
+    const newClient = {
+      name: clientName,
+      currentBlockSession: 0,
+      totalBlockSessions: totalBlockSessions,
+      workouts: [],
+    }
+    this.clientService.addClient(newClient)
   }
 
 

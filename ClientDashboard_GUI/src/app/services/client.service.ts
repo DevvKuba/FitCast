@@ -20,4 +20,8 @@ export class ClientService {
   deleteClient(clientId: number) : Observable<any>{
     return this.http.delete(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/ById?clientId=${clientId}`);
   }
+
+  addClient(client: Client): Observable<Client>{
+    return this.http.post<Client>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net`, client);
+  }
 }
