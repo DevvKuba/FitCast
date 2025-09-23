@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult> GatherAndUpdateDailySessions()
         {
             var result = await syncService.SyncDailySessions();
-            if (!result) return BadRequest("incorrect process to gather & update daily sessions");
+            if (!result) return Ok("No workouts collected from Hevy App");
             return Ok(result);
         }
     }

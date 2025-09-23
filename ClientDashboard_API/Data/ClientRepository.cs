@@ -122,6 +122,7 @@ namespace ClientDashboard_API.Data
         {
             await context.Client.AddAsync(new Client
             {
+
                 Name = clientName.ToLower(),
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions

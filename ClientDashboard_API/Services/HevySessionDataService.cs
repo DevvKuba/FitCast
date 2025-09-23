@@ -13,10 +13,10 @@ namespace ClientDashboard_API.Services
         {
             string json = await response.Content.ReadAsStringAsync();
 
-            // add if workouts are empty... maybe check string length - if there are no workouts the strin will be / not be a specific length
-
             // need to enable insensitivity so mapping can be done without worrying about casing
             ApiSessionResponse? workoutsInfo = null;
+            // if no workouts are logged for the day, events array isn't present within the response
+            // so structure can't de deserialised
             try
             {
                 workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -50,7 +50,7 @@ namespace ClientDashboard_API.Services
             string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
             Console.WriteLine(desiredDate);
 
-            string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=5&since={desiredDate}";
+            string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
 
             // utilise HttpClient for requests
             using HttpClient client = new HttpClient();

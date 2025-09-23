@@ -169,7 +169,6 @@ namespace ClientDashboard_API.Controllers
         /// Client method for removing an existing Client from the database via id
         /// </summary>
         [HttpDelete("/ById")]
-        // eventually change to by Name
         public async Task<IActionResult> RemoveClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
