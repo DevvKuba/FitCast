@@ -25,7 +25,8 @@ export class ClientInfoComponent implements OnInit {
   clients: Client[] = [];
   clonedClients: { [s: string]: Client } = {}
   private clientService = inject(ClientService);
-  visible: boolean = false;
+  deleteDialogVisible: boolean = false;
+  addDialogVisible: boolean = false;
   newClientName : string = "";
   newTotalBlockSessions : number = 0;
 
@@ -33,8 +34,12 @@ export class ClientInfoComponent implements OnInit {
       this.getClients();
   }
 
-  showDialog(){
-    this.visible = true;
+  showDialogForDelete(){
+    this.deleteDialogVisible = true;
+  }
+
+  showDialogForAdd(){
+    this.addDialogVisible = true;
   }
 
   onRowEditInit(client: Client) {
@@ -69,6 +74,7 @@ export class ClientInfoComponent implements OnInit {
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
         console.log(`Successfully deleted client with id: ${clientId} ` + response)
+        this.deleteDialogVisible = false;
         this.getClients();
       },
       error: (error) => {
@@ -88,7 +94,7 @@ export class ClientInfoComponent implements OnInit {
       next: (response) => {
         console.log(`Success added client: ${clientName} `, response)
         // success toast
-        this.visible = false;
+        this.addDialogVisible = false;
         this.getClients();
       },
       error: (error) => {
