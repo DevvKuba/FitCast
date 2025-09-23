@@ -125,12 +125,12 @@ namespace ClientDashboard_API.Controllers
         {
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
 
-            if (clientExists) return BadRequest($"Client {clientName} already exists in the database");
+            if (clientExists) return BadRequest(new { message = $"Client {clientName} already exists in the database", success = false });
 
             await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions);
-            if (await unitOfWork.Complete()) return Ok($"Client: {clientName} added");
+            if (await unitOfWork.Complete()) return Ok(new { message = $"Client: {clientName} added", success = true });
 
-            return BadRequest($"Client {clientName} not added");
+            return BadRequest(new { message = $"Client {clientName} not added", success = false });
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace ClientDashboard_API.Controllers
         {
             var clientExists = await unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
 
-            if (clientExists != null) return BadRequest($"Client {client.Name} already exists in the database");
+            if (clientExists != null) return BadRequest(new { message = $"Client {client.Name} already exists in the database", success = false });
 
             await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions);
             if (await unitOfWork.Complete()) return Ok(new { message = "$Client: {client.Name} added", success = true });
@@ -157,7 +157,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<IActionResult> RemoveClientAsync([FromQuery] string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null) return NotFound($"Client {clientName} not found in the database");
+            if (client == null) return NotFound(new { message = $"Client {clientName} not found in the database", success = false });
 
             unitOfWork.ClientRepository.RemoveClient(client);
             if (await unitOfWork.Complete()) return Ok(new { message = $"Client: {clientName} removed", success = true });
@@ -173,12 +173,12 @@ namespace ClientDashboard_API.Controllers
         public async Task<IActionResult> RemoveClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-            if (client == null) return NotFound($"Client with id: {clientId} not found in the database");
+            if (client == null) return NotFound(new { message = $"Client with id: {clientId} not found in the database", success = false });
 
             unitOfWork.ClientRepository.RemoveClient(client);
-            if (await unitOfWork.Complete()) return Ok($"Client with id: {clientId} removed");
+            if (await unitOfWork.Complete()) return Ok(new { message = $"Client with id: {clientId} removed", success = true });
 
-            return BadRequest($"Client with id: {clientId} not removed");
+            return BadRequest(new { message = $"Client with id: {clientId} not removed", success = false });
         }
 
     }
