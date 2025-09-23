@@ -1,10 +1,5 @@
 
 <div class="table-container">
-    <div class="mb-4">
-        <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
-        <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
-        <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
-    </div>
     <p-table
         [value]="workouts"
         [paginator]="true"
@@ -17,6 +12,11 @@
         [rowsPerPageOptions]="[10, 20, 30]"
     >
         <ng-template #header>
+            <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
             <tr>
                 <th pSortableColumn="workoutTitle" style="width:22%">
                     Workout Title <p-sortIcon field="workoutTitle" />
