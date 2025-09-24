@@ -47,7 +47,7 @@ export class ClientInfoComponent implements OnInit {
     }
 
   onRowEditSave(newClient: Client) {
-      if (newClient.currentBlockSession > 0 && newClient.totalBlockSessions > 0) {
+      if (newClient.currentBlockSession >= 0 && newClient.totalBlockSessions > 0) {
           delete this.clonedClients[newClient.id as number];
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
