@@ -64,8 +64,8 @@ namespace ClientDashboard_API.Controllers
             var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
 
             unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.Name, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
-            if (await unitOfWork.Complete()) return Ok($"{updatedClient.Name}'s details have been updated successfuly");
-            return BadRequest($"Failed to update {updatedClient.Name}'s details");
+            if (await unitOfWork.Complete()) return Ok(new { message = $"{updatedClient.Name}'s details have been updated successfuly", success = true });
+            return BadRequest(new { message = $"Failed to update {updatedClient.Name}'s details", success = false });
         }
 
         /// <summary>
