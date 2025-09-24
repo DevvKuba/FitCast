@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ClientService } from '../services/client.service';
 import { Client } from '../models/client';
 import { MessageService, SelectItem } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
+import { Toast } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
@@ -14,32 +14,31 @@ import { PrimeIcons, MenuItem } from 'primeng/api';
 import { concatWith } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
 import { SpinnerComponent } from "../spinner/spinner.component";
+import { Ripple } from 'primeng/ripple';
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, ToastModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent],
+  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple],
+  providers: [MessageService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
 export class ClientInfoComponent implements OnInit {
+  private clientService = inject(ClientService);
+  private messageService = inject(MessageService);
+
   clients: Client[] = [];
   clonedClients: { [s: string]: Client } = {}
-  private clientService = inject(ClientService);
+
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
   newClientName : string = "";
   newTotalBlockSessions : number = 0;
+  toastSummary : string = "";
+  toastDetail : string = "";
 
   ngOnInit() {
       this.getClients();
-  }
-
-  showDialogForDelete(){
-    this.deleteDialogVisible = true;
-  }
-
-  showDialogForAdd(){
-    this.addDialogVisible = true;
   }
 
   onRowEditInit(client: Client) {
@@ -52,16 +51,22 @@ export class ClientInfoComponent implements OnInit {
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               console.log('Client updated successfully', response);
+              this.toastSummary = 'Success Updating';
+              this.toastDetail = `updated client: ${newClient.name} successfully`;
+              this.showSuccess();
             },
             error: (error) => {
               console.log('Update Failed', error);
+              this.toastSummary = 'Error Updating';
+              this.toastDetail = `client: ${newClient.name} not updated successfully`;
+              this.showError();
             }
           })
-          
-          // this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Client updated' });
       } else {
-        console.log("Input values are not valid")
-          // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Sessions' });
+        console.log("Input values are not valid");
+        this.toastSummary = 'Incorrect Values';
+        this.toastDetail = `make sure correct update values are provided`;
+        this.showError()
       }
   }
 
@@ -73,12 +78,18 @@ export class ClientInfoComponent implements OnInit {
   onRowDelete(clientId: number){
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
-        console.log(`Successfully deleted client with id: ${clientId} ` + response)
+        console.log(`Successfully deleted client with id: ${clientId} ` + response);
+        this.toastSummary = 'Success Deleting';
+        this.toastDetail = `successfully deleted client with id: ${clientId}`;
+        this.showSuccess();
         this.deleteDialogVisible = false;
         this.getClients();
       },
       error: (error) => {
-        console.log(`Error deleting client with id: ${clientId} ` + error)
+        console.log(`Error deleting client with id: ${clientId} ` + error);
+        this.toastSummary = 'Error Deleting' ;
+        this.toastDetail = `unsuccessful deletion process of client with id: ${clientId}`;
+        this.showError();
       }
     })
   }
@@ -93,17 +104,20 @@ export class ClientInfoComponent implements OnInit {
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
         console.log(`Success added client: ${clientName} `, response)
-        // success toast
+        this.toastSummary = 'Success Adding';
+        this.toastDetail = `added client: ${clientName} successfully`
+        this.showSuccess();
         this.addDialogVisible = false;
         this.getClients();
       },
       error: (error) => {
         console.log(`Error adding client: ${clientName} `, error)
-        // error toast
+        this.toastSummary = 'Error Adding';
+        this.toastDetail = `adding client: ${clientName} was not successful`
+        this.showError()
       }
     })
   }
-
 
   getClients(){
     this.clientService.getAllClients().subscribe({
@@ -112,5 +126,21 @@ export class ClientInfoComponent implements OnInit {
       }
     })
   }
+
+  showDialogForDelete(){
+    this.deleteDialogVisible = true;
+  }
+
+  showDialogForAdd(){
+    this.addDialogVisible = true;
+  }
+
+  showSuccess() {
+        this.messageService.add({ severity: 'success', summary: this.toastSummary, detail: this.toastDetail });
+    }
+
+  showError() {
+        this.messageService.add({ severity: 'error', summary: this.toastSummary, detail: this.toastDetail });
+    }
 
 }

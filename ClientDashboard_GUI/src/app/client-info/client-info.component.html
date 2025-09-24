@@ -2,6 +2,8 @@
   <app-spinner></app-spinner>
 }
 @else {
+
+<p-toast />
   <div class="table-container">
   <p-table [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
