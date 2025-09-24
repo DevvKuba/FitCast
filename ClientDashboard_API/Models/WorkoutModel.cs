@@ -1,11 +1,16 @@
-﻿namespace Client_Session_Tracker_C_.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Client_Session_Tracker_C_.Models
 {
     public class WorkoutModel
     {
-        public required string Title { get; set; }
+        [JsonPropertyName("title")]
+        public string? Title { get; set; }
 
-        public required string Start_Time { get; set; }
+        [JsonPropertyName("start_time")]
+        public string? Start_Time { get; set; }
 
-        public required List<ExerciseModel> Exercises { get; set; }
+        [JsonPropertyName("exercises")]
+        public List<ExerciseModel>? Exercises { get; set; }
     }
 }

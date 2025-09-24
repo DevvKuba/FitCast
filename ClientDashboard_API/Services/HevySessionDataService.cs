@@ -2,6 +2,7 @@
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Interfaces;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ClientDashboard_API.Services
 {
@@ -19,8 +20,14 @@ namespace ClientDashboard_API.Services
             // so structure can't de deserialised
             try
             {
-                workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip // ignores extra properties
+                };
+                workoutsInfo = JsonSerializer.Deserialize<ApiSessionResponse>(json, options);
             }
+            // possibly catch another type of exception to catch any bad requests
             catch (Exception)
             {
                 Console.WriteLine($"No workouts present when gathering from the Hevy Api");
@@ -28,13 +35,13 @@ namespace ClientDashboard_API.Services
 
             if (workoutsInfo == null) return [];
 
-            // check issue with Parsing string "1970-01-01T00:00:00Z" to a DateOnly "1970-01-01"
             var workoutDetails = workoutsInfo.Events
+                .Where(x => x.Workout != null) // filters out deleted events
                 .Select(x => new WorkoutSummaryDto
                 {
-                    Title = x.Workout.Title,
-                    SessionDate = DateOnly.Parse(x.Workout.Start_Time[0..10]),
-                    ExerciseCount = x.Workout.Exercises.Count,
+                    Title = x.Workout!.Title ?? "Unknown",
+                    SessionDate = DateOnly.Parse(x.Workout.Start_Time?[0..10] ?? "1970-01-01"),
+                    ExerciseCount = x.Workout.Exercises?.Count ?? 0,
                 }).ToList();
 
             return workoutDetails;
