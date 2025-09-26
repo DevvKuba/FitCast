@@ -2,6 +2,7 @@
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,10 +45,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8);
             await _unitOfWork.Complete();
 
-            var currentClientSession = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
+            var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
+            var objectResult = actionResult.Result as ObjectResult;
+            var currentClientSession = objectResult!.Value as ApiResponseDto<int> ?? new ApiResponseDto<int> { Message = "", Success = false };
             var expectedClientSession = 0;
 
-            Assert.Equal(currentClientSession.Value, expectedClientSession);
+            Assert.Equal(currentClientSession!.Data, expectedClientSession);
         }
 
         [Fact]
@@ -57,10 +60,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8);
             await _unitOfWork.Complete();
 
-            var currentClientSession = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
+            var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
+            var okResult = actionResult.Result as ObjectResult;
+            var currentClientSession = okResult!.Value as ApiResponseDto<int> ?? new ApiResponseDto<int> { Message = "", Success = false };
             var incorrectClientSession = 1;
 
-            Assert.NotEqual(currentClientSession.Value, incorrectClientSession);
+            Assert.NotEqual(currentClientSession!.Data, incorrectClientSession);
         }
 
         [Fact]
@@ -72,9 +77,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _clientController.GetClientsOnLastBlockSessionAsync();
             var okResult = actionResult.Result as ObjectResult;
-            var clientSessions = okResult!.Value as List<string> ?? new List<string>();
+            var clientSessions = okResult!.Value as ApiResponseDto<List<string>> ?? new ApiResponseDto<List<string>> { Data = [], Message = "", Success = false };
 
-            Assert.Equal(2, clientSessions.Count());
+            Assert.Equal(2, clientSessions!.Data!.Count());
 
         }
 
@@ -85,9 +90,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 1, TotalBlockSessions = 8 });
             await _unitOfWork.Complete();
 
-            var clientsOnLastSession = await _clientController.GetClientsOnLastBlockSessionAsync();
+            var actionResult = await _clientController.GetClientsOnLastBlockSessionAsync();
+            var okResult = actionResult.Result as ObjectResult;
+            var clientsOnLastSession = okResult!.Value as ApiResponseDto<List<string>> ?? new ApiResponseDto<List<string>> { Data = [], Message = "", Success = false };
 
-            Assert.Null(clientsOnLastSession?.Value?[0]);
+            Assert.Equal(clientsOnLastSession?.Data!.Count, 0);
         }
 
         [Fact]
@@ -99,9 +106,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _clientController.GetClientsOnFirstBlockSessionAsync();
             var okResult = actionResult.Result as ObjectResult;
-            var clientSessions = okResult!.Value as List<string> ?? new List<string>();
+            var clientSessions = okResult!.Value as ApiResponseDto<List<string>> ?? new ApiResponseDto<List<string>> { Data = [], Message = "", Success = false };
 
-            Assert.Equal(2, clientSessions.Count());
+            Assert.Equal(2, clientSessions!.Data!.Count());
         }
 
         [Fact]
@@ -111,9 +118,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 5, TotalBlockSessions = 8 });
             await _unitOfWork.Complete();
 
-            var clientsOnFirstSession = await _clientController.GetClientsOnFirstBlockSessionAsync();
+            var actionResult = await _clientController.GetClientsOnFirstBlockSessionAsync();
+            var okResult = actionResult.Result as ObjectResult;
+            var clientsOnFirstSession = okResult!.Value as ApiResponseDto<List<string>> ?? new ApiResponseDto<List<string>> { Data = [], Message = "", Success = false };
 
-            Assert.Null(clientsOnFirstSession?.Value?[0]);
+            Assert.Equal(clientsOnFirstSession?.Data!.Count, 0);
         }
 
         [Fact]

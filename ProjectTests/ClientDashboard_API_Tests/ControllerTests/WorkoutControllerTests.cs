@@ -2,6 +2,7 @@
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -134,10 +135,10 @@ namespace ClientDashboard_API_Tests.ControllerTests
             // since the workout obj is in the result we need to retrieve it as OkObjectResult
             // then proceed with retrieving it's value
             var okResult = actionResult.Result as OkObjectResult;
-            var latestWorkout = okResult!.Value as Workout;
+            var latestWorkout = okResult!.Value as ApiResponseDto<Workout> ?? new ApiResponseDto<Workout> { Data = null, Message = "", Success = false };
 
             Assert.NotNull(latestWorkout);
-            Assert.Equal(workoutDateOne, latestWorkout.SessionDate);
+            Assert.Equal(workoutDateOne, latestWorkout!.Data!.SessionDate);
         }
 
         [Fact]
@@ -169,9 +170,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _workoutController.GetClientWorkoutsFromDateAsync(DateOnly.Parse("17/06/2025"));
             var okResult = actionResult.Result as OkObjectResult;
-            var clientWorkouts = okResult!.Value as List<Workout> ?? new List<Workout>();
+            var clientWorkouts = okResult!.Value as ApiResponseDto<List<Workout>> ?? new ApiResponseDto<List<Workout>> { Data = null, Message = "", Success = false };
 
-            Assert.Equal(2, clientWorkouts.Count);
+            Assert.Equal(2, clientWorkouts!.Data!.Count);
         }
 
         [Fact]
@@ -208,11 +209,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _workoutController.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("19/06/2025"));
             var okResult = actionResult.Result as ObjectResult;
-            var workout = okResult!.Value as Workout ?? null;
+            var workout = okResult!.Value as ApiResponseDto<Workout> ?? new ApiResponseDto<Workout> { Data = null, Message = "", Success = false };
 
-            Assert.Equal(workout!.ClientName, clientName);
-            Assert.Equal(workout!.WorkoutTitle, workoutTitle);
-            Assert.Equal(workout!.ExerciseCount, exerciseCount);
+            Assert.Equal(workout!.Data!.ClientName, clientName);
+            Assert.Equal(workout!.Data!.WorkoutTitle, workoutTitle);
+            Assert.Equal(workout!.Data!.ExerciseCount, exerciseCount);
         }
 
         [Fact]
@@ -229,9 +230,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _workoutController.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("20/06/2025"));
             var okResult = actionResult.Result as ObjectResult;
-            var workout = okResult!.Value as Workout ?? null;
+            var workout = okResult!.Value as ApiResponseDto<Workout> ?? new ApiResponseDto<Workout> { Data = null, Message = "", Success = false };
 
-            Assert.Null(workout);
+            Assert.Null(workout.Data);
         }
 
         [Fact]
@@ -247,12 +248,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _workoutController.GetAllDailyClientWorkoutsAsync();
             var okResult = actionResult.Result as ObjectResult;
-            var dailyWorkouts = okResult!.Value as List<Workout> ?? new List<Workout>();
+            var dailyWorkouts = okResult!.Value as ApiResponseDto<List<Workout>> ?? new ApiResponseDto<List<Workout>> { Data = null, Message = "", Success = false };
 
-            var clientOne = dailyWorkouts.Where(x => x.ClientName == "rob").FirstOrDefault();
-            var clientTwo = dailyWorkouts.Where(x => x.ClientName == "mat").FirstOrDefault();
+            var clientOne = dailyWorkouts!.Data!.Where(x => x.ClientName == "rob").FirstOrDefault();
+            var clientTwo = dailyWorkouts!.Data!.Where(x => x.ClientName == "mat").FirstOrDefault();
 
-            Assert.Equal(2, dailyWorkouts?.Count);
+            Assert.Equal(2, dailyWorkouts!.Data!.Count);
             Assert.Equal(2, clientOne!.CurrentBlockSession);
             Assert.Equal(2, clientTwo!.CurrentBlockSession);
         }
@@ -270,12 +271,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var actionResult = await _workoutController.GetAllDailyClientWorkoutsAsync();
             var okResult = actionResult.Result as ObjectResult;
-            var dailyWorkouts = okResult!.Value as List<Workout> ?? new List<Workout>();
+            var dailyWorkouts = okResult!.Value as ApiResponseDto<List<Workout>> ?? new ApiResponseDto<List<Workout>> { Data = null, Message = "", Success = false };
 
-            var clientOne = dailyWorkouts.Where(x => x.ClientName == "rob").FirstOrDefault();
-            var clientTwo = dailyWorkouts.Where(x => x.ClientName == "mat").FirstOrDefault();
+            var clientOne = dailyWorkouts!.Data!.Where(x => x.ClientName == "rob").FirstOrDefault();
+            var clientTwo = dailyWorkouts!.Data!.Where(x => x.ClientName == "mat").FirstOrDefault();
 
-            Assert.Equal(0, dailyWorkouts?.Count);
+            Assert.Equal(0, dailyWorkouts!.Data!.Count);
             Assert.Null(clientOne);
             Assert.Null(clientTwo);
         }
