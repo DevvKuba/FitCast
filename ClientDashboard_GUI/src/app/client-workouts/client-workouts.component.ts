@@ -20,7 +20,7 @@ export class ClientWorkouts {
     rows = 10; // pageSize
 
     ngOnInit() {
-        this.displayWorkouts(this.first, this.rows);
+        this.displayWorkouts();
     }
 
     // apart from the initial initialisation of paginated workouts
@@ -28,23 +28,23 @@ export class ClientWorkouts {
 
     next() {
         this.first = this.first + this.rows;
-        this.displayWorkouts(this.first, this.rows);
+        this.displayWorkouts();
     }
 
     prev() {
         this.first = this.first - this.rows;
-        this.displayWorkouts(this.first, this.rows);
+        this.displayWorkouts();
     }
 
     reset() {
         this.first = 0;
-        this.displayWorkouts(this.first, this.rows);
+        this.displayWorkouts();
     }
 
     pageChange(event: { first: number; rows: number; }) {
         this.first = event.first;
         this.rows = event.rows;
-        this.displayWorkouts(this.first, this.rows);
+        this.displayWorkouts();
     }
 
     isLastPage(): boolean {
@@ -55,10 +55,13 @@ export class ClientWorkouts {
         return this.workouts ? this.first === 0 : true;
     }
 
-    displayWorkouts(first: number, rows: number){
+    displayWorkouts(){
         this.workoutService.retrievePaginatedWorkouts(this.first, this.rows).subscribe({
-            next: (data) => {
-                this.workouts = data;
+            next: (response) => {
+                this.workouts = response.data ?? [];
+            },
+            error: (response) => {
+                console.log(`Error when loading workouts: ${response.message}`)
             }
         });
     }
