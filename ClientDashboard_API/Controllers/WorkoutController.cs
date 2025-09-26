@@ -15,8 +15,10 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetPaginatedWorkouts([FromQuery] int first, [FromQuery] int rows)
         {
             var paginatedWorkouts = await unitOfWork.WorkoutRepository.GetPaginatedWorkoutsAsync(first, rows);
-
-            if (!paginatedWorkouts.Any()) return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = false });
+            if (!paginatedWorkouts.Any())
+            {
+                return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = false });
+            }
 
             return Ok(new ApiResponseDto<List<Workout>> { Data = paginatedWorkouts, Message = "Paginated workouts returned", Success = true });
         }
@@ -47,7 +49,6 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
-
             if (clientWorkout == null)
             {
                 return NotFound(new ApiResponseDto<Workout> { Data = null, Message = $"Client: {clientName}'s workout at {workoutDate} was not found.", Success = false });
@@ -64,7 +65,6 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
         {
             var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsFromDateAsync(workoutDate);
-
             if (!clientWorkouts.Any())
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = $"No client sessions found on specified date: {workoutDate}", Success = false });
@@ -80,7 +80,6 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetLatestClientWorkoutAsync(string clientName)
         {
             var latestWorkoutInfo = await unitOfWork.WorkoutRepository.GetLatestClientWorkoutAsync(clientName);
-
             if (latestWorkoutInfo == null)
             {
                 return NotFound(new ApiResponseDto<Workout> { Data = null, Message = $"{clientName} has no workouts recorded", Success = false });
@@ -96,15 +95,20 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-
-            if (client == null) return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });
+            }
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount);
 
-            if (await unitOfWork.Complete()) return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Workout added for client: {clientName}", Success = true });
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Workout added for client: {clientName}", Success = true });
 
-            return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
         }
 
         /// <summary>
@@ -114,15 +118,20 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteClientWorkoutAsync(string clientName, DateOnly workoutDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
-
-            if (clientWorkout == null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
+            if (clientWorkout == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
+            }
 
             unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(clientWorkout.Client);
             unitOfWork.WorkoutRepository.RemoveWorkout(clientWorkout);
 
-            if (await unitOfWork.Complete()) return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"{clientName}'s workout at {workoutDate} has been removed", Success = true });
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Removing client unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"{clientName}'s workout at {workoutDate} has been removed", Success = true });
 
-            return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Removing client unsuccessful", Success = false });
         }
     }
 }
