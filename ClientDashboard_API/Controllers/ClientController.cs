@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,9 @@ namespace ClientDashboard_API.Controllers
         {
             var clients = await unitOfWork.ClientRepository.GetAllClientDataAsync();
 
-            if (!clients.Any()) return NotFound($"No clients found");
+            if (!clients.Any()) return NotFound(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = false });
 
-            return Ok(clients);
+            return Ok(new ApiResponseDto<List<Client>> { Data = clients, Message = "clients gathered.", Success = true });
         }
         /// <summary>
         /// Client method allowing for the retrieval of the clients current session,

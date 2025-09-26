@@ -22,7 +22,7 @@ namespace ClientDashboard_API.Data
                 newCurrentSession = 1;
             }
 
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
                 CurrentBlockSession = newCurrentSession,
@@ -34,7 +34,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientDetailsAsync(Client client, string newClientName, int? newCurrentSession, int? newTotalSessions)
         {
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 Name = newClientName,
                 CurrentBlockSession = newCurrentSession,
@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Data
         {
             int newCurrentSession = client.CurrentBlockSession - 1;
 
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 CurrentBlockSession = newCurrentSession,
             };
@@ -56,7 +56,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientTotalBlockSession(Client client, int? blockSessions)
         {
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
                 TotalBlockSessions = blockSessions,
@@ -67,7 +67,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientCurrentSession(Client client, int? currentSession)
         {
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
                 TotalBlockSessions = client.TotalBlockSessions,
@@ -78,7 +78,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientName(Client client, string name)
         {
-            var updatedData = new ClientUpdateDTO
+            var updatedData = new ClientUpdateDto
             {
                 Name = name,
                 TotalBlockSessions = client.TotalBlockSessions,

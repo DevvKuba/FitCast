@@ -22,7 +22,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDTO, Client>();
+                cfg.CreateMap<ClientUpdateDto, Client>();
             });
             _mapper = config.CreateMapper();
 

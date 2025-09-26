@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.Dto_s
 {
-    public class ClientUpdateDTO
+    public class ClientUpdateDto
     {
         public string? Name { get; set; }
         public int? CurrentBlockSession { get; set; }

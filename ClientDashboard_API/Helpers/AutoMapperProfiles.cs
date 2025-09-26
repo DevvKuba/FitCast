@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Helpers
             // TODO Instead of one below?
             //CreateMap<Workout, WorkoutDto>();
             CreateMap<Client, WorkoutDto>();
-            CreateMap<ClientUpdateDTO, Client>();
+            CreateMap<ClientUpdateDto, Client>();
         }
     }
 }
