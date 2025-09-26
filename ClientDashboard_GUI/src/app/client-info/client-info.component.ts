@@ -50,13 +50,13 @@ export class ClientInfoComponent implements OnInit {
           delete this.clonedClients[newClient.id as number];
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
-              console.log('Client updated successfully', response);
+              console.log('Client updated successfully', response.message);
               this.toastSummary = 'Success Updating';
               this.toastDetail = `updated client: ${newClient.name} successfully`;
               this.showSuccess();
             },
-            error: (error) => {
-              console.log('Update Failed', error);
+            error: (response) => {
+              console.log('Update Failed', response.message);
               this.toastSummary = 'Error Updating';
               this.toastDetail = `client: ${newClient.name} not updated successfully`;
               this.showError();
@@ -78,16 +78,16 @@ export class ClientInfoComponent implements OnInit {
   onRowDelete(clientId: number){
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
-        console.log(`Successfully deleted client with id: ${clientId} ` + response);
+        console.log(`Successfully deleted client with id: ${clientId} ` + response.message);
         this.toastSummary = 'Success Deleting';
         this.toastDetail = `successfully deleted client with id: ${clientId}`;
         this.showSuccess();
         this.deleteDialogVisible = false;
         this.getClients();
       },
-      error: (error) => {
-        console.log(`Error deleting client with id: ${clientId} ` + error);
-        this.toastSummary = 'Error Deleting' ;
+      error: (response) => {
+        console.log(`Error deleting client with id: ${clientId} ` + response.message);
+        this.toastSummary = 'Error Deleting';
         this.toastDetail = `unsuccessful deletion process of client with id: ${clientId}`;
         this.showError();
       }
@@ -103,15 +103,15 @@ export class ClientInfoComponent implements OnInit {
     }
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
-        console.log(`Success added client: ${clientName} `, response)
+        console.log(`Success added client: ${clientName} `, response.message)
         this.toastSummary = 'Success Adding';
         this.toastDetail = `added client: ${clientName} successfully`
         this.showSuccess();
         this.addDialogVisible = false;
         this.getClients();
       },
-      error: (error) => {
-        console.log(`Error adding client: ${clientName} `, error)
+      error: (response) => {
+        console.log(`Error adding client: ${clientName} `, response.message)
         this.toastSummary = 'Error Adding';
         this.toastDetail = `adding client: ${clientName} was not successful`
         this.showError()
@@ -121,8 +121,8 @@ export class ClientInfoComponent implements OnInit {
 
   getClients(){
     this.clientService.getAllClients().subscribe({
-      next: (data) => {
-        this.clients = data;
+      next: (response) => {
+        this.clients = response.data ?? [];
       }
     })
   }
