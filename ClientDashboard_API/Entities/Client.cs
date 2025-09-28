@@ -8,6 +8,8 @@ namespace ClientDashboard_API.Entities
         public int Id { get; set; }
         public required string Name { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         public int CurrentBlockSession { get; set; }
 
         public int? TotalBlockSessions { get; set; }

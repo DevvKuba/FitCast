@@ -32,11 +32,12 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateClientDetailsAsync(Client client, string newClientName, int? newCurrentSession, int? newTotalSessions)
+        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions)
         {
             var updatedData = new ClientUpdateDto
             {
                 Name = newClientName,
+                IsActive = newActivity,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = newTotalSessions
             };
