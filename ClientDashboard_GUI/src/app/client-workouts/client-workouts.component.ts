@@ -36,13 +36,11 @@ export class ClientWorkouts {
 
     reset() {
         this.first = 0;
-        this.displayWorkouts();
     }
 
     pageChange(event: { first: number; rows: number; }) {
         this.first = event.first;
         this.rows = event.rows;
-        this.displayWorkouts();
     }
 
     isLastPage(): boolean {
