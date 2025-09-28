@@ -28,12 +28,10 @@ export class ClientWorkouts {
 
     next() {
         this.first = this.first + this.rows;
-        this.displayWorkouts();
     }
 
     prev() {
         this.first = this.first - this.rows;
-        this.displayWorkouts();
     }
 
     reset() {
@@ -56,7 +54,7 @@ export class ClientWorkouts {
     }
 
     displayWorkouts(){
-        this.workoutService.retrievePaginatedWorkouts(this.first, this.rows).subscribe({
+        this.workoutService.retrievePaginatedWorkouts().subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },

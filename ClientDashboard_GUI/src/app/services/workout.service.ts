@@ -10,8 +10,8 @@ import { ApiResponse } from '../models/api-response';
 export class WorkoutService {
   http = inject(HttpClient);
 
-  retrievePaginatedWorkouts(first: number, rows: number): Observable<ApiResponse<Workout[]>> {
-    return this.http.get<ApiResponse<Workout[]>>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/GetPaginatedWorkouts?first=${first}&rows=${rows}`);
+  retrievePaginatedWorkouts(): Observable<ApiResponse<Workout[]>> {
+    return this.http.get<ApiResponse<Workout[]>>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/GetPaginatedWorkouts`);
   }
   
 }
