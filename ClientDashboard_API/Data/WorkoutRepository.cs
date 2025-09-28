@@ -6,13 +6,15 @@ namespace ClientDashboard_API.Data
 {
     public class WorkoutRepository(DataContext context) : IWorkoutRepository
     {
-        public async Task<List<Workout>> GetPaginatedWorkoutsAsync(int first, int rows)
+        public async Task<List<Workout>> GetWorkoutsAsync()
         {
-            var workouts = context.Workouts.AsQueryable();
-            var offset = first * rows;
+            //var workouts = context.Workouts.AsQueryable();
+            //var offset = first * rows;
 
-            var paginatedResult = await workouts.OrderByDescending(x => x.SessionDate).Skip(offset).Take(rows).ToListAsync();
-            return paginatedResult;
+            //var paginatedResult = await workouts.OrderByDescending(x => x.SessionDate).Skip(offset).Take(rows).ToListAsync();
+            var workouts = await context.Workouts.OrderByDescending(x => x.SessionDate).ToListAsync();
+
+            return workouts;
         }
         public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
