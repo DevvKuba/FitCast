@@ -86,7 +86,7 @@ export class ClientInfoComponent implements OnInit {
   onRowDelete(clientId: number){
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
-        console.log(`Successfully deleted client with id: ${clientId} ` + response.message);
+        console.log(response.message);
         this.toastSummary = 'Success Deleting';
         this.toastDetail = `successfully deleted client with id: ${clientId}`;
         this.showSuccess();
@@ -94,7 +94,7 @@ export class ClientInfoComponent implements OnInit {
         this.getClients();
       },
       error: (response) => {
-        console.log(`Error deleting client with id: ${clientId} ` + response.message);
+        console.log(response.message);
         this.toastSummary = 'Error Deleting';
         this.toastDetail = `unsuccessful deletion process of client with id: ${clientId}`;
         this.showError();
@@ -112,7 +112,7 @@ export class ClientInfoComponent implements OnInit {
     }
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
-        console.log(`Success added client: ${clientName} `, response.message)
+        console.log(response.message)
         this.toastSummary = 'Success Adding';
         this.toastDetail = `added client: ${clientName} successfully`
         this.showSuccess();
@@ -120,7 +120,7 @@ export class ClientInfoComponent implements OnInit {
         this.getClients();
       },
       error: (response) => {
-        console.log(`Error adding client: ${clientName} `, response.message)
+        console.log(response.message)
         this.toastSummary = 'Error Adding';
         this.toastDetail = `adding client: ${clientName} was not successful`
         this.showError()

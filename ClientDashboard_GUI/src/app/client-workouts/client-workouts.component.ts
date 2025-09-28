@@ -56,7 +56,7 @@ export class ClientWorkouts {
                 this.workouts = response.data ?? [];
             },
             error: (response) => {
-                console.log(`Error when loading workouts: ${response.message}`)
+                console.log(response.message)
             }
         });
     }
