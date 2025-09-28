@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Data
 
         public DbSet<Workout> Workouts { get; set; }
 
+        public DbSet<Trainer> Trainer { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -19,6 +21,12 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
                 .HasForeignKey(e => e.ClientId)
+                .IsRequired();
+
+            builder.Entity<Trainer>()
+                .HasMany(e => e.Clients)
+                .WithOne(e => e.Trainer)
+                .HasForeignKey(e => e.TrainerId)
                 .IsRequired();
 
         }

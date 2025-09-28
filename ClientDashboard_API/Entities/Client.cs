@@ -15,5 +15,10 @@ namespace ClientDashboard_API.Entities
         public int? TotalBlockSessions { get; set; }
 
         public List<Workout> Workouts { get; set; } = [];
+
+        public int TrainerId { get; set; }
+
+        // navigration properties
+        public Trainer Trainer { get; set; } = null!;
     }
 }
