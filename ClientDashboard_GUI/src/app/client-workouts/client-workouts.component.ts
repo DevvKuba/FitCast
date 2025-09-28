@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { Workout } from '../models/workout';
 import { WorkoutService } from '../services/workout.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-client-workouts',
@@ -14,6 +15,7 @@ import { SpinnerComponent } from "../spinner/spinner.component";
 })
 export class ClientWorkouts {
   workouts: Workout[] = [];
+
   private workoutService = inject(WorkoutService);
 
     first = 0; // offset
@@ -22,9 +24,6 @@ export class ClientWorkouts {
     ngOnInit() {
         this.displayWorkouts();
     }
-
-    // apart from the initial initialisation of paginated workouts
-    // add further method that can filter the results accordingly *potentially
 
     next() {
         this.first = this.first + this.rows;

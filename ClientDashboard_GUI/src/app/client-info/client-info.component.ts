@@ -28,17 +28,24 @@ export class ClientInfoComponent implements OnInit {
   private messageService = inject(MessageService);
 
   clients: Client[] = [];
+  activityStatuses!: SelectItem[];
   clonedClients: { [s: string]: Client } = {}
 
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
   newClientName : string = "";
+  newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   toastSummary : string = "";
   toastDetail : string = "";
 
   ngOnInit() {
       this.getClients();
+
+       this.activityStatuses = [
+        {label: 'Active', value: true},
+        {label: 'Inactive', value: false}
+    ];
   }
 
   onRowEditInit(client: Client) {
@@ -48,6 +55,7 @@ export class ClientInfoComponent implements OnInit {
   onRowEditSave(newClient: Client) {
       if (newClient.currentBlockSession >= 0 && newClient.totalBlockSessions > 0) {
           delete this.clonedClients[newClient.id as number];
+
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               console.log('Client updated successfully', response.message);
@@ -97,6 +105,7 @@ export class ClientInfoComponent implements OnInit {
   addNewClient(clientName: string, totalBlockSessions: number){
     const newClient = {
       name: clientName,
+      isActive: this.newActivity,
       currentBlockSession: 0,
       totalBlockSessions: totalBlockSessions,
       workouts: [],
@@ -137,10 +146,18 @@ export class ClientInfoComponent implements OnInit {
 
   showSuccess() {
         this.messageService.add({ severity: 'success', summary: this.toastSummary, detail: this.toastDetail });
-    }
+  }
 
   showError() {
         this.messageService.add({ severity: 'error', summary: this.toastSummary, detail: this.toastDetail });
-    }
+  }
+
+  getActivities(isActive : boolean) : string {
+    return isActive ? 'success' : 'danger';
+  }
+
+  getActivityLabel(isActive: boolean) : string {
+    return isActive ? 'Active' : 'Inactive';
+  }
 
 }

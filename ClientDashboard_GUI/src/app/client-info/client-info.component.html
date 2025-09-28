@@ -26,14 +26,17 @@
           </p-dialog> 
         </div>
           <tr>
-              <th pSortableColumn="name" style="width:33%">
+              <th pSortableColumn="name" style="width:25%">
                     Client Name <p-sortIcon field="name" />
               </th>
-              <th pSortableColumn="currentBlockSession" style="width:33%">
+              <th pSortableColumn="currentBlockSession" style="width:25%">
                     Current Session <p-sortIcon field="currentBlockSession" />
               </th>
-              <th pSortableColumn="totalBlockSessions" style="width:33%">
+              <th pSortableColumn="totalBlockSessions" style="width:25%">
                     Block Sessions <p-sortIcon field="totalBlockSessions" />
+              </th>
+              <th pSortableColumn="isActive" style="width:25%">
+                    Activity Status <p-sortIcon field="isActive" />
               </th>
           </tr>
       </ng-template>
@@ -72,6 +75,23 @@
                     </ng-template>
                     <ng-template #output>
                         {{client.totalBlockSessions}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              <td>
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-select
+                            [options]="activityStatuses"
+                            appendTo="body"
+                            [(ngModel)]= "client.isActive"
+                            [style]="{'width':'100%'}" 
+                            />
+                    </ng-template>
+                    <ng-template #output>
+                         <p-tag
+                            [value]="getActivityLabel(client.isActive)"
+                            [severity]="getActivities(client.isActive)" />
                     </ng-template>
                 </p-cellEditor>
               </td>
