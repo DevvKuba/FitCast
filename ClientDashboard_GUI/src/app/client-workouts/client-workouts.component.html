@@ -47,7 +47,7 @@
                 <td>{{ workout.clientName }}</td>
                 <td>{{ workout.currentBlockSession }}</td>
                 <td>{{ workout.totalBlockSessions }}</td>
-                <td>{{ workout.sessionDate }}</td>
+                <td>{{ workout.sessionDate | date: 'dd/MM/yyyy' }}</td>
                 <td>{{ workout.exerciseCount }}</td>
             </tr>
         </ng-template>
