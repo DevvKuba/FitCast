@@ -19,6 +19,6 @@ namespace ClientDashboard_API.Entities
         public int? TrainerId { get; set; }
 
         // navigration properties
-        public Trainer Trainer { get; set; } = null!;
+        public Trainer? Trainer { get; set; } = null!;
     }
 }
