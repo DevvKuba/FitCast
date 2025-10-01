@@ -1,7 +1,10 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClientDashboard_API.Entities
 {
     public class Trainer
     {
+        [Key]
         public int Id { get; set; }
 
         public required string Email { get; set; }

@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Entities
 
         public List<Workout> Workouts { get; set; } = [];
 
-        public int TrainerId { get; set; }
+        public int? TrainerId { get; set; }
 
         // navigration properties
         public Trainer Trainer { get; set; } = null!;

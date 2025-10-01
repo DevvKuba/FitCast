@@ -8,10 +8,6 @@ namespace ClientDashboard_API.Data
     {
         public async Task<List<Workout>> GetWorkoutsAsync()
         {
-            //var workouts = context.Workouts.AsQueryable();
-            //var offset = first * rows;
-
-            //var paginatedResult = await workouts.OrderByDescending(x => x.SessionDate).Skip(offset).Take(rows).ToListAsync();
             var workouts = await context.Workouts.OrderByDescending(x => x.SessionDate).ToListAsync();
 
             return workouts;

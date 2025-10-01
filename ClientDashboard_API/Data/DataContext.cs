@@ -27,7 +27,7 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Clients)
                 .WithOne(e => e.Trainer)
                 .HasForeignKey(e => e.TrainerId)
-                .IsRequired();
+                .IsRequired(false);
 
         }
 
