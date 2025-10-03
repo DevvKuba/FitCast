@@ -18,5 +18,14 @@ namespace ClientDashboard_API.Data
             var trainer = await context.Trainer.Where(x => x.Id == id).FirstOrDefaultAsync();
             return trainer;
         }
+        public void AddNewTrainer(Trainer trainer)
+        {
+            context.Trainer.Add(trainer);
+        }
+
+        public void DeleteTrainer(Trainer trainer)
+        {
+            context.Trainer.Remove(trainer);
+        }
     }
 }

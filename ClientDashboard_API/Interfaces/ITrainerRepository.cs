@@ -8,5 +8,9 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Trainer?> GetTrainerById(int id);
 
+        void AddNewTrainer(Trainer trainer);
+
+        void DeleteTrainer(Trainer trainer);
+
     }
 }
