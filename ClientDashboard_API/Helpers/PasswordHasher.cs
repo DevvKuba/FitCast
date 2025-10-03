@@ -17,5 +17,19 @@ namespace ClientDashboard_API.Helpers
 
             return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
         }
+
+        public bool Verify(string password, string passwordHash)
+        {
+            string[] parts = passwordHash.Split("-");
+            byte[] hash = Convert.FromHexString(parts[0]);
+            byte[] salt = Convert.FromHexString(parts[1]);
+
+            byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
+
+            //return hash.SequenceEqual(inputHash);
+            // comparision of hash to newly generated hash which should match if the password matches
+            // unlike above return - makes it impossible to track the time for computation making it more secure against attacks
+            return CryptographicOperations.FixedTimeEquals(hash, inputHash);
+        }
     }
 }

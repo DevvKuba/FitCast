@@ -24,11 +24,6 @@ namespace ClientDashboard_API.Services
             };
 
             await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
-            if (!await unitOfWork.Complete())
-            {
-                throw new Exception("Trainer hasn't been saved in the database sucessfully");
-            }
-            ;
 
             // email verification ?
             // access token 

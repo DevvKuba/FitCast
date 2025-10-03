@@ -28,7 +28,6 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IMessageService, TwillioMessageService>();
             services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
             services.AddScoped<ITrainerLoginService, TrainerLoginService>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

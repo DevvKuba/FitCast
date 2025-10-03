@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace ClientDashboard_API.Helpers
 {
-    internal sealed class TokenProvider(IConfiguration configuration)
+    internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
     {
         public string Create(Trainer trainer)
         {
