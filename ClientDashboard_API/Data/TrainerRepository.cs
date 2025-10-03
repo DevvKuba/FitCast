@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class TrainerRepository(DataContext context, IMapper mapper) : ITrainerRepository
+    public class TrainerRepository(DataContext context) : ITrainerRepository
     {
         public async Task<Trainer?> GetTrainerByEmailAsync(string email)
         {

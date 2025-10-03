@@ -15,6 +15,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly DataContext _context;
         private readonly ClientRepository _clientRepository;
         private readonly WorkoutRepository _workoutRepository;
+        private readonly TrainerRepository _trainerRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly ClientController _clientController;
 
@@ -34,7 +35,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _context = new DataContext(optionsBuilder.Options);
             _clientRepository = new ClientRepository(_context, _mapper);
             _workoutRepository = new WorkoutRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository);
+            _trainerRepository = new TrainerRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository);
             _clientController = new ClientController(_unitOfWork);
         }
 
