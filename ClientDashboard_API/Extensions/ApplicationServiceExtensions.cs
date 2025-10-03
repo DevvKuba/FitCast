@@ -26,6 +26,9 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<IMessageService, TwillioMessageService>();
+            services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
+            services.AddScoped<ITrainerLoginService, TrainerLoginService>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

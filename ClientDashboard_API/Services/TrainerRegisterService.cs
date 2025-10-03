@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 
 
@@ -6,9 +7,8 @@ namespace ClientDashboard_API.Services
 {
     public sealed class TrainerRegisterService(ITrainerRepository trainerRepository, IPasswordHasher passwordHasher) : ITrainerRegisterService
     {
-        public sealed record Request(string Email, string FirstName, string Surname, string Password);
 
-        public async Task<Trainer> Handle(Request request)
+        public async Task<Trainer> Handle(RegisterDto request)
         {
             if (await trainerRepository.DoesExistAsync(request.Email))
             {
