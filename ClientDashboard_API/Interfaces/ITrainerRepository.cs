@@ -4,13 +4,15 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITrainerRepository
     {
-        Task<Trainer?> GetTrainerByEmail(string email);
+        Task<Trainer?> GetTrainerByEmailAsync(string email);
 
-        Task<Trainer?> GetTrainerById(int id);
+        Task<Trainer?> GetTrainerByIdAsync(int id);
 
-        void AddNewTrainer(Trainer trainer);
+        Task AddNewTrainerAsync(Trainer trainer);
 
         void DeleteTrainer(Trainer trainer);
+
+        Task<bool> DoesExistAsync(string email);
 
     }
 }
