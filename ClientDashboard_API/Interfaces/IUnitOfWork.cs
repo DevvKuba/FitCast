@@ -6,6 +6,8 @@
 
         IWorkoutRepository WorkoutRepository { get; }
 
+        ITrainerRepository TrainerRepository { get; }
+
         Task<bool> Complete();
 
         bool HasChanges();

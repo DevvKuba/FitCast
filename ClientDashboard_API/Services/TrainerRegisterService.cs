@@ -5,12 +5,12 @@ using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public sealed class TrainerRegisterService(ITrainerRepository trainerRepository, IPasswordHasher passwordHasher) : ITrainerRegisterService
+    public sealed class TrainerRegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : ITrainerRegisterService
     {
 
         public async Task<Trainer> Handle(RegisterDto request)
         {
-            if (await trainerRepository.DoesExistAsync(request.Email))
+            if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
             {
                 throw new Exception("The email is already in use");
             }
@@ -23,7 +23,12 @@ namespace ClientDashboard_API.Services
                 PasswordHash = passwordHasher.Hash(request.Password)
             };
 
-            await trainerRepository.AddNewTrainerAsync(trainer);
+            await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
+            if (!await unitOfWork.Complete())
+            {
+                throw new Exception("Trainer hasn't been saved in the database sucessfully");
+            }
+            ;
 
             // email verification ?
             // access token 

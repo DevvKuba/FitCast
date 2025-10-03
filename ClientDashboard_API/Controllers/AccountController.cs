@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class AccountController(ITrainerRegisterService trainerRegsiterService, ITrainerRepository trainerRepository) : BaseAPIController
+    public class AccountController(IUnitOfWork unitOfWork, ITrainerRegisterService trainerRegsiterService) : BaseAPIController
     {
         [HttpPost]
         public async Task RegisterTrainer(RegisterDto registerInfo)
