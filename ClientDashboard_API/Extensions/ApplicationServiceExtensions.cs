@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Data;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,12 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+            services.AddScoped<ITrainerRepository, TrainerRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<IMessageService, TwillioMessageService>();
+
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

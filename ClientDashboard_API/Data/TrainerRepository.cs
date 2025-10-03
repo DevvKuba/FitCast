@@ -3,7 +3,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClientDashboard_API.Data.Migrations
+namespace ClientDashboard_API.Data
 {
     public class TrainerRepository(DataContext context, IMapper mapper) : ITrainerRepository
     {
