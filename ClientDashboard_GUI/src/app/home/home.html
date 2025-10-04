@@ -1,4 +1,14 @@
-<div>
+@if(isLoggingIn){
+  <div>
   <h1 class="header">Welcome to Client Dashboard</h1>
   <app-login></app-login>
+  <p-button class="toggle-button" label="Register" severity="success" (click)="toggleToRegisterPage()"/> 
 </div>
+}
+@else {
+  <div class>
+  <h1 class="header">Welcome to Client Dashboard</h1>
+  <app-register></app-register>
+  <p-button class="toggle-button" label="Login" severity="success" (click)="toggleToLoginPage()"/> 
+</div>
+}

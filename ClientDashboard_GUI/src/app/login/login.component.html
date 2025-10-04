@@ -8,10 +8,10 @@
     </div>
     <div class="login-field">
       <p-iftalabel>
-          <p-password [(ngModel)]="password" inputId="password" [toggleMask]="true" />
+          <p-password [(ngModel)]="password" [feedback]="false" toggleMask="true"/>
           <label for="password">Password</label>
       </p-iftalabel>
-      <p-button class="login-button" label="Submit" severity="success" onclick="trainerLogin(password, email)"/>
+      <p-button class="login-button" label="Login" severity="success" (click)="trainerLogin(email, password)"/>
     </div>
   </div>
 </div>

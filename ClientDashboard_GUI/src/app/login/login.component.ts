@@ -17,8 +17,8 @@ import { AccountService } from '../services/account.service';
 })
 export class LoginComponent {
 
-  email: string | null = "";
-  password: string | null = "";
+  email: string = "";
+  password: string = "";
 
   accountService = inject(AccountService);
 
