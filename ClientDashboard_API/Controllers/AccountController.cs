@@ -23,15 +23,10 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await loginService.Handle(loginInfo);
 
-            // rework to call exception if the password doesn't become verified
-            // if (!await unitOfWork.Complete())
-            // {
-            //    return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"{trainer.FirstName} didn't log in successfully", Success = false });
-            // }
+            return Ok(new ApiResponseDto<string> { Data = trainer, Message = "token created successfully", Success = true });
 
 
-
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} logged in successfully", Success = true });
+            //return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} logged in successfully", Success = true });
 
 
         }

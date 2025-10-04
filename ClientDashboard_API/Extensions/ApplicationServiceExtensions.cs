@@ -29,6 +29,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
             services.AddScoped<ITrainerLoginService, TrainerLoginService>();
 
+            services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
