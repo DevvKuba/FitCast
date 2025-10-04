@@ -36,8 +36,8 @@ namespace ClientDashboard_API
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
-                        ValidIssuer = builder.Configuration["Jwt:Issuers"],
-                        ValidAudience = builder.Configuration["Jwt:Audinece"],
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
                         ClockSkew = TimeSpan.Zero
                     };
                 });
@@ -82,9 +82,9 @@ namespace ClientDashboard_API
             // Enable serving static files from wwwroot
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseAuthorization();
             app.UseCors("AllowSelectiveOrigins");
             app.MapControllers();
+            // Authentication should come before Authorization
             app.UseAuthentication();
             app.UseAuthorization();
             app.Run();

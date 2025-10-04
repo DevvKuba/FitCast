@@ -7,7 +7,6 @@ namespace ClientDashboard_API.Controllers
 {
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-
         [HttpGet("/allClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetAllClientsAsync()
         {
