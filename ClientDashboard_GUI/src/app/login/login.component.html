@@ -1,1 +1,17 @@
-<p>login works!</p>
+<div class="login-component">
+  <div class="card flex justify-center">
+    <div class="login-field">
+      <p-iftalabel>
+        <input pInputText id="email" [(ngModel)]="email" />
+        <label for="email">Email</label>
+      </p-iftalabel>
+    </div>
+    <div class="login-field">
+      <p-iftalabel>
+          <p-password [(ngModel)]="password" inputId="password" [toggleMask]="true" />
+          <label for="password">Password</label>
+      </p-iftalabel>
+      <p-button class="login-button" label="Submit" severity="success" onclick="trainerLogin(password, email)"/>
+    </div>
+  </div>
+</div>
