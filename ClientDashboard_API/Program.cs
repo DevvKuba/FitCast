@@ -1,7 +1,10 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace ClientDashboard_API
 {
@@ -23,6 +26,21 @@ namespace ClientDashboard_API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ClientDashboard API", Version = "v1" });
             });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+                        ValidIssuer = builder.Configuration["Jwt:Issuers"],
+                        ValidAudience = builder.Configuration["Jwt:Audinece"],
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
 
             var app = builder.Build();
 
@@ -67,6 +85,8 @@ namespace ClientDashboard_API
             app.UseAuthorization();
             app.UseCors("AllowSelectiveOrigins");
             app.MapControllers();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.Run();
         }
     }
