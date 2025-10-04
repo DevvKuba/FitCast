@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Controllers
     public class AccountController(IUnitOfWork unitOfWork, ITrainerRegisterService registerService, ITrainerLoginService loginService) : BaseAPIController
     {
         [HttpPost("/register")]
-        public async Task<ActionResult<ApiResponseDto<string>>> Register(RegisterDto registerInfo)
+        public async Task<ActionResult<ApiResponseDto<string>>> Register([FromBody] RegisterDto registerInfo)
         {
             var trainer = await registerService.Handle(registerInfo);
             if (!await unitOfWork.Complete())
@@ -18,8 +18,8 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} was successfuly added", Success = true });
         }
 
-        [HttpGet("/login")]
-        public async Task<ActionResult<ApiResponseDto<string>>> Login(LoginDto loginInfo)
+        [HttpPost("/login")]
+        public async Task<ActionResult<ApiResponseDto<string>>> Login([FromBody] LoginDto loginInfo)
         {
             var trainer = await loginService.Handle(loginInfo);
 
