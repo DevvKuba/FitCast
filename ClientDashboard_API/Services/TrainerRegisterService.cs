@@ -8,11 +8,11 @@ namespace ClientDashboard_API.Services
     public sealed class TrainerRegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : ITrainerRegisterService
     {
 
-        public async Task<Trainer> Handle(RegisterDto request)
+        public async Task<TrainerServiceDto> Handle(RegisterDto request)
         {
             if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
             {
-                throw new Exception("The email is already in use");
+                return new TrainerServiceDto { Data = null, Message = "The email is already in use" };
             }
 
             var trainer = new Trainer
@@ -25,10 +25,9 @@ namespace ClientDashboard_API.Services
 
             await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
 
-            // email verification ?
-            // access token 
+            // email verification 
 
-            return trainer;
+            return new TrainerServiceDto { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added" };
         }
     }
 }

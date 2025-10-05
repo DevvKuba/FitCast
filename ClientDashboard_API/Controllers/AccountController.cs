@@ -9,13 +9,13 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("/register")]
         public async Task<ActionResult<ApiResponseDto<string>>> Register([FromBody] RegisterDto registerInfo)
         {
-            var trainer = await registerService.Handle(registerInfo);
+            var response = await registerService.Handle(registerInfo);
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"{trainer.FirstName} was not added sucessfully", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
             }
 
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} was successfuly added", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = response.Data, Message = response.Message, Success = true });
         }
 
         [HttpPost("/login")]
