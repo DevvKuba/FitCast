@@ -8,6 +8,8 @@ import { Message } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { LoginDto } from '../models/login-dto';
 import { AccountService } from '../services/account.service';
+import { routes } from '../app.routes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +23,7 @@ export class LoginComponent {
   password: string = "";
 
   accountService = inject(AccountService);
+  router = inject(Router);
 
   trainerLogin(trainerEmail: string, trainerPassword: string){
     const loginInfo: LoginDto = {
@@ -30,6 +33,7 @@ export class LoginComponent {
     this.accountService.login(loginInfo).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.data );
+        this.router.navigateByUrl('client-info');
       },
       error: (response) => {
         console.log("Error logging in and fetching jwt token ", response);
