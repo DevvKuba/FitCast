@@ -36,8 +36,8 @@ namespace ClientDashboard_API
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt__Secret"]!)),
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidIssuer = builder.Configuration["Jwt__Issuer"],
+                        ValidAudience = builder.Configuration["Jwt__Audience"],
                         ClockSkew = TimeSpan.Zero
                     };
                 });
