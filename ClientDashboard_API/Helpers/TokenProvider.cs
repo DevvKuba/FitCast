@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Helpers
     {
         public string Create(Trainer trainer)
         {
-            string secretKey = configuration["Jwt:Secret"]!;
+            string secretKey = configuration["Jwt__Secret"]!;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
