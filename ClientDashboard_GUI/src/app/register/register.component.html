@@ -1,1 +1,25 @@
-<p>register works!</p>
+<div class="login-field">
+      <p-iftalabel>
+        <input pInputText id="email" [(ngModel)]="email" />
+        <label for="email">Email</label>
+      </p-iftalabel>
+    </div>
+    <div class="login-field">
+      <p-iftalabel>
+        <input pInputText id="firstName" [(ngModel)]="firstName" />
+        <label for="firstName">First Name</label>
+      </p-iftalabel>
+    </div>
+    <div class="login-field">
+      <p-iftalabel>
+        <input pInputText id="surname" [(ngModel)]="surname" />
+        <label for="surname">Surname</label>
+      </p-iftalabel>
+    </div>
+    <div class="login-field">
+      <p-iftalabel>
+          <p-password [(ngModel)]="password" toggleMask="true"/>
+          <label for="password">Password</label>
+      </p-iftalabel>
+      <p-button class="register-button" label="Register" severity="success" (click)="trainerRegister(email, firstName, surname, password)"/>
+    </div>

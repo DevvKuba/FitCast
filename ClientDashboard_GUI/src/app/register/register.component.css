@@ -1,0 +1,11 @@
+.login-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
