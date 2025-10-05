@@ -5,24 +5,24 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerLoginService(IUnitOfWork unitOfWork, ITokenProvider tokenProvider, IPasswordHasher passwordHasher) : ITrainerLoginService
     {
-        public async Task<string> Handle(LoginDto loginDto)
+        public async Task<TrainerServiceDto> Handle(LoginDto loginDto)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(loginDto.Email);
 
             if (trainer is null)
             {
-                throw new Exception("The user was not found");
+                return new TrainerServiceDto { Data = null, Message = "The user was not found" };
             }
 
             bool verified = passwordHasher.Verify(loginDto.Password, trainer.PasswordHash);
 
             if (!verified)
             {
-                throw new Exception("The password is incorrect");
+                return new TrainerServiceDto { Data = null, Message = "The password is incorrect" };
             }
 
             var token = tokenProvider.Create(trainer);
-            return token;
+            return new TrainerServiceDto { Data = token, Message = "Token created successfully" };
         }
     }
 }

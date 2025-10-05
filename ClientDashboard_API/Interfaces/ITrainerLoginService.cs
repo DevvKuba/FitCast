@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITrainerLoginService
     {
-        Task<string> Handle(LoginDto loginDto);
+        Task<TrainerServiceDto> Handle(LoginDto loginDto);
     }
 }
