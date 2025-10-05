@@ -23,10 +23,10 @@ namespace ClientDashboard_API.Helpers
                     new Claim(JwtRegisteredClaimNames.Sub, trainer.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, trainer.Email)
                     ]),
-                Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt__ExpirationInDays")),
+                Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInDays")),
                 SigningCredentials = credentials,
-                Issuer = configuration["Jwt__Issuer"],
-                Audience = configuration["Jwt__Audience"]
+                Issuer = configuration["Jwt_Issuer"],
+                Audience = configuration["Jwt_Audience"]
             };
 
             var handler = new JsonWebTokenHandler();
