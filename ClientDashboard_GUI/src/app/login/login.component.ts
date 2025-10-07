@@ -38,14 +38,14 @@ export class LoginComponent {
     this.accountService.login(loginInfo).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.data );
-        this.toastSummary = 'Logged In'
-        this.toastDetail = 'Redirected to client-info page'
+        this.toastSummary = 'Logged In';
+        this.toastDetail = 'Redirected to client-info page';
         this.router.navigateByUrl('client-info');
         console.log(response);
       },
       error: (response) => {
-        this.toastSummary = 'Unable to log in'
-        this.toastDetail = 'Unsuccessfully attempted to create token'
+        this.toastSummary = 'Unable to log in';
+        this.toastDetail = response.message;
         this.showError();
         console.log("Error logging in and fetching jwt token ", response);
       }

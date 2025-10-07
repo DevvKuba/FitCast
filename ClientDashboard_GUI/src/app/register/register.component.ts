@@ -10,6 +10,7 @@ import { AccountService } from '../services/account.service';
 import { RegisterDto } from '../models/register-dto';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ApiResponse } from '../models/api-response';
 
 @Component({
   selector: 'app-register',
@@ -39,13 +40,13 @@ export class RegisterComponent {
     this.accountService.register(registerInfo).subscribe({
       next: (response) => {
         this.toastSummary = 'Success Registering';
-        this.toastDetail = 'Proceed to the login page';
+        this.toastDetail = response.message;
         this.showSuccess();
         console.log(response);
       },
-      error: (response) => {
+      error: (response : ApiResponse<any>) => {
         this.toastSummary = 'Error Registering';
-        this.toastDetail = 'Unsuccessfully trying to register';
+        this.toastDetail = response.message;
         this.showError();
         console.log(response)
       }

@@ -10,6 +10,11 @@ namespace ClientDashboard_API.Services
 
         public async Task<TrainerServiceDto> Handle(RegisterDto request)
         {
+            // check if any fields are empty
+            if (request.FirstName is null || request.Surname is null || request.Password is null || request.Email is null)
+            {
+                return new TrainerServiceDto { Data = null, Message = "Must fill in all required fields" };
+            }
             if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
             {
                 return new TrainerServiceDto { Data = null, Message = "The email is already in use" };
