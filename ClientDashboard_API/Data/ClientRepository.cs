@@ -25,6 +25,7 @@ namespace ClientDashboard_API.Data
             var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
+                IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions
             };
@@ -50,7 +51,10 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
+                Name = client.Name,
+                IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
+                TotalBlockSessions = client.TotalBlockSessions,
             };
             mapper.Map(updatedData, client);
         }
@@ -60,8 +64,10 @@ namespace ClientDashboard_API.Data
             var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
+                IsActive = client.IsActive,
                 TotalBlockSessions = blockSessions,
                 CurrentBlockSession = client.CurrentBlockSession
+
             };
             mapper.Map(updatedData, client);
         }
@@ -71,6 +77,7 @@ namespace ClientDashboard_API.Data
             var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,
+                IsActive = client.IsActive,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = currentSession
             };
@@ -82,6 +89,7 @@ namespace ClientDashboard_API.Data
             var updatedData = new ClientUpdateDto
             {
                 Name = name,
+                IsActive = client.IsActive,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = client.CurrentBlockSession,
             };
@@ -125,6 +133,7 @@ namespace ClientDashboard_API.Data
             {
 
                 Name = clientName.ToLower(),
+                IsActive = true,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions
             });
