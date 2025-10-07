@@ -12,6 +12,7 @@ import { routes } from '../app.routes';
 import { Router } from '@angular/router';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { ApiResponse } from '../models/api-response';
 
 @Component({
   selector: 'app-login',
@@ -36,8 +37,8 @@ export class LoginComponent {
       password: trainerPassword
     }
     this.accountService.login(loginInfo).subscribe({
-      next: (response) => {
-        localStorage.setItem('token', response.data );
+      next: (response : ApiResponse<string>) => {
+        localStorage.setItem('token', response.data ?? '' );
         this.toastSummary = 'Logged In';
         this.toastDetail = 'Redirected to client-info page';
         this.router.navigateByUrl('client-info');
@@ -45,9 +46,9 @@ export class LoginComponent {
       },
       error: (response) => {
         this.toastSummary = 'Unable to log in';
-        this.toastDetail = response.message;
+        this.toastDetail = response.error.message;
         this.showError();
-        console.log("Error logging in and fetching jwt token ", response);
+        console.log("Error logging in and fetching jwt token ", response.error.message);
       }
     })
   }

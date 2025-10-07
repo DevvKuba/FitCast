@@ -38,15 +38,16 @@ export class RegisterComponent {
       password: trainerPassword
     }
     this.accountService.register(registerInfo).subscribe({
-      next: (response) => {
+      next: (response : ApiResponse<string>) => {
         this.toastSummary = 'Success Registering';
         this.toastDetail = response.message;
         this.showSuccess();
         console.log(response);
       },
-      error: (response : ApiResponse<any>) => {
+      error: (response) => {
         this.toastSummary = 'Error Registering';
-        this.toastDetail = response.message;
+        this.toastDetail = response.error.message;
+        ;
         this.showError();
         console.log(response)
       }
