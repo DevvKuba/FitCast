@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.DTOs;
+﻿
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 
@@ -8,16 +9,16 @@ namespace ClientDashboard_API.Services
     public sealed class TrainerRegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : ITrainerRegisterService
     {
 
-        public async Task<TrainerServiceDto> Handle(RegisterDto request)
+        public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
         {
             // check if any fields are empty
             if (request.FirstName is null || request.Surname is null || request.Password is null || request.Email is null)
             {
-                return new TrainerServiceDto { Data = null, Message = "Must fill in all required fields" };
+                return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
             if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
             {
-                return new TrainerServiceDto { Data = null, Message = "The email is already in use" };
+                return new ApiResponseDto<string> { Data = null, Message = "The email is already in use", Success = false };
             }
 
             var trainer = new Trainer
@@ -32,7 +33,7 @@ namespace ClientDashboard_API.Services
 
             // email verification 
 
-            return new TrainerServiceDto { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added" };
+            return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
         }
     }
 }

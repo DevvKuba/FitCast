@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITrainerRegisterService
     {
-        Task<TrainerServiceDto> Handle(RegisterDto registerDto);
+        Task<ApiResponseDto<string>> Handle(RegisterDto registerDto);
     }
 }
