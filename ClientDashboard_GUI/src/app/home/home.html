@@ -1,20 +1,6 @@
-@if(isLoggingIn){
-  <div>
-  <h1 class="header">Welcome to Client Dashboard</h1>
-  <app-login></app-login>
-  <p-button class="toggle-button" label="To Register" severity="success" (click)="toggleToRegisterPage()"/> 
-</div>
-}
-@else {
-  <div class>
-  <h1 class="header">Welcome to Client Dashboard</h1>
-  <app-register></app-register>
-  <p-button class="toggle-button" label="To Login" severity="success" (click)="toggleToLoginPage()"/> 
-</div>
-}
+<h1 class="header">Welcome to Client Dashboard</h1>
 
-<!-- 
- <p-button class="toggle-button" label="To Login" severity="success" routerLink="/login"/> 
+<p-button class="toggle-button" label="To Login" severity="success" routerLink="/login"/> 
 
- <p-button class="toggle-button" label="To Register" severity="success" routerLink="/register"/>  -->
+<p-button class="toggle-button" label="To Register" severity="success" routerLink="/register"/> 
 

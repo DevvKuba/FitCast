@@ -1,26 +1,28 @@
-
-<div class="login-field">
+<h1 class="header">Register Below</h1>
+<div class="register-field">
       <p-iftalabel>
         <input pInputText id="email" [(ngModel)]="email" />
         <label>Email</label>
       </p-iftalabel>
     </div>
-    <div class="login-field">
+    <div class="register-field">
       <p-iftalabel>
         <input pInputText id="firstName" [(ngModel)]="firstName" />
         <label>First Name</label>
       </p-iftalabel>
     </div>
-    <div class="login-field">
+    <div class="register-field">
       <p-iftalabel>
         <input pInputText id="surname" [(ngModel)]="surname" />
         <label>Surname</label>
       </p-iftalabel>
     </div>
-    <div class="login-field">
+    <div class="register-field">
       <p-iftalabel>
           <p-password [(ngModel)]="password" toggleMask="true"/>
           <label>Password</label>
       </p-iftalabel>
       <p-button class="register-button" label="Register" severity="success" (click)="trainerRegister(email, firstName, surname, password)"/>
+
+      <p-button class="to-login-button" label="To Login" severity="success" routerLink="/login"/>
     </div>

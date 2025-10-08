@@ -11,11 +11,11 @@ import { RegisterDto } from '../models/register-dto';
 import { Toast } from 'primeng/toast';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule],
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })

@@ -9,7 +9,7 @@ import { PasswordModule } from 'primeng/password';
 import { LoginDto } from '../models/login-dto';
 import { AccountService } from '../services/account.service';
 import { routes } from '../app.routes';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
@@ -17,7 +17,7 @@ import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-login',
-  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule],
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

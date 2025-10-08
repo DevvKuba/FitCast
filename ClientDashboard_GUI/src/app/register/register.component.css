@@ -1,11 +1,11 @@
-.login-component {
+
+.register-field {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.login-field {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.to-login-button {
 }
+
+

@@ -11,13 +11,4 @@ import { RegisterComponent } from "../register/register.component";
   styleUrl: './home.css'
 })
 export class Home {
-  isLoggingIn: boolean = true;
-
-  toggleToRegisterPage(){
-    this.isLoggingIn  = false;
-  }
-
-  toggleToLoginPage(){
-    this.isLoggingIn  = true;
-  }
 }
