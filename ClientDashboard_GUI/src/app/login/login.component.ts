@@ -14,7 +14,7 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
-import { User } from '../models/user';
+import { UserDto } from '../models/user-dto';
 
 @Component({
   selector: 'app-login',
@@ -30,6 +30,7 @@ export class LoginComponent {
 
   email: string = "";
   password: string = "";
+  storageItem = "token";
 
   trainerLogin(trainerEmail: string, trainerPassword: string){
     const loginInfo: LoginDto = {
@@ -37,8 +38,8 @@ export class LoginComponent {
       password: trainerPassword
     }
     this.accountService.login(loginInfo).subscribe({
-      next: (response : ApiResponse<User>) => {
-        localStorage.setItem('token', response.data?.token ?? '' );
+      next: (response : ApiResponse<UserDto>) => {
+        localStorage.setItem(this.storageItem, response.data?.token ?? '' );
         this.toastService.toastSummary = 'Logged In';
         this.toastService.toastDetail = 'Redirected to client-info page';
         this.toastService.showSuccess();
@@ -52,5 +53,9 @@ export class LoginComponent {
         console.log("Error logging in and fetching jwt token ", response.error.message);
       }
     })
+  }
+
+  trainerLogout(storageItem: string){
+    this.accountService.logout(storageItem);
   }
 }
