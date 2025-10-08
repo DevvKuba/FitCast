@@ -9,26 +9,25 @@ import { PasswordModule } from 'primeng/password';
 import { AccountService } from '../services/account.service';
 import { RegisterDto } from '../models/register-dto';
 import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
+import { ToastService } from '../services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  imports: [Message, InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule, Toast],
-   providers: [MessageService],
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   accountService = inject(AccountService);
-  messageService = inject(MessageService);
+  toastService = inject(ToastService);
+  router = inject(Router);
 
   email: string = "";
   firstName: string = "";
   surname: string = "";
   password: string = "";
-  toastSummary : string = "";
-  toastDetail : string = "";
 
   trainerRegister(trainerEmail: string, trainerFirstName: string, trainerSurname: string, trainerPassword: string){
     const registerInfo: RegisterDto = {
@@ -39,26 +38,19 @@ export class RegisterComponent {
     }
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {
-        this.toastSummary = 'Success Registering';
-        this.toastDetail = response.message;
-        this.showSuccess();
+        this.toastService.toastSummary = 'Success Registering';
+        this.toastService.toastDetail = response.message;
+        this.toastService.showSuccess();
+        
         console.log(response);
       },
       error: (response) => {
-        this.toastSummary = 'Error Registering';
-        this.toastDetail = response.error.message;
+        this.toastService.toastSummary = 'Error Registering';
+        this.toastService.toastDetail = response.error.message;
         ;
-        this.showError();
+        this.toastService.showError();
         console.log(response)
       }
     });
-  }
-
-   showSuccess() {
-        this.messageService.add({ severity: 'success', summary: this.toastSummary, detail: this.toastDetail });
-  }
-
-  showError() {
-        this.messageService.add({ severity: 'error', summary: this.toastSummary, detail: this.toastDetail });
   }
 }

@@ -1,16 +1,16 @@
-<p-toast />
+
 <div class="login-component">
   <div class="card flex justify-center">
     <div class="login-field">
       <p-iftalabel>
         <input pInputText id="email" [(ngModel)]="email" />
-        <label for="email">Email</label>
+        <label>Email</label>
       </p-iftalabel>
     </div>
     <div class="login-field">
       <p-iftalabel>
           <p-password [(ngModel)]="password" [feedback]="false" toggleMask="true"/>
-          <label for="password">Password</label>
+          <label>Password</label>
       </p-iftalabel>
       <p-button class="login-button" label="Login" severity="success" (click)="trainerLogin(email, password)"/>
     </div>
