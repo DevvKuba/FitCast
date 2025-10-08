@@ -57,5 +57,6 @@ export class LoginComponent {
 
   trainerLogout(storageItem: string){
     this.accountService.logout(storageItem);
+    console.log("User logged out.")
   }
 }
