@@ -9,7 +9,7 @@
         [rows]="10"
         [first]="first"
         [showCurrentPageReport]="true"
-        [tableStyle]="{ 'width': '100%' }"
+        [tableStyle]="{ 'width': '1000px' , 'table-layout': 'fixed' }"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         (onPage)="pageChange($event)"
         [rowsPerPageOptions]="[10, 20, 30]"
@@ -24,13 +24,13 @@
                 <th pSortableColumn="workoutTitle" style="width:22%">
                     Workout Title <p-sortIcon field="workoutTitle" />
                 </th>
-                 <th pSortableColumn="clientName" style="width:17%">
+                 <th pSortableColumn="clientName" style="width:16%">
                     Client Name <p-sortIcon field="clientName" />
                 </th>
-                 <th pSortableColumn="currentBlockSession" style="width:17%">
+                 <th pSortableColumn="currentBlockSession" style="width:16%">
                     Current Session <p-sortIcon field="currentBlockSession" />
                 </th>
-                 <th pSortableColumn="totalBlockSessions" style="width:17%">
+                 <th pSortableColumn="totalBlockSessions" style="width:16%">
                     Total Sessions <p-sortIcon field="totalBlockSessions" />
                 </th>
                  <th pSortableColumn="sessionDate" style="width:15%">
