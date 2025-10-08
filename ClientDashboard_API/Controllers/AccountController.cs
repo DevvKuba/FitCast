@@ -19,17 +19,17 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpPost("/login")]
-        public async Task<ActionResult<ApiResponseDto<string>>> Login([FromBody] LoginDto loginInfo)
+        public async Task<ActionResult<ApiResponseDto<UserDto>>> Login([FromBody] LoginDto loginInfo)
         {
-            var response = await loginService.Handle(loginInfo);
+            var user = await loginService.Handle(loginInfo);
 
-            if (response.Data == null)
+            if (user.Data == null)
             {
                 // both error cases return null , response.Message contains specific error message
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
+                return BadRequest(new ApiResponseDto<UserDto> { Data = null, Message = user.Message, Success = false });
             }
 
-            return Ok(new ApiResponseDto<string> { Data = response.Data, Message = "token created successfully, user now logged in", Success = true });
+            return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
 
         }
     }
