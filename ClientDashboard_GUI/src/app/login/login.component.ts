@@ -14,6 +14,7 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
+import { User } from '../models/user';
 
 @Component({
   selector: 'app-login',
@@ -36,8 +37,8 @@ export class LoginComponent {
       password: trainerPassword
     }
     this.accountService.login(loginInfo).subscribe({
-      next: (response : ApiResponse<string>) => {
-        localStorage.setItem('token', response.data ?? '' );
+      next: (response : ApiResponse<User>) => {
+        localStorage.setItem('token', response.data?.token ?? '' );
         this.toastService.toastSummary = 'Logged In';
         this.toastService.toastDetail = 'Redirected to client-info page';
         this.toastService.showSuccess();
