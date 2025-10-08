@@ -1,11 +1,55 @@
-.login-component {
+.header{
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.login-form-container {
+  max-width: 350px;
+  margin: 0 auto;
+  padding: 2rem;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .login-field {
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.login-field input[pInputText],
+.login-field p-password {
+  width: 100%;
+  min-height: 3rem;
+}
+
+
+.login-button,
+.to-register-button {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+  min-height: 3rem;
+}
+
+/* smaller screens */
+@media (max-width: 768px) {
+  .login-form-container {
+    max-width: 300px;
+    padding: 1rem;
+  }
+  
+  .button-container {
+    flex-direction: column;
+  }
+  
+  .login-button,
+  .to-register-button {
+    width: 100%;
+  }
 }
