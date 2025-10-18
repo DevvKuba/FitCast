@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-        [HttpGet("/allClients")]
+        [HttpGet("allClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetAllClientsAsync()
         {
             var clients = await unitOfWork.ClientRepository.GetAllClientDataAsync();
@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing for the retrieval of all clients, on their last block session
         /// </summary>
-        [HttpGet("/onLastSession")]
+        [HttpGet("onLastSession")]
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnLastBlockSessionAsync()
         {
             var clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
@@ -55,7 +55,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
-        [HttpGet("/onFirstSession")]
+        [HttpGet("onFirstSession")]
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnFirstBlockSessionAsync()
         {
             var clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
@@ -70,7 +70,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update all client information
         /// </summary>
-        [HttpPut("/newClientInformation")]
+        [HttpPut("newClientInformation")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
             var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
@@ -157,7 +157,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for adding a new Client to the database via client params
         /// </summary>
-        [HttpPost("/ByParams")]
+        [HttpPost("ByParams")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions)
         {
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
@@ -179,7 +179,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for adding a new Client to the database via client object body
         /// </summary>
-        [HttpPost("/ByBody")]
+        [HttpPost("ByBody")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] Client client)
         {
             var clientExists = await unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
@@ -201,7 +201,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via name
         /// </summary>
-        [HttpDelete("/ByName")]
+        [HttpDelete("ByName")]
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientAsync([FromQuery] string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
@@ -223,7 +223,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via id
         /// </summary>
-        [HttpDelete("/ById")]
+        [HttpDelete("ById")]
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);

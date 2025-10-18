@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of paginated workouts
         /// </summary>
-        [HttpGet("/GetPaginatedWorkouts")]
+        [HttpGet("GetPaginatedWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts()
         {
             var workouts = await unitOfWork.WorkoutRepository.GetWorkoutsAsync();
@@ -28,7 +28,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of all daily workouts
         /// </summary>
-        [HttpGet("/GetAllDailySessions")]
+        [HttpGet("GetAllDailySessions")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetAllDailyClientWorkoutsAsync()
         {
             var todaysDateString = DateTime.Now.Date.ToString();
@@ -93,7 +93,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client
         /// </summary>
-        [HttpPost("/newWorkout")]
+        [HttpPost("newWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
