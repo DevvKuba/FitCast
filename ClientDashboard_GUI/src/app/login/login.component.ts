@@ -61,6 +61,7 @@ export class LoginComponent {
   trainerLogout(storageItem: string){
     this.accountService.logout(storageItem);
     this.accountService.currentUser.set(null);
-    console.log("User logged out.")
+    console.log("User logged out, current user is now: ", this.accountService.currentUser());
+    this.router.navigateByUrl('');
   }
 }
