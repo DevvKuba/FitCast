@@ -40,6 +40,9 @@ export class LoginComponent {
     this.accountService.login(loginInfo).subscribe({
       next: (response : ApiResponse<UserDto>) => {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
+        this.accountService.currentUser.set(response.data ?? null);
+        console.log("User logged in: ", this.accountService.currentUser()?.firstName);
+
         this.toastService.toastSummary = 'Logged In';
         this.toastService.toastDetail = 'Redirected to client-info page';
         this.toastService.showSuccess();
@@ -57,6 +60,8 @@ export class LoginComponent {
 
   trainerLogout(storageItem: string){
     this.accountService.logout(storageItem);
-    console.log("User logged out.")
+    this.accountService.currentUser.set(null);
+    console.log("User logged out, current user is now: ", this.accountService.currentUser());
+    this.router.navigateByUrl('');
   }
 }
