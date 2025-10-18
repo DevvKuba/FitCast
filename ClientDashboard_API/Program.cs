@@ -40,6 +40,16 @@ namespace ClientDashboard_API
                         ValidAudience = builder.Configuration["Jwt_Audience"],
                         ClockSkew = TimeSpan.Zero
                     };
+
+                    o.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = ctx =>
+                        {
+                            var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                            logger.LogWarning("JWT authentication failed: {Message}", ctx.Exception.Message);
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             var app = builder.Build();
@@ -83,10 +93,12 @@ namespace ClientDashboard_API
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseCors("AllowSelectiveOrigins");
-            app.MapControllers();
             // Authentication should come before Authorization
+            // both should run before .MapControllers
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapControllers();
             app.Run();
         }
     }

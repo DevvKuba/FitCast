@@ -2,10 +2,12 @@
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
+    [Authorize]
     public class WorkoutController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
     {
         /// <summary>
