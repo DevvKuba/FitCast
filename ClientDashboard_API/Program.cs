@@ -21,7 +21,7 @@ namespace ClientDashboard_API
                 { 
                     b.WithOrigins("http://localhost:4200", "https://localhost:4200")
                     .AllowAnyMethod()
-                    .WithHeaders("Content-Type", "Authorization") // Explicit headers
+                    .AllowAnyHeader()
                     .AllowCredentials();
                 });
             });
