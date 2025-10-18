@@ -18,13 +18,12 @@ namespace ClientDashboard_API
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSelectiveOrigins", b =>
-                    b.AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .WithOrigins("http://localhost:4200", "https://localhost:4200")
-                    .WithExposedHeaders("Authorization")
-                    .WithHeaders("Authorization", "Content-Type")
-                    );
+                { 
+                    b.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                    .AllowAnyMethod()
+                    .WithHeaders("Content-Type", "Authorization") // Explicit headers
+                    .AllowCredentials();
+                });
             });
 
             builder.Services.AddEndpointsApiExplorer();
