@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { RegisterDto } from '../models/register-dto';
 import { LoginDto } from '../models/login-dto';
 import { UserDto } from '../models/user-dto';
+import { environment } from '../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +13,14 @@ import { UserDto } from '../models/user-dto';
 export class AccountService {
   http = inject(HttpClient);
   currentUser = signal<UserDto | null>(null);
+  baseUrl = environment.apiUrl;
 
   register(registerInfo : RegisterDto) : Observable<ApiResponse<any>>{
-  return this.http.post<ApiResponse<string>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/api/account/register", registerInfo);
+  return this.http.post<ApiResponse<string>>(this.baseUrl + "account/register", registerInfo);
  }
 
   login(loginInfo : LoginDto) : Observable<ApiResponse<any>>{
-    return this.http.post<ApiResponse<UserDto>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/api/account/login", loginInfo);
+    return this.http.post<ApiResponse<UserDto>>(this.baseUrl + "account/login", loginInfo);
   }
 
   logout(storageItem: string){
