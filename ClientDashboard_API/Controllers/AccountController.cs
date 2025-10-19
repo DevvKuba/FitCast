@@ -1,12 +1,14 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
     public class AccountController(IUnitOfWork unitOfWork, ITrainerRegisterService registerService, ITrainerLoginService loginService) : BaseAPIController
     {
-        [HttpPost("/register")]
+        [AllowAnonymous]
+        [HttpPost("register")]
         public async Task<ActionResult<ApiResponseDto<string>>> Register([FromBody] RegisterDto registerInfo)
         {
             var response = await registerService.Handle(registerInfo);
@@ -18,7 +20,8 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = response.Data, Message = response.Message, Success = true });
         }
 
-        [HttpPost("/login")]
+        [AllowAnonymous]
+        [HttpPost("login")]
         public async Task<ActionResult<ApiResponseDto<UserDto>>> Login([FromBody] LoginDto loginInfo)
         {
             var user = await loginService.Handle(loginInfo);

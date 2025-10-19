@@ -18,7 +18,12 @@ namespace ClientDashboard_API
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSelectiveOrigins", b =>
-                    b.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200", "https://localhost:4200"));
+                { 
+                    b.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                });
             });
 
             builder.Services.AddEndpointsApiExplorer();
@@ -39,6 +44,16 @@ namespace ClientDashboard_API
                         ValidIssuer = builder.Configuration["Jwt_Issuer"],
                         ValidAudience = builder.Configuration["Jwt_Audience"],
                         ClockSkew = TimeSpan.Zero
+                    };
+
+                    o.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = ctx =>
+                        {
+                            var logger = ctx.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                            logger.LogWarning("JWT authentication failed: {Message}", ctx.Exception.Message);
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -83,10 +98,12 @@ namespace ClientDashboard_API
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseCors("AllowSelectiveOrigins");
-            app.MapControllers();
             // Authentication should come before Authorization
+            // both should run before .MapControllers
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapControllers();
             app.Run();
         }
     }
