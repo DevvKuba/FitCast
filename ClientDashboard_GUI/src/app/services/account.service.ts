@@ -14,11 +14,11 @@ export class AccountService {
   currentUser = signal<UserDto | null>(null);
 
   register(registerInfo : RegisterDto) : Observable<ApiResponse<any>>{
-  return this.http.post<ApiResponse<string>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/register", registerInfo);
+  return this.http.post<ApiResponse<string>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/api/account/register", registerInfo);
  }
 
   login(loginInfo : LoginDto) : Observable<ApiResponse<any>>{
-    return this.http.post<ApiResponse<UserDto>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/login", loginInfo);
+    return this.http.post<ApiResponse<UserDto>>("https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/api/account/login", loginInfo);
   }
 
   logout(storageItem: string){

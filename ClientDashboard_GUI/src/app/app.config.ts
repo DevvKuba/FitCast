@@ -14,7 +14,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(withInterceptors([jwtInterceptorInterceptor])),
     provideRouter(routes),
-    provideHttpClient(),
     provideAnimationsAsync(),
     MessageService,
     providePrimeNG({

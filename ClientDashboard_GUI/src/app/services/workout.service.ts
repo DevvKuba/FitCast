@@ -11,7 +11,7 @@ export class WorkoutService {
   http = inject(HttpClient);
 
   retrievePaginatedWorkouts(): Observable<ApiResponse<Workout[]>> {
-    return this.http.get<ApiResponse<Workout[]>>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/GetPaginatedWorkouts`);
+    return this.http.get<ApiResponse<Workout[]>>(`https://clientdashboardapp-dfdja3c4hxffdsg0.uksouth-01.azurewebsites.net/api/workout/GetPaginatedWorkouts`);
   }
   
 }
