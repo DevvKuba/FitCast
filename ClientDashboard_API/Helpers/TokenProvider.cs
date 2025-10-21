@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Helpers
                     new Claim(JwtRegisteredClaimNames.Sub, trainer.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, trainer.Email)
                     ]),
-                Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInDays")),
+                Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInMinutes")),
                 SigningCredentials = credentials,
                 Issuer = configuration["Jwt_Issuer"],
                 Audience = configuration["Jwt_Audience"]

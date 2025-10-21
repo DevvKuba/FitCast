@@ -4,6 +4,8 @@ import { inject } from '@angular/core';
 
 export const jwtInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   const accountService = inject(AccountService);
+  console.log('Current user:', accountService.currentUser());
+  console.log('Token:', accountService.currentUser()?.token);
 
   if(accountService.currentUser()){
     req = req.clone({
