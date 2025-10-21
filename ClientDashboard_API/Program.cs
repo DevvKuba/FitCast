@@ -3,7 +3,6 @@ using ClientDashboard_API.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 
 namespace ClientDashboard_API
@@ -18,7 +17,7 @@ namespace ClientDashboard_API
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowSelectiveOrigins", b =>
-                { 
+                {
                     b.WithOrigins("http://localhost:4200", "https://localhost:4200")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
@@ -27,10 +26,7 @@ namespace ClientDashboard_API
             });
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ClientDashboard API", Version = "v1" });
-            });
+            builder.Services.AddSwaggerGenAuth();
 
             builder.Services.AddAuthorization();
 
