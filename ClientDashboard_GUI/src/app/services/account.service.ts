@@ -27,4 +27,11 @@ export class AccountService {
     localStorage.removeItem(storageItem);
   }
 
+  isAuthenticated() : boolean {
+    if(this.currentUser()?.token != null){
+      return true;
+    }
+    return false;
+  }
+
 }
