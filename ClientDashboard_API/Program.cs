@@ -100,6 +100,9 @@ namespace ClientDashboard_API
             app.UseAuthorization();
 
             app.MapControllers();
+
+            // fallback routing for Angular
+            app.MapFallbackToFile("index.html");
             app.Run();
         }
     }
