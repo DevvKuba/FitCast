@@ -44,51 +44,15 @@ jobs:
 
       - name: Copy Angular build to API wwwroot
         run: |
-          # Check what Angular actually built
-          echo "=== Angular build output ==="
-          ls -la ./ClientDashboard_GUI/dist/
-          echo "=== Checking client-dashboard-gui folder ==="
-          ls -la ./ClientDashboard_GUI/dist/client-dashboard-gui/ || echo "? client-dashboard-gui folder not found"
-          
-          # Check current wwwroot state
-          echo "=== Current wwwroot contents BEFORE copy ==="
-          ls -la ./ClientDashboard_API/wwwroot/ || echo "wwwroot folder doesn't exist"
-          
-          # Ensure wwwroot exists
-          mkdir -p ./ClientDashboard_API/wwwroot
-          
           # Remove existing wwwroot content (but preserve the google verification file)
           find ./ClientDashboard_API/wwwroot -type f ! -name 'google45f9e3f493489c5e.html' -delete
-          
-          # Copy Angular build output to wwwroot
-          if [ -d "./ClientDashboard_GUI/dist/client-dashboard-gui" ]; then
-            echo "? Copying from dist/client-dashboard-gui/"
-            cp -r ./ClientDashboard_GUI/dist/client-dashboard-gui/* ./ClientDashboard_API/wwwroot/
-          elif [ -d "./ClientDashboard_GUI/dist" ]; then
-            echo "??  Copying from dist/ (different structure)"
-            cp -r ./ClientDashboard_GUI/dist/* ./ClientDashboard_API/wwwroot/
-          else
-            echo "? No dist folder found!"
-            exit 1
-          fi
-          
+          # Copy Angular build output from browser subfolder to wwwroot
+          cp -r ./ClientDashboard_GUI/dist/client-dashboard-gui/browser/* ./ClientDashboard_API/wwwroot/
           # Ensure the google verification file is present
           echo "google-site-verification: google45f9e3f493489c5e.html" > ./ClientDashboard_API/wwwroot/google45f9e3f493489c5e.html
-          
           # List wwwroot contents for verification
-          echo "=== Contents of wwwroot AFTER copy ==="
+          echo "Contents of wwwroot after copy:"
           ls -la ./ClientDashboard_API/wwwroot/
-          
-          # Critical check for index.html
-          if [ -f "./ClientDashboard_API/wwwroot/index.html" ]; then
-            echo "? index.html found - frontend should work!"
-            echo "Index.html content preview:"
-            head -5 ./ClientDashboard_API/wwwroot/index.html
-          else
-            echo "? index.html NOT found - this will cause 404!"
-            echo "Available files:"
-            find ./ClientDashboard_API/wwwroot -type f
-          fi
 
       - name: Publish .NET API
         run: dotnet publish ./ClientDashboard_API/ClientDashboard_API.csproj --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
