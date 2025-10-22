@@ -40,8 +40,6 @@ export class LoginComponent {
     this.accountService.login(loginInfo).subscribe({
       next: (response : ApiResponse<UserDto>) => {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
-        localStorage.getItem('token')
-
         this.accountService.currentUser.set(response.data ?? null);
         console.log("User logged in: ", this.accountService.currentUser()?.firstName);
 
