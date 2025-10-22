@@ -44,10 +44,12 @@ jobs:
 
       - name: Copy Angular build to API wwwroot
         run: |
-          # Remove existing wwwroot content
-          rm -rf ./ClientDashboard_API/wwwroot/*
+          # Remove existing wwwroot content (but preserve the google verification file)
+          find ./ClientDashboard_API/wwwroot -type f ! -name 'google45f9e3f493489c5e.html' -delete
           # Copy Angular build output to wwwroot
           cp -r ./ClientDashboard_GUI/dist/client-dashboard-gui/* ./ClientDashboard_API/wwwroot/
+          # Ensure the google verification file is present
+          echo "google-site-verification: google45f9e3f493489c5e.html" > ./ClientDashboard_API/wwwroot/google45f9e3f493489c5e.html
           # List wwwroot contents for verification
           echo "Contents of wwwroot after copy:"
           ls -la ./ClientDashboard_API/wwwroot/
