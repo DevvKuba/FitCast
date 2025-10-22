@@ -12,10 +12,11 @@ namespace ClientDashboard_API.Services
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
         {
             // check if any fields are empty
-            if (request.FirstName is null || request.Surname is null || request.Password is null || request.Email is null)
+            if (request.FirstName.Length is 0 || request.Surname.Length is 0 || request.Password.Length is 0 || request.Email.Length is 0)
             {
                 return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
+
             if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
             {
                 return new ApiResponseDto<string> { Data = null, Message = "The email is already in use", Success = false };
