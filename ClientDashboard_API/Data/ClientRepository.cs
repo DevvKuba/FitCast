@@ -127,7 +127,7 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
-        public async Task AddNewClientAsync(string clientName, int? blockSessions)
+        public async Task AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
         {
             await context.Client.AddAsync(new Client
             {
@@ -135,7 +135,8 @@ namespace ClientDashboard_API.Data
                 Name = clientName.ToLower(),
                 IsActive = true,
                 CurrentBlockSession = 0,
-                TotalBlockSessions = blockSessions
+                TotalBlockSessions = blockSessions,
+                TrainerId = trainerId
             });
         }
 

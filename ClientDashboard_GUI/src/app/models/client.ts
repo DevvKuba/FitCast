@@ -6,5 +6,6 @@ export interface Client {
   isActive: boolean,
   currentBlockSession: number,
   totalBlockSessions: number,
+  trainerId? : number,
   workouts: Workout[],
 }

@@ -158,7 +158,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database via client params
         /// </summary>
         [HttpPost("ByParams")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions)
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions, [FromQuery] int trainerId)
         {
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
             if (clientExists)
@@ -166,7 +166,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} already exists in the database", Success = false });
             }
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions);
+            await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions, trainerId);
 
             if (!await unitOfWork.Complete())
             {
@@ -187,8 +187,9 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {client.Name} already exists in the database", Success = false });
             }
+            // get their trainer that we can assign them too ?
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions);
+            await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions, client.TrainerId);
 
             if (!await unitOfWork.Complete())
             {

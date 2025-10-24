@@ -106,11 +106,13 @@ export class ClientInfoComponent implements OnInit {
   }
 
   addNewClient(clientName: string, totalBlockSessions: number){
+    this.trainerId = this.accountService.currentUser()?.id ?? 0;
     const newClient = {
       name: clientName,
       isActive: this.newActivity,
       currentBlockSession: 0,
       totalBlockSessions: totalBlockSessions,
+      trainerId: this.trainerId,
       workouts: [],
     }
     this.clientService.addClient(newClient).subscribe({
