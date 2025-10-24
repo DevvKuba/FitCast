@@ -15,6 +15,7 @@ import { concatWith } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { Ripple } from 'primeng/ripple';
+import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-client-info',
@@ -26,11 +27,13 @@ import { Ripple } from 'primeng/ripple';
 export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
   private messageService = inject(MessageService);
+  private accountService = inject(AccountService);
 
   clients: Client[] = [];
   activityStatuses!: SelectItem[];
   clonedClients: { [s: string]: Client } = {}
 
+  trainerId : number = 0;
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
   newClientName : string = "";
@@ -129,7 +132,8 @@ export class ClientInfoComponent implements OnInit {
   }
 
   getClients(){
-    this.clientService.getAllClients().subscribe({
+    this.trainerId = this.accountService.currentUser()?.id ?? 0;
+    this.clientService.getAllTrainerClients(this.trainerId).subscribe({
       next: (response) => {
         this.clients = response.data ?? [];
       }

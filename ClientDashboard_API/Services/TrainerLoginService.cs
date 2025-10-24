@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Services
 
             var token = tokenProvider.Create(trainer);
 
-            var user = new UserDto { FirstName = trainer.FirstName, Token = token };
+            var user = new UserDto { FirstName = trainer.FirstName, Id = trainer.Id, Token = token };
 
             return new ApiResponseDto<UserDto> { Data = user, Message = "Token created successfully", Success = true };
         }

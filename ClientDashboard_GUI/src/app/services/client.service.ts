@@ -13,8 +13,8 @@ export class ClientService {
   http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  getAllClients() : Observable<ApiResponse<Client[]>>{
-    return this.http.get<ApiResponse<Client[]>>( this.baseUrl + "client/allClients")
+  getAllTrainerClients(trainerId: number) : Observable<ApiResponse<Client[]>>{
+    return this.http.get<ApiResponse<Client[]>>( this.baseUrl + `client/allTrainerClients?trainerId=${trainerId}`)
   }
 
   updateClient(newClient : Client) : Observable<ApiResponse<any>>{
