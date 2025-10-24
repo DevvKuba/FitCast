@@ -8,6 +8,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Trainer?> GetTrainerByIdAsync(int id);
 
+        Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
+
         Task AddNewTrainerAsync(Trainer trainer);
 
         void DeleteTrainer(Trainer trainer);

@@ -17,6 +17,13 @@ namespace ClientDashboard_API.Data
             var trainer = await context.Trainer.Where(x => x.Id == id).FirstOrDefaultAsync();
             return trainer;
         }
+
+        public async Task<List<Client>> GetTrainerClientsAsync(Trainer trainer)
+        {
+            var clientList = await context.Trainer.SelectMany(x => x.Clients.Where(x => x.TrainerId == trainer.Id)).ToListAsync();
+            return clientList;
+        }
+
         public async Task AddNewTrainerAsync(Trainer trainer)
         {
             await context.Trainer.AddAsync(trainer);

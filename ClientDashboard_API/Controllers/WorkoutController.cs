@@ -13,10 +13,19 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of paginated workouts
         /// </summary>
-        [HttpGet("GetPaginatedWorkouts")]
-        public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts()
+        [HttpGet("GetTrainerWorkouts")]
+        public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts([FromQuery] int trainerId)
         {
-            var workouts = await unitOfWork.WorkoutRepository.GetWorkoutsAsync();
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            if (trainer == null)
+            {
+                return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No trainers with that id found", Success = false });
+            }
+
+            var clientList = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
+
+            var workouts = unitOfWork.WorkoutRepository.GetSpecificClientWorkoutsAsync(clientList);
+
             if (!workouts.Any())
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = false });

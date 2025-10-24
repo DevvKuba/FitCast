@@ -6,9 +6,19 @@ namespace ClientDashboard_API.Data
 {
     public class WorkoutRepository(DataContext context) : IWorkoutRepository
     {
-        public async Task<List<Workout>> GetWorkoutsAsync()
+        public List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList)
         {
-            var workouts = await context.Workouts.OrderByDescending(x => x.SessionDate).ToListAsync();
+            // TODO 
+            List<Workout> workouts = [];
+            foreach (Client client in clientList)
+            {
+                foreach (Workout workout in client.Workouts)
+                {
+                    workouts.Add(workout);
+                }
+            }
+
+            workouts = workouts.OrderByDescending(x => x.SessionDate).ToList();
 
             return workouts;
         }
