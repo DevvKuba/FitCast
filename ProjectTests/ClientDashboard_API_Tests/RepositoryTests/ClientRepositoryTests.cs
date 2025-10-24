@@ -41,7 +41,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var testClient = new Client { Name = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
 
-            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8);
+            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8, 0);
             await _unitOfWork.Complete();
             var databaseClient = await _context.Client.FirstOrDefaultAsync();
 
@@ -54,7 +54,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestRemovingClientCorrectlyAsync()
         {
-            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8);
+            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8, 0);
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -67,7 +67,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestCheckingIfExistingClientExistsAsync()
         {
-            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8);
+            await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8, 0);
             await _unitOfWork.Complete();
             var clientName = "rob";
 

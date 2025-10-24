@@ -44,7 +44,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestCorrectlyGettingCurrentClientBlockSessionAsync()
         {
             // by default adding a new client sets their current session to 0
-            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8);
+            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8, 0);
             await _unitOfWork.Complete();
 
             var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
@@ -59,7 +59,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestIncorrectlyGettingCurrentClientBlockSessionAsync()
         {
             // by default adding a new client sets their current session to 0
-            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8);
+            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8, 0);
             await _unitOfWork.Complete();
 
             var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
@@ -251,7 +251,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var clientName = "rob";
             var blockSessions = 4;
 
-            await _clientController.AddNewClientAsync(clientName, blockSessions);
+            await _clientController.AddNewClientAsync(clientName, blockSessions, 0);
 
             var addedClient = await _context.Client.FirstOrDefaultAsync();
 
@@ -264,8 +264,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var duplicateClient = new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 2, Workouts = [] };
 
-            await _clientController.AddNewClientAsync(duplicateClient.Name, duplicateClient.TotalBlockSessions);
-            await _clientController.AddNewClientAsync(duplicateClient.Name, duplicateClient.TotalBlockSessions);
+            await _clientController.AddNewClientAsync(duplicateClient.Name, duplicateClient.TotalBlockSessions, 0);
+            await _clientController.AddNewClientAsync(duplicateClient.Name, duplicateClient.TotalBlockSessions, 0);
 
             Assert.Equal(1, _context.Client.Count());
         }
@@ -276,7 +276,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var clientName = "rob";
             var blockSessions = 4;
 
-            await _clientController.AddNewClientAsync(clientName, blockSessions);
+            await _clientController.AddNewClientAsync(clientName, blockSessions, 0);
             await _clientController.RemoveClientAsync(clientName);
 
             Assert.Empty(_context.Client);
@@ -288,7 +288,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var clientName = "rob";
             var blockSessions = 4;
 
-            await _clientController.AddNewClientAsync(clientName, blockSessions);
+            await _clientController.AddNewClientAsync(clientName, blockSessions, 0);
             await _clientController.RemoveClientAsync("mat");
             var client = await _context.Client.FirstOrDefaultAsync();
 
