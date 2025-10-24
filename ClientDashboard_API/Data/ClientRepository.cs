@@ -8,9 +8,9 @@ namespace ClientDashboard_API.Data
 {
     public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
     {
-        public async Task<List<Client>> GetAllClientDataAsync()
+        public async Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId)
         {
-            var clients = await context.Client.ToListAsync();
+            var clients = await context.Client.Where(x => x.TrainerId == trainerId).ToListAsync();
             return clients;
         }
 

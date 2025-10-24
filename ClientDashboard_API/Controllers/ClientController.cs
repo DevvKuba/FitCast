@@ -9,10 +9,10 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-        [HttpGet("allClients")]
-        public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetAllClientsAsync()
+        [HttpGet("allTrainerClients")]
+        public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync([FromQuery] int trainerId)
         {
-            var clients = await unitOfWork.ClientRepository.GetAllClientDataAsync();
+            var clients = await unitOfWork.ClientRepository.GetAllTrainerClientDataAsync(trainerId);
             if (!clients.Any())
             {
                 return NotFound(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = false });
