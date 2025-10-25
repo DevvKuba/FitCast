@@ -6,6 +6,8 @@ import { Workout } from '../models/workout';
 import { WorkoutService } from '../services/workout.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { SelectModule } from 'primeng/select';
+import { AccountService } from '../services/account.service';
+import { UserDto } from '../models/user-dto';
 
 @Component({
   selector: 'app-client-workouts',
@@ -14,9 +16,11 @@ import { SelectModule } from 'primeng/select';
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
-  workouts: Workout[] = [];
+    workouts: Workout[] = [];
+    trainerId : number  = 0;
 
-  private workoutService = inject(WorkoutService);
+    private workoutService = inject(WorkoutService);
+    private accountService = inject(AccountService);
 
     first = 0; // offset
     rows = 10; // pageSize
@@ -51,7 +55,9 @@ export class ClientWorkouts {
     }
 
     displayWorkouts(){
-        this.workoutService.retrieveTrainerClientWorkouts().subscribe({
+        this.trainerId = this.accountService.currentUser()?.id ?? 0;
+        console.log(this.trainerId);
+        this.workoutService.retrieveTrainerClientWorkouts(this.trainerId).subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },

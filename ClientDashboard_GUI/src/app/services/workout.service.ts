@@ -12,8 +12,8 @@ export class WorkoutService {
   http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  retrieveTrainerClientWorkouts(): Observable<ApiResponse<Workout[]>> {
-    return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + `workout/GetPaginatedWorkouts`);
+  retrieveTrainerClientWorkouts(trainerId : number): Observable<ApiResponse<Workout[]>> {
+    return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + `workout/GetTrainerWorkouts?trainerId=${trainerId}`);
   }
   
 }
