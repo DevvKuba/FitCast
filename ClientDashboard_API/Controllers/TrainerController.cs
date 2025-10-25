@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
+    [Authorize]
     public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
     {
         /// <summary>
