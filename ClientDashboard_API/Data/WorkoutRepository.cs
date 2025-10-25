@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Data
     {
         public List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList)
         {
-            // TODO 
+            // is there a better way to do this
             List<Workout> workouts = [];
             foreach (Client client in clientList)
             {
@@ -17,8 +17,11 @@ namespace ClientDashboard_API.Data
                     workouts.Add(workout);
                 }
             }
+            // workouts that were provided with an inclusion to the client, that inclusion
+            // should be cut off to remove the circular reference between entites
 
-            workouts = workouts.OrderByDescending(x => x.SessionDate).ToList();
+            workouts = workouts
+                .OrderByDescending(x => x.SessionDate).ToList();
 
             return workouts;
         }

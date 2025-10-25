@@ -134,7 +134,6 @@ namespace ClientDashboard_API.Data
 
         public void UnassignTrainerAsync(Client client)
         {
-            client.Trainer = null;
             client.TrainerId = null;
         }
 
