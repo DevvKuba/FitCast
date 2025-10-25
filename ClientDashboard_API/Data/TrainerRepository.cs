@@ -28,6 +28,12 @@ namespace ClientDashboard_API.Data
             return clientList;
         }
 
+        public void AssignClient(Trainer trainer, Client client)
+        {
+            client.TrainerId = trainer.Id;
+            client.Trainer = trainer;
+        }
+
         public async Task AddNewTrainerAsync(Trainer trainer)
         {
             await context.Trainer.AddAsync(trainer);

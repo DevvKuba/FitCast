@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
 
+        void AssignClient(Trainer trainer, Client client);
+
         Task AddNewTrainerAsync(Trainer trainer);
 
         void DeleteTrainer(Trainer trainer);
