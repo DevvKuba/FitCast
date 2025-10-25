@@ -15,7 +15,7 @@ namespace ClientDashboard_API.Controllers
             var clients = await unitOfWork.ClientRepository.GetAllTrainerClientDataAsync(trainerId);
             if (!clients.Any())
             {
-                return NotFound(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = false });
+                return Ok(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = true });
             }
 
             return Ok(new ApiResponseDto<List<Client>> { Data = clients, Message = "clients gathered.", Success = true });

@@ -29,7 +29,7 @@ export class ClientInfoComponent implements OnInit {
   private messageService = inject(MessageService);
   private accountService = inject(AccountService);
 
-  clients: Client[] = [];
+  clients: Client[] | null = null;
   activityStatuses!: SelectItem[];
   clonedClients: { [s: string]: Client } = {}
 
@@ -82,7 +82,7 @@ export class ClientInfoComponent implements OnInit {
   }
 
   onRowEditCancel(client: Client, index: number) {
-      this.clients[index] = this.clonedClients[client.id as number];
+      this.clients![index] = this.clonedClients[client.id as number];
       delete this.clonedClients[client.id as number];
   }
 

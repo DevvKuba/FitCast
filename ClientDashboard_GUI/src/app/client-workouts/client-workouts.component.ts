@@ -16,7 +16,7 @@ import { UserDto } from '../models/user-dto';
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
-    workouts: Workout[] = [];
+    workouts: Workout[] | null = null;
     trainerId : number  = 0;
 
     private workoutService = inject(WorkoutService);

@@ -28,7 +28,7 @@ namespace ClientDashboard_API.Controllers
 
             if (!workouts.Any())
             {
-                return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = false });
+                return Ok(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = true });
             }
 
             return Ok(new ApiResponseDto<List<Workout>> { Data = workouts, Message = " workouts returned", Success = true });
