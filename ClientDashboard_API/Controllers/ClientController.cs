@@ -155,6 +155,27 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
+        /// Client method for removing currently allocated trainer
+        /// </summary>
+        [HttpPut("unAssignTrainer")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UnAssignCurrentTrainerAsync([FromQuery] int clientId)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id {clientId} found", Success = false });
+            }
+
+            unitOfWork.ClientRepository.UnassignTrainerAsync(client);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while unassigning {client.Name}'s trainer", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"{client.Name}'s trainer is now unassigned", Success = true });
+        }
+
+        /// <summary>
         /// Client method for adding a new Client to the database via client params
         /// </summary>
         [HttpPost("ByParams")]

@@ -132,6 +132,12 @@ namespace ClientDashboard_API.Data
             return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
 
+        public void UnassignTrainerAsync(Client client)
+        {
+            client.Trainer = null;
+            client.TrainerId = null;
+        }
+
         public async Task AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();

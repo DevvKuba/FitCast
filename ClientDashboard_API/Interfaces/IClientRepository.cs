@@ -28,6 +28,8 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateClientName(Client client, string name);
 
+        void UnassignTrainerAsync(Client client);
+
         Task AddNewClientAsync(string clientName, int? blockSessions, int? trainerId);
 
         void RemoveClient(Client client);
