@@ -28,6 +28,8 @@ export class RegisterComponent {
   firstName: string = "";
   surname: string = "";
   password: string = "";
+  toastSummary: string = "";
+  toastDetail: string = "";
 
   trainerRegister(trainerEmail: string, trainerFirstName: string, trainerSurname: string, trainerPassword: string){
     const registerInfo: RegisterDto = {
@@ -38,17 +40,16 @@ export class RegisterComponent {
     }
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {
-        this.toastService.toastSummary = 'Success Registering';
-        this.toastService.toastDetail = response.message;
-        this.toastService.showSuccess();
+        this.toastSummary = 'Success Registering';
+        this.toastDetail = response.message;
+        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
         
         console.log(response);
       },
       error: (response) => {
-        this.toastService.toastSummary = 'Error Registering';
-        this.toastService.toastDetail = response.error.message;
-        ;
-        this.toastService.showError();
+        this.toastSummary = 'Error Registering';
+        this.toastDetail = response.error.message;
+        this.toastService.showError(this.toastSummary, this.toastDetail);
         console.log(response)
       }
     });

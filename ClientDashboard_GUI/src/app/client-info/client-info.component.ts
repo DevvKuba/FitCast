@@ -16,6 +16,7 @@ import { Dialog } from 'primeng/dialog';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { Ripple } from 'primeng/ripple';
 import { AccountService } from '../services/account.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-client-info',
@@ -26,7 +27,8 @@ import { AccountService } from '../services/account.service';
 })
 export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
-  private messageService = inject(MessageService);
+  // private messageService = inject(MessageService);
+  private toastService = inject(ToastService);
   private accountService = inject(AccountService);
 
   clients: Client[] | null = null;
@@ -64,20 +66,20 @@ export class ClientInfoComponent implements OnInit {
               console.log('Client updated successfully', response.message);
               this.toastSummary = 'Success Updating';
               this.toastDetail = `updated client: ${newClient.name} successfully`;
-              this.showSuccess();
+              this.toastService.showSuccess(this.toastSummary, this.toastDetail);
             },
             error: (response) => {
               console.log('Update Failed', response.message);
               this.toastSummary = 'Error Updating';
               this.toastDetail = `client: ${newClient.name} not updated successfully`;
-              this.showError();
+              this.toastService.showError(this.toastSummary, this.toastDetail);
             }
           })
       } else {
         console.log("Input values are not valid");
         this.toastSummary = 'Incorrect Values';
         this.toastDetail = `make sure correct update values are provided`;
-        this.showError()
+        this.toastService.showError(this.toastSummary, this.toastDetail)
       }
   }
 
@@ -92,7 +94,7 @@ export class ClientInfoComponent implements OnInit {
         console.log(response.message);
         this.toastSummary = 'Success Deleting';
         this.toastDetail = `successfully deleted client with id: ${clientId}`;
-        this.showSuccess();
+        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
         this.deleteDialogVisible = false;
         this.getClients();
       },
@@ -100,7 +102,7 @@ export class ClientInfoComponent implements OnInit {
         console.log(response.message);
         this.toastSummary = 'Error Deleting';
         this.toastDetail = `unsuccessful deletion process of client with id: ${clientId}`;
-        this.showError();
+        this.toastService.showError(this.toastSummary, this.toastDetail);
       }
     })
   }
@@ -120,7 +122,7 @@ export class ClientInfoComponent implements OnInit {
         console.log(response.message)
         this.toastSummary = 'Success Adding';
         this.toastDetail = `added client: ${clientName} successfully`
-        this.showSuccess();
+        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
         this.addDialogVisible = false;
         this.getClients();
       },
@@ -128,7 +130,7 @@ export class ClientInfoComponent implements OnInit {
         console.log(response.message)
         this.toastSummary = 'Error Adding';
         this.toastDetail = `adding client: ${clientName} was not successful`
-        this.showError()
+        this.toastService.showError(this.toastSummary, this.toastDetail)
       }
     })
   }
@@ -148,14 +150,6 @@ export class ClientInfoComponent implements OnInit {
 
   showDialogForAdd(){
     this.addDialogVisible = true;
-  }
-
-  showSuccess() {
-        this.messageService.add({ severity: 'success', summary: this.toastSummary, detail: this.toastDetail });
-  }
-
-  showError() {
-        this.messageService.add({ severity: 'error', summary: this.toastSummary, detail: this.toastDetail });
   }
 
   getActivities(isActive : boolean) : string {

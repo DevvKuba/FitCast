@@ -30,6 +30,8 @@ export class LoginComponent {
 
   email: string = "";
   password: string = "";
+  toastSummary: string = "";
+  toastDetail: string = "";
   storageItem = "token";
 
   trainerLogin(trainerEmail: string, trainerPassword: string){
@@ -43,16 +45,16 @@ export class LoginComponent {
         this.accountService.currentUser.set(response.data ?? null);
         console.log("User logged in: ", this.accountService.currentUser()?.firstName);
 
-        this.toastService.toastSummary = 'Logged In';
-        this.toastService.toastDetail = 'Redirected to client-info page';
-        this.toastService.showSuccess();
+        this.toastSummary = 'Logged In';
+        this.toastDetail = 'Redirected to client-info page';
+        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
         this.router.navigateByUrl('client-info');
         console.log(response);
       },
       error: (response) => {
-        this.toastService.toastSummary = 'Unable to log in';
-        this.toastService.toastDetail = response.error.message;
-        this.toastService.showError();
+        this.toastSummary = 'Unable to log in';
+        this.toastDetail = response.error.message;
+        this.toastService.showError(this.toastSummary, this.toastDetail);
         console.log("Error logging in and fetching jwt token ", response.error.message);
       }
     })

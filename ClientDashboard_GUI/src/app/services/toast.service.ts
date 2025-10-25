@@ -8,14 +8,11 @@ import { Toast } from 'primeng/toast';
 export class ToastService {
   messageService = inject(MessageService);
 
-  toastSummary : string = "";
-  toastDetail : string = "";
-
-  showSuccess() {
-        this.messageService.add({ severity: 'success', summary: this.toastSummary, detail: this.toastDetail });
+  showSuccess(toastSummary: string, toastDetail: string) {
+        this.messageService.add({ severity: 'success', summary: toastSummary, detail: toastDetail });
   }
 
-  showError() {
-        this.messageService.add({ severity: 'error', summary: this.toastSummary, detail: this.toastDetail });
+  showError(toastSummary: string, toastDetail: string) {
+        this.messageService.add({ severity: 'error', summary: toastSummary, detail: toastDetail });
   }
 }
