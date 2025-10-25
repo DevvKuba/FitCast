@@ -17,11 +17,13 @@ namespace ClientDashboard_API.Data
                     workouts.Add(workout);
                 }
             }
-            // workouts that were provided with an inclusion to the client, that inclusion
-            // should be cut off to remove the circular reference between entites
+            workouts = workouts.OrderByDescending(x => x.SessionDate).ToList();
 
-            workouts = workouts
-                .OrderByDescending(x => x.SessionDate).ToList();
+            // to remove the presence of a circular reference
+            foreach (Workout workout in workouts)
+            {
+                workout.Client = null!;
+            }
 
             return workouts;
         }
