@@ -14,13 +14,17 @@ namespace ClientDashboard_API.Data
 
         public async Task<Trainer?> GetTrainerByIdAsync(int id)
         {
-            var trainer = await context.Trainer.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var trainer = await context.Trainer
+                //.Include(t => t.Clients)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
             return trainer;
         }
 
         public async Task<List<Client>> GetTrainerClientsAsync(Trainer trainer)
         {
-            var clientList = await context.Trainer.SelectMany(x => x.Clients.Where(x => x.TrainerId == trainer.Id)).ToListAsync();
+            var clientList = await context.Trainer
+                //.Include(x => x.Clients)
+                .SelectMany(x => x.Clients.Where(x => x.TrainerId == trainer.Id)).ToListAsync();
             return clientList;
         }
 

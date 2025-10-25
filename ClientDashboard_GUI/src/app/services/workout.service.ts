@@ -12,7 +12,7 @@ export class WorkoutService {
   http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  retrievePaginatedWorkouts(): Observable<ApiResponse<Workout[]>> {
+  retrieveTrainerClientWorkouts(): Observable<ApiResponse<Workout[]>> {
     return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + `workout/GetPaginatedWorkouts`);
   }
   

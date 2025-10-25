@@ -51,7 +51,7 @@ export class ClientWorkouts {
     }
 
     displayWorkouts(){
-        this.workoutService.retrievePaginatedWorkouts().subscribe({
+        this.workoutService.retrieveTrainerClientWorkouts().subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },

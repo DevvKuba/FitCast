@@ -127,8 +127,14 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
+        public async Task<bool> CheckIfClientExistsAsync(string clientName)
+        {
+            return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
+        }
+
         public async Task AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
         {
+            var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
             await context.Client.AddAsync(new Client
             {
 
@@ -136,18 +142,14 @@ namespace ClientDashboard_API.Data
                 IsActive = true,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions,
-                TrainerId = trainerId
+                TrainerId = trainerId,
+                Trainer = trainer,
             });
         }
 
         public void RemoveClient(Client client)
         {
             context.Client.Remove(client);
-        }
-
-        public async Task<bool> CheckIfClientExistsAsync(string clientName)
-        {
-            return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
         }
 
     }
