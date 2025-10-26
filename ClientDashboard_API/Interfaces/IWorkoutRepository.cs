@@ -15,7 +15,6 @@ namespace ClientDashboard_API.Interfaces
 
         Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount);
 
-        // to be changed possibly
         void RemoveWorkout(Workout workout);
 
         // expand in future - more fields in Workout will allow for 

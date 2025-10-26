@@ -37,7 +37,7 @@ namespace ClientDashboard_API.Services
                 {
                     // client doesn't exist in this case so needs to be added first
                     // look over trainerId declaration
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, 0);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null);
                     await unitOfWork.Complete();
 
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
