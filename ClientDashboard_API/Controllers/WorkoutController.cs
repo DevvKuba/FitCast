@@ -100,7 +100,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Workout request for adding a workout for a specific client
+        /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
         /// </summary>
         [HttpPost("newWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)

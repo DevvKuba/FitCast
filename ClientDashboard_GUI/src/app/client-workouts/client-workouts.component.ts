@@ -15,10 +15,11 @@ import { FormsModule } from '@angular/forms';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { Client } from '../models/client';
 import { ClientService } from '../services/client.service';
+import { DatePicker } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule ],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule, DatePicker ],
   templateUrl: './client-workouts.component.html',
   styleUrl: './client-workouts.component.css'
 })
@@ -26,9 +27,12 @@ export class ClientWorkouts {
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
     visible: boolean = false;
+
     clientName : string = "";
+    workoutTitle: string = "";
+    date: Date | undefined;
+    exerciseCount: number = 0;
     clients: any[] = [];
-    clientNames: any[] = [];
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
@@ -86,13 +90,9 @@ export class ClientWorkouts {
         this.clients = response.data?.map(x => x.name) ?? [];
       }
     })
-    // var i: number = 0;
-    // for(i; i < this.clients.length; i ++){
-    //     this.clientNames = this.clients[i].name;
-    // }
   }
 
-    showDialog() {
+    showDialogForAdd() {
         this.visible = true;
     }
 }
