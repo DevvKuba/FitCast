@@ -99,7 +99,7 @@ export class ClientWorkouts {
       next: (response) => {
         this.clients = response.data?.map(x => ({id: x.id , name: x.name})) ?? [];
       },
-      error: (response){
+      error: (response) => {
         console.log('Failed to display client for which you may add a workout for');
         this.clients = [];
       }

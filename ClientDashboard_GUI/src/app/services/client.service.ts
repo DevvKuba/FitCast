@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Client } from '../models/client';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
+import { ClientAddDto } from '../models/client-add-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class ClientService {
     return this.http.delete<any>( this.baseUrl + `client/ById?clientId=${clientId}`);
   }
 
-  addClient(client: Client): Observable<ApiResponse<Client>>{
-    return this.http.post<ApiResponse<Client>>(this.baseUrl + `client/ByBody`, client);
+  addClient(newClient: ClientAddDto): Observable<ApiResponse<Client>>{
+    return this.http.post<ApiResponse<Client>>(this.baseUrl + `client/ByBody`, newClient);
   }
 }

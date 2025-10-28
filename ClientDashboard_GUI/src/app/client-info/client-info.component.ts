@@ -27,7 +27,6 @@ import { ToastService } from '../services/toast.service';
 })
 export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
-  // private messageService = inject(MessageService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
 
@@ -110,12 +109,9 @@ export class ClientInfoComponent implements OnInit {
   addNewClient(clientName: string, totalBlockSessions: number){
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     const newClient = {
-      name: clientName,
-      isActive: this.newActivity,
-      currentBlockSession: 0,
+      clientName: clientName,
       totalBlockSessions: totalBlockSessions,
       trainerId: this.trainerId,
-      workouts: [],
     }
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
