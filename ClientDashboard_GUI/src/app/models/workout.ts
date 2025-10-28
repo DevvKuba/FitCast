@@ -1,6 +1,6 @@
 export interface Workout {
   id?: number,
-  clientId?: number,
+  clientId: number,
   clientName: string,
   workoutTitle: string,
   sessionDate: Date,

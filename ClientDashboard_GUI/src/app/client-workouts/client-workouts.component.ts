@@ -28,11 +28,11 @@ export class ClientWorkouts {
     trainerId : number  = 0;
     visible: boolean = false;
 
-    clientName : string = "";
+    selectedClient :{id: number, name: string} | null = null;
     workoutTitle: string = "";
     date: Date | undefined;
     exerciseCount: number = 0;
-    clients: any[] = [];
+    clients: {id: number, name: string}[] = [];
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
@@ -83,10 +83,11 @@ export class ClientWorkouts {
         });
     }
 
-    addNewWorkout(workoutTitle: string, clientName : string, sessionDate : Date, exerciseCount: number){
+    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date, exerciseCount: number){
         var workout : Workout = {
+            clientId: selectedClient.id,
             workoutTitle: workoutTitle,
-            clientName: clientName,
+            clientName: selectedClient.name,
             sessionDate: sessionDate,
             exerciseCount: exerciseCount
         }
@@ -96,7 +97,11 @@ export class ClientWorkouts {
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     this.clientService.getAllTrainerClients(this.trainerId).subscribe({
       next: (response) => {
-        this.clients = response.data?.map(x => x.name) ?? [];
+        this.clients = response.data?.map(x => ({id: x.id , name: x.name})) ?? [];
+      },
+      error: (response){
+        console.log('Failed to display client for which you may add a workout for');
+        this.clients = [];
       }
     })
   }
