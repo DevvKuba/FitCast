@@ -26,7 +26,7 @@ export class ClientService {
     return this.http.delete<any>( this.baseUrl + `client/ById?clientId=${clientId}`);
   }
 
-  addClient(newClient: ClientAddDto): Observable<ApiResponse<Client>>{
-    return this.http.post<ApiResponse<Client>>(this.baseUrl + `client/ByBody`, newClient);
+  addClient(newClient: ClientAddDto): Observable<ApiResponse<ClientAddDto>>{
+    return this.http.post<ApiResponse<ClientAddDto>>(this.baseUrl + `client/ByBody`, newClient);
   }
 }

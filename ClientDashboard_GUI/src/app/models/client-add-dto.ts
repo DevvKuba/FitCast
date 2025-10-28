@@ -1,5 +1,5 @@
 export interface ClientAddDto {
-  clientName: string, 
+  name: string, 
   totalBlockSessions: number,
   trainerId: number
 }

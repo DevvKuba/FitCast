@@ -17,10 +17,11 @@ import { SpinnerComponent } from "../spinner/spinner.component";
 import { Ripple } from 'primeng/ripple';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple],
+  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule],
   providers: [MessageService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
@@ -109,7 +110,7 @@ export class ClientInfoComponent implements OnInit {
   addNewClient(clientName: string, totalBlockSessions: number){
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     const newClient = {
-      clientName: clientName,
+      name: clientName,
       totalBlockSessions: totalBlockSessions,
       trainerId: this.trainerId,
     }

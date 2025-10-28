@@ -9,15 +9,15 @@ import {
   Badge,
   BadgeModule
 } from "./chunk-XXDIXQXP.js";
+import {
+  Ripple
+} from "./chunk-NVZ4KBYK.js";
 import "./chunk-5G7WYC4N.js";
 import {
   AngleDownIcon,
   AngleRightIcon,
   BarsIcon
-} from "./chunk-TE26ICMZ.js";
-import {
-  Ripple
-} from "./chunk-NVZ4KBYK.js";
+} from "./chunk-DPKVLVKF.js";
 import {
   BaseComponent
 } from "./chunk-LEJ4DYGU.js";
