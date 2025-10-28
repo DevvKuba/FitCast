@@ -11,10 +11,14 @@ import { UserDto } from '../models/user-dto';
 import { Toast } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { Dialog } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { Client } from '../models/client';
+import { ClientService } from '../services/client.service';
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule ],
   templateUrl: './client-workouts.component.html',
   styleUrl: './client-workouts.component.css'
 })
@@ -22,9 +26,13 @@ export class ClientWorkouts {
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
     visible: boolean = false;
+    clientName : string = "";
+    clients: any[] = [];
+    clientNames: any[] = [];
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
+    private clientService = inject(ClientService);
 
     first = 0; // offset
     rows = 10; // pageSize
@@ -70,6 +78,19 @@ export class ClientWorkouts {
             }
         });
     }
+
+    gatherClientNames(){
+    this.trainerId = this.accountService.currentUser()?.id ?? 0;
+    this.clientService.getAllTrainerClients(this.trainerId).subscribe({
+      next: (response) => {
+        this.clients = response.data?.map(x => x.name) ?? [];
+      }
+    })
+    // var i: number = 0;
+    // for(i; i < this.clients.length; i ++){
+    //     this.clientNames = this.clients[i].name;
+    // }
+  }
 
     showDialog() {
         this.visible = true;

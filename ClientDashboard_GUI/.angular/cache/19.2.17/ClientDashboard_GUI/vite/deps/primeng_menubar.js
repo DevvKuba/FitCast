@@ -3,12 +3,15 @@ import {
   TooltipModule
 } from "./chunk-WDEFHEAG.js";
 import {
-  zindexutils
-} from "./chunk-NMOYQVAO.js";
-import {
   Badge,
   BadgeModule
 } from "./chunk-XXDIXQXP.js";
+import {
+  Ripple
+} from "./chunk-NVZ4KBYK.js";
+import {
+  zindexutils
+} from "./chunk-NMOYQVAO.js";
 import "./chunk-5G7WYC4N.js";
 import {
   AngleDownIcon,
@@ -16,22 +19,11 @@ import {
   BarsIcon
 } from "./chunk-BSPN7C2N.js";
 import {
-  Ripple
-} from "./chunk-NVZ4KBYK.js";
-import {
   BaseComponent
 } from "./chunk-LEJ4DYGU.js";
 import {
   BaseStyle
 } from "./chunk-6L75TMRD.js";
-import {
-  RouterLink,
-  RouterLinkActive,
-  RouterModule
-} from "./chunk-T7LVAAVI.js";
-import "./chunk-TM4XZ3TD.js";
-import "./chunk-QN5N25J2.js";
-import "./chunk-KS4LJBZ2.js";
 import {
   PrimeTemplate,
   SharedModule,
@@ -45,6 +37,14 @@ import {
   resolve,
   uuid
 } from "./chunk-VEYEDONB.js";
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterModule
+} from "./chunk-NH2AD6SN.js";
+import "./chunk-KVUXCZYO.js";
+import "./chunk-KS4LJBZ2.js";
+import "./chunk-QN5N25J2.js";
 import {
   CommonModule,
   NgClass,
