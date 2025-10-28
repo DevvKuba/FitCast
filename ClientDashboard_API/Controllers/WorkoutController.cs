@@ -102,9 +102,10 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
         /// </summary>
-        [HttpPost("newWorkout")]
+        [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
+            // may need to change to Id even for SessionSyncService
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
             if (client == null)
             {
@@ -119,6 +120,29 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Workout added for client: {clientName}", Success = true });
+
+        }
+
+        /// <summary>
+        /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
+        /// </summary>
+        [HttpPost("Manual/NewWorkout")]
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientWorkoutAsync([FromBody] Workout workout)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(workout.ClientId);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {workout.ClientName} not found", Success = false });
+            }
+
+            unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.WorkoutTitle, workout.SessionDate, workout.ExerciseCount);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = workout.ClientName, Message = $"Workout added for client: {workout.ClientName}", Success = true });
 
         }
 

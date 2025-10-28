@@ -83,6 +83,15 @@ export class ClientWorkouts {
         });
     }
 
+    addNewWorkout(workoutTitle: string, clientName : string, sessionDate : Date, exerciseCount: number){
+        var workout : Workout = {
+            workoutTitle: workoutTitle,
+            clientName: clientName,
+            sessionDate: sessionDate,
+            exerciseCount: exerciseCount
+        }
+    }
+
     gatherClientNames(){
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     this.clientService.getAllTrainerClients(this.trainerId).subscribe({
