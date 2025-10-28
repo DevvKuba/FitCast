@@ -8,16 +8,20 @@ import { SpinnerComponent } from "../spinner/spinner.component";
 import { SelectModule } from 'primeng/select';
 import { AccountService } from '../services/account.service';
 import { UserDto } from '../models/user-dto';
+import { Toast } from 'primeng/toast';
+import { InputTextModule } from 'primeng/inputtext';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog],
   templateUrl: './client-workouts.component.html',
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
+    visible: boolean = false;
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
@@ -65,5 +69,9 @@ export class ClientWorkouts {
                 console.log(response.message)
             }
         });
+    }
+
+    showDialog() {
+        this.visible = true;
     }
 }
