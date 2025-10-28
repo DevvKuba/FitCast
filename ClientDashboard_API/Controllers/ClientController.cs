@@ -201,7 +201,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database via client object body
         /// </summary>
         [HttpPost("ByBody")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] Client client)
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
             //var clientExists = await unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
             //if (clientExists != null)
@@ -210,13 +210,13 @@ namespace ClientDashboard_API.Controllers
             //}
             // get their trainer that we can assign them too ?
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(client.Name, client.TotalBlockSessions, client.TrainerId);
+            await unitOfWork.ClientRepository.AddNewClientAsync(newClient.Name, newClient.TotalBlockSessions, newClient.TrainerId);
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {client.Name} not added", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {newClient.Name} not added", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = client.Name, Message = $"Client: {client.Name} added", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = newClient.Name, Message = $"Client: {newClient.Name} added", Success = true });
 
         }
 
