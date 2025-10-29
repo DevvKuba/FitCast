@@ -84,13 +84,7 @@ export class ClientWorkouts {
     }
 
     addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date, exerciseCount: number){
-        var workout : Workout = {
-            clientId: selectedClient.id,
-            workoutTitle: workoutTitle,
-            clientName: selectedClient.name,
-            sessionDate: sessionDate,
-            exerciseCount: exerciseCount
-        }
+
     }
 
     gatherClientNames(){

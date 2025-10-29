@@ -26,7 +26,7 @@
                     </div>
                     <div class="flex items-center gap-4 mb-8">
                         <label for="client-name" class="font-semibold w-24">Client Name</label>
-                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" (onDropdownClick)="gatherClientNames()" />
+                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
                     </div>
                     <div class="flex items-center gap-4 mb-8">
                         <label for="workout-date" class="font-semibold w-24">Session Date</label>
