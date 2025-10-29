@@ -7,7 +7,7 @@ import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, Menubar],
+  imports: [Menubar],
   providers: [LoginComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
