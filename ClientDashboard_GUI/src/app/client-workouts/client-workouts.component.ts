@@ -85,7 +85,22 @@ export class ClientWorkouts {
     }
 
     addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date, exerciseCount: number){
+        var newWorkout = {
+            workoutTitle: workoutTitle,
+            clientName: selectedClient.name,
+            clientId: selectedClient.id,
+            sessionDate: sessionDate,
+            exerciseCount: exerciseCount
+        }
 
+        this.workoutService.addWorkout(newWorkout).subscribe({
+            next: (response) => {
+                
+            },
+            error: (response) => {
+
+            }
+        })
     }
 
     gatherClientNames(){

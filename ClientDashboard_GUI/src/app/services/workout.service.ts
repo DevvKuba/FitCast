@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
 import { body } from '@primeuix/themes/aura/card';
+import { WorkoutAddDto } from '../models/workout-add-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class WorkoutService {
     return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + `workout/GetTrainerWorkouts?trainerId=${trainerId}`);
   }
 
-  addWorkout(newWorkout : Workout) : Observable<ApiResponse<string>>{
+  addWorkout(newWorkout : WorkoutAddDto) : Observable<ApiResponse<string>>{
     return this.http.post<ApiResponse<string>>(this.baseUrl + 'workout/Manual/NewWorkout', newWorkout);
   }
   
