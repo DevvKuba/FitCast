@@ -16,10 +16,11 @@ import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocompl
 import { Client } from '../models/client';
 import { ClientService } from '../services/client.service';
 import { DatePicker } from 'primeng/datepicker';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule, DatePicker ],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule ],
   templateUrl: './client-workouts.component.html',
   styleUrl: './client-workouts.component.css'
 })
