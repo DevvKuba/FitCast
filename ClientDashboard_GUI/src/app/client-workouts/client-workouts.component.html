@@ -30,7 +30,7 @@
                     </div>
                     <div class="flex items-center gap-4 mb-8">
                         <label for="workout-date" class="font-semibold w-24">Session Date</label>
-                        <p-datepicker [appendTo]="'body'" [(ngModel)]="date" dateFormat="dd/mm/yy" />
+                        <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
                     </div>
                     <div class="flex items-center gap-4 mb-8">
                         <label for="exercise-count" class="font-semibold w-24">Exercise Count</label>
@@ -38,7 +38,7 @@
                     </div>
                     <div class="flex justify-end gap-2">
                         <p-button label="Cancel" severity="secondary" (click)="visible = false" />
-                        <p-button label="Save" (click)="visible = false" />
+                        <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate ?? undefined, exerciseCount)" />
                     </div>
                 </p-dialog>
             </div>

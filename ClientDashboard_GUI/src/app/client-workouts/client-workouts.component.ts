@@ -17,11 +17,14 @@ import { Client } from '../models/client';
 import { ClientService } from '../services/client.service';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { MessageService } from 'primeng/api';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule ],
   templateUrl: './client-workouts.component.html',
+  providers: [MessageService],
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
@@ -29,15 +32,16 @@ export class ClientWorkouts {
     trainerId : number  = 0;
     visible: boolean = false;
 
-    selectedClient :{id: number, name: string} | null = null;
+    selectedClient :{id: number, name: string} = {id: 0, name: ""};
     workoutTitle: string = "";
-    date: Date | undefined;
+    sessionDate: Date  = new Date();
     exerciseCount: number = 0;
     clients: {id: number, name: string}[] = [];
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
+    private toastService = inject(ToastService);
 
     first = 0; // offset
     rows = 10; // pageSize
@@ -84,21 +88,23 @@ export class ClientWorkouts {
         });
     }
 
-    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date, exerciseCount: number){
+    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number){
         var newWorkout = {
             workoutTitle: workoutTitle,
             clientName: selectedClient.name,
             clientId: selectedClient.id,
-            sessionDate: sessionDate,
+            sessionDate: this.formatDateForApi(sessionDate),
             exerciseCount: exerciseCount
         }
 
         this.workoutService.addWorkout(newWorkout).subscribe({
             next: (response) => {
-                
+                this.visible = false;
+                this.toastService.showSuccess('Successfully added workout', response.message);
+                this.displayWorkouts();
             },
             error: (response) => {
-
+                this.toastService.showError('Workout not added', response.message);
             }
         })
     }
@@ -118,5 +124,15 @@ export class ClientWorkouts {
 
     showDialogForAdd() {
         this.visible = true;
+    }
+
+  formatDateForApi(date: Date | undefined): string {
+  if (!date) return '';
+  
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
     }
 }

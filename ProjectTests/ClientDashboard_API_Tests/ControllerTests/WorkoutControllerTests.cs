@@ -52,7 +52,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             var clientWorkout = await _context.Workouts.FirstOrDefaultAsync();
 
@@ -72,7 +72,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 10;
 
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             var clientWorkout = await _context.Workouts.FirstOrDefaultAsync();
 
@@ -90,7 +90,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             await _workoutController.DeleteClientWorkoutAsync(clientName, workoutDate);
 
@@ -110,7 +110,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             await _workoutController.DeleteClientWorkoutAsync("mat", workoutDate);
 
@@ -130,8 +130,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
 
             var actionResult = await _workoutController.GetLatestClientWorkoutAsync(clientName);
             // since the workout obj is in the result we need to retrieve it as OkObjectResult
@@ -167,8 +167,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
 
             var actionResult = await _workoutController.GetClientWorkoutsFromDateAsync(DateOnly.Parse("17/06/2025"));
             var okResult = actionResult.Result as OkObjectResult;
@@ -188,8 +188,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount);
 
             var actionResult = await _workoutController.GetClientWorkoutsFromDateAsync(DateOnly.Parse("20/06/2025"));
             var okResult = actionResult.Result as OkObjectResult;
@@ -207,7 +207,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             var actionResult = await _workoutController.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("19/06/2025"));
             var okResult = actionResult.Result as ObjectResult;
@@ -228,7 +228,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _context.Client.AddAsync(new Client { Name = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
+            await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount);
 
             var actionResult = await _workoutController.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("20/06/2025"));
             var okResult = actionResult.Result as ObjectResult;
@@ -245,8 +245,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync("rob", "rob's workout", DateOnly.Parse(todaysDateString[0..10]), 10);
-            await _workoutController.AddNewClientWorkoutAsync("mat", "mat's workout", DateOnly.Parse(todaysDateString[0..10]), 10);
+            await _workoutController.AddNewAutoClientWorkoutAsync("rob", "rob's workout", DateOnly.Parse(todaysDateString[0..10]), 10);
+            await _workoutController.AddNewAutoClientWorkoutAsync("mat", "mat's workout", DateOnly.Parse(todaysDateString[0..10]), 10);
 
             var actionResult = await _workoutController.GetAllDailyClientWorkoutsAsync();
             var okResult = actionResult.Result as ObjectResult;
@@ -268,8 +268,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _context.Client.AddAsync(new Client { Name = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
-            await _workoutController.AddNewClientWorkoutAsync("rob", "rob's workout", date, 10);
-            await _workoutController.AddNewClientWorkoutAsync("mat", "mat's workout", date, 10);
+            await _workoutController.AddNewAutoClientWorkoutAsync("rob", "rob's workout", date, 10);
+            await _workoutController.AddNewAutoClientWorkoutAsync("mat", "mat's workout", date, 10);
 
             var actionResult = await _workoutController.GetAllDailyClientWorkoutsAsync();
             var okResult = actionResult.Result as ObjectResult;
