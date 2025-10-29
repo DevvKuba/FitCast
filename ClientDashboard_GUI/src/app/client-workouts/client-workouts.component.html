@@ -17,7 +17,7 @@
     >
         <ng-template #header>
             <div class="card flex justify-center">
-                <p-button icon="pi pi-plus" (click)="showDialogForAdd()" label="Add Workout" />
+                <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="Add Workout" />
                 <p-dialog header="Add new Workout" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem', height: 'auto'}">
                     <span class="p-text-secondary block mb-8">Enter new workout details:</span>
                     <div class="flex items-center gap-4 mb-4">
