@@ -158,18 +158,18 @@
                         type="button"
                         pCancelEditableRow
                         icon="pi pi-trash"
-                        (click)="showDialogForDelete()"
+                        (click)="showDialogForDelete(workout.id, workout.workoutTitle)"
                         text
                         rounded
                         severity="secondary"
                     ></p-button>
                       <p-dialog header="Delete Workout" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
                         <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete workout titled {{workout.workoutTitle}} from your table?</span>
+                          <span class="p-text-secondary block mb-8">Are you sure you want to delete workout titled {{deleteWorkoutTitle}} from your table?</span>
                         </div>
                           <div class="flex justify-end gap-2">
                               <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
-                              <p-button label="Delete" (click)=" onRowDelete(workout.id)" />
+                              <p-button label="Delete" (click)=" onRowDelete(deleteWorkoutId)" />
                           </div>
                       </p-dialog>
                     </div>

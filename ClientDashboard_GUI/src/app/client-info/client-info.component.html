@@ -148,7 +148,7 @@
                     ></p-button>
                       <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
                         <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete client {{client.Name}} from your table?</span>
+                          <span class="p-text-secondary block mb-8">Are you sure you want to delete client {{client.name}} from your table?</span>
                         </div>
                           <div class="flex justify-end gap-2">
                               <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />

@@ -41,6 +41,8 @@ export class ClientWorkouts {
     exerciseCount: number = 0;
     clients: {id: number, name: string}[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
+    deleteWorkoutId: number = 0;
+    deleteWorkoutTitle: string = "";
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
@@ -182,8 +184,10 @@ export class ClientWorkouts {
     this.addDialogVisible = true;
     }
 
-  showDialogForDelete(){
+  showDialogForDelete(workoutId: number, workoutTitle : string){
     this.deleteDialogVisible = true;
+    this.deleteWorkoutId = workoutId;
+    this.deleteWorkoutTitle = workoutTitle;
   }
 
 
