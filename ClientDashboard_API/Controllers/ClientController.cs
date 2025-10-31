@@ -203,12 +203,6 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("ByBody")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
-            //var clientExists = await unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
-            //if (clientExists != null)
-            //{
-            //    return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {client.Name} already exists in the database", Success = false });
-            //}
-            // get their trainer that we can assign them too ?
 
             await unitOfWork.ClientRepository.AddNewClientAsync(newClient.Name, newClient.TotalBlockSessions, newClient.TrainerId);
 

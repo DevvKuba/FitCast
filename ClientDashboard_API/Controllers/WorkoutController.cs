@@ -147,6 +147,15 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
+        /// Workout request for updating an existing workout for a specific client
+        /// </summary>
+        [HttpPut("updateWorkout")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] Workout updatedWorkout)
+        {
+            var workout = await unitOfWork.WorkoutRepository.Get
+        }
+
+        /// <summary>
         /// Workout request for removing a specific workout via client name & date
         /// </summary>
         [HttpDelete("{clientName}/{sessionDate}")]

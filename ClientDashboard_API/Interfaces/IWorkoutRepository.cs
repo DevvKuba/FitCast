@@ -7,6 +7,8 @@ namespace ClientDashboard_API.Interfaces
         List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList);
         Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate);
 
+        Task<Workout?> GetWorkoutById(int id);
+
         Task<Workout> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate);
 
         Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate);
