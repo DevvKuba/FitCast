@@ -46,7 +46,6 @@ export class ClientWorkouts {
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
     private toastService = inject(ToastService);
-    private messageService = inject(MessageService);
 
     first = 0; // offset
     rows = 10; // pageSize
@@ -119,7 +118,17 @@ export class ClientWorkouts {
     }
 
     onRowDelete(workoutId: number){
-
+        this.workoutService.deleteWorkout(workoutId).subscribe({
+            next: (response) => {
+                this.toastService.showSuccess('Success Deleting Workout', response.message);
+                this.deleteDialogVisible = false;
+                this.displayWorkouts();
+            },
+            error: (response) => {
+                console.log(response);
+                this.toastService.showError('Unsuccessful Workout Deletion', response.error.message);
+            }
+        })
     }
 
     addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number){
