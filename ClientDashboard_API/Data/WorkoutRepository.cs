@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -61,13 +60,10 @@ namespace ClientDashboard_API.Data
 
         public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount)
         {
-            var workoutUpdateInfo = new WorkoutUpdateDto
-            {
-                Title = workoutTitle,
-                SessionDate = sessionDate,
-                ExerciseCount = exerciseCount
-            };
-            mapper.Map(workoutUpdateInfo, existingWorkout);
+            existingWorkout.WorkoutTitle = workoutTitle;
+            existingWorkout.SessionDate = sessionDate;
+            existingWorkout.ExerciseCount = exerciseCount;
+
         }
 
 

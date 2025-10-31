@@ -150,16 +150,16 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for updating an existing workout for a specific client
         /// </summary>
         [HttpPut("updateWorkout")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] Workout updatedWorkout)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] WorkoutUpdateDto newWorkoutInfo)
         {
-            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(updatedWorkout.Id);
+            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(newWorkoutInfo.Id);
 
             if (workout == null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout not found", Success = false });
             }
 
-            unitOfWork.WorkoutRepository.UpdateWorkout(workout, updatedWorkout.WorkoutTitle, updatedWorkout.SessionDate, updatedWorkout.ExerciseCount);
+            unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, DateOnly.Parse(newWorkoutInfo.SessionDate), newWorkoutInfo.ExerciseCount);
 
             if (!await unitOfWork.Complete())
             {

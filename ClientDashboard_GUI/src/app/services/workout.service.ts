@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
 import { WorkoutAddDto } from '../models/workout-add-dto';
+import { WorkoutUpdateDto } from '../models/workout-update-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class WorkoutService {
     return this.http.post<ApiResponse<string>>(this.baseUrl + 'workout/Manual/NewWorkout', newWorkout);
   }
 
-  updateWorkout(updatedWorkout: Workout) : Observable<ApiResponse<string>>{
-    return this.http.put<ApiResponse<string>>(this.baseUrl + 'updateWorkout', updatedWorkout);
+  updateWorkout(updatedWorkoutInfo: WorkoutUpdateDto) : Observable<ApiResponse<any>>{
+    return this.http.put<any>(this.baseUrl + 'workout/updateWorkout', updatedWorkoutInfo);
   }
   
 }

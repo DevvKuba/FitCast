@@ -2,10 +2,11 @@
 {
     public class WorkoutUpdateDto
     {
-        public string? Title { get; set; }
+        public required int Id { get; set; }
+        public required string WorkoutTitle { get; set; }
 
-        public DateOnly? SessionDate { get; set; }
+        public required string SessionDate { get; set; }
 
-        public int? ExerciseCount { get; set; }
+        public required int ExerciseCount { get; set; }
     }
 }

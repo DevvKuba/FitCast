@@ -30,7 +30,7 @@ import { TagModule } from 'primeng/tag';
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
-    workouts: Workout[] = [];
+    workouts: Workout[] | null = null;
     trainerId : number  = 0;
     addDialogVisible: boolean = false;
     deleteDialogVisible: boolean = false;
@@ -85,9 +85,18 @@ export class ClientWorkouts {
     }
 
     onRowEditSave(newWorkout: Workout) {
-        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null && newWorkout.exerciseCount > 0) {
+        console.log(typeof(newWorkout.sessionDate));
+        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null 
+            && newWorkout.exerciseCount > 0 && newWorkout.id !== null) {
             delete this.clonedWorkouts[newWorkout.id as number];
-            this.workoutService.updateWorkout(newWorkout).subscribe({
+
+            var updatedInfo =  {
+                id: newWorkout.id,
+                workoutTitle: newWorkout.workoutTitle,
+                sessionDate: newWorkout.sessionDate,
+                exerciseCount: newWorkout.exerciseCount
+            }
+            this.workoutService.updateWorkout(updatedInfo).subscribe({
                 next: (response) => {
                     console.log(response);
                     this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
@@ -103,8 +112,10 @@ export class ClientWorkouts {
     }
 
     onRowEditCancel(workout: Workout, index: number) {
-        this.workouts[index] = this.clonedWorkouts[workout.id as number];
-        delete this.clonedWorkouts[workout.id as number];
+        if(this.workouts && this.clonedWorkouts[workout.id as number]){
+            this.workouts[index] = this.clonedWorkouts[workout.id as number];
+            delete this.clonedWorkouts[workout.id as number];
+        }
     }
 
     onRowDelete(workoutId: number){
@@ -159,11 +170,11 @@ export class ClientWorkouts {
   }
 
   showDialogForAdd() {
-        this.addDialogVisible = true;
+    this.addDialogVisible = true;
     }
 
   showDialogForDelete(){
-
+    this.deleteDialogVisible = true;
   }
 
 

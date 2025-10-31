@@ -1,9 +1,9 @@
 export interface Workout {
-  id?: number,
+  id: number,
   clientId: number,
   clientName: string,
   workoutTitle: string,
-  sessionDate: Date,
+  sessionDate: string,
   currentBlockSession?: number,
   totalBlockSessions?: number,
   exerciseCount: number,

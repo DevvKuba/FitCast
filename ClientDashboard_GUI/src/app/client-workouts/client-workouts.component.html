@@ -62,7 +62,7 @@
                  <th pSortableColumn="totalBlockSessions" style="width:16%; text-align: center;">
                     Total Sessions <p-sortIcon field="totalBlockSessions" />
                 </th>
-                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;">
+                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;" >
                     Session Date <p-sortIcon field="sessionDate" />
                 </th>
                  <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
@@ -95,7 +95,7 @@
                             [(ngModel)]= "workout.sessionDate" />
                     </ng-template>
                     <ng-template #output>
-                        {{workout.sessionDate}}
+                        {{workout.sessionDate | date:'dd/MM/yyyy'}}
                     </ng-template>
                 </p-cellEditor>
               </td>
@@ -163,9 +163,9 @@
                         rounded
                         severity="secondary"
                     ></p-button>
-                      <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
+                      <p-dialog header="Delete Workout" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
                         <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete this client from your table?</span>
+                          <span class="p-text-secondary block mb-8">Are you sure you want to delete this workout from your table?</span>
                         </div>
                           <div class="flex justify-end gap-2">
                               <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
