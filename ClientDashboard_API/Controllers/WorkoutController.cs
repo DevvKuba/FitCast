@@ -187,10 +187,32 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Removing client unsuccessful", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Removing client was unsuccessful", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"{clientName}'s workout at {workoutDate} has been removed", Success = true });
 
+        }
+
+        /// <summary>
+        /// Workout request for removing a specific workout via client name & date
+        /// </summary>
+        [HttpDelete("DeleteWorkout")]
+        public async Task<ActionResult<ApiResponseDto<string>>> DeleteWorkoutAsync([FromQuery] int workoutId)
+        {
+            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(workoutId);
+
+            if (workout == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout doesn't exist", Success = false });
+            }
+
+            unitOfWork.WorkoutRepository.RemoveWorkout(workout);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Removing workout was unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = workout.WorkoutTitle, Message = $"Workout titled: {workout.WorkoutTitle} at {workout.SessionDate} has been removed", Success = true });
         }
     }
 }
