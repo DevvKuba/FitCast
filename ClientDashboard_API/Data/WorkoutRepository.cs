@@ -1,10 +1,12 @@
-﻿using ClientDashboard_API.Entities;
+﻿using AutoMapper;
+using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class WorkoutRepository(DataContext context) : IWorkoutRepository
+    public class WorkoutRepository(DataContext context, IMapper mapper) : IWorkoutRepository
     {
         public List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList)
         {
@@ -28,7 +30,7 @@ namespace ClientDashboard_API.Data
             return workouts;
         }
 
-        public async Task<Workout?> GetWorkoutById(int id)
+        public async Task<Workout?> GetWorkoutByIdAsync(int id)
         {
             Workout? workout = await context.Workouts.Where(x => x.Id == id).FirstOrDefaultAsync();
             return workout;
@@ -55,6 +57,17 @@ namespace ClientDashboard_API.Data
         {
             Workout? clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName.ToLower()).OrderByDescending(x => x.SessionDate).FirstOrDefaultAsync();
             return clientWorkout;
+        }
+
+        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount)
+        {
+            var workoutUpdateInfo = new WorkoutUpdateDto
+            {
+                Title = workoutTitle,
+                SessionDate = sessionDate,
+                ExerciseCount = exerciseCount
+            };
+            mapper.Map(workoutUpdateInfo, existingWorkout);
         }
 
 

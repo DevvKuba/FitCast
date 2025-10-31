@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Helpers
@@ -12,6 +13,7 @@ namespace ClientDashboard_API.Helpers
             //CreateMap<Workout, WorkoutDto>();
             CreateMap<Client, WorkoutDto>();
             CreateMap<ClientUpdateDto, Client>();
+            CreateMap<WorkoutUpdateDto, Workout>();
         }
     }
 }

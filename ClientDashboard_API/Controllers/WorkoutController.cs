@@ -152,7 +152,22 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("updateWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] Workout updatedWorkout)
         {
-            var workout = await unitOfWork.WorkoutRepository.Get
+            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(updatedWorkout.Id);
+
+            if (workout == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout not found", Success = false });
+            }
+
+            unitOfWork.WorkoutRepository.UpdateWorkout(workout, updatedWorkout.WorkoutTitle, updatedWorkout.SessionDate, updatedWorkout.ExerciseCount);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Updating workout unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = workout.ClientName, Message = $"Workout with title: {workout.WorkoutTitle} at {workout.SessionDate} successfully updated", Success = true });
+
+
         }
 
         /// <summary>
