@@ -11,3 +11,7 @@
 .exercise-count-input {
     max-width: 80px;
 }
+
+.workout-td {
+    text-align: center;
+}

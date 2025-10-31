@@ -50,29 +50,29 @@
                 <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
             </div>
             <tr>
-                <th pSortableColumn="workoutTitle" style="width:22%">
+                <th pSortableColumn="workoutTitle" style="width:22%; text-align: center;">
                     Workout Title <p-sortIcon field="workoutTitle" />
                 </th>
-                 <th pSortableColumn="clientName" style="width:16%">
+                 <th pSortableColumn="clientName" style="width:16%; text-align: center;">
                     Client Name <p-sortIcon field="clientName" />
                 </th>
-                 <th pSortableColumn="currentBlockSession" style="width:16%">
+                 <th pSortableColumn="currentBlockSession" style="width:16%; text-align: center;">
                     Current Session <p-sortIcon field="currentBlockSession" />
                 </th>
-                 <th pSortableColumn="totalBlockSessions" style="width:16%">
+                 <th pSortableColumn="totalBlockSessions" style="width:16%; text-align: center;">
                     Total Sessions <p-sortIcon field="totalBlockSessions" />
                 </th>
-                 <th pSortableColumn="sessionDate" style="width:15%">
+                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;">
                     Session Date <p-sortIcon field="sessionDate" />
                 </th>
-                 <th pSortableColumn="exerciseCount" style="width:15%">
+                 <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
                     Exercises <p-sortIcon field="exerciseCount" />
                 </th>
             </tr>
         </ng-template>
         <ng-template #body let-workout let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="workout">
-                <td>
+                <td class="workout-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -84,10 +84,10 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                <td>{{ workout.clientName }}</td>
-                <td>{{ workout.currentBlockSession }}</td>
-                <td>{{ workout.totalBlockSessions }}</td>
-                <td>
+                <td class="workout-td">{{ workout.clientName }}</td>
+                <td class="workout-td">{{ workout.currentBlockSession }}</td>
+                <td class="workout-td">{{ workout.totalBlockSessions }}</td>
+                <td class="workout-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -99,7 +99,7 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                <td>
+                <td class="workout-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input class="exercise-count-input"
@@ -112,7 +112,7 @@
                 </p-cellEditor>
               </td>
                 
-                <td>
+                <td class="workout-td">
                 <div class="flex items-center justify-center gap-2">
                     <button
                         *ngIf="!editing"
