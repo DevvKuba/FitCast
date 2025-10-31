@@ -25,5 +25,9 @@ export class WorkoutService {
   updateWorkout(updatedWorkoutInfo: WorkoutUpdateDto) : Observable<ApiResponse<any>>{
     return this.http.put<any>(this.baseUrl + 'workout/updateWorkout', updatedWorkoutInfo);
   }
+
+  deleteWorkout(workoutId : number) : Observable<ApiResponse<any>>{
+    return this.http.delete<any>(this.baseUrl + `workout/DeleteWorkout?workoutId=${workoutId}`);
+  }
   
 }
