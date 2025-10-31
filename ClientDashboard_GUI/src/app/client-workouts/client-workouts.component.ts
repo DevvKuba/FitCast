@@ -86,9 +86,10 @@ export class ClientWorkouts {
     onRowEditSave(newWorkout: Workout) {
         if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null && newWorkout.exerciseCount > 0) {
             delete this.clonedWorkouts[newWorkout.id as number];
-            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product is updated' });
+            this.workoutService
+            this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
         } else {
-            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Price' });
+            this.toastService.showError('Update Unsuccessful', 'Ensure all fields are filled in correctly');
         }
     }
 

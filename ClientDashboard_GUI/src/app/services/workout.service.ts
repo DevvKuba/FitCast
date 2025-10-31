@@ -21,5 +21,9 @@ export class WorkoutService {
   addWorkout(newWorkout : WorkoutAddDto) : Observable<ApiResponse<string>>{
     return this.http.post<ApiResponse<string>>(this.baseUrl + 'workout/Manual/NewWorkout', newWorkout);
   }
+
+  updateWorkout(updatedWorkout: Workout) : Observable<ApiResponse<string>>{
+    return this.http.put<ApiResponse<string>>(this.baseUrl + 'updateWorkout', updatedWorkout);
+  }
   
 }
