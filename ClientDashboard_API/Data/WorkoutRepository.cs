@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class WorkoutRepository(DataContext context, IMapper mapper) : IWorkoutRepository
+    public class WorkoutRepository(DataContext context) : IWorkoutRepository
     {
         public List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList)
         {
