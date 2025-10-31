@@ -41,8 +41,10 @@ export class ClientInfoComponent implements OnInit {
   newClientName : string = "";
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
-  toastSummary : string = "";
-  toastDetail : string = "";
+  toastSummary: string = "";
+  toastDetail: string = "";
+  deleteClientId: number = 0;
+  deleteClientName: string = "";
 
   ngOnInit() {
       this.getClients();
@@ -141,8 +143,10 @@ export class ClientInfoComponent implements OnInit {
     })
   }
 
-  showDialogForDelete(){
+  showDialogForDelete(clientId: number, clientName: string){
     this.deleteDialogVisible = true;
+    this.deleteClientId = clientId;
+    this.deleteClientName = clientName;
   }
 
   showDialogForAdd(){

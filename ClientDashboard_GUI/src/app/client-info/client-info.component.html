@@ -141,18 +141,18 @@
                         type="button"
                         pCancelEditableRow
                         icon="pi pi-trash"
-                        (click)="showDialogForDelete()"
+                        (click)="showDialogForDelete(client.id, client.name)"
                         text
                         rounded
                         severity="secondary"
                     ></p-button>
                       <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
                         <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete client {{client.name}} from your table?</span>
+                          <span class="p-text-secondary block mb-8">Are you sure you want to delete client {{deleteClientName}} from your table?</span>
                         </div>
                           <div class="flex justify-end gap-2">
                               <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
-                              <p-button label="Delete" (click)=" onRowDelete(client.id)" />
+                              <p-button label="Delete" (click)=" onRowDelete(deleteClientId)" />
                           </div>
                       </p-dialog>
                     </div>
