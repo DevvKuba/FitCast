@@ -19,16 +19,18 @@ import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageService } from 'primeng/api';
 import { ToastService } from '../services/toast.service';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-client-workouts',
-  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule, Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule ],
+  imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
+     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule ],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
-    workouts: Workout[] | null = null;
+    workouts: Workout[] = [];
     trainerId : number  = 0;
     visible: boolean = false;
 
@@ -37,11 +39,13 @@ export class ClientWorkouts {
     sessionDate: Date  = new Date();
     exerciseCount: number = 0;
     clients: {id: number, name: string}[] = [];
+    clonedWorkouts: { [s: string]: Workout } = {};
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
     private toastService = inject(ToastService);
+    private messageService = inject(MessageService);
 
     first = 0; // offset
     rows = 10; // pageSize
@@ -73,6 +77,24 @@ export class ClientWorkouts {
 
     isFirstPage(): boolean {
         return this.workouts ? this.first === 0 : true;
+    }
+
+     onRowEditInit(workout: Workout) {
+        this.clonedWorkouts[workout.id as number] = { ...workout };
+    }
+
+    onRowEditSave(newWorkout: Workout) {
+        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null && newWorkout.exerciseCount > 0) {
+            delete this.clonedWorkouts[newWorkout.id as number];
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Product is updated' });
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Invalid Price' });
+        }
+    }
+
+    onRowEditCancel(workout: Workout, index: number) {
+        this.workouts[index] = this.clonedWorkouts[workout.id as number];
+        delete this.clonedWorkouts[workout.id as number];
     }
 
     displayWorkouts(){
