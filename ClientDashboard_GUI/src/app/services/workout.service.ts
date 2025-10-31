@@ -1,10 +1,9 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Workout } from '../models/workout';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
-import { body } from '@primeuix/themes/aura/card';
 import { WorkoutAddDto } from '../models/workout-add-dto';
 
 @Injectable({

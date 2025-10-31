@@ -1,4 +1,4 @@
-import { Component, inject} from '@angular/core';
+import { Component, inject, resolveForwardRef} from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -32,7 +32,8 @@ import { TagModule } from 'primeng/tag';
 export class ClientWorkouts {
     workouts: Workout[] = [];
     trainerId : number  = 0;
-    visible: boolean = false;
+    addDialogVisible: boolean = false;
+    deleteDialogVisible: boolean = false;
 
     selectedClient :{id: number, name: string} = {id: 0, name: ""};
     workoutTitle: string = "";
@@ -86,8 +87,16 @@ export class ClientWorkouts {
     onRowEditSave(newWorkout: Workout) {
         if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null && newWorkout.exerciseCount > 0) {
             delete this.clonedWorkouts[newWorkout.id as number];
-            this.workoutService
-            this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
+            this.workoutService.updateWorkout(newWorkout).subscribe({
+                next: (response) => {
+                    console.log(response);
+                    this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
+                }, 
+                error: (response) => {
+                    console.log(response);
+                    this.toastService.showError('Unsuccessful Update', `Workout: ${newWorkout.workoutTitle} not updated`);
+                }
+            })
         } else {
             this.toastService.showError('Update Unsuccessful', 'Ensure all fields are filled in correctly');
         }
@@ -96,6 +105,31 @@ export class ClientWorkouts {
     onRowEditCancel(workout: Workout, index: number) {
         this.workouts[index] = this.clonedWorkouts[workout.id as number];
         delete this.clonedWorkouts[workout.id as number];
+    }
+
+    onRowDelete(workoutId: number){
+
+    }
+
+    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number){
+        var newWorkout = {
+            workoutTitle: workoutTitle,
+            clientName: selectedClient.name,
+            clientId: selectedClient.id,
+            sessionDate: this.formatDateForApi(sessionDate),
+            exerciseCount: exerciseCount
+        }
+
+        this.workoutService.addWorkout(newWorkout).subscribe({
+            next: (response) => {
+                this.addDialogVisible = false;
+                this.toastService.showSuccess('Successfully added workout', response.message);
+                this.displayWorkouts();
+            },
+            error: (response) => {
+                this.toastService.showError('Workout not added', response.message);
+            }
+        })
     }
 
     displayWorkouts(){
@@ -111,27 +145,6 @@ export class ClientWorkouts {
         });
     }
 
-    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number){
-        var newWorkout = {
-            workoutTitle: workoutTitle,
-            clientName: selectedClient.name,
-            clientId: selectedClient.id,
-            sessionDate: this.formatDateForApi(sessionDate),
-            exerciseCount: exerciseCount
-        }
-
-        this.workoutService.addWorkout(newWorkout).subscribe({
-            next: (response) => {
-                this.visible = false;
-                this.toastService.showSuccess('Successfully added workout', response.message);
-                this.displayWorkouts();
-            },
-            error: (response) => {
-                this.toastService.showError('Workout not added', response.message);
-            }
-        })
-    }
-
     gatherClientNames(){
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     this.clientService.getAllTrainerClients(this.trainerId).subscribe({
@@ -145,9 +158,14 @@ export class ClientWorkouts {
     })
   }
 
-    showDialogForAdd() {
-        this.visible = true;
+  showDialogForAdd() {
+        this.addDialogVisible = true;
     }
+
+  showDialogForDelete(){
+
+  }
+
 
   formatDateForApi(date: Date | undefined): string {
   if (!date) return '';

@@ -4,17 +4,10 @@
   align-items: center;
 }
 
-/* Ensure modal backdrop covers everything */
-::ng-deep .p-dialog-mask {
-    z-index: 9998 !important;
+.p-inputtext {
+    max-width: 135px;
 }
 
-/* Ensure dialog itself is above backdrop */
-::ng-deep .p-dialog {
-    z-index: 9999 !important;
-}
-
-/* Specifically target table pagination to be below modal */
-::ng-deep .p-paginator {
-    z-index: 1 !important;
+.exercise-count-input {
+    max-width: 80px;
 }
