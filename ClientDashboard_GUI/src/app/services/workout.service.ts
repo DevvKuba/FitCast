@@ -29,5 +29,6 @@ export class WorkoutService {
   deleteWorkout(workoutId : number) : Observable<ApiResponse<any>>{
     return this.http.delete<any>(this.baseUrl + `workout/DeleteWorkout?workoutId=${workoutId}`);
   }
+
   
 }

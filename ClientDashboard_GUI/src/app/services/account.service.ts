@@ -25,6 +25,7 @@ export class AccountService {
 
   logout(storageItem: string){
     localStorage.removeItem(storageItem);
+    this.currentUser.set(null);
   }
 
   isAuthenticated() : boolean {
@@ -32,6 +33,43 @@ export class AccountService {
       return true;
     }
     return false;
+  }
+
+   initializeAuthState(): void {
+    const token = localStorage.getItem('token');
+
+    if(token && this.isTokenValid(token)){
+      const userInfo = this.extractUserFromToken(token);
+      this.currentUser.set(userInfo);
+    }
+  }
+
+  private extractUserFromToken(token: string) : UserDto{
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return{
+        id: payload.sub || payload.userId,
+        firstName: payload.firstName || payload.given_name,
+        token: token
+      };
+    }
+    catch(error){
+      throw new Error('Invalid token format');
+    }
+  }
+
+  private isTokenValid(token : string) : boolean{
+    try {
+      //decode processes to validate token
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      // check if token hasn't expired
+      return payload.exp > currentTime;
+    }
+    catch (error) {
+      return false;
+    }
   }
 
 }

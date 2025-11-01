@@ -3,6 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './navbar/navbar';
 import { Toast } from 'primeng/toast';
+import { AccountService } from './services/account.service';
 
 @Component({
   selector: 'app-root',
@@ -14,14 +15,12 @@ export class App implements OnInit {
   http = inject(HttpClient);
   protected readonly title = signal('ClientDashboard_GUI');
   clients: any;
+  accountService = inject(AccountService);
 
   ngOnInit(): void {
-  // general structure
-  // this.http.get('https://localhost:7217/onFirstSession').subscribe({
-  //   next: response => this.clients = response,
-  //   error: error => console.log(error),
-  //   complete: () => console.log('Request has completed')
-  // })
+    this.accountService.initializeAuthState();
+    console.log(this.accountService.currentUser()?.firstName)
+    console.log(this.accountService.currentUser()?.token)
 }
 }
 
