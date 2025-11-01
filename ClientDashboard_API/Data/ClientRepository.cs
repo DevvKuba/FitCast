@@ -49,6 +49,15 @@ namespace ClientDashboard_API.Data
         {
             int newCurrentSession = client.CurrentBlockSession - 1;
 
+            if (newCurrentSession == 0)
+            {
+                if (client.TotalBlockSessions is not null)
+                {
+                    newCurrentSession = (int)client.TotalBlockSessions;
+                }
+
+            }
+
             var updatedData = new ClientUpdateDto
             {
                 Name = client.Name,

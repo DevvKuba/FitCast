@@ -206,7 +206,10 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout doesn't exist", Success = false });
             }
 
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(workout.ClientId);
+
             unitOfWork.WorkoutRepository.RemoveWorkout(workout);
+            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(client);
 
             if (!await unitOfWork.Complete())
             {
