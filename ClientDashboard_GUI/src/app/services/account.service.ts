@@ -48,8 +48,8 @@ export class AccountService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return{
-        id: payload.sub || payload.userId,
-        firstName: payload.firstName || payload.given_name,
+        id: payload.sub,
+        firstName: payload.given_name,
         token: token
       };
     }

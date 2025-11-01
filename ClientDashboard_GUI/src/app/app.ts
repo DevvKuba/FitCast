@@ -19,8 +19,6 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.accountService.initializeAuthState();
-    console.log(this.accountService.currentUser()?.firstName)
-    console.log(this.accountService.currentUser()?.token)
 }
 }
 
