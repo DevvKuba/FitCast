@@ -21,6 +21,7 @@ namespace ClientDashboard_API.Helpers
                 Subject = new ClaimsIdentity(
                     [
                     new Claim(JwtRegisteredClaimNames.Sub, trainer.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.GivenName, trainer.FirstName),
                     new Claim(JwtRegisteredClaimNames.Email, trainer.Email)
                     ]),
                 Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInMinutes")),
