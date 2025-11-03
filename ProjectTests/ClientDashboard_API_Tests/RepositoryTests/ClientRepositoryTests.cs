@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.Data;
+using ClientDashboard_API.Data.Migrations;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly ClientRepository _clientRepository;
         private readonly WorkoutRepository _workoutRepository;
         private readonly TrainerRepository _trainerRepository;
+        private readonly NotificationRepository _notificationRepository;
         private readonly UnitOfWork _unitOfWork;
 
         public ClientRepositoryTests()
@@ -32,7 +34,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _clientRepository = new ClientRepository(_context, _mapper);
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository);
+            _notificationRepository = new NotificationRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository);
 
         }
 
