@@ -8,6 +8,6 @@ namespace ClientDashboard_API.Interfaces
 
         void InitialiseBaseTwillioClient();
 
-        void SendMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage);
+        void SendMessage(Trainer? trainer, Client? client, string senderPhoneNumber, string notificationMessage);
     }
 }
