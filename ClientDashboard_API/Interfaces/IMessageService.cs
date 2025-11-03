@@ -2,6 +2,10 @@
 {
     public interface IMessageService
     {
-        void SendClientBlockCompletionReminder(string clientName);
+        void PipelineClientBlockCompletionReminder(string clientName);
+
+        Task TrainerBlockCompletionReminderAsync(int trainerId, int clientId);
+
+        Task ClientBlockCompletionReminderAsync(int trainerId, int clientId);
     }
 }

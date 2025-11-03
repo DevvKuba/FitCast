@@ -4,10 +4,11 @@ using Twilio.Types;
 
 namespace ClientDashboard_API.Services
 {
-    public class TwillioMessageService : IMessageService
+    public class TwillioMessageService() : IMessageService
     {
-        // for trainer need trainer and client id
-        public void SendClientBlockCompletionReminder(string clientName)
+
+        // would need to change to id for more accurate retrieval rather than clientName
+        public void PipelineClientBlockCompletionReminder(string clientName)
         {
             var ACCOUNT_SID = Environment.GetEnvironmentVariable("ACCOUNT_SID");
             var AUTH_TOKEN = Environment.GetEnvironmentVariable("AUTH_TOKEN");
@@ -25,6 +26,15 @@ namespace ClientDashboard_API.Services
             var message = MessageResource.Create(messageOptions);
         }
 
-        // send client Client Block Completion Reminder : need trainer and client id
+        public Task TrainerBlockCompletionReminderAsync(int trainerId, int clientId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ClientBlockCompletionReminderAsync(int trainerId, int clientId)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

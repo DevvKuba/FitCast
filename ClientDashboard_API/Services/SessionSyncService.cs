@@ -29,7 +29,7 @@ namespace ClientDashboard_API.Services
                         // indicating that their block is finished
                         if (client.CurrentBlockSession == client.TotalBlockSessions)
                         {
-                            messageService.SendClientBlockCompletionReminder(client.Name);
+                            messageService.PipelineClientBlockCompletionReminder(client.Name);
                         }
                     }
                 }
