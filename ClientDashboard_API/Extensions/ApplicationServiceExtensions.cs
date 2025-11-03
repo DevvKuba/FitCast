@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Data;
+using ClientDashboard_API.Data.Migrations;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
@@ -28,6 +29,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IMessageService, TwillioMessageService>();
             services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
             services.AddScoped<ITrainerLoginService, TrainerLoginService>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();

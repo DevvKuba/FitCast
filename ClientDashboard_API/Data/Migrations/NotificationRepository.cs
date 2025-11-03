@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Data.Migrations
 {
-    public class NotificationRepository : INotificationRepository
+    public class NotificationRepository(DataContext context) : INotificationRepository
     {
 
     }
