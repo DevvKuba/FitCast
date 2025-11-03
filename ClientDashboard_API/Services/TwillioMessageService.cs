@@ -6,6 +6,7 @@ namespace ClientDashboard_API.Services
 {
     public class TwillioMessageService : IMessageService
     {
+        // for trainer need trainer and client id
         public void SendClientBlockCompletionReminder(string clientName)
         {
             var ACCOUNT_SID = Environment.GetEnvironmentVariable("ACCOUNT_SID");
@@ -23,5 +24,7 @@ namespace ClientDashboard_API.Services
 
             var message = MessageResource.Create(messageOptions);
         }
+
+        // send client Client Block Completion Reminder : need trainer and client id
     }
 }

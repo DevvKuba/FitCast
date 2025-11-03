@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public int TrainerId { get; set; }
+        public int? TrainerId { get; set; }
 
         public int? ClientId { get; set; }
 
@@ -15,5 +15,10 @@
         public required string SentThrough { get; set; } // email , sms.. 
 
         public DateTime SentAt { get; set; }
+
+        public Trainer? Trainer { get; set; } = null!;
+
+        public Client? Client { get; set; } = null!;
+
     }
 }
