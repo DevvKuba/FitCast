@@ -8,6 +8,8 @@
 
         ITrainerRepository TrainerRepository { get; }
 
+        INotificationRepository NotificationRepository { get; }
+
         Task<bool> Complete();
 
         bool HasChanges();

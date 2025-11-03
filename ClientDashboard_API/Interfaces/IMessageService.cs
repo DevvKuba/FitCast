@@ -1,11 +1,13 @@
-﻿namespace ClientDashboard_API.Interfaces
+﻿using ClientDashboard_API.Entities;
+
+namespace ClientDashboard_API.Interfaces
 {
     public interface IMessageService
     {
         void PipelineClientBlockCompletionReminder(string clientName);
 
-        Task TrainerBlockCompletionReminderAsync(int trainerId, int clientId);
+        void InitialiseBaseTwillioClient();
 
-        Task ClientBlockCompletionReminderAsync(int trainerId, int clientId);
+        void SendMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage);
     }
 }

@@ -1,10 +1,11 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
 namespace ClientDashboard_API.Services
 {
-    public class TwillioMessageService() : IMessageService
+    public class TwillioMessageService(IUnitOfWork unitOfWork) : IMessageService
     {
 
         // would need to change to id for more accurate retrieval rather than clientName
@@ -26,14 +27,24 @@ namespace ClientDashboard_API.Services
             var message = MessageResource.Create(messageOptions);
         }
 
-        public Task TrainerBlockCompletionReminderAsync(int trainerId, int clientId)
+
+        public void InitialiseBaseTwillioClient()
         {
-            throw new NotImplementedException();
+            //initilaise base client
+            var ACCOUNT_SID = Environment.GetEnvironmentVariable("ACCOUNT_SID");
+            var AUTH_TOKEN = Environment.GetEnvironmentVariable("AUTH_TOKEN");
+            Twilio.TwilioClient.Init(ACCOUNT_SID, AUTH_TOKEN);
         }
 
-        public Task ClientBlockCompletionReminderAsync(int trainerId, int clientId)
+        public void SendMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
         {
-            throw new NotImplementedException();
+            var messageOptions = new CreateMessageOptions(
+              // TODO would be changed to recipient PhoneNumber
+              new PhoneNumber(trainer.Email ?? client.Name));
+            messageOptions.From = new PhoneNumber(senderPhoneNumber);
+            messageOptions.Body = notificationMessage;
+
+            var message = MessageResource.Create(messageOptions);
         }
 
     }
