@@ -26,6 +26,10 @@ namespace ClientDashboard_API.Data
                 .HasValue<Trainer>("Trainer")
                 .HasValue<Client>("Client");
 
+            builder.Entity<Trainer>()
+                .Property(t => t.AverageSessionPrice)
+                .HasPrecision(18, 2);
+
             builder.Entity<Client>()
                 .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
@@ -51,7 +55,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<Notification>()
                 .WithOne(n => n.Trainer)
                 .HasForeignKey(n => n.TrainerId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
         }

@@ -50,7 +50,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Client");
+                    b.ToTable("Client", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Notification", b =>
@@ -88,7 +88,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Trainer", b =>
@@ -117,7 +117,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Trainer");
+                    b.ToTable("Trainer", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Workout", b =>
@@ -155,7 +155,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Workouts");
+                    b.ToTable("Workouts", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Client", b =>
