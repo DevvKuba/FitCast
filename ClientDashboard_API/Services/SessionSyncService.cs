@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Services
                 {
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
-                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client.Name, workout.SessionDate);
+                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client.FirstName, workout.SessionDate);
                     // if workout is not a duplicate / not yet added
                     if (existingWorkout == null)
                     {
@@ -29,7 +29,7 @@ namespace ClientDashboard_API.Services
                         // indicating that their block is finished
                         if (client.CurrentBlockSession == client.TotalBlockSessions)
                         {
-                            messageService.PipelineClientBlockCompletionReminder(client.Name);
+                            messageService.PipelineClientBlockCompletionReminder(client.FirstName);
                         }
                     }
                 }

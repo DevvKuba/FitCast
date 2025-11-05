@@ -71,7 +71,7 @@ namespace ClientDashboard_API.Data
             await context.Workouts.AddAsync(new Workout
             {
                 ClientId = client.Id,
-                ClientName = client.Name,
+                ClientName = client.FirstName,
                 WorkoutTitle = workoutTitle,
                 SessionDate = workoutDate,
                 CurrentBlockSession = client.CurrentBlockSession,

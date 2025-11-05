@@ -35,7 +35,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving date when updating clients trainer", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = client.Name, Message = $"client: {client.Name} is now under trainer: {trainer.FirstName}", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"client: {client.FirstName} is now under trainer: {trainer.FirstName}", Success = true });
         }
 
 

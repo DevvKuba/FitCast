@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Services
         {
             var messageOptions = new CreateMessageOptions(
               // TODO would be changed to recipient PhoneNumber
-              new PhoneNumber(trainer.Email ?? client.Name));
+              new PhoneNumber(trainer.Email ?? client.FirstName));
             messageOptions.From = new PhoneNumber(senderPhoneNumber);
             messageOptions.Body = notificationMessage;
 

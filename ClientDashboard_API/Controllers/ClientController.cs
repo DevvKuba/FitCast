@@ -79,13 +79,13 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
             }
 
-            unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.Name, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
+            unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {updatedClient.Name}'s details", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {updatedClient.FirstName}'s details", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = updatedClient.Name, Message = $"{updatedClient.Name}'s details have been updated successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = updatedClient.FirstName, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
 
         }
 
@@ -170,9 +170,9 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while unassigning {client.Name}'s trainer", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while unassigning {client.FirstName}'s trainer", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = null, Message = $"{client.Name}'s trainer is now unassigned", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"{client.FirstName}'s trainer is now unassigned", Success = true });
         }
 
         /// <summary>

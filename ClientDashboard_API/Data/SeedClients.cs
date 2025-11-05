@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Data
                 var client = new Client
                 {
                     // potentially seed name as lower case
-                    Name = clientRecord[0].ToLower(),
+                    FirstName = clientRecord[0].ToLower(),
                     CurrentBlockSession = int.Parse(clientRecord[1]),
                     TotalBlockSessions = int.Parse(clientRecord[2]),
                     Workouts = new List<Workout>()

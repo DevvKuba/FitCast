@@ -28,7 +28,7 @@ namespace ClientDashboard_API.Controllers
 
             }
 
-            var notificationMessage = $"{client.Name}'s monthly sessions have come to an end,\n" +
+            var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
                 $"remember to message them in regards of a new payment.";
 
             messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
@@ -65,7 +65,7 @@ namespace ClientDashboard_API.Controllers
 
             }
 
-            var notificationMessage = $"Hey {client.Name}! this is {trainer.FirstName} just wanted to" +
+            var notificationMessage = $"Hey {client.FirstName}! this is {trainer.FirstName} just wanted to" +
              "inform you that our monthly sessions have come to an end,\n" +
                 $"If you could place a block payment before our next session that would be great.";
 

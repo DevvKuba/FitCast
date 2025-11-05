@@ -24,7 +24,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
-                Name = client.Name,
+                Name = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions
@@ -60,7 +60,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
-                Name = client.Name,
+                Name = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions,
@@ -72,7 +72,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = client.Name,
+                Name = client.FirstName,
                 IsActive = client.IsActive,
                 TotalBlockSessions = blockSessions,
                 CurrentBlockSession = client.CurrentBlockSession
@@ -85,7 +85,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = client.Name,
+                Name = client.FirstName,
                 IsActive = client.IsActive,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = currentSession
@@ -107,7 +107,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<Client> GetClientByNameAsync(string clientName)
         {
-            var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).FirstOrDefaultAsync();
+            var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).FirstOrDefaultAsync();
             return clientData;
         }
 
@@ -119,26 +119,26 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> GetClientsCurrentSessionAsync(string clientName)
         {
-            var clientData = await context.Client.Where(x => x.Name == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
+            var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
             return clientData;
         }
 
 
         public async Task<List<string>> GetClientsOnFirstSessionAsync()
         {
-            var clients = await context.Client.Where(x => x.CurrentBlockSession == 1).Select(x => x.Name.ToLower()).ToListAsync();
+            var clients = await context.Client.Where(x => x.CurrentBlockSession == 1).Select(x => x.FirstName.ToLower()).ToListAsync();
             return clients;
         }
 
         public async Task<List<string>> GetClientsOnLastSessionAsync()
         {
-            var clients = await context.Client.Where(x => x.CurrentBlockSession == x.TotalBlockSessions).Select(x => x.Name.ToLower()).ToListAsync();
+            var clients = await context.Client.Where(x => x.CurrentBlockSession == x.TotalBlockSessions).Select(x => x.FirstName.ToLower()).ToListAsync();
             return clients;
         }
 
         public async Task<bool> CheckIfClientExistsAsync(string clientName)
         {
-            return await context.Client.AnyAsync(record => record.Name == clientName.ToLower());
+            return await context.Client.AnyAsync(record => record.FirstName == clientName.ToLower());
         }
 
         public void UnassignTrainerAsync(Client client)
@@ -152,7 +152,7 @@ namespace ClientDashboard_API.Data
             await context.Client.AddAsync(new Client
             {
 
-                Name = clientName.ToLower(),
+                FirstName = clientName.ToLower(),
                 IsActive = true,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions,
