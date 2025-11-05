@@ -20,11 +20,23 @@ namespace ClientDashboard_API.Data
         {
             base.OnModelCreating(builder);
 
-            // Configure inheritance
+            builder.Entity<UserBase>().ToTable("Users");
+            builder.Entity<Client>().ToTable("Clients");
+            builder.Entity<Trainer>().ToTable("Trainers");
+
+            // explicit identiy configuration
             builder.Entity<UserBase>()
-                .HasDiscriminator<string>("UserType")
-                .HasValue<Trainer>("Trainer")
-                .HasValue<Client>("Client");
+                .Property(u => u.Id)
+                .ValueGeneratedOnAdd()
+                .UseIdentityColumn(1, 1);
+
+            builder.Entity<Trainer>().
+                Property(t => t.Id)
+                .ValueGeneratedNever();
+
+            builder.Entity<Client>().
+                Property(c => c.Id)
+                .ValueGeneratedNever();
 
             builder.Entity<Trainer>()
                 .Property(t => t.AverageSessionPrice)

@@ -1,7 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 
-namespace ClientDashboard_API.Data.Migrations
+namespace ClientDashboard_API.Data
 {
     public class NotificationRepository(DataContext context) : INotificationRepository
     {

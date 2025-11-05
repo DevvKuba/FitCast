@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClientDashboard_API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ClientDataDbContextModelSnapshot : ModelSnapshot
+    partial class DataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -21,37 +21,6 @@ namespace ClientDashboard_API.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ClientDashboard_API.Entities.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CurrentBlockSession")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("TotalBlockSessions")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TrainerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrainerId");
-
-                    b.ToTable("Client", (string)null);
-                });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Notification", b =>
                 {
@@ -88,19 +57,17 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
-            modelBuilder.Entity("ClientDashboard_API.Entities.Trainer", b =>
+            modelBuilder.Entity("ClientDashboard_API.Entities.UserBase", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -108,16 +75,22 @@ namespace ClientDashboard_API.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Trainer", (string)null);
+                    b.ToTable("Users", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Workout", b =>
@@ -138,6 +111,9 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<int>("CurrentBlockSession")
                         .HasColumnType("int");
 
+                    b.Property<double?>("Duration")
+                        .HasColumnType("float");
+
                     b.Property<int>("ExerciseCount")
                         .HasColumnType("int");
 
@@ -155,17 +131,54 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Workouts", (string)null);
+                    b.ToTable("Workouts");
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Client", b =>
                 {
-                    b.HasOne("ClientDashboard_API.Entities.Trainer", "Trainer")
-                        .WithMany("Clients")
-                        .HasForeignKey("TrainerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.HasBaseType("ClientDashboard_API.Entities.UserBase");
 
-                    b.Navigation("Trainer");
+                    b.Property<int>("CurrentBlockSession")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DailySteps")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TotalBlockSessions")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TrainerId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Weight")
+                        .HasColumnType("float");
+
+                    b.HasIndex("TrainerId");
+
+                    b.ToTable("Clients", (string)null);
+                });
+
+            modelBuilder.Entity("ClientDashboard_API.Entities.Trainer", b =>
+                {
+                    b.HasBaseType("ClientDashboard_API.Entities.UserBase");
+
+                    b.Property<decimal?>("AverageSessionPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BusinessName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DefaultCurrency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WorkoutRetrievalApiKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("Trainers", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Notification", b =>
@@ -178,7 +191,7 @@ namespace ClientDashboard_API.Data.Migrations
                     b.HasOne("ClientDashboard_API.Entities.Trainer", "Trainer")
                         .WithMany()
                         .HasForeignKey("TrainerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Client");
 
@@ -193,6 +206,31 @@ namespace ClientDashboard_API.Data.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("ClientDashboard_API.Entities.Client", b =>
+                {
+                    b.HasOne("ClientDashboard_API.Entities.UserBase", null)
+                        .WithOne()
+                        .HasForeignKey("ClientDashboard_API.Entities.Client", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClientDashboard_API.Entities.Trainer", "Trainer")
+                        .WithMany("Clients")
+                        .HasForeignKey("TrainerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Trainer");
+                });
+
+            modelBuilder.Entity("ClientDashboard_API.Entities.Trainer", b =>
+                {
+                    b.HasOne("ClientDashboard_API.Entities.UserBase", null)
+                        .WithOne()
+                        .HasForeignKey("ClientDashboard_API.Entities.Trainer", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Client", b =>

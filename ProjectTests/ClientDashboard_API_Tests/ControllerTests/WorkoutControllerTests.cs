@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
-using ClientDashboard_API.Data.Migrations;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;

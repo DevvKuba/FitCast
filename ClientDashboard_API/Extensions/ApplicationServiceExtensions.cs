@@ -1,5 +1,4 @@
 ﻿using ClientDashboard_API.Data;
-using ClientDashboard_API.Data.Migrations;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;

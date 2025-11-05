@@ -39,8 +39,7 @@ namespace ClientDashboard_API.Services
         public void SendSMSMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
         {
             var messageOptions = new CreateMessageOptions(
-              // TODO would be changed to recipient PhoneNumber
-              new PhoneNumber(trainer.Email ?? client.FirstName));
+              new PhoneNumber(trainer.PhoneNumber ?? client.PhoneNumber));
             messageOptions.From = new PhoneNumber(senderPhoneNumber);
             messageOptions.Body = notificationMessage;
 
