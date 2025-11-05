@@ -79,7 +79,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<ClientChurnLabel>()
                 .WithOne(c => c.Client)
                 .HasForeignKey(c => c.ClientId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             // Trainer relationship
@@ -87,7 +87,14 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Clients)
                 .WithOne(e => e.Trainer)
                 .HasForeignKey(e => e.TrainerId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+
+            builder.Entity<Trainer>()
+                .HasMany<MonthlyTrainerRevenue>()
+                .WithOne(t => t.Trainer)
+                .HasForeignKey(t => t.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             // Nofitication relationships
