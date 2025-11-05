@@ -8,8 +8,8 @@
 
         public DateOnly AsOfDate { get; set; }
 
-        public int ChurnedByDate { get; } = 28;
+        public int ChurnedByDate { get; set; } = 28;
 
-        public Client? Client { get; set; } = null;
+        public Client Client { get; set; } = null!;
     }
 }

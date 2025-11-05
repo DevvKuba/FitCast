@@ -60,6 +60,18 @@ namespace ClientDashboard_API.Data
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
 
+            builder.Entity<MonthlyTrainerRevenue>()
+                .Property(m => m.AverageSessionPrice)
+                .HasPrecision(18, 2);
+
+            builder.Entity<MonthlyTrainerRevenue>()
+                .Property(m => m.MonthlyRevenue)
+                .HasPrecision(18, 2);
+
+            builder.Entity<ClientDailyFeature>()
+                .Property(c => c.LifeTimeValue)
+                .HasPrecision(18, 2);
+
             // Client relationship
             builder.Entity<Client>()
                 .HasMany(e => e.Workouts)

@@ -10,7 +10,7 @@
 
         public int SessionsIn7d { get; set; }
 
-        public int SessionsId28d { get; set; }
+        public int SessionsIn28d { get; set; }
 
         public int DaysSinceLastSession { get; set; }
 
@@ -24,7 +24,7 @@
 
         public bool CurrentlyActive { get; set; }
 
-        public Client? Client { get; set; } = null!;
+        public Client Client { get; set; } = null!;
 
     }
 }

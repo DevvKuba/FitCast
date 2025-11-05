@@ -14,8 +14,8 @@
 
         public int NewClients { get; set; }
 
-        public int AverageSessionRate { get; set; }
+        public decimal AverageSessionPrice { get; set; }
 
-        public Trainer? Trainer { get; set; } = null!;
+        public Trainer Trainer { get; set; } = null!;
     }
 }
