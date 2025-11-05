@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
@@ -17,6 +18,13 @@ namespace ClientDashboard_API.Data
 
         public DbSet<Notification> Notification { get; set; }
 
+        public DbSet<MonthlyTrainerRevenue> MonthlyTrainerRevenue { get; set; }
+
+        public DbSet<ClientDailyFeature> ClientDailyFeature { get; set; }
+
+        public DbSet<ClientChurnLabel> ClientChurnLabel { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -26,6 +34,9 @@ namespace ClientDashboard_API.Data
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
+            builder.Entity<MonthlyTrainerRevenue>().ToTable("MonthlyTrainerRevenue");
+            builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
+            builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
 
             // explicit identiy configuration
             builder.Entity<UserBase>()
