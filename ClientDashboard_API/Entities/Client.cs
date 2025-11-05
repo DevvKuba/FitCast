@@ -1,18 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ClientDashboard_API.Entities
+﻿namespace ClientDashboard_API.Entities
 {
-    public class Client
+    public class Client : UserBase
     {
-        [Key]
-        public int Id { get; set; }
-        public required string Name { get; set; }
-
         public bool IsActive { get; set; } = true;
 
         public int CurrentBlockSession { get; set; }
 
         public int? TotalBlockSessions { get; set; }
+
+        public int? DailySteps { get; set; }
+
+        public decimal? Weight { get; set; }
+
 
         public List<Workout> Workouts { get; set; } = [];
 
