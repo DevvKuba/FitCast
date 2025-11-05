@@ -99,7 +99,7 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Clients)
                 .WithOne(e => e.Trainer)
                 .HasForeignKey(e => e.TrainerId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
             builder.Entity<Trainer>()
