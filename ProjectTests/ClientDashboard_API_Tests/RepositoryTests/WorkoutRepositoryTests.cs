@@ -42,7 +42,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddingWorkoutAsync()
         {
-            var client = new Client { Name = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;
@@ -62,7 +62,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestRemovingWorkoutAsync()
         {
-            var client = new Client { Name = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;

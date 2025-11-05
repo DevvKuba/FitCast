@@ -42,13 +42,13 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddingCorrectClientAsync()
         {
-            var testClient = new Client { Name = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
+            var testClient = new Client { FirstName = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
 
             await _clientRepository.AddNewClientAsync(clientName: "Rob", blockSessions: 8, 0);
             await _unitOfWork.Complete();
             var databaseClient = await _context.Client.FirstOrDefaultAsync();
 
-            Assert.Equal(databaseClient!.Name, testClient.Name);
+            Assert.Equal(databaseClient!.FirstName, testClient.FirstName);
             Assert.Equal(databaseClient.CurrentBlockSession, testClient.CurrentBlockSession);
             Assert.Equal(databaseClient.TotalBlockSessions, testClient.TotalBlockSessions);
             Assert.Equal(databaseClient.Workouts.Count, testClient.Workouts.Count);
@@ -82,33 +82,33 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingAllClientsOnLastSessionsAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { Name = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientList = await _clientRepository.GetClientsOnLastSessionAsync();
 
-            Assert.True(_context.Client.Any(x => x.Name == "rob"));
-            Assert.True(_context.Client.Any(x => x.Name == "mark"));
+            Assert.True(_context.Client.Any(x => x.FirstName == "rob"));
+            Assert.True(_context.Client.Any(x => x.FirstName == "mark"));
         }
 
         [Fact]
         public async Task TestGettingAllClientsOnFirstSessionsAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { Name = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientList = await _clientRepository.GetClientsOnFirstSessionAsync();
 
-            Assert.True(_context.Client.Any(x => x.Name == "rob"));
-            Assert.True(_context.Client.Any(x => x.Name == "mark"));
+            Assert.True(_context.Client.Any(x => x.FirstName == "rob"));
+            Assert.True(_context.Client.Any(x => x.FirstName == "mark"));
         }
 
         [Fact]
         public async Task TestGettingClientsCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientSession = await _clientRepository.GetClientsCurrentSessionAsync("rob");
@@ -120,7 +120,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingClientByNameAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _clientRepository.GetClientByNameAsync("rob");
@@ -133,7 +133,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateAddingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -146,7 +146,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateAddingClientCurrentSessionNewBlockAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -159,7 +159,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateDeletingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -172,7 +172,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientTotalBlockSessionsAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -186,7 +186,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -200,7 +200,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientNameAsync()
         {
-            await _context.AddAsync(new Client { Name = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -208,7 +208,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _clientRepository.UpdateClientName(client!, newName);
             await _unitOfWork.Complete();
 
-            Assert.Equal(newName, client!.Name);
+            Assert.Equal(newName, client!.FirstName);
         }
     }
 }
