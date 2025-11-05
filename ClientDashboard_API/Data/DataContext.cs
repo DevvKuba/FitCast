@@ -9,9 +9,11 @@ namespace ClientDashboard_API.Data
         public DbSet<UserBase> Users { get; set; }
         public DbSet<Client> Client { get; set; }
 
+        public DbSet<Trainer> Trainer { get; set; }
+
         public DbSet<Workout> Workouts { get; set; }
 
-        public DbSet<Trainer> Trainer { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         public DbSet<Notification> Notification { get; set; }
 
@@ -23,6 +25,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<UserBase>().ToTable("Users");
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Trainer>().ToTable("Trainers");
+            builder.Entity<Payment>().ToTable("Payments");
 
             // explicit identiy configuration
             builder.Entity<UserBase>()
@@ -42,6 +45,11 @@ namespace ClientDashboard_API.Data
                 .Property(t => t.AverageSessionPrice)
                 .HasPrecision(18, 2);
 
+            builder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasPrecision(18, 2);
+
+            // Client relationship
             builder.Entity<Client>()
                 .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
@@ -49,6 +57,7 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
+            // Trainer relationship
             builder.Entity<Trainer>()
                 .HasMany(e => e.Clients)
                 .WithOne(e => e.Trainer)
@@ -56,6 +65,7 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
+            // Nofitication relationships
             builder.Entity<Client>()
                 .HasMany<Notification>()
                 .WithOne(n => n.Client)
@@ -67,6 +77,21 @@ namespace ClientDashboard_API.Data
                 .HasMany<Notification>()
                 .WithOne(n => n.Trainer)
                 .HasForeignKey(n => n.TrainerId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(false);
+
+            // Payment relationships
+            builder.Entity<Client>()
+                .HasMany<Payment>()
+                .WithOne(p => p.Client)
+                .HasForeignKey(p => p.ClientId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            builder.Entity<Trainer>()
+                .HasMany<Payment>()
+                .WithOne(p => p.Trainer)
+                .HasForeignKey(p => p.TrainerId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
