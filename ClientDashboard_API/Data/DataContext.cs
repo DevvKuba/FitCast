@@ -84,15 +84,15 @@ namespace ClientDashboard_API.Data
                 .HasMany<ClientDailyFeature>()
                 .WithOne(c => c.Client)
                 .HasForeignKey(c => c.ClientId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(false);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
 
             builder.Entity<Client>()
                 .HasMany<ClientChurnLabel>()
                 .WithOne(c => c.Client)
                 .HasForeignKey(c => c.ClientId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(false);
+                .IsRequired(true);
 
             // Trainer relationship
             builder.Entity<Trainer>()
@@ -107,7 +107,7 @@ namespace ClientDashboard_API.Data
                 .WithOne(t => t.Trainer)
                 .HasForeignKey(t => t.TrainerId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(false);
+                .IsRequired(true);
 
             // Nofitication relationships
             builder.Entity<Client>()
@@ -137,7 +137,7 @@ namespace ClientDashboard_API.Data
                 .WithOne(p => p.Trainer)
                 .HasForeignKey(p => p.TrainerId)
                 .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired(false);
+                .IsRequired(true);
 
 
         }

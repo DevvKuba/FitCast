@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public int? TrainerId { get; set; }
+        public int TrainerId { get; set; }
 
         public decimal MonthlyRevenue { get; set; }
 
