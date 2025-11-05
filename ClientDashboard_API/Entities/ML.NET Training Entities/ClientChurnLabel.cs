@@ -9,5 +9,7 @@
         public DateOnly AsOfDate { get; set; }
 
         public int ChurnedByDate { get; } = 28;
+
+        public Client? Client { get; set; } = null;
     }
 }
