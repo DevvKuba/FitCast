@@ -10,7 +10,7 @@
 
         public int? DailySteps { get; set; }
 
-        public decimal? Weight { get; set; }
+        public double? Weight { get; set; }
 
 
         public List<Workout> Workouts { get; set; } = [];
