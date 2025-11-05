@@ -2,7 +2,7 @@
 {
     public class ClientAddDto
     {
-        public required string Name { get; set; }
+        public required string FirstName { get; set; }
 
         public required int TotalBlockSessions { get; set; }
 

@@ -2,7 +2,7 @@
 {
     public class ClientUpdateDto
     {
-        public string? Name { get; set; }
+        public string? FirstName { get; set; }
 
         public bool? IsActive { get; set; }
         public int? CurrentBlockSession { get; set; }

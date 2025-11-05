@@ -204,13 +204,13 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(newClient.Name, newClient.TotalBlockSessions, newClient.TrainerId);
+            await unitOfWork.ClientRepository.AddNewClientAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.TrainerId);
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {newClient.Name} not added", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {newClient.FirstName} not added", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = newClient.Name, Message = $"Client: {newClient.Name} added", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = newClient.FirstName, Message = $"Client: {newClient.FirstName} added", Success = true });
 
         }
 

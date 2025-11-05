@@ -24,7 +24,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
-                Name = client.FirstName,
+                FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions
@@ -37,7 +37,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = newClientName,
+                FirstName = newClientName,
                 IsActive = newActivity,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = newTotalSessions
@@ -60,7 +60,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
-                Name = client.FirstName,
+                FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions,
@@ -72,7 +72,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = client.FirstName,
+                FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 TotalBlockSessions = blockSessions,
                 CurrentBlockSession = client.CurrentBlockSession
@@ -85,7 +85,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = client.FirstName,
+                FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = currentSession
@@ -97,7 +97,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                Name = name,
+                FirstName = name,
                 IsActive = client.IsActive,
                 TotalBlockSessions = client.TotalBlockSessions,
                 CurrentBlockSession = client.CurrentBlockSession,
