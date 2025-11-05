@@ -36,7 +36,7 @@ namespace ClientDashboard_API.Services
             Twilio.TwilioClient.Init(ACCOUNT_SID, AUTH_TOKEN);
         }
 
-        public void SendMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
+        public void SendSMSMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
         {
             var messageOptions = new CreateMessageOptions(
               // TODO would be changed to recipient PhoneNumber

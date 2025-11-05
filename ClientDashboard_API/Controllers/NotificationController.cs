@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Controllers
             var notificationMessage = $"{client.Name}'s monthly sessions have come to an end,\n" +
                 $"remember to message them in regards of a new payment.";
 
-            messageService.SendMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: "Trainer Client Block termination", sentThrough: "SMS");
@@ -69,7 +69,7 @@ namespace ClientDashboard_API.Controllers
              "inform you that our monthly sessions have come to an end,\n" +
                 $"If you could place a block payment before our next session that would be great.";
 
-            messageService.SendMessage(trainer: null, client, SENDER_PHONE_NUMBER!, notificationMessage);
+            messageService.SendSMSMessage(trainer: null, client, SENDER_PHONE_NUMBER!, notificationMessage);
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: "Trainer Client Block termination", sentThrough: "SMS");
