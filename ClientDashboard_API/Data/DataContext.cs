@@ -41,7 +41,7 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Clients)
                 .WithOne(e => e.Trainer)
                 .HasForeignKey(e => e.TrainerId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
             builder.Entity<Client>()
