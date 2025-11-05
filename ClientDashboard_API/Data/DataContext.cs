@@ -6,6 +6,7 @@ namespace ClientDashboard_API.Data
     // <DataContext> mathces what EF Core DI system provides
     public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
     {
+        public DbSet<UserBase> Users { get; set; }
         public DbSet<Client> Client { get; set; }
 
         public DbSet<Workout> Workouts { get; set; }
@@ -18,6 +19,12 @@ namespace ClientDashboard_API.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Configure inheritance
+            builder.Entity<UserBase>()
+                .HasDiscriminator<string>("UserType")
+                .HasValue<Trainer>("Trainer")
+                .HasValue<Client>("Client");
 
             builder.Entity<Client>()
                 .HasMany(e => e.Workouts)

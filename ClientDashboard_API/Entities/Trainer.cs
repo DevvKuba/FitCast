@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.Entities
 {
-    public class Trainer
+    public class Trainer : UserBase
     {
         public string? BusinessName { get; set; }
 
