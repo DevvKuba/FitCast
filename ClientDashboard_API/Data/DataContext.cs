@@ -44,13 +44,6 @@ namespace ClientDashboard_API.Data
                 .ValueGeneratedOnAdd()
                 .UseIdentityColumn(1, 1);
 
-            builder.Entity<Trainer>().
-                Property(t => t.Id)
-                .ValueGeneratedNever();
-
-            builder.Entity<Client>().
-                Property(c => c.Id)
-                .ValueGeneratedNever();
 
             builder.Entity<Trainer>()
                 .Property(t => t.AverageSessionPrice)

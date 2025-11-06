@@ -25,7 +25,6 @@ namespace ClientDashboard_API.Controllers
             if (client == null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
-
             }
 
             var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
