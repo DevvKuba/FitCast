@@ -1,10 +1,10 @@
 import { Client } from "./client";
+import { UserBase } from "./user-base";
 
-export interface Trainer {
-  id: number;
-  email: string;
-  firstName: string;
-  surname: string;
-  passwordHash: string;
+export interface Trainer extends UserBase {
+  businessName?: string,
+  averageSessionPrice?: number,
+  workoutRetrievalApiKey?: string,
+  defaultCurrency?: string,
   clients: Client[];
 }

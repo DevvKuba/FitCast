@@ -171,7 +171,7 @@ export class ClientWorkouts {
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     this.clientService.getAllTrainerClients(this.trainerId).subscribe({
       next: (response) => {
-        this.clients = response.data?.map(x => ({id: x.id , name: x.name})) ?? [];
+        this.clients = response.data?.map(x => ({id: x.id , name: x.firstName})) ?? [];
       },
       error: (response) => {
         console.log('Failed to display client for which you may add a workout for');

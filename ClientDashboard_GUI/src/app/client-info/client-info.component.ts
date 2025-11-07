@@ -67,13 +67,13 @@ export class ClientInfoComponent implements OnInit {
             next: (response) => {
               console.log('Client updated successfully', response.message);
               this.toastSummary = 'Success Updating';
-              this.toastDetail = `updated client: ${newClient.name} successfully`;
+              this.toastDetail = `updated client: ${newClient.firstName} successfully`;
               this.toastService.showSuccess(this.toastSummary, this.toastDetail);
             },
             error: (response) => {
               console.log('Update Failed', response.message);
               this.toastSummary = 'Error Updating';
-              this.toastDetail = `client: ${newClient.name} not updated successfully`;
+              this.toastDetail = `client: ${newClient.firstName} not updated successfully`;
               this.toastService.showError(this.toastSummary, this.toastDetail);
             }
           })
