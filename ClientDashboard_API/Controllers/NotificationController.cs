@@ -28,7 +28,7 @@ namespace ClientDashboard_API.Controllers
             }
 
             var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
-                $"remember to message them in regards of a new payment.";
+                $"remember to message them in regards of a new monthly payment.";
 
             messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
 
