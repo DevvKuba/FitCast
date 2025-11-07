@@ -6,7 +6,7 @@ import { IftaLabelModule } from 'primeng/iftalabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
-import { LoginDto } from '../models/login-dto';
+import { LoginDto } from '../models/dtos/login-dto';
 import { AccountService } from '../services/account.service';
 import { routes } from '../app.routes';
 import { Router, RouterLink } from '@angular/router';
@@ -14,7 +14,7 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
-import { UserDto } from '../models/user-dto';
+import { UserDto } from '../models/dtos/user-dto';
 
 @Component({
   selector: 'app-login',

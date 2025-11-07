@@ -4,8 +4,8 @@ import { Workout } from '../models/workout';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
-import { WorkoutAddDto } from '../models/workout-add-dto';
-import { WorkoutUpdateDto } from '../models/workout-update-dto';
+import { WorkoutAddDto } from '../models/dtos/workout-add-dto';
+import { WorkoutUpdateDto } from '../models/dtos/workout-update-dto';
 
 @Injectable({
   providedIn: 'root'

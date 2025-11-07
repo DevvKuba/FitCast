@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Message } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { AccountService } from '../services/account.service';
-import { RegisterDto } from '../models/register-dto';
+import { RegisterDto } from '../models/dtos/register-dto';
 import { Toast } from 'primeng/toast';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';

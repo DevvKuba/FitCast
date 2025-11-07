@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Client } from '../models/client';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
-import { ClientAddDto } from '../models/client-add-dto';
+import { ClientAddDto } from '../models/dtos/client-add-dto';
 
 @Injectable({
   providedIn: 'root'

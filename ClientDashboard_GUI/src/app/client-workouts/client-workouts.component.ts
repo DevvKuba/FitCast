@@ -7,7 +7,7 @@ import { WorkoutService } from '../services/workout.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { SelectModule } from 'primeng/select';
 import { AccountService } from '../services/account.service';
-import { UserDto } from '../models/user-dto';
+import { UserDto } from '../models/dtos/user-dto';
 import { Toast } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { Dialog } from 'primeng/dialog';

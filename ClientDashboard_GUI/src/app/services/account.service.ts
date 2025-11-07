@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '../models/api-response';
 import { Observable } from 'rxjs';
-import { RegisterDto } from '../models/register-dto';
-import { LoginDto } from '../models/login-dto';
-import { UserDto } from '../models/user-dto';
+import { RegisterDto } from '../models/dtos/register-dto';
+import { LoginDto } from '../models/dtos/login-dto';
+import { UserDto } from '../models/dtos/user-dto';
 import { environment } from '../environments/environment';
 
 @Injectable({
