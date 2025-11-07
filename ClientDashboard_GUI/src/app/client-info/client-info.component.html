@@ -26,8 +26,8 @@
           </p-dialog> 
         </div>
           <tr>
-              <th pSortableColumn="name" style="width:25%; text-align: center;">
-                    Client Name <p-sortIcon field="name" />
+              <th pSortableColumn="firstName" style="width:25%; text-align: center;">
+                    Client Name <p-sortIcon field="firstName" />
               </th>
               <th pSortableColumn="currentBlockSession" style="width:25%; text-align: center;">
                     Current Session <p-sortIcon field="currentBlockSession" />
@@ -47,10 +47,10 @@
                     <ng-template #input>
                         <input
                             pInputText type="text"
-                            [(ngModel)]= "client.name" />
+                            [(ngModel)]= "client.firstName" />
                     </ng-template>
                     <ng-template #output>
-                        {{client.name}}
+                        {{client.firstName}}
                     </ng-template>
                 </p-cellEditor>
               </td>
