@@ -38,6 +38,27 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"client: {client.FirstName} is now under trainer: {trainer.FirstName}", Success = true });
         }
 
+        /// <summary>
+        /// Trainer method allowing assignment of a new phone number
+        /// </summary>
+        [HttpPut("{phoneNumber}/updateTrainerNumber")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPhoneNumberAsync([FromQuery] int trainerId, string phoneNumber)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            await unitOfWork.TrainerRepository.UpdateTrainerPhoneNumber(trainer.Id, phoneNumber);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new phone number", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s phone number updated to: {trainer.PhoneNumber}", Success = true });
+        }
 
     }
 }
