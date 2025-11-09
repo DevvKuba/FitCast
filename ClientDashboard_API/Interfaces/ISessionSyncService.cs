@@ -2,6 +2,8 @@
 {
     public interface ISessionSyncService
     {
-        Task<bool> SyncDailySessions();
+        Task<bool> SyncDailyPipelineSessionsAsync();
+
+        Task<bool> SyncSessionsAsync();
     }
 }

@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut]
         public async Task<ActionResult> GatherAndUpdateDailySessions()
         {
-            var result = await syncService.SyncDailySessions();
+            var result = await syncService.SyncDailyPipelineSessionsAsync();
             if (!result) return Ok("No workouts collected from Hevy App");
             return Ok(result);
         }

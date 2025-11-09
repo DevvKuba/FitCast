@@ -4,7 +4,8 @@ namespace ClientDashboard_API.Services
 {
     public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService) : ISessionSyncService
     {
-        public async Task<bool> SyncDailySessions()
+        // PIPELINE only task currently
+        public async Task<bool> SyncDailyPipelineSessionsAsync()
         {
             // gathers all the data 
             var dailyWorkouts = await hevyParser.CallApi();
@@ -49,5 +50,14 @@ namespace ClientDashboard_API.Services
             return true;
         }
 
+        public Task<bool> SyncSessionsAsync(int trainerId)
+        {
+            // finds the trainer get object
+            // call dailyWorkouts - with trainer Hevy set Api key
+            // look through workouts and do identical functionality compared to above methods
+            // just calling different messageService methods NOT pipeline ones
+
+            throw new NotImplementedException();
+        }
     }
 }
