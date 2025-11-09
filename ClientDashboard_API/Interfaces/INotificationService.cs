@@ -1,9 +1,11 @@
-﻿namespace ClientDashboard_API.Interfaces
+﻿using ClientDashboard_API.DTOs;
+
+namespace ClientDashboard_API.Interfaces
 {
     public interface INotificationService
     {
-        Task SendTrainerBlockCompletionReminderAsync(int trainerId, int clientId);
+        Task<ApiResponseDto<string>> SendTrainerReminderAsync(int trainerId, int clientId);
 
-        Task SendClientBlockCompletionReminderAsync(int trainerId, int clientId);
+        Task<ApiResponseDto<string>> SendClientReminderAsync(int trainerId, int clientId);
     }
 }

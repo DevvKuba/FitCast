@@ -5,7 +5,7 @@ using Twilio.Types;
 
 namespace ClientDashboard_API.Services
 {
-    public class TwillioMessageService(IUnitOfWork unitOfWork) : IMessageService
+    public class TwillioMessageService : IMessageService
     {
 
         // would need to change to id for more accurate retrieval rather than clientName
