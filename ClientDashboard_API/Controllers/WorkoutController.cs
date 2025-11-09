@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
+    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IMapper mapper) : BaseAPIController
     {
         /// <summary>
         /// Workout request for the retrieval of paginated workouts
@@ -105,7 +105,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
         {
-            // may need to change to Id even for SessionSyncService
+            // TODO may need to change to Id even for SessionSyncService
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
             if (client == null)
             {
@@ -119,6 +119,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
             }
+
             return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Workout added for client: {clientName}", Success = true });
 
         }
@@ -141,6 +142,12 @@ namespace ClientDashboard_API.Controllers
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
+            }
+
+            // if given trainer has notifications enabled & mobile number provided
+            if (client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
             }
             return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for client: {newWorkout.ClientName}", Success = true });
 
