@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
 
+        Task UpdateTrainerPhoneNumber(int trainerId, string phoneNumber);
+
         void AssignClient(Trainer trainer, Client client);
 
         Task AddNewTrainerAsync(Trainer trainer);

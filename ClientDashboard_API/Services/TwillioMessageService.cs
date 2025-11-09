@@ -38,8 +38,10 @@ namespace ClientDashboard_API.Services
 
         public void SendSMSMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
         {
+            var recieverPhoneNumber = trainer.PhoneNumber ?? client.PhoneNumber;
+
             var messageOptions = new CreateMessageOptions(
-              new PhoneNumber(trainer.PhoneNumber ?? client.PhoneNumber));
+              new PhoneNumber(recieverPhoneNumber));
             messageOptions.From = new PhoneNumber(senderPhoneNumber);
             messageOptions.Body = notificationMessage;
 

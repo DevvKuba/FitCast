@@ -16,6 +16,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<string>> GetClientsOnFirstSessionAsync();
 
+        void UpdateClientPhoneNumber(Client client, string phoneNumber);
+
         void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions);
 
         void UpdateAddingClientCurrentSessionAsync(Client client);

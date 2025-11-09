@@ -34,6 +34,13 @@ namespace ClientDashboard_API.Data
             client.TrainerId = trainer.Id;
         }
 
+        public async Task UpdateTrainerPhoneNumber(int trainerId, string phoneNumber)
+        {
+            var trainer = await GetTrainerByIdAsync(trainerId);
+
+            trainer.PhoneNumber = phoneNumber;
+        }
+
         public async Task AddNewTrainerAsync(Trainer trainer)
         {
             await context.Trainer.AddAsync(trainer);
@@ -48,5 +55,6 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
+
     }
 }

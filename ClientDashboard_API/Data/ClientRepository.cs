@@ -105,6 +105,11 @@ namespace ClientDashboard_API.Data
             mapper.Map(updatedData, client);
         }
 
+        public void UpdateClientPhoneNumber(Client client, string phoneNumber)
+        {
+            client.PhoneNumber = phoneNumber;
+        }
+
         public async Task<Client> GetClientByNameAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).FirstOrDefaultAsync();
