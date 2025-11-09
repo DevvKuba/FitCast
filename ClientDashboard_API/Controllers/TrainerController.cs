@@ -41,7 +41,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Trainer method allowing assignment of a new phone number
         /// </summary>
-        [HttpPut("{phoneNumber}/updateTrainerNumber")]
+        [HttpPut("updateTrainerNumber")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPhoneNumberAsync([FromQuery] int trainerId, string phoneNumber)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
