@@ -4,6 +4,6 @@
     {
         Task<bool> SyncDailyPipelineSessionsAsync();
 
-        Task<bool> SyncSessionsAsync();
+        Task<bool> SyncSessionsAsync(int trainerId);
     }
 }

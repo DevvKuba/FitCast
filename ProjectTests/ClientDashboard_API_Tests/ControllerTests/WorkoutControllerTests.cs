@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly WorkoutRepository _workoutRepository;
         private readonly TrainerRepository _trainerRepository;
         private readonly NotificationRepository _notificationRepository;
+        private readonly TwillioMessageService _messageService;
+        private readonly NotificationService _notificationService;
         private readonly UnitOfWork _unitOfWork;
         private readonly WorkoutController _workoutController;
 
@@ -39,8 +42,10 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context);
             _notificationRepository = new NotificationRepository(_context);
+            _messageService = new TwillioMessageService();
+            _notificationService = new NotificationService(_unitOfWork, _messageService);
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository);
-            _workoutController = new WorkoutController(_unitOfWork, _mapper);
+            _workoutController = new WorkoutController(_unitOfWork, _notificationService, _mapper);
         }
 
         [Fact]
