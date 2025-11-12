@@ -18,10 +18,11 @@ import { Ripple } from 'primeng/ripple';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule],
+  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, RouterLink],
   providers: [MessageService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
