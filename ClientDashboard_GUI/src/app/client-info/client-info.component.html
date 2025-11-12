@@ -83,7 +83,7 @@
                     <ng-template #input>
                         <p-select
                             [options]="activityStatuses"
-                            appendTo="body"
+                          appendTo="body"
                             [(ngModel)]= "client.isActive"
                             [style]="{'width':'100%'}" 
                             />
@@ -97,7 +97,7 @@
               </td>
               <td class="client-td action-column">
                 <div class="flex items-center justify-center gap-2 flex-wrap">
-                    <a href="https://wa.me/+447446107779">
+                  <a [href]="`https://wa.me/${client.phoneNumber}`" target="_blank" rel="noopener noreferrer">
                     <button
                       *ngIf="!editing"
                       pButton
