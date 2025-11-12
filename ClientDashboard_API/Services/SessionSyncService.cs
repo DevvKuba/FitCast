@@ -84,7 +84,7 @@ namespace ClientDashboard_API.Services
                 }
                 else
                 {
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, trainerId);
                     await unitOfWork.Complete();
 
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
