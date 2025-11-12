@@ -1,5 +1,6 @@
 ﻿using Client_Session_Tracker_C_.Models;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -47,7 +48,7 @@ namespace ClientDashboard_API.Services
             return workoutDetails;
         }
 
-        public async Task<List<WorkoutSummaryDto>> CallApi()
+        public async Task<List<WorkoutSummaryDto>> CallApiThroughPipelineAsync()
         {
             DateTime todaysDate = DateTime.Now;
 
@@ -72,6 +73,32 @@ namespace ClientDashboard_API.Services
             Console.WriteLine(response.StatusCode);
 
             // if reponse status code is 200 - successful proceed
+            if (response.IsSuccessStatusCode)
+            {
+                return await RetrieveWorkouts(response);
+            }
+            else
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
+        }
+
+        public async Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer)
+        {
+            DateTime todaysDate = DateTime.Now;
+            DateTime yesterdaysDate = todaysDate.AddDays(-1);
+            string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
+
+            string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
+
+            using HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Add("accept", "application/json");
+            client.DefaultRequestHeaders.Add("api-key", trainer.WorkoutRetrievalApiKey);
+
+            HttpResponseMessage response = await client.GetAsync(url);
+
             if (response.IsSuccessStatusCode)
             {
                 return await RetrieveWorkouts(response);

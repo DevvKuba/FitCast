@@ -2,13 +2,13 @@
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService, INotificationService notificationService) : ISessionSyncService
     {
-        // PIPELINE only task currently
+        // PIPELINE only task currently - need to adjust to even remove in the future
         public async Task<bool> SyncDailyPipelineSessionsAsync()
         {
             // gathers all the data 
-            var dailyWorkouts = await hevyParser.CallApi();
+            var dailyWorkouts = await hevyParser.CallApiThroughPipelineAsync();
 
             if (dailyWorkouts.Count == 0) return false;
 
@@ -50,14 +50,49 @@ namespace ClientDashboard_API.Services
             return true;
         }
 
-        public Task<bool> SyncSessionsAsync(int trainerId)
+        public async Task<bool> SyncSessionsAsync(int trainerId)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             // finds the trainer get object
-            // call dailyWorkouts - with trainer Hevy set Api key
+            var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer!);
+
             // look through workouts and do identical functionality compared to above methods
             // just calling different messageService methods NOT pipeline ones
 
-            throw new NotImplementedException();
+            foreach (var workout in dailyWorkouts)
+            {
+                string clientName = workout.Title.Split(' ')[0];
+                var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+
+                if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
+                {
+
+                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client.FirstName, workout.SessionDate);
+                    // if workout is not a duplicate / not yet added
+                    if (existingWorkout == null)
+                    {
+                        unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                        await unitOfWork.Complete();
+
+                        // indicating that their block is finished
+                        if (client.CurrentBlockSession == client.TotalBlockSessions)
+                        {
+                            await notificationService.SendTrainerReminderAsync(trainerId, client.Id);
+                        }
+                    }
+                }
+                else
+                {
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null);
+                    await unitOfWork.Complete();
+
+                    unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                    await unitOfWork.Complete();
+                }
+            }
+            return true;
         }
     }
 }
