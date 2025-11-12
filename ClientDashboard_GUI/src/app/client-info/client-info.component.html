@@ -42,7 +42,7 @@
       </ng-template>
       <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
           <tr [pEditableRow]="client">
-              <td>
+              <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -54,7 +54,7 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-              <td>
+              <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -66,7 +66,7 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-              <td>
+              <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -78,7 +78,7 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-              <td>
+              <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
                         <p-select
@@ -95,7 +95,29 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-              <td>
+              <td class="client-td">
+                 <div class="flex items-center justify-center gap-2">
+                    <button
+                    pButton
+                    pRipple
+                    severity="secondary"
+                    icon="pi pi-whatsapp"
+                    rounded
+                    ></button>
+                  </div>
+              </td>
+              <td class="client-td">
+                 <div class="flex items-center justify-center gap-2">
+                    <button
+                    pButton
+                    pRipple
+                    severity="secondary"
+                    icon="pi pi-chart-bar"
+                    rounded
+                    ></button>
+                  </div>
+              </td>
+              <td class="client-td">
                 <div class="flex items-center justify-center gap-2">
                     <button
                         *ngIf="!editing"
