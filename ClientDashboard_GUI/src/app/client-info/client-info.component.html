@@ -95,30 +95,24 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-              <td class="client-td">
-                 <div class="flex items-center justify-center gap-2">
+              <td class="client-td action-column">
+                <div class="flex items-center justify-center gap-2 flex-wrap">
                     <button
-                    pButton
-                    pRipple
-                    severity="secondary"
-                    icon="pi pi-whatsapp"
-                    rounded
+                      *ngIf="!editing"
+                      pButton
+                      pRipple
+                      severity="secondary"
+                      icon="pi pi-whatsapp"
+                      rounded
                     ></button>
-                  </div>
-              </td>
-              <td class="client-td">
-                 <div class="flex items-center justify-center gap-2">
                     <button
-                    pButton
-                    pRipple
-                    severity="secondary"
-                    icon="pi pi-chart-bar"
-                    rounded
+                      *ngIf="!editing"
+                      pButton
+                      pRipple
+                      severity="secondary"
+                      icon="pi pi-chart-line"
+                      rounded
                     ></button>
-                  </div>
-              </td>
-              <td class="client-td">
-                <div class="flex items-center justify-center gap-2">
                     <button
                         *ngIf="!editing"
                         pButton

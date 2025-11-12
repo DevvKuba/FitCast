@@ -11,3 +11,20 @@
 .client-td {
   text-align: center;
 }
+
+.action-column {
+  width: 200px;
+  min-width: 200px;
+  white-space: nowrap;
+}
+
+.action-column .flex {
+    flex-wrap: nowrap;
+    gap: 4px;
+}
+
+.action-column button {
+    margin-left: 2px;
+    margin-right: 2px;
+    flex-shrink: 0;
+}
