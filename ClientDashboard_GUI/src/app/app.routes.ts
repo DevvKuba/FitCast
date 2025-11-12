@@ -8,8 +8,11 @@ import { authGuard } from './guards/auth-guard.guard';
 
 export const routes: Routes = [
   {path: '', component: Home},
-  {path: 'client-workouts', component: ClientWorkouts, canActivate: [authGuard]},
   {path: 'client-info', component: ClientInfoComponent, canActivate: [authGuard]},
+  {path: 'client-workouts', component: ClientWorkouts, canActivate: [authGuard]},
+  // TODO change to analytics component when developing
+  {path: 'client-analytics', component: ClientInfoComponent, canActivate: [authGuard]},
+  {path: 'trainer-analytics', component: ClientInfoComponent, canActivate: [authGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
 ];

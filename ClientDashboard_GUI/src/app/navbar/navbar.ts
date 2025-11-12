@@ -35,6 +35,16 @@ export class Navbar implements OnInit {
                 icon: 'pi pi-table'
             },
             {
+                label: 'Client Analytics',
+                routerLink: '/client-analytics',
+                icon: 'pi pi-chart-line'
+            },
+            {
+                label: 'Trainer Analytics',
+                routerLink: '/trainer-analytics',
+                icon: 'pi pi-credit-card'
+            },
+            {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
                 command: () => this.loginComponent.trainerLogout(this.loginComponent.storageItem)
