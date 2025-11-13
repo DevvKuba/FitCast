@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace ClientDashboard_API.Services
 {
-    public class HevySessionDataService : ISessionDataParser
+    public class HevySessionDataService(IApiKeyEncryter encrypter) : ISessionDataParser
     {
         public string API_KEY { set; get; } = Environment.GetEnvironmentVariable("API_KEY")!;
 
@@ -93,6 +93,7 @@ namespace ClientDashboard_API.Services
             string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
 
             using HttpClient client = new HttpClient();
+
 
             client.DefaultRequestHeaders.Add("accept", "application/json");
             client.DefaultRequestHeaders.Add("api-key", trainer.WorkoutRetrievalApiKey);

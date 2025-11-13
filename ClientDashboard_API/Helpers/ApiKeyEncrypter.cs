@@ -34,9 +34,26 @@ namespace ClientDashboard_API.Helpers
             return Convert.ToBase64String(result);
         }
 
-        public string Decrypt(string plainText)
+        public string Decrypt(string encryptedText)
         {
-            throw new NotImplementedException();
+            var encryptedData = Convert.FromBase64String(encryptedText);
+
+            using var aes = Aes.Create();
+            aes.Key = key;
+
+            // Extract IV from the beginning
+            var iv = new byte[aes.BlockSize / 8];
+            Buffer.BlockCopy(encryptedData, 0, iv, 0, iv.Length);
+            aes.IV = iv;
+
+            // Extract encrypted bytes
+            var encryptedBytes = new byte[encryptedData.Length - iv.Length];
+            Buffer.BlockCopy(encryptedData, iv.Length, encryptedBytes, 0, encryptedBytes.Length);
+
+            using var decryptor = aes.CreateDecryptor();
+            var decryptedBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+
+            return Encoding.UTF8.GetString(decryptedBytes);
         }
 
     }
