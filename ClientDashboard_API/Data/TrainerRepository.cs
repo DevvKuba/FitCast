@@ -34,11 +34,16 @@ namespace ClientDashboard_API.Data
             client.TrainerId = trainer.Id;
         }
 
-        public async Task UpdateTrainerPhoneNumber(int trainerId, string phoneNumber)
+        public async Task UpdateTrainerPhoneNumberAsync(int trainerId, string phoneNumber)
         {
             var trainer = await GetTrainerByIdAsync(trainerId);
+            trainer!.PhoneNumber = phoneNumber;
+        }
 
-            trainer.PhoneNumber = phoneNumber;
+        public async Task UpdateTrainerApiKeyAsync(int trainerId, string apiKey)
+        {
+            var trainer = await GetTrainerByIdAsync(trainerId);
+            trainer!.WorkoutRetrievalApiKey = apiKey;
         }
 
         public async Task AddNewTrainerAsync(Trainer trainer)

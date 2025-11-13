@@ -51,7 +51,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            await unitOfWork.TrainerRepository.UpdateTrainerPhoneNumber(trainer.Id, phoneNumber);
+            await unitOfWork.TrainerRepository.UpdateTrainerPhoneNumberAsync(trainer.Id, phoneNumber);
 
             if (!await unitOfWork.Complete())
             {
