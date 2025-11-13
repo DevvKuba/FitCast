@@ -64,7 +64,7 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of a new Workout Retrieval Api Key
         /// </summary>
         [HttpPut("updateTrainerApiKey")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKey([FromQuery] int trainerId, [FromQuery] string providedApiKey)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKeyAsync([FromQuery] int trainerId, [FromQuery] string providedApiKey)
         {
             // check for trainer
 
@@ -77,6 +77,8 @@ namespace ClientDashboard_API.Controllers
             // else BadRequest around apiKey not being valid
 
             // unitOfWork.Complete() etc..
+
+            throw new NotImplementedException();
         }
 
     }
