@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAPIController
+    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing assignment of client under them
@@ -42,7 +42,7 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of a new phone number
         /// </summary>
         [HttpPut("updateTrainerNumber")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPhoneNumberAsync([FromQuery] int trainerId, string phoneNumber)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePhoneNumberAsync([FromQuery] int trainerId, [FromQuery] string phoneNumber)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
@@ -58,6 +58,25 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new phone number", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s phone number updated to: {trainer.PhoneNumber}", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method allowing assignment of a new Workout Retrieval Api Key
+        /// </summary>
+        [HttpPut("updateTrainerApiKey")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKey([FromQuery] int trainerId, [FromQuery] string providedApiKey)
+        {
+            // check for trainer
+
+            // have a dummy / test method within HevySessionDataService can uses the apiKey to try and get a 200 response 
+
+            // if that's the case use encryption service to encrypt the functioning key
+
+            // store for trainer RetrievalWorkoutApiKey property
+
+            // else BadRequest around apiKey not being valid
+
+            // unitOfWork.Complete() etc..
         }
 
     }
