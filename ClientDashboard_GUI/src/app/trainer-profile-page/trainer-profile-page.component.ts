@@ -63,7 +63,7 @@ export class TrainerProfilePageComponent implements OnInit {
     const currentUser = this.accountService.currentUser();
     // get trainer through currentUser.id and then store everything
     if(currentUser){
-      const trainer = this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
+      this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
         next: (response) => {
           this.firstName = response.data.firstName || '';
           this.surname = response.data.surname || '';
@@ -75,6 +75,13 @@ export class TrainerProfilePageComponent implements OnInit {
         }
       })
     }
+  }
+
+  resetInputFields(): void {
+    this.loadTrainerProfile();
+  }
+
+  saveInputFields(){
     
   }
   
