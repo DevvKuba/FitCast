@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +15,16 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing for the retrieval of a specific Trainer by id
         /// </summary>
         [HttpGet("retrieveTrainerById")]
-        public async Task<ActionResult<ApiResponseDto<string>>> RetrieveTrainerByIdAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<Trainer>>> RetrieveTrainerByIdAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return BadRequest(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            return Ok(new ApiResponseDto<string> { Data = trainer, Message = $"trainer: {trainer.FirstName} successfully retrieved", Success = true });
+            return Ok(new ApiResponseDto<Trainer> { Data = trainer, Message = $"trainer: {trainer.FirstName} successfully retrieved", Success = true });
         }
 
         /// <summary>
