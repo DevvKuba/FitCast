@@ -151,10 +151,10 @@ namespace ClientDashboard_API.Data
             client.TrainerId = null;
         }
 
-        public async Task AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
+        public async Task<Client> AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
-            await context.Client.AddAsync(new Client
+            var newClient = new Client
             {
 
                 FirstName = clientName.ToLower(),
@@ -163,7 +163,12 @@ namespace ClientDashboard_API.Data
                 TotalBlockSessions = blockSessions,
                 TrainerId = trainerId,
                 Trainer = trainer,
-            });
+            };
+
+            await context.Client.AddAsync(newClient);
+
+            return newClient;
+
         }
 
         public void RemoveClient(Client client)

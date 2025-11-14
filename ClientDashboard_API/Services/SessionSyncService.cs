@@ -78,15 +78,16 @@ namespace ClientDashboard_API.Services
                         // indicating that their block is finished
                         if (client.CurrentBlockSession == client.TotalBlockSessions)
                         {
-                            await notificationService.SendTrainerReminderAsync(trainerId, client.Id);
+                            await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
                         }
                     }
                 }
                 else
                 {
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, trainerId);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, trainer.Id);
                     await unitOfWork.Complete();
 
+                    // need to get clinet somehow , we don't have access to the actual client if they weren't previously in the database 
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
                     await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
                     await unitOfWork.Complete();

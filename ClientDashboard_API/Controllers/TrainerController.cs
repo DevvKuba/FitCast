@@ -106,7 +106,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            var result = await syncService.SyncSessionsAsync(trainerId);
+            var result = await syncService.SyncSessionsAsync(trainer);
             if (!result)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Hevy workout sync unsuccessful", Success = false });
