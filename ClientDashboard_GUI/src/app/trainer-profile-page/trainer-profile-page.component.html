@@ -7,39 +7,44 @@
                 Trainer Profile
             </h2>
         </div>
-        
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
         <div class="card-content">
             <div class="grid">
                 <div class="field-group">
                     <label for="firstName">First Name</label>
-                    <input pInputText id="firstName" [(ngModel)]="firstName" />
+                    <input pInputText id="firstName" formControlName="firstName" />
+                    <small *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" 
+                          class="p-error">
+                        First name is required
+                    </small>
                 </div>
 
                 <div class="field-group">
                     <label for="surname">Surname</label>
-                    <input pInputText id="surname" [(ngModel)]="surname" />
+                    <input pInputText id="surname" formControlName="surname" />
                 </div>
 
                 <div class="field-group">
                     <label for="email">Email</label>
-                    <input pInputText id="email" [(ngModel)]="email" />
+                    <input pInputText id="email" formControlName="email" />
                 </div>
 
                 <div class="field-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input pInputText id="phoneNumber" [(ngModel)]="phoneNumber" />
+                    <input pInputText id="phoneNumber" formControlName="phoneNumber" />
                 </div>
 
                 <div class="field-group">
                     <label for="businessName">Business Name</label>
-                    <input pInputText id="businessName" [(ngModel)]="businessName" />
+                    <input pInputText id="businessName" formControlName="businessName">
                 </div>
                 
                 <div class="field-group">
                     <label for="defaultCurrency">Default Currency</label>
                     <p-dropdown 
                         id="defaultCurrency"
-                        [(ngModel)]="defaultCurrency"
+                        formControlName="defaultCurrency"
                         name="defaultCurrency"
                         [options]="currencies"
                         optionLabel="name"
@@ -53,14 +58,15 @@
                     <label for="averageSessionPrice">Average Session Price</label>
                     <p-inputNumber 
                         id="averageSessionPrice"
-                        [(ngModel)]="averageSessionPrice"
+                        formControlName= "averageSessionPrice"
                         name="averageSessionPrice"
                         mode="currency"
-                        [currency]="defaultCurrency || 'GBP'"
+                        [currency]="profileForm.get('defaultCurrency')?.value || 'GBP'"
                         placeholder="Enter session price">
                     </p-inputNumber>
                 </div>
             </div>
+            
 
             <div class="button-group">
                 <p-button 
@@ -68,7 +74,7 @@
                     severity="secondary" 
                     icon="pi pi-refresh"
                     styleClass="reset-btn"
-                    (onClick)="resetInputFields()">
+                    (onClick)="resetProfile()">
                 </p-button>
 
                 <p-button 
@@ -79,6 +85,8 @@
                 </p-button>
             </div>
         </div>
-    </div>
+    </form>
+        
+  </div>
     
 </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FieldsetModule } from 'primeng/fieldset';
@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
 import { Trainer } from '../models/trainer';
 import { AccountService } from '../services/account.service';
 import { TrainerService } from '../services/trainer.service';
+import { defaultIfEmpty } from 'rxjs';
 
 interface Currency {
   name: string;
@@ -28,24 +29,28 @@ interface Currency {
     FieldsetModule,
     InputNumberModule,
     DropdownModule,
-    ToastModule
+    ToastModule,
+    ReactiveFormsModule
   ],
   providers: [MessageService],
   templateUrl: './trainer-profile-page.component.html',
   styleUrl: './trainer-profile-page.component.css'
 })
 export class TrainerProfilePageComponent implements OnInit {
+  profileForm!: FormGroup
+
   accountService = inject(AccountService);
   messageService = inject(MessageService);
   trainerService = inject(TrainerService);
+  formBuilder = inject(FormBuilder);
 
-  firstName: string = "";
-  surname: string = "";
-  email: string = "";
-  phoneNumber: string = "";
-  businessName: string = "";
-  defaultCurrency: string = "";
-  averageSessionPrice: number = 0;
+  // firstName: string = "";
+  // surname: string = "";
+  // email: string = "";
+  // phoneNumber: string = "";
+  // businessName: string = "";
+  // defaultCurrency: string = "";
+  // averageSessionPrice: number = 0;
   
   currencies: Currency[] = [
     { name: 'British Pound (GBP)', code: 'GBP' },
@@ -56,6 +61,16 @@ export class TrainerProfilePageComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.profileForm = this.formBuilder.group({
+      firstName: ['', Validators.required],
+      surname: ['', Validators.required],
+      email: ['', Validators.email],
+      phoneNumber: [''],
+      businessName: [''],
+      defaultCurrency: ['GBP'],
+      averageSessionPrice: [0]
+    });
+
     this.loadTrainerProfile();
   }
   
@@ -65,23 +80,18 @@ export class TrainerProfilePageComponent implements OnInit {
     if(currentUser){
       this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
         next: (response) => {
-          this.firstName = response.data.firstName || '';
-          this.surname = response.data.surname || '';
-          this.email = response.data.email || '';
-          this.phoneNumber = response.data.phoneNumber || '';
-          this.businessName = response.data.businessName || '';
-          this.defaultCurrency = response.data.defaultCurrency || '';
-          this.averageSessionPrice = response.data.averageSessionPrice || 0;
+          this.profileForm.patchValue(response.data);
         }
       })
     }
   }
 
-  resetInputFields(): void {
+  resetProfile(): void {
+    this.profileForm.reset();
     this.loadTrainerProfile();
   }
 
-  saveInputFields(){
+  saveProfile(){
     
   }
   
