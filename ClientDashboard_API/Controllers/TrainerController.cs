@@ -4,6 +4,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 using Twilio.TwiML.Voice;
 
 namespace ClientDashboard_API.Controllers
@@ -25,6 +26,15 @@ namespace ClientDashboard_API.Controllers
             }
 
             return Ok(new ApiResponseDto<Trainer> { Data = trainer, Message = $"trainer: {trainer.FirstName} successfully retrieved", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method allowing assignment of client under them
+        /// </summary>
+        [HttpPut("updateTrainerProfileDetails")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerProfileAsync([FromBody] TrainerUpdateDto updatedTrainerProfile)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
