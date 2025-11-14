@@ -128,6 +128,27 @@ input[pInputText]:hover {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) ;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.button-group p-button {
+  flex: 1;
+}
+
+::ng-deep .reset-btn,
+::ng-deep .save-btn {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
 
 /* Responsive design */
 @media (max-width: 768px) {
