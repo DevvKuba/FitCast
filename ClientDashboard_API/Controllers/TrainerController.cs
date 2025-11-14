@@ -8,7 +8,7 @@ using Twilio.TwiML.Voice;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class TrainerController(IUnitOfWork unitOfWork, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
+    public class TrainerController(IUnitOfWork unitOfWork,IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing assignment of client under them

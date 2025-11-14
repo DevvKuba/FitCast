@@ -93,7 +93,7 @@ namespace ClientDashboard_API.Services
             string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
 
             using HttpClient client = new HttpClient();
-            if (trainer.WorkoutRetrievalApiKey != null)
+            if (trainer.WorkoutRetrievalApiKey == null)
             {
                 throw new KeyNotFoundException("Trainer does not have an Workout Retrieval Api Key configured");
             }

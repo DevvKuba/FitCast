@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
@@ -50,11 +51,10 @@ namespace ClientDashboard_API.Services
             return true;
         }
 
-        public async Task<bool> SyncSessionsAsync(int trainerId)
+        public async Task<bool> SyncSessionsAsync(Trainer trainer)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             // finds the trainer get object
-            var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer!);
+            var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer);
 
             // look through workouts and do identical functionality compared to above methods
             // just calling different messageService methods NOT pipeline ones
