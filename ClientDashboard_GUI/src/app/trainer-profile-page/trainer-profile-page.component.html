@@ -1,1 +1,70 @@
-<p>trainer-profile-page works!</p>
+<div class="profile-container">
+    <p-toast />
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-2xl font-bold mb-4">
+                Trainer Profile
+            </h2>
+        </div>
+        
+        <div class="card-content">
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <label for="username">First Name</label>
+                            <input pInputText id="username" aria-describedby="username-help" [(ngModel)]="firstName" />
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <label for="username">Surname</label>
+                            <input pInputText id="username" aria-describedby="username-help" [(ngModel)]="surname" />
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <label for="username">Email</label>
+                            <input pInputText id="username" aria-describedby="username-help" [(ngModel)]="email" />
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <label for="username">Phone Number</label>
+                            <input pInputText id="username" aria-describedby="username-help" [(ngModel)]="firstName" />
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <label for="username">Business Name</label>
+                            <input pInputText id="username" aria-describedby="username-help" [(ngModel)]="firstName" />
+                        </div>
+                        
+                        <div class="col-12 md:col-6">
+                            <label for="defaultCurrency" class="block text-900 font-medium mb-2">Default Currency</label>
+                            <p-dropdown 
+                                id="defaultCurrency"
+                                [(ngModel)]="defaultCurrency"
+                                name="defaultCurrency"
+                                [options]="currencies"
+                                optionLabel="name"
+                                optionValue="code"
+                                placeholder="Select currency"
+                                class="w-full"
+                                [showClear]="true">
+                            </p-dropdown>
+                        </div>
+                        
+                        <div class="col-12 md:col-6">
+                            <label for="averageSessionPrice" class="block text-900 font-medium mb-2">Average Session Price</label>
+                            <p-inputNumber 
+                                id="averageSessionPrice"
+                                [(ngModel)]="averageSessionPrice"
+                                name="averageSessionPrice"
+                                mode="currency"
+                                [currency]="defaultCurrency || 'GBP'"
+                                placeholder="Enter session price"
+                                class="w-full">
+                            </p-inputNumber>
+                        </div>
+                    </div>
+              
+        </div>
+    </div>
+    
+</div>
