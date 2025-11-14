@@ -13,21 +13,18 @@ import { AccountService } from '../services/account.service';
   styleUrl: './navbar.css'
 })
 export class Navbar implements OnInit {
-  items: MenuItem[] | undefined;
+  functionItems: MenuItem[] | undefined;
+  generalItems: MenuItem[] | undefined;
+ 
   loginComponent = inject(LoginComponent);
   accountService = inject(AccountService);
 
     ngOnInit() {
-        this.items = [
-            {
-                label: 'Home',
-                routerLink: '/',
-                icon: 'pi pi-home'
-            },
+        this.functionItems = [
             {
                 label: 'Client Info',
                 routerLink: '/client-info',
-                icon: 'pi pi-user'
+                icon: 'pi pi-users'
             },
             {
                 label: 'Client Workouts',
@@ -43,6 +40,18 @@ export class Navbar implements OnInit {
                 label: 'Trainer Analytics',
                 routerLink: '/trainer-analytics',
                 icon: 'pi pi-credit-card'
+            }
+        ];
+        this.generalItems = [
+            {
+                label: 'Home',
+                routerLink: '/',
+                icon: 'pi pi-home'
+            },
+            {
+                label: 'Profile',
+                routerLink: '/trainer-profile',
+                icon: 'pi pi-user-edit'
             },
             {
                 label: 'Logout',

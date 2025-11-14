@@ -1,6 +1,11 @@
 @if(accountService.currentUser()){
-    <div class="card">
-        <p-menubar [model]="items" />
-    </div>
+
+    <p-menubar [model]="functionItems">
+    <ng-template #end>
+        <div class="flex align-items-center gap-2">
+            <p-menubar [model]="generalItems" [style]="{'border': 'none', 'background': 'transparent'}"></p-menubar>
+        </div>
+    </ng-template>
+</p-menubar>
 }
 
