@@ -9,34 +9,34 @@
         </div>
         
         <div class="card-content">
-                <div class="grid">
-                  <div class="flex flex-col gap-2">
+            <div class="grid">
+                <div class="field-group">
                     <label for="firstName">First Name</label>
-                    <input pInputText id="firstName" aria-describedby="first-name-help" [(ngModel)]="firstName" />
+                    <input pInputText id="firstName" [(ngModel)]="firstName" />
                 </div>
 
-                <div class="col-12 md:col-6">
+                <div class="field-group">
                     <label for="surname">Surname</label>
-                    <input pInputText id="surname" aria-describedby="username-help" [(ngModel)]="surname" />
+                    <input pInputText id="surname" [(ngModel)]="surname" />
                 </div>
 
-                <div class="col-12 md:col-6">
+                <div class="field-group">
                     <label for="email">Email</label>
-                    <input pInputText id="email" aria-describedby="email-help" [(ngModel)]="email" />
+                    <input pInputText id="email" [(ngModel)]="email" />
                 </div>
 
-                <div class="col-12 md:col-6">
+                <div class="field-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input pInputText id="phoneNumber" aria-describedby="phoneNumber-help" [(ngModel)]="phoneNumber" />
+                    <input pInputText id="phoneNumber" [(ngModel)]="phoneNumber" />
                 </div>
 
-                <div class="col-12 md:col-6">
+                <div class="field-group">
                     <label for="businessName">Business Name</label>
-                    <input pInputText id="businessName" aria-describedby="businessName-help" [(ngModel)]="businessName" />
+                    <input pInputText id="businessName" [(ngModel)]="businessName" />
                 </div>
                 
-                <div class="col-12 md:col-6">
-                    <label for="defaultCurrency" class="block text-900 font-medium mb-2">Default Currency</label>
+                <div class="field-group">
+                    <label for="defaultCurrency">Default Currency</label>
                     <p-dropdown 
                         id="defaultCurrency"
                         [(ngModel)]="defaultCurrency"
@@ -45,25 +45,22 @@
                         optionLabel="name"
                         optionValue="code"
                         placeholder="Select currency"
-                        class="w-full"
                         [showClear]="true">
                     </p-dropdown>
                 </div>
                 
-                <div class="col-12 md:col-6">
-                    <label for="averageSessionPrice" class="block text-900 font-medium mb-2">Average Session Price</label>
+                <div class="field-group">
+                    <label for="averageSessionPrice">Average Session Price</label>
                     <p-inputNumber 
                         id="averageSessionPrice"
                         [(ngModel)]="averageSessionPrice"
                         name="averageSessionPrice"
                         mode="currency"
                         [currency]="defaultCurrency || 'GBP'"
-                        placeholder="Enter session price"
-                        class="w-full">
+                        placeholder="Enter session price">
                     </p-inputNumber>
                 </div>
             </div>
-      
         </div>
     </div>
     
