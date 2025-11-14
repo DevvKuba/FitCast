@@ -11,6 +11,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<WorkoutSummaryDto>> RetrieveWorkouts(HttpResponseMessage response);
 
+        Task<bool> IsApiKeyValidAsync(string apiKey);
 
     }
 }
