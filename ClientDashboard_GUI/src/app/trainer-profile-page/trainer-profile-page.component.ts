@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Trainer } from '../models/trainer';
 import { AccountService } from '../services/account.service';
+import { TrainerService } from '../services/trainer.service';
 
 interface Currency {
   name: string;
@@ -36,6 +37,7 @@ interface Currency {
 export class TrainerProfilePageComponent implements OnInit {
   accountService = inject(AccountService);
   messageService = inject(MessageService);
+  trainerService = inject(TrainerService);
 
   firstName: string = "";
   surname: string = "";
@@ -60,10 +62,20 @@ export class TrainerProfilePageComponent implements OnInit {
   loadTrainerProfile(): void {
     const currentUser = this.accountService.currentUser();
     // get trainer through currentUser.id and then store everything
-    
-    if (currentUser) {
-      this.firstName = currentUser.firstName || '';
+    if(currentUser){
+      const trainer = this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
+        next: (response) => {
+          this.firstName = response.data.firstName || '';
+          this.surname = response.data.surname || '';
+          this.email = response.data.email || '';
+          this.phoneNumber = response.data.phoneNumber || '';
+          this.businessName = response.data.businessName || '';
+          this.defaultCurrency = response.data.defaultCurrency || '';
+          this.averageSessionPrice = response.data.averageSessionPrice || 0;
+        }
+      })
     }
+    
   }
   
 }

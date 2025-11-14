@@ -11,6 +11,10 @@ export class TrainerService {
   baseUrl = environment.apiUrl;
 
   assignClient(clientId : number, trainerId : number) : Observable<any>{
-  return this.http.put(this.baseUrl + `assignClient?clientId=${clientId}&trainerId=${trainerId}`, null);
-  } 
+  return this.http.put(this.baseUrl + `trainer/assignClient?clientId=${clientId}&trainerId=${trainerId}`, null);
+  }
+
+  retrieveTrainerById(trainerId: number) : Observable<any>{
+    return this.http.get(this.baseUrl + `trainer/retrieveTrainerById?trainerId=${trainerId}`);
+  }
 }
