@@ -11,6 +11,22 @@ namespace ClientDashboard_API.Controllers
     public class TrainerController(IUnitOfWork unitOfWork,IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
+        /// Trainer method allowing for the retrieval of a specific Trainer by id
+        /// </summary>
+        [HttpGet("retrieveTrainerById")]
+        public async Task<ActionResult<ApiResponseDto<string>>> RetrieveTrainerByIdAsync([FromQuery] int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<string> { Data = trainer, Message = $"trainer: {trainer.FirstName} successfully retrieved", Success = true });
+        }
+
+        /// <summary>
         /// Trainer method allowing assignment of client under them
         /// </summary>
         [HttpPut("assignClient")]
