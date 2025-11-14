@@ -156,7 +156,6 @@ namespace ClientDashboard_API.Data
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
             var newClient = new Client
             {
-
                 FirstName = clientName.ToLower(),
                 IsActive = true,
                 CurrentBlockSession = 0,
