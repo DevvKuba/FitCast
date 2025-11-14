@@ -33,18 +33,6 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions)
-        {
-            var updatedData = new ClientUpdateDto
-            {
-                FirstName = newClientName,
-                IsActive = newActivity,
-                CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = newTotalSessions
-            };
-            mapper.Map(updatedData, client);
-        }
-
         public void UpdateDeletingClientCurrentSession(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession - 1;
@@ -64,6 +52,18 @@ namespace ClientDashboard_API.Data
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = client.TotalBlockSessions,
+            };
+            mapper.Map(updatedData, client);
+        }
+
+        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions)
+        {
+            var updatedData = new ClientUpdateDto
+            {
+                FirstName = newClientName,
+                IsActive = newActivity,
+                CurrentBlockSession = newCurrentSession,
+                TotalBlockSessions = newTotalSessions
             };
             mapper.Map(updatedData, client);
         }
