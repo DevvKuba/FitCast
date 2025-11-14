@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("assignClient")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateClientAssignmentAsync([FromQuery] int clientId, [FromQuery] int trainerId)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if (trainer == null)
             {

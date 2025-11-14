@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Services
             messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
-            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if (trainer == null)
             {
@@ -45,7 +45,7 @@ namespace ClientDashboard_API.Services
             messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
-            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if (trainer == null)
             {

@@ -6,6 +6,8 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<Trainer?> GetTrainerByEmailAsync(string email);
 
+        Task<Trainer?> GetTrainerWithClientsByIdAsync(int id);
+
         Task<Trainer?> GetTrainerByIdAsync(int id);
 
         Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);

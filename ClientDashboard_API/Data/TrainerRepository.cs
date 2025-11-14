@@ -14,6 +14,12 @@ namespace ClientDashboard_API.Data
 
         public async Task<Trainer?> GetTrainerByIdAsync(int id)
         {
+            var trainer = await context.Trainer.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return trainer;
+        }
+
+        public async Task<Trainer?> GetTrainerWithClientsByIdAsync(int id)
+        {
             var trainer = await context.Trainer
                 .Include(t => t.Clients)
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -60,6 +66,5 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
-
     }
 }

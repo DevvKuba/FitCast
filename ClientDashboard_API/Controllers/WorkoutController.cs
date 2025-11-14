@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("GetTrainerWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts([FromQuery] int trainerId)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
             if (trainer == null)
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No trainers with that id found", Success = false });
