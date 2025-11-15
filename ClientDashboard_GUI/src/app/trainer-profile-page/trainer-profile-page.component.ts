@@ -12,6 +12,7 @@ import { Trainer } from '../models/trainer';
 import { AccountService } from '../services/account.service';
 import { TrainerService } from '../services/trainer.service';
 import { defaultIfEmpty } from 'rxjs';
+import { ToastService } from '../services/toast.service';
 
 interface Currency {
   name: string;
@@ -40,7 +41,8 @@ export class TrainerProfilePageComponent implements OnInit {
   profileForm!: FormGroup
 
   accountService = inject(AccountService);
-  messageService = inject(MessageService);
+  // messageService = inject(MessageService);
+  toastService = inject(ToastService)
   trainerService = inject(TrainerService);
   formBuilder = inject(FormBuilder);
 
@@ -92,7 +94,22 @@ export class TrainerProfilePageComponent implements OnInit {
   }
 
   saveProfile(){
-    
+    if(this.profileForm.valid){
+      const trainerUpdatedProfile = this.profileForm.value;
+
+      const currentUser = this.accountService.currentUser();
+
+      if(currentUser){
+        this.trainerService.updateTrainerProfile(currentUser.id, trainerUpdatedProfile).subscribe({
+          next: (response) => {
+            this.toastService.showSuccess("Success Updating Profile",  `${response.data}'s profile has been updated`);
+          },
+          error: (response) => {
+            this.toastService.showError("Error Updating Profile",  `${response.data}'s profile has not been updated`);
+          }
+        })
+      }
+    }
   }
   
 }
