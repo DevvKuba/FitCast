@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -11,6 +12,8 @@ namespace ClientDashboard_API.Interfaces
         Task<Trainer?> GetTrainerByIdAsync(int id);
 
         Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
+
+        void UpdateTrainerProfileDetailsAsync(Trainer trainer, TrainerUpdateDto updateDto);
 
         Task UpdateTrainerPhoneNumberAsync(int trainerId, string phoneNumber);
 

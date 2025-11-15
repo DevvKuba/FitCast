@@ -1,10 +1,12 @@
-﻿using ClientDashboard_API.Entities;
+﻿using AutoMapper;
+using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class TrainerRepository(DataContext context) : ITrainerRepository
+    public class TrainerRepository(DataContext context, IMapper mapper) : ITrainerRepository
     {
         public async Task<Trainer?> GetTrainerByEmailAsync(string email)
         {
@@ -40,6 +42,11 @@ namespace ClientDashboard_API.Data
             client.TrainerId = trainer.Id;
         }
 
+        public void UpdateTrainerProfileDetailsAsync(Trainer trainer, TrainerUpdateDto updateDto)
+        {
+            mapper.Map(updateDto, trainer);
+        }
+
         public async Task UpdateTrainerPhoneNumberAsync(int trainerId, string phoneNumber)
         {
             var trainer = await GetTrainerByIdAsync(trainerId);
@@ -66,5 +73,6 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
+
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 using Twilio.TwiML.Voice;
+using Twilio.Types;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -32,9 +33,22 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of client under them
         /// </summary>
         [HttpPut("updateTrainerProfileDetails")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerProfileAsync([FromBody] TrainerUpdateDto updatedTrainerProfile)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerProfileAsync([FromQuery] int trainerId, [FromBody] TrainerUpdateDto updatedTrainerProfile)
         {
-            throw new NotImplementedException();
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            unitOfWork.TrainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updatedTrainerProfile);
+
+            if(!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving trainer profile", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName} has bad their profile updated successfully", Success = true });
         }
 
         /// <summary>
