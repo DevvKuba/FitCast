@@ -32,6 +32,7 @@ import { TagModule } from 'primeng/tag';
 export class ClientWorkouts {
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
+    autoWorkoutRetrievalVisible: boolean = false;
     addDialogVisible: boolean = false;
     deleteDialogVisible: boolean = false;
 
@@ -178,6 +179,10 @@ export class ClientWorkouts {
         this.clients = [];
       }
     })
+  }
+
+  showDialogForAutoWorkoutRetrieval(){
+    this.autoWorkoutRetrievalVisible = true;
   }
 
   showDialogForAdd() {
