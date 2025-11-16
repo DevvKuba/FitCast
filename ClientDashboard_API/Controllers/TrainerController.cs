@@ -48,7 +48,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving trainer profile", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName} has bad their profile updated successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName} has had their profile updated successfully", Success = true });
         }
 
         /// <summary>
