@@ -29,8 +29,9 @@
                     rounded
                     severity="secondary">
                 </p-button>
-                <p-togglebutton 
-                    [(ngModel)]="validApiKeyProvided"
+                <p-togglebutton
+                    [disabled]="!validApiKeyProvided"
+                    (click)="gatherExternalWorkouts()"
                     onLabel="Gather Workouts"
                     offLabel="Gather Workouts"
                     styleClass="w-full sm:w-40"

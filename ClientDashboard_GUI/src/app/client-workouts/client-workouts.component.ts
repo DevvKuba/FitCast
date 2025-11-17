@@ -64,6 +64,9 @@ export class ClientWorkouts {
     ngOnInit() {
         this.displayWorkouts();
         this.getTrainerApiKey();
+        if(this.trainerApiKey !== null){
+            this.validApiKeyProvided = true;
+        }
     }
 
     next() {
@@ -191,10 +194,21 @@ export class ClientWorkouts {
       next: (response) => {
         this.clients = response.data?.map(x => ({id: x.id , name: x.firstName})) ?? [];
       },
-      error: (response) => {
+      error: () => {
         console.log('Failed to display client for which you may add a workout for');
         this.clients = [];
       }
+    })
+  }
+
+  gatherExternalWorkouts(){
+    this.trainerService.gatherAndUpdateExternalWorkouts(this.accountService.currentUser()?.id ?? 0).subscribe({
+        next: () => {
+            this.toastService.showSuccess('Success Gathering Workouts', 'All workouts have been added and client details updated');
+        },
+        error: () => {
+            this.toastService.showError('Error Gathering Workouts', 'An error occured');
+        }
     })
   }
 

@@ -18,6 +18,10 @@ export class TrainerService {
     return this.http.get(this.baseUrl + `trainer/retrieveTrainerById?trainerId=${trainerId}`);
   }
 
+  gatherAndUpdateExternalWorkouts(trainerId: number) : Observable<any> {
+    return this.http.put(this.baseUrl + `trainer/getDailyHevyWorkouts?trainerId=${trainerId}`, null);
+  }
+
   getWorkoutRetrievalApiKey(trainerId : number) : Observable<any>{
     return this.http.get(this.baseUrl +  `trainer/getHevyApiKey?trainerId=${trainerId}`);
   }
