@@ -158,7 +158,7 @@ namespace ClientDashboard_API.Controllers
         //summary>
         /// Trainer method to retrieve a trainer's Hevy Api Key
         /// </summary>
-        [HttpGet("geHevyApiKey")]
+        [HttpGet("getHevyApiKey")]
         public async Task<ActionResult<ApiResponseDto<string>>> GetWorkoutRetrievalApiKeyAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);

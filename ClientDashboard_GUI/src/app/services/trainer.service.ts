@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, ObservableLike } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,10 @@ export class TrainerService {
 
   retrieveTrainerById(trainerId: number) : Observable<any>{
     return this.http.get(this.baseUrl + `trainer/retrieveTrainerById?trainerId=${trainerId}`);
+  }
+
+  getWorkoutRetrievalApiKey(trainerId : number) : Observable<any>{
+    return this.http.get(this.baseUrl +  `trainer/getHevyApiKey?trainerId=${trainerId}`);
   }
 
   updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{

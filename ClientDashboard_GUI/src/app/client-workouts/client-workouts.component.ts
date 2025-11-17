@@ -22,6 +22,7 @@ import { ToastService } from '../services/toast.service';
 import { TagModule } from 'primeng/tag';
 import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
 import { PasswordModule } from 'primeng/password';
+import { TrainerService } from '../services/trainer.service';
 
 @Component({
   selector: 'app-client-workouts',
@@ -54,6 +55,7 @@ export class ClientWorkouts {
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
+    private trainerService = inject(TrainerService);
     private toastService = inject(ToastService);
 
     first = 0; // offset
@@ -61,6 +63,7 @@ export class ClientWorkouts {
 
     ngOnInit() {
         this.displayWorkouts();
+        this.getTrainerApiKey();
     }
 
     next() {
@@ -86,6 +89,14 @@ export class ClientWorkouts {
 
     isFirstPage(): boolean {
         return this.workouts ? this.first === 0 : true;
+    }
+
+    getTrainerApiKey(){
+        this.trainerService.getWorkoutRetrievalApiKey(this.accountService.currentUser()?.id ?? 0).subscribe({
+            next: (response) => {
+                this.trainerApiKey = response.data;
+            }
+        })
     }
 
      onRowEditInit(workout: Workout) {
