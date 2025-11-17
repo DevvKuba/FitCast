@@ -41,7 +41,7 @@
             <p-dialog header="Set up Hevy App Workout Retrieval" [modal]="true" [(visible)]="autoWorkoutRetrievalVisible" [style]="{ width: '25rem' }">
                 <div class="flex items-center gap-4 mb-4">
                     <label for="username" class="font-semibold w-24">ApiKey</label>
-                    <input pInputText id="username" class="flex-auto" autocomplete="off" />
+                    <p-password [(ngModel)]="trainerApiKey" [toggleMask]="true" />
                 </div>
                 <div class="flex items-center gap-4 mb-8">
                     <label for="email" class="font-semibold w-24">Toggle Automatic Collection</label>

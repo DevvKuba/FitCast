@@ -155,5 +155,28 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = "Hevy workout sync successfully completed", Success = true });
         }
 
+        //summary>
+        /// Trainer method to retrieve a trainer's Hevy Api Key
+        /// </summary>
+        [HttpGet("geHevyApiKey")]
+        public async Task<ActionResult<ApiResponseDto<string>>> GetWorkoutRetrievalApiKeyAsync([FromQuery] int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            var encryptedApiKey = trainer.WorkoutRetrievalApiKey;
+
+            if(encryptedApiKey == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"trainer: {trainer.FirstName} does not have an api key set" , Success = false });
+            }
+
+            return Ok(new ApiResponseDto<string> { Data = encrypter.Decrypt(trainer.WorkoutRetrievalApiKey!), Message = $"trainer: {trainer.FirstName}'s api key decrypted and returned successfully", Success = true });
+        }
+
     }
 }

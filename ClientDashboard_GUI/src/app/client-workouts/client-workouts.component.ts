@@ -21,11 +21,13 @@ import { MessageService } from 'primeng/api';
 import { ToastService } from '../services/toast.service';
 import { TagModule } from 'primeng/tag';
 import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
+import { PasswordModule } from 'primeng/password';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
-     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule, ToggleButtonModule, ToggleButton ],
+     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
+     ToggleButtonModule, ToggleButton, PasswordModule ],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'
@@ -45,6 +47,7 @@ export class ClientWorkouts {
     clonedWorkouts: { [s: string]: Workout } = {};
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
+    trainerApiKey: string = "";
     automaticRetrievalChecked: boolean = false;
     validApiKeyProvided: boolean = false;
 

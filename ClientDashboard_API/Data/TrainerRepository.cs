@@ -20,6 +20,7 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
+
         public async Task<Trainer?> GetTrainerWithClientsByIdAsync(int id)
         {
             var trainer = await context.Trainer
