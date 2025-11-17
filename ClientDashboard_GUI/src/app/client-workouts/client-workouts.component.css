@@ -15,3 +15,10 @@
 .workout-td {
     text-align: center;
 }
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}

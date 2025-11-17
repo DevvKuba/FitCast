@@ -18,18 +18,24 @@
         editMode="row"
     >
         <ng-template #header>
-            <p-button
-            pButton
-            pRipple
-            type="button"
-            icon="pi pi-cog"
-            (click)="showDialogForAutoWorkoutRetrieval()"
-            text
-            size="large"
-            rounded
-            severity="secondary"></p-button>
-            <p-dialog header="Edit Profile" [modal]="true" [(visible)]="autoWorkoutRetrievalVisible" [style]="{ width: '25rem' }">
-                <span class="p-text-secondary block mb-8">Update your information.</span>
+            <div class="header-buttons">
+                <p-button
+                    pButton
+                    pRipple
+                    type="button"
+                    icon="pi pi-cog"
+                    (click)="showDialogForAutoWorkoutRetrieval()"
+                    text
+                    rounded
+                    severity="secondary">
+                </p-button>
+                <p-button 
+                    label="Gather Workouts" 
+                    severity="secondary"
+                    size="small">
+                </p-button>
+            </div>
+            <p-dialog header="Set up External Workout Retrieval" [modal]="true" [(visible)]="autoWorkoutRetrievalVisible" [style]="{ width: '25rem' }">
                 <div class="flex items-center gap-4 mb-4">
                     <label for="username" class="font-semibold w-24">Workout API Provider</label>
                     <input pInputText id="username" class="flex-auto" autocomplete="off" />
@@ -47,6 +53,7 @@
                     <p-button label="Save" (click)="autoWorkoutRetrievalVisible = false" />
                 </div>
             </p-dialog>
+
             
             <div class="card flex justify-center">
                 <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
