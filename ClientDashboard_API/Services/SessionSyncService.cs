@@ -51,7 +51,7 @@ namespace ClientDashboard_API.Services
             return true;
         }
 
-        public async Task<bool> SyncSessionsAsync(Trainer trainer)
+        public async Task<int> SyncSessionsAsync(Trainer trainer)
         {
             // finds the trainer get object
             var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer);
@@ -93,7 +93,7 @@ namespace ClientDashboard_API.Services
                     await unitOfWork.Complete();
                 }
             }
-            return true;
+            return dailyWorkouts.Count();
         }
     }
 }

@@ -138,21 +138,27 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method to collect daily client workout's from Hevy Workout Tracker
         /// </summary>
         [HttpPut("getDailyHevyWorkouts")]
-        public async Task<ActionResult<ApiResponseDto<string>>> GatherAndUpdateHevyClientWorkoutsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<int>>> GatherAndUpdateHevyClientWorkoutsAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
             }
 
-            var result = await syncService.SyncSessionsAsync(trainer);
-            if (!result)
+            if(trainer.WorkoutRetrievalApiKey == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Hevy workout sync unsuccessful", Success = false });
+                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not have an assigned api key ", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = "Hevy workout sync successfully completed", Success = true });
+
+            var collectedSessions = await syncService.SyncSessionsAsync(trainer);
+
+            if (collectedSessions == 0)
+            {
+                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "No Hevy Workouts were collected", Success = true });
+            }
+            return Ok(new ApiResponseDto<int> { Data = collectedSessions, Message = $"{collectedSessions} Hevy workouts successfully retrieved", Success = true });
         }
 
         //summary>

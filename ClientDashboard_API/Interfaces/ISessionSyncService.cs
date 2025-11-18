@@ -6,6 +6,6 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<bool> SyncDailyPipelineSessionsAsync();
 
-        Task<bool> SyncSessionsAsync(Trainer trainer);
+        Task<int> SyncSessionsAsync(Trainer trainer);
     }
 }
