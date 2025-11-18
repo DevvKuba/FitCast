@@ -8,6 +8,8 @@
 
         public string? WorkoutRetrievalApiKey { get; set; }
 
+        public bool AutoRetrieval { get; set; } = false;
+
         public string? DefaultCurrency { get; set; }
 
         public List<Client> Clients { get; set; } = [];
