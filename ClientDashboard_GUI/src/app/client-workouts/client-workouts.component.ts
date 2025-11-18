@@ -63,6 +63,7 @@ export class ClientWorkouts {
 
     ngOnInit() {
         this.displayWorkouts();
+        this.getAutoRetrievalStatus();
         this.getTrainerApiKey();
         if(this.trainerApiKey !== null){
             this.validApiKeyProvided = true;
@@ -98,6 +99,14 @@ export class ClientWorkouts {
         this.trainerService.getWorkoutRetrievalApiKey(this.accountService.currentUser()?.id ?? 0).subscribe({
             next: (response) => {
                 this.trainerApiKey = response.data;
+            }
+        })
+    }
+
+    getAutoRetrievalStatus(){
+        this.trainerService.getAutoRetrievalStatus(this.accountService.currentUser()?.id ?? 0).subscribe({
+            next: (response) => {
+                this.automaticRetrievalChecked = response.data;
             }
         })
     }
