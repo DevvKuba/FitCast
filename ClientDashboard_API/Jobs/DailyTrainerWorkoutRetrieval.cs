@@ -5,17 +5,15 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyTrainerWorkoutRetrieval(DataContext dataContext, ISessionSyncService syncService) : IJob
+    public class DailyTrainerWorkoutRetrieval(IUnitOfWork unitOfWork, ISessionSyncService syncService) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            foreach(Trainer trainer in dataContext.Trainer)
+            var trainers = await unitOfWork.TrainerRepository.GetTrainersWithAutoRetrievalAsync();
+            foreach(Trainer trainer in trainers)
             {
-                if (trainer.AutoRetrieval)
-                {
-                    var workoutCount = await syncService.SyncSessionsAsync(trainer);
-                    Console.WriteLine($"Retrieved {workoutCount} client workouts for trainer: {trainer.FirstName} at {DateTime.UtcNow}");
-                }
+                var workoutCount = await syncService.SyncSessionsAsync(trainer);
+                Console.WriteLine($"Retrieved {workoutCount} client workouts for trainer: {trainer.FirstName} at {DateTime.UtcNow}");
             }
         }
     }
