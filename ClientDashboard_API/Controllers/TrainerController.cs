@@ -125,7 +125,7 @@ namespace ClientDashboard_API.Controllers
             var encryptedApiKey = encrypter.Encrypt(providedApiKey);
 
             // store for trainer RetrievalWorkoutApiKey property
-            await unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainerId, encryptedApiKey);
+            unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
 
             if (!await unitOfWork.Complete())
             {
@@ -133,6 +133,38 @@ namespace ClientDashboard_API.Controllers
             }
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key successfully set up", Success = true });
         }
+
+        /// <summary>
+        /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
+        /// </summary>
+        [HttpPut("updateTrainerRetrievalDetails")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerRetrievalDetailsAsync([FromQuery] int trainerId, [FromQuery] string providedApiKey, [FromQuery] bool enabled)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            if (!await hevyDataParser.IsApiKeyValidAsync(providedApiKey))
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"provided api key: {providedApiKey} is not valid.", Success = false });
+            }
+
+            var encryptedApiKey = encrypter.Encrypt(providedApiKey);
+
+            unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
+            unitOfWork.TrainerRepository.UpdateTrainerAutoRetrievalAsync(trainer, enabled);
+
+            if(!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key and auto retrieval status successfully set up", Success = true });
+
+        }
+
 
         //summary>
         /// Trainer method to collect daily client workout's from Hevy Workout Tracker

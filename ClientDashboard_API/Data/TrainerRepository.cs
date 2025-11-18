@@ -65,10 +65,9 @@ namespace ClientDashboard_API.Data
             trainer.AutoRetrieval = enabled;
         }
 
-        public async Task UpdateTrainerApiKeyAsync(int trainerId, string apiKey)
+        public void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey)
         {
-            var trainer = await GetTrainerByIdAsync(trainerId);
-            trainer!.WorkoutRetrievalApiKey = apiKey;
+            trainer.WorkoutRetrievalApiKey = apiKey;
         }
 
         public async Task AddNewTrainerAsync(Trainer trainer)
