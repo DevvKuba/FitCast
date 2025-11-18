@@ -36,7 +36,6 @@ namespace ClientDashboard_API.Extensions
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
-            services.AddQuartzHostedService();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

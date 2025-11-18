@@ -1,8 +1,10 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Extensions;
+using ClientDashboard_API.Jobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
 using System.Text;
 
 namespace ClientDashboard_API
@@ -52,6 +54,27 @@ namespace ClientDashboard_API
                         }
                     };
                 });
+
+            builder.Services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory();
+
+                // key for background job
+                var jobKey = new JobKey("DailyWorkoutSyncJob");
+
+                // registering job for DI container
+                q.AddJob<DailyTrainerWorkoutRetrieval>(opts => opts.WithIdentity(jobKey));
+
+                // setting up scheduled job trigger for midnight execution
+                q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("DailyWorkoutSyncJob-trigger")
+                .WithCronSchedule("0 0 0 * * ?")
+                .WithDescription("Runs daily at midnight - 12AM to sync Hevy workouts"));
+
+            });
+
+            builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
             var app = builder.Build();
 
