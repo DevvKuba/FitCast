@@ -10,6 +10,8 @@
 
         public string? PhoneNumber { get; set; }
 
+        public string? BusinessName { get; set; }
+
         public string? DefaultCurrency { get; set; }
 
         public decimal? AverageSessionPrice { get; set; }

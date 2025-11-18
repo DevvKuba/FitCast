@@ -22,16 +22,6 @@ export class Navbar implements OnInit {
     ngOnInit() {
         this.functionItems = [
             {
-                label: 'Client Info',
-                routerLink: '/client-info',
-                icon: 'pi pi-users'
-            },
-            {
-                label: 'Client Workouts',
-                routerLink: '/client-workouts',
-                icon: 'pi pi-table'
-            },
-            {
                 label: 'Client Analytics',
                 routerLink: '/client-analytics',
                 icon: 'pi pi-chart-line'
@@ -40,7 +30,18 @@ export class Navbar implements OnInit {
                 label: 'Trainer Analytics',
                 routerLink: '/trainer-analytics',
                 icon: 'pi pi-credit-card'
+            },
+            {
+                label: 'Client Info',
+                routerLink: '/client-info',
+                icon: 'pi pi-users'
+            },
+            {
+                label: 'Client Workouts',
+                routerLink: '/client-workouts',
+                icon: 'pi pi-table'
             }
+            
         ];
         this.generalItems = [
             {
