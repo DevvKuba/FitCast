@@ -33,4 +33,8 @@ export class TrainerService {
   updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{
     return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails?trainerId=${trainerId}`, newProfile);
   }
+
+  updateTrainerRetrievalDetails(trainerId: number, providedApiKey: string, retrievalStatus: boolean) : Observable<any>{
+    return this.http.put(this.baseUrl + `trainer/updateTrainerRetrievalDetails?trainerId=${trainerId}&providedApiKey=${providedApiKey}&enabled=${retrievalStatus}`, null);
+  }
 }

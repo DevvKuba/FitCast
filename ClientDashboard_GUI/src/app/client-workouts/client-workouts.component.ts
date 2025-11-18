@@ -111,6 +111,19 @@ export class ClientWorkouts {
         })
     }
 
+    updateWorkoutRetrievalDetails(apiKey: string, retrievalStatus: boolean){
+        this.trainerService.updateTrainerRetrievalDetails(this.accountService.currentUser()?.id ?? 0,
+        apiKey, retrievalStatus).subscribe({
+            next: (response) => {
+                this.toastService.showSuccess('Success updated details', response.message);
+                this.autoWorkoutRetrievalVisible = false
+            }, 
+            error: (response) => {
+                this.toastService.showError('Error updating details', response.message);
+            }
+        })
+    }
+
      onRowEditInit(workout: Workout) {
         this.clonedWorkouts[workout.id as number] = { ...workout };
     }
