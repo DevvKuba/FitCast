@@ -29,6 +29,12 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
+        public async Task<List<Trainer?>> GetTrainersWithAutoRetrievalAsync()
+        {
+            var trainers = await context.Trainer.Where(x => x.AutoRetrieval == true).ToListAsync();
+            return trainers;
+        }
+
         public async Task<List<Client>> GetTrainerClientsAsync(Trainer trainer)
         {
             var clientList = await context.Client
@@ -52,6 +58,11 @@ namespace ClientDashboard_API.Data
         {
             var trainer = await GetTrainerByIdAsync(trainerId);
             trainer!.PhoneNumber = phoneNumber;
+        }
+
+        public void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled)
+        {
+            trainer.AutoRetrieval = enabled;
         }
 
         public async Task UpdateTrainerApiKeyAsync(int trainerId, string apiKey)
