@@ -43,6 +43,7 @@
                 <div class="flex items-center gap-4 mb-4">
                     <label for="username" class="font-semibold w-24">ApiKey</label>
                     <p-password [(ngModel)]="trainerApiKey" [toggleMask]="true" [feedback]="false" />
+                    <p-button label="Reset" styleClass="w-full sm:w-40" severity="secondary" (click)="getTrainerApiKey()"></p-button>
                 </div>
                 <div class="flex items-center gap-4 mb-8">
                     <label for="email" class="font-semibold w-24">Toggle Automatic Collection</label>
