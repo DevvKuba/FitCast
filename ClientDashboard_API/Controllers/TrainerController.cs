@@ -5,13 +5,14 @@ using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
 using Twilio.TwiML.Voice;
 using Twilio.Types;
 
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class TrainerController(IUnitOfWork unitOfWork,IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
+    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing for the retrieval of a specific Trainer by id
@@ -44,7 +45,7 @@ namespace ClientDashboard_API.Controllers
 
             unitOfWork.TrainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updatedTrainerProfile);
 
-            if(!await unitOfWork.Complete())
+            if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving trainer profile", Success = false });
             }
@@ -157,7 +158,7 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
             unitOfWork.TrainerRepository.UpdateTrainerAutoRetrievalAsync(trainer, enabled);
 
-            if(!await unitOfWork.Complete())
+            if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });
             }
@@ -179,7 +180,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
             }
 
-            if(trainer.WorkoutRetrievalApiKey == null)
+            if (trainer.WorkoutRetrievalApiKey == null)
             {
                 return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not have an assigned api key ", Success = false });
             }
@@ -208,13 +209,28 @@ namespace ClientDashboard_API.Controllers
 
             var encryptedApiKey = trainer.WorkoutRetrievalApiKey;
 
-            if(encryptedApiKey == null)
+            if (encryptedApiKey == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"trainer: {trainer.FirstName} does not have an api key set" , Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"trainer: {trainer.FirstName} does not have an api key set", Success = false });
             }
 
             return Ok(new ApiResponseDto<string> { Data = encrypter.Decrypt(trainer.WorkoutRetrievalApiKey!), Message = $"trainer: {trainer.FirstName}'s api key decrypted and returned successfully", Success = true });
         }
 
+        //summary>
+        /// Trainer method to retrieve a trainer's Auto Retrieval status
+        /// </summary>
+        [HttpGet("getAutoRetrievalStatus")]
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoRetrievalStatusAsync([FromQuery] int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<bool> { Data = trainer.AutoRetrieval, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
+        }
     }
 }

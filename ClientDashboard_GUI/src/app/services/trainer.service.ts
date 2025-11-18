@@ -26,6 +26,10 @@ export class TrainerService {
     return this.http.get(this.baseUrl +  `trainer/getHevyApiKey?trainerId=${trainerId}`);
   }
 
+  getAutoRetrievalStatus(trainerId : number) : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getAutoRetrievalStatus?trainerId=${trainerId}`);
+  }
+
   updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{
     return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails?trainerId=${trainerId}`, newProfile);
   }
