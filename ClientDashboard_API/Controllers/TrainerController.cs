@@ -156,7 +156,7 @@ namespace ClientDashboard_API.Controllers
 
             if (collectedSessions == 0)
             {
-                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "No Hevy Workouts were collected", Success = true });
+                return Ok(new ApiResponseDto<int> { Data = 0, Message = "No Hevy Workouts were collected", Success = true });
             }
             return Ok(new ApiResponseDto<int> { Data = collectedSessions, Message = $"{collectedSessions} Hevy workouts successfully retrieved", Success = true });
         }

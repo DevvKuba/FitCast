@@ -203,11 +203,16 @@ export class ClientWorkouts {
 
   gatherExternalWorkouts(){
     this.trainerService.gatherAndUpdateExternalWorkouts(this.accountService.currentUser()?.id ?? 0).subscribe({
-        next: () => {
-            this.toastService.showSuccess('Success Gathering Workouts', 'All workouts have been added and client details updated');
+        next: (response) => {
+            if(response.data == 0){
+                this.toastService.showNeutral('Success Gathering Workouts', `Accessed workouts successfully, No workouts found to retrieve`);
+            }else {
+                this.toastService.showSuccess('Success Gathering Workouts', `All ${response.data} workouts have been added and client details updated`);
+            }
+            this.displayWorkouts();
         },
         error: () => {
-            this.toastService.showError('Error Gathering Workouts', 'An error occured');
+            this.toastService.showError('Error Gathering Workouts', 'An error occurred calling the external api');
         }
     })
   }
