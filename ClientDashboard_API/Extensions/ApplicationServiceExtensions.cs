@@ -3,6 +3,7 @@ using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 
 namespace ClientDashboard_API.Extensions
 {
@@ -34,6 +35,8 @@ namespace ClientDashboard_API.Extensions
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+            services.AddQuartzHostedService();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
