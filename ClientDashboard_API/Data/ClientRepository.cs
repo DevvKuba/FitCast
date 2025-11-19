@@ -151,6 +151,7 @@ namespace ClientDashboard_API.Data
             client.TrainerId = null;
         }
 
+        // eventually when pipeline is no longer needed, maybe trainerId a non-nullable type
         public async Task<Client> AddNewClientAsync(string clientName, int? blockSessions, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();

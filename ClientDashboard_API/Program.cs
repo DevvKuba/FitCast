@@ -95,7 +95,7 @@ namespace ClientDashboard_API
                     await context.Database.EnsureCreatedAsync(); // bootstrap database schema when no migrations exist
                 }
 
-                await SeedClients.Seed(context);
+                await RestoreBackupData.RestoreClientsAndWorkouts(context);
             }
 
             // captures the bool set to EnableSwagger on azure
