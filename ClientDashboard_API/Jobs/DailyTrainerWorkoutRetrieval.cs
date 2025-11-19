@@ -13,6 +13,7 @@ namespace ClientDashboard_API.Jobs
             foreach (Trainer trainer in trainers)
             {
                 var workoutCount = await syncService.SyncSessionsAsync(trainer);
+                // logging message below would be something within the trainer notification box
                 Console.WriteLine($"Retrieved {workoutCount} client workouts for trainer: {trainer.FirstName} at {DateTime.UtcNow}");
             }
         }
