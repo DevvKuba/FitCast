@@ -42,7 +42,8 @@ namespace ClientDashboard_API.Data
                     PhoneNumber = clientData.phone,
                     IsActive = clientData.isActive,
                     CurrentBlockSession = clientData.currentSession,
-                    TotalBlockSessions = clientData.totalSessions
+                    TotalBlockSessions = clientData.totalSessions,
+                    TrainerId = clientData.trainerId,
                 };
 
                 context.Client.Add(userBase);
