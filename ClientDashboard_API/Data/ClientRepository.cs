@@ -10,7 +10,9 @@ namespace ClientDashboard_API.Data
     {
         public async Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId)
         {
-            var clients = await context.Client.Where(x => x.TrainerId == trainerId).ToListAsync();
+            var clients = await context.Client.Where(x => x.TrainerId == trainerId)
+                .OrderByDescending(x => x.IsActive)
+                .ToListAsync();
             return clients;
         }
 
