@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var trainers = await unitOfWork.TrainerRepository.GetTrainersWithAutoRetrievalAsync();
-            foreach(Trainer trainer in trainers)
+            foreach (Trainer trainer in trainers)
             {
                 var workoutCount = await syncService.SyncSessionsAsync(trainer);
                 Console.WriteLine($"Retrieved {workoutCount} client workouts for trainer: {trainer.FirstName} at {DateTime.UtcNow}");

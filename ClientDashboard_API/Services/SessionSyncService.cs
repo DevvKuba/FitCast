@@ -55,7 +55,7 @@ namespace ClientDashboard_API.Services
         {
             // finds the trainer get object
             var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer);
-
+            int duplicateCount = 0;
             // look through workouts and do identical functionality compared to above methods
             // just calling different messageService methods NOT pipeline ones
 
@@ -81,6 +81,10 @@ namespace ClientDashboard_API.Services
                             await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
                         }
                     }
+                    else
+                    {
+                        duplicateCount++;
+                    }
                 }
                 else
                 {
@@ -93,7 +97,7 @@ namespace ClientDashboard_API.Services
                     await unitOfWork.Complete();
                 }
             }
-            return dailyWorkouts.Count();
+            return dailyWorkouts.Count() - duplicateCount;
         }
     }
 }
