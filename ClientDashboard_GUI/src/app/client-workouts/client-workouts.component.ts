@@ -1,4 +1,4 @@
-import { Component, inject, resolveForwardRef} from '@angular/core';
+import { Component, inject, resolveForwardRef, ViewChild} from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -23,17 +23,19 @@ import { TagModule } from 'primeng/tag';
 import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
 import { PasswordModule } from 'primeng/password';
 import { TrainerService } from '../services/trainer.service';
+import { Popover, PopoverModule } from 'primeng/popover';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, ToggleButton, PasswordModule ],
+     ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule ],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
+    @ViewChild('op') op!: Popover;
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
     autoWorkoutRetrievalVisible: boolean = false;
@@ -49,6 +51,7 @@ export class ClientWorkouts {
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
     trainerApiKey: string = "";
+    retrievalInfoText: string = "";
     automaticRetrievalChecked: boolean = false;
     validApiKeyProvided: boolean = false;
 
@@ -64,6 +67,7 @@ export class ClientWorkouts {
     ngOnInit() {
         this.displayWorkouts();
         this.getAutoRetrievalStatus();
+        this.setRetrievalInfoText();
         this.getTrainerApiKey();
         if(this.trainerApiKey !== null){
             this.validApiKeyProvided = true;
@@ -93,6 +97,15 @@ export class ClientWorkouts {
 
     isFirstPage(): boolean {
         return this.workouts ? this.first === 0 : true;
+    }
+
+     toggle(event: any) {
+        this.op.toggle(event);
+    }
+
+    setRetrievalInfoText(){
+        this.retrievalInfoText = "You can configure your Hevy Workout Api for either manual or automated" +
+        " workout collection, the automatic background retrieval process occurs daily at midnight"
     }
 
     getTrainerApiKey(){
