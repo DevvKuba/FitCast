@@ -1,4 +1,8 @@
-<div class="profile-container">
+@if (this.isLoading) {
+    <app-spinner></app-spinner>
+}
+@else {
+    <div class="profile-container">
     <p-toast />
     
     <div class="card">
@@ -91,3 +95,6 @@
   </div>
     
 </div>
+}
+
+

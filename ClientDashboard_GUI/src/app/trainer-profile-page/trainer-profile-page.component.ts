@@ -13,6 +13,7 @@ import { AccountService } from '../services/account.service';
 import { TrainerService } from '../services/trainer.service';
 import { defaultIfEmpty } from 'rxjs';
 import { ToastService } from '../services/toast.service';
+import { SpinnerComponent } from '../spinner/spinner.component';
 
 interface Currency {
   name: string;
@@ -31,7 +32,8 @@ interface Currency {
     InputNumberModule,
     DropdownModule,
     ToastModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SpinnerComponent
   ],
   providers: [MessageService],
   templateUrl: './trainer-profile-page.component.html',
@@ -41,18 +43,11 @@ export class TrainerProfilePageComponent implements OnInit {
   profileForm!: FormGroup
 
   accountService = inject(AccountService);
-  // messageService = inject(MessageService);
   toastService = inject(ToastService)
   trainerService = inject(TrainerService);
   formBuilder = inject(FormBuilder);
 
-  // firstName: string = "";
-  // surname: string = "";
-  // email: string = "";
-  // phoneNumber: string = "";
-  // businessName: string = "";
-  // defaultCurrency: string = "";
-  // averageSessionPrice: number = 0;
+  isLoading : boolean = false;
   
   currencies: Currency[] = [
     { name: 'British Pound (GBP)', code: 'GBP' },
@@ -77,12 +72,14 @@ export class TrainerProfilePageComponent implements OnInit {
   }
   
   loadTrainerProfile(): void {
+    this.isLoading = true;
     const currentUser = this.accountService.currentUser();
     // get trainer through currentUser.id and then store everything
     if(currentUser){
       this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
         next: (response) => {
           this.profileForm.patchValue(response.data);
+          this.isLoading = false;
         }
       })
     }
