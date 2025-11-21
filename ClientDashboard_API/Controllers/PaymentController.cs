@@ -1,16 +1,70 @@
 ﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Runtime.CompilerServices;
 
 namespace ClientDashboard_API.Controllers
 {
     public class PaymentController(IUnitOfWork unitOfWork) : BaseAPIController
     {
         [HttpGet("getAllTrainerPayments")]
-        public async Task<ActionResult<ApiResponseDto<string>>> getTrainerPaymentsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync([FromQuery] int trainerId)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+            var trainerPayments = await unitOfWork.PaymentRepository.GetAllPaymentsForTrainerAsync(trainer);
 
+            return  Ok(new ApiResponseDto<List<Payment>> { Data = trainerPayments, Message = $"Successfully gathered trainer: {trainer.FirstName}'s payments", Success = true });
+
+        }
+
+        [HttpPost("addPayment")]
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromQuery] int trainerId, [FromQuery] int clientId, [FromBody] PaymentAddDto paymentInfo)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id:{clientId} found", Success = false });
+            }
+
+            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, paymentInfo.PaymentDate);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payments after deletion", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Payment for trainer: {trainer.FirstName} and their client: {client.FirstName} has been added successfully", Success = true });
+
+        }
+
+        [HttpDelete("deletePayment")]
+        public async Task<ActionResult<ApiResponseDto<string>>> DeleteTrainerPaymentAsync([FromQuery] int paymentId)
+        {
+            var payment = await unitOfWork.PaymentRepository.GetPaymentWithRelatedEntitiesById(paymentId);
+
+            if (payment == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
+            }
+
+            unitOfWork.PaymentRepository.DeletePayment(payment);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payments after deletion", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} and their client: {payment.Client!.FirstName} has been deleted successfully", Success = true });
         }
     }
 }

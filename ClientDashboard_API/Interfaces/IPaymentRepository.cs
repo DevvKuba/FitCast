@@ -4,7 +4,9 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IPaymentRepository
     {
-        Task<Payment?> GetPaymentById(int id);
+        Task<Payment?> GetPaymentByIdAsync(int id);
+
+        Task<Payment?> GetPaymentWithRelatedEntitiesById(int id);
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
 

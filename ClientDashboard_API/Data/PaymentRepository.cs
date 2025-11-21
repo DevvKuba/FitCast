@@ -12,9 +12,19 @@ namespace ClientDashboard_API.Data
             return payments;
         }
 
-        public async Task<Payment?> GetPaymentById(int id)
+        public async Task<Payment?> GetPaymentByIdAsync(int id)
         {
             var payment = await context.Payments.Where(p => p.Id == id).FirstOrDefaultAsync();
+            return payment;
+        }
+
+        public async Task<Payment?> GetPaymentWithRelatedEntitiesById(int id)
+        {
+            var payment = await context.Payments.Where(p => p.Id == id)
+                .Include(p => p.Trainer)
+                .Include(p => p.Client)
+                .FirstOrDefaultAsync();
+
             return payment;
         }
 
