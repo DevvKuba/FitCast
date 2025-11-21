@@ -10,6 +10,8 @@
 
         INotificationRepository NotificationRepository { get; }
 
+        IPaymentRepository PaymentRepository { get; }
+
         Task<bool> Complete();
 
         bool HasChanges();
