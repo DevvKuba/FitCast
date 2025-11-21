@@ -6,11 +6,13 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { authGuard } from './guards/auth-guard.guard';
 import { TrainerProfilePageComponent } from './trainer-profile-page/trainer-profile-page.component';
+import { ClientPaymentsComponent } from './client-payments/client-payments.component';
 
 export const routes: Routes = [
   {path: '', component: Home},
   {path: 'client-info', component: ClientInfoComponent, canActivate: [authGuard]},
   {path: 'client-workouts', component: ClientWorkouts, canActivate: [authGuard]},
+  {path: 'client-payments', component: ClientPaymentsComponent, canActivate: [authGuard]},
   // TODO change to analytics component when developing
   {path: 'client-analytics', component: ClientInfoComponent, canActivate: [authGuard]},
   {path: 'trainer-analytics', component: ClientInfoComponent, canActivate: [authGuard]},

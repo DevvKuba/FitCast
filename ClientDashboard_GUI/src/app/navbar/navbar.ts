@@ -29,7 +29,7 @@ export class Navbar implements OnInit {
             {
                 label: 'Trainer Analytics',
                 routerLink: '/trainer-analytics',
-                icon: 'pi pi-credit-card'
+                icon: 'pi pi-chart-bar'
             },
             {
                 label: 'Client Info',
@@ -40,6 +40,11 @@ export class Navbar implements OnInit {
                 label: 'Client Workouts',
                 routerLink: '/client-workouts',
                 icon: 'pi pi-table'
+            },
+            {
+                label: 'Client Payments',
+                routerLink: '/client-payments',
+                icon: 'pi pi-credit-card'
             }
             
         ];
