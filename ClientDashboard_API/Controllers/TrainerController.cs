@@ -158,6 +158,7 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
             unitOfWork.TrainerRepository.UpdateTrainerAutoRetrievalAsync(trainer, enabled);
 
+
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });

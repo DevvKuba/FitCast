@@ -91,7 +91,6 @@ namespace ClientDashboard_API.Services
                     var newClient = await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, trainer.Id);
                     await unitOfWork.Complete();
 
-                    // need to get clinet somehow , we don't have access to the actual client if they weren't previously in the database 
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(newClient);
                     await unitOfWork.WorkoutRepository.AddWorkoutAsync(newClient, workout.Title, workout.SessionDate, workout.ExerciseCount);
                     await unitOfWork.Complete();

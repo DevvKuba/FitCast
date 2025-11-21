@@ -26,6 +26,7 @@ namespace ClientDashboard_API.Data
             var trainer = await context.Trainer
                 .Include(t => t.Clients)
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
+
             return trainer;
         }
 

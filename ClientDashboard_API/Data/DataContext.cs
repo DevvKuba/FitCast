@@ -29,12 +29,14 @@ namespace ClientDashboard_API.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            // do I need to apply migrations since we are renaming the database columns here ?
 
             builder.Entity<UserBase>().ToTable("Users");
             builder.Entity<Client>().ToTable("Clients");
+            builder.Entity<Workout>().ToTable("Workouts");
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
-            builder.Entity<MonthlyTrainerRevenue>().ToTable("MonthlyTrainerRevenue");
+            builder.Entity<MonthlyTrainerRevenue>().ToTable("MonthlyTrainerRevenues");
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
 
