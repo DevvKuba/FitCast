@@ -24,6 +24,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             services.AddScoped<ITrainerRepository, TrainerRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<INotificationService, NotificationService>();
