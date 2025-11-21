@@ -1,0 +1,25 @@
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.p-inputtext {
+    max-width: 135px;
+}
+
+.payment-amount-input {
+    max-width: 150px;
+}
+
+.payment-currency-input {
+    max-width: 80px;
+}
+
+.payment-sessions-input {
+    max-width: 100px;
+}
+
+.payment-td {
+    text-align: center;
+}

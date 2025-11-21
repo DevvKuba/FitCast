@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Data
 
         public INotificationRepository NotificationRepository => notificationRepository;
 
-        public IPaymentRepository paymentRepository => paymentRepository;
+        public IPaymentRepository PaymentRepository => paymentRepository;
 
         public async Task<bool> Complete()
         {

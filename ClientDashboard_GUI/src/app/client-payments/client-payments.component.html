@@ -1,1 +1,201 @@
-<p>client-payments works!</p>
+@if(payments === null){
+    <app-spinner></app-spinner>
+}
+@else {
+    <p-toast />
+    <div class="table-container">
+    <p-table
+        [value]="payments"
+        [paginator]="true"
+        [rows]="10"
+        [first]="first"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'width': '1000px' , 'table-layout': 'fixed' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        (onPage)="pageChange($event)"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        dataKey="id"
+        editMode="row"
+    >
+        <ng-template #header>
+            
+            <div class="card flex justify-center">
+                <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
+                <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem', height: 'auto'}" >
+                    <span class="p-text-secondary block mb-8">Enter new payment details:</span>
+                    <div class="flex items-center gap-4 mb-4">
+                        <label for="client-name" class="font-semibold w-24">Client Name</label>
+                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <label for="amount" class="font-semibold w-24">Amount</label>
+                        <p-inputnumber inputId="amount" [(ngModel)]="amount" mode="currency" [currency]="currency || 'GBP'" class="flex-auto" />
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <label for="currency" class="font-semibold w-24">Currency</label>
+                        <input pInputText id="currency" [(ngModel)]="currency" class="flex-auto" autocomplete="off" />
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <label for="session-count" class="font-semibold w-24">Sessions</label>
+                        <p-inputnumber inputId="session-count" [(ngModel)]="numberOfSessions" class="flex-auto" />
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <label for="payment-date" class="font-semibold w-24">Payment Date</label>
+                        <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
+                        <p-button label="Save" (click)="addNewPayment()" />
+                    </div>
+                </p-dialog>
+            </div>
+            <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
+            <tr>
+                <th pSortableColumn="clientName" style="width:20%; text-align: center;">
+                    Client Name <p-sortIcon field="clientName" />
+                </th>
+                 <th pSortableColumn="amount" style="width:18%; text-align: center;">
+                    Amount <p-sortIcon field="amount" />
+                </th>
+                 <th pSortableColumn="currency" style="width:12%; text-align: center;">
+                    Currency <p-sortIcon field="currency" />
+                </th>
+                 <th pSortableColumn="numberOfSessions" style="width:18%; text-align: center;">
+                    Sessions <p-sortIcon field="numberOfSessions" />
+                </th>
+                 <th pSortableColumn="paymentDate" style="width:20%; text-align: center;" >
+                    Payment Date <p-sortIcon field="paymentDate" />
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-payment let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="payment">
+                <td class="payment-td">{{ payment.clientName }}</td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-inputnumber
+                            [(ngModel)]="payment.amount"
+                            mode="currency"
+                            [currency]="payment.currency || 'GBP'"
+                            styleClass="payment-amount-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.amount | currency:payment.currency:'symbol':'1.2-2'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]="payment.currency"
+                            class="payment-currency-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.currency}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-inputnumber
+                            [(ngModel)]="payment.numberOfSessions"
+                            class="payment-sessions-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.numberOfSessions}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="date"
+                            [(ngModel)]="payment.paymentDate" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.paymentDate | date:'dd/MM/yyyy'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                
+                <td class="payment-td">
+                <div class="flex items-center justify-center gap-2">
+                    <button
+                        *ngIf="!editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pInitEditableRow
+                        icon="pi pi-pencil"
+                        (click)="onRowEditInit(payment)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                    <button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pSaveEditableRow
+                        icon="pi pi-check"
+                        (click)="onRowEditSave(payment)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                    <button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pCancelEditableRow
+                        icon="pi pi-times"
+                        (click)="onRowEditCancel(payment, ri)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></button>
+                    <div class="card flex justify-center">
+                      <p-button
+                        *ngIf="editing"
+                        pButton
+                        pRipple
+                        type="button"
+                        pCancelEditableRow
+                        icon="pi pi-trash"
+                        (click)="showDialogForDelete(payment.id)"
+                        text
+                        rounded
+                        severity="secondary"
+                    ></p-button>
+                      <p-dialog header="Delete Payment" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
+                        <div class="delete-message">
+                          <span class="p-text-secondary block mb-8">Are you sure you want to delete this payment record from your table?</span>
+                        </div>
+                          <div class="flex justify-end gap-2">
+                              <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
+                              <p-button label="Delete" (click)="onRowDelete(deletePaymentId)" />
+                          </div>
+                      </p-dialog>
+                    </div>
+                    
+                </div>
+            </td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
+</div>
+
+}
+
