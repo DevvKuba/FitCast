@@ -19,6 +19,8 @@ import { PopoverModule } from 'primeng/popover';
 import { Payment } from '../models/payment';
 import { Client } from '../models/client';
 import { AccountService } from '../services/account.service';
+import { ClientWorkouts } from '../client-workouts/client-workouts.component';
+import { ClientService } from '../services/client.service';
 
 @Component({
   selector: 'app-client-payments',
@@ -32,6 +34,7 @@ export class ClientPaymentsComponent implements OnInit {
 
   paymentService = inject(PaymentService);
   accountService = inject(AccountService);
+  clientService = inject(ClientService);
 
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
@@ -97,19 +100,23 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     onRowDelete(paymentId: number){
-
+      // method to remove payment including closing the delete dialog
+       
     } 
 
     addNewPayment(){
-
+      // take in values then pass then into a payment-add-dto 
+      // including closing dialog if everything is successful
     }
 
     showDialogForAdd() {
-
+      this.addDialogVisible = true;
     }
 
     showDialogForDelete(paymentId: number){
       // can use payment id to set a payment id variable then use 
+      this.deleteDialogVisible = true;
+      this.deletePaymentId = paymentId;
       // within on RowDelete to delete payment with that id
     }
 
@@ -125,7 +132,7 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     gatherClientNames(){
-
+      this.clients = this.clientService.gatherClientNames();
     }
 
 }

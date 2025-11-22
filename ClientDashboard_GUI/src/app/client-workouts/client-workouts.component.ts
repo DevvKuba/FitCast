@@ -223,19 +223,6 @@ export class ClientWorkouts {
         });
     }
 
-    gatherClientNames(){
-    this.trainerId = this.accountService.currentUser()?.id ?? 0;
-    this.clientService.getAllTrainerClients(this.trainerId).subscribe({
-      next: (response) => {
-        this.clients = response.data?.map(x => ({id: x.id , name: x.firstName})) ?? [];
-      },
-      error: () => {
-        console.log('Failed to display client for which you may add a workout for');
-        this.clients = [];
-      }
-    })
-  }
-
   gatherExternalWorkouts(){
     this.trainerService.gatherAndUpdateExternalWorkouts(this.accountService.currentUser()?.id ?? 0).subscribe({
         next: (response) => {
@@ -275,5 +262,9 @@ export class ClientWorkouts {
   const year = date.getFullYear();
   
   return `${day}/${month}/${year}`;
+    }
+
+  gatherClientNames(){
+    this.clients = this.clientService.gatherClientNames()
     }
 }
