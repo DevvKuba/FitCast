@@ -39,8 +39,10 @@ export class ClientPaymentsComponent implements OnInit {
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
   clients: {id: number, name: string}[] = [];
+  paymentStatuses: any[] = [];
   currentUserId: number = 0;
   selectedClient: Client | null = null;
+  selectedStatus: {name: string, value: boolean} | null = null;
   amount: number = 0;
   currency: string = 'GBP';
   numberOfSessions: number = 1;
@@ -55,6 +57,10 @@ export class ClientPaymentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+     this.paymentStatuses = [
+        {name: 'Confirmed', value: true},
+        {name: 'Pending', value: false}
+    ];
     this.gatherAllTrainerPayments();
 
   }
@@ -110,7 +116,6 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     showDialogForAdd() {
-      this.gatherClientNames();
       this.addDialogVisible = true;
     }
 
@@ -139,5 +144,20 @@ export class ClientPaymentsComponent implements OnInit {
         }
     });
     }
+
+    gatherStatuses(){
+    this.paymentStatuses = [
+        {name: 'Confirmed', value: true},
+        {name: 'Pending', value: false}
+    ];
+  }
+
+   getActivities(isConfirmed : boolean) : string {
+    return isConfirmed ? 'success' : 'warning';
+  }
+
+  getActivityLabel(isConfirmed: boolean) : string {
+    return isConfirmed ? 'Confirmed' : 'Pending';
+  }
 
 }
