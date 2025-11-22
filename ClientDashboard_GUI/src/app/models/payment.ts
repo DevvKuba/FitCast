@@ -6,4 +6,5 @@ export interface Payment {
   currency: string;
   numberOfSessions: number;
   paymentDate: string; 
+  confirmed: boolean;
 }
