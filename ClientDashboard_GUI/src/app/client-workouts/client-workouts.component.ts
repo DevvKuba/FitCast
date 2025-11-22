@@ -46,6 +46,7 @@ export class ClientWorkouts {
     workoutTitle: string = "";
     sessionDate: Date  = new Date();
     exerciseCount: number = 0;
+    currentUserId: number = 0;
     clients: {id: number, name: string}[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
     deleteWorkoutId: number = 0;
@@ -65,6 +66,7 @@ export class ClientWorkouts {
     rows = 10; // pageSize
 
     ngOnInit() {
+        this.currentUserId = this.accountService.currentUser()?.id ?? 0;
         this.displayWorkouts();
         this.getAutoRetrievalStatus();
         this.setRetrievalInfoText();
@@ -244,6 +246,7 @@ export class ClientWorkouts {
   }
 
   showDialogForAdd() {
+    this.gatherClientNames();
     this.addDialogVisible = true;
     }
 
@@ -265,6 +268,10 @@ export class ClientWorkouts {
     }
 
   gatherClientNames(){
-    this.clients = this.clientService.gatherClientNames()
+    this.clientService.gatherClientNames(this.currentUserId).subscribe({
+        next: (response) => {
+            this.clients = response
+        }
+    });
     }
 }

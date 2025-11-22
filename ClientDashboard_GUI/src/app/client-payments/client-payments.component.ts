@@ -38,7 +38,7 @@ export class ClientPaymentsComponent implements OnInit {
 
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
-  clients: Client[] = [];
+  clients: {id: number, name: string}[] = [];
   currentUserId: number = 0;
   selectedClient: Client | null = null;
   amount: number = 0;
@@ -110,6 +110,7 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     showDialogForAdd() {
+      this.gatherClientNames();
       this.addDialogVisible = true;
     }
 
@@ -132,7 +133,11 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     gatherClientNames(){
-      this.clients = this.clientService.gatherClientNames();
+    this.clientService.gatherClientNames(this.currentUserId).subscribe({
+        next: (response) => {
+            this.clients = response
+        }
+    });
     }
 
 }

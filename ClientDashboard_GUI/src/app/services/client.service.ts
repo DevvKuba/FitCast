@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, map, Observable, of } from 'rxjs';
 import { Client } from '../models/client';
 import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
@@ -32,16 +32,10 @@ export class ClientService {
     return this.http.post<ApiResponse<ClientAddDto>>(this.baseUrl + `client/ByBody`, newClient);
   }
 
-  gatherClientNames(): any[]{
-    this.getAllTrainerClients(this.accountService.currentUser()?.id ?? 0).subscribe({
-      next: (response) => {
-        return response.data?.map(x => ({id: x.id , name: x.firstName})) ?? [];
-      },
-      error: () => {
-        console.log('Failed to display client for which you may add a workout for');
-        return [];
-      }
-    })
-    return [];
+  gatherClientNames(trainerId: number): Observable<{id: number, name: string}[]>{
+    return this.getAllTrainerClients(trainerId).pipe(
+        map(response => response.data?.map(x => ({id: x.id , name: x.firstName})) ?? []),
+        catchError(() => of([]))
+    );
   }
 }
