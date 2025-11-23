@@ -41,10 +41,10 @@ export class ClientPaymentsComponent implements OnInit {
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
   clients: {id: number, name: string}[] = [];
-  paymentStatuses: any[] = [];
+  paymentStatuses: {name: string, value: boolean}[] = [];
   currentUserId: number = 0;
-  selectedClient: Client | null = null;
-  selectedStatus: {name: string, value: boolean} | null = null;
+  selectedClient: {id: number, name: string} = {id: 0, name: ""};
+  selectedStatus: {name: string, value: boolean} = {name: "", value: false};
   amount: number = 0;
   currency: string = 'GBP';
   numberOfSessions: number = 1;
@@ -59,12 +59,11 @@ export class ClientPaymentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
-     this.paymentStatuses = [
+    this.paymentStatuses = [
         {name: 'Confirmed', value: true},
         {name: 'Pending', value: false}
     ];
     this.gatherAllTrainerPayments();
-
   }
 
   next() {
@@ -112,15 +111,17 @@ export class ClientPaymentsComponent implements OnInit {
        
     } 
 
-    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : boolean){
+    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean}){
+      // potentially null check the values
       const paymentInformation = {
         trainerId: this.currentUserId,
         clientId: selectedClientId,
         amount: paymentAmount,
         numberOfSessions: numberOfSessions,
         paymentDate: this.formatDateForApi(paymentDate),
-        confirmed: selectedStatus
+        confirmed: selectedStatus.value
       }
+      console.log(paymentInformation.confirmed)
       // take in values then pass then into a payment-add-dto 
       this.paymentService.addTrainerPayment(paymentInformation).subscribe({
         next: (response) => {
