@@ -15,7 +15,7 @@ export class PaymentService {
     return this.http.get(this.baseUrl + `payment/getAllTrainerPayments?trainerId=${trainerId}`);
   }
 
-  addTrainerPayment(trainerId: number, clientId: number, paymentInfo: PaymentAddDto){
-    return this.http.post(this.baseUrl + `payment/addPayment?trainerId=${trainerId}&clientId=${clientId}`, paymentInfo); 
+  addTrainerPayment(paymentInfo: PaymentAddDto){
+    return this.http.post(this.baseUrl + `payment/addPayment`, paymentInfo); 
   }
 }

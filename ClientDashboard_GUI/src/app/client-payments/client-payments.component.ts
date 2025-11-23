@@ -120,7 +120,7 @@ export class ClientPaymentsComponent implements OnInit {
         confirmed: selectedStatus
       }
       // take in values then pass then into a payment-add-dto 
-      this.paymentService.addTrainerPayment()
+      this.paymentService.addTrainerPayment(paymentInformation)
       // including closing dialog if everything is successful
     }
 
