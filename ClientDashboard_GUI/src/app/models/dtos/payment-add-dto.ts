@@ -5,5 +5,5 @@ export interface PaymentAddDto {
   currency: string;
   numberOfSessions: number;
   paymentDate: string; 
-  confirmed: boolean
+  confirmed: boolean;
 }
