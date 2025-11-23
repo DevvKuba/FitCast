@@ -45,7 +45,7 @@
                     </div>
                     <div class="flex justify-end gap-2">
                         <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
-                        <p-button label="Save" (click)="addNewPayment()" />
+                        <p-button label="Save" (click)="addNewPayment(selectedClient!.id, amount, numberOfSessions, paymentDate, selectedStatus?.value)" />
                     </div>
                    
                 </p-dialog>

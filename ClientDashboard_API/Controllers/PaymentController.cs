@@ -24,18 +24,18 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpPost("addPayment")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromQuery] int trainerId, [FromQuery] int clientId, [FromBody] PaymentAddDto paymentInfo)
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromBody] PaymentAddDto paymentInfo)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(paymentInfo.TrainerId);
             if (trainer == null)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(paymentInfo.ClientId);
             if (client == null)
             {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id:{clientId} found", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id:{paymentInfo.ClientId} found", Success = false });
             }
 
             await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, paymentInfo.PaymentDate);

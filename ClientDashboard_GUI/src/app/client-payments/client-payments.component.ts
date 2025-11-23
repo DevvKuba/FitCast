@@ -110,8 +110,17 @@ export class ClientPaymentsComponent implements OnInit {
        
     } 
 
-    addNewPayment(){
+    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date | null, selectedStatus : boolean | undefined){
+      const paymentInformation = {
+        trainerId: this.currentUserId,
+        clientId: selectedClientId,
+        amount: paymentAmount,
+        numberOfSessions: numberOfSessions,
+        paymentDate: paymentDate?.toDateString,
+        confirmed: selectedStatus
+      }
       // take in values then pass then into a payment-add-dto 
+      this.paymentService.addTrainerPayment()
       // including closing dialog if everything is successful
     }
 
