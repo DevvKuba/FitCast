@@ -21,6 +21,7 @@ import { Client } from '../models/client';
 import { AccountService } from '../services/account.service';
 import { ClientWorkouts } from '../client-workouts/client-workouts.component';
 import { ClientService } from '../services/client.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-client-payments',
@@ -35,6 +36,7 @@ export class ClientPaymentsComponent implements OnInit {
   paymentService = inject(PaymentService);
   accountService = inject(AccountService);
   clientService = inject(ClientService);
+  toastService = inject(ToastService);
 
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
@@ -110,17 +112,25 @@ export class ClientPaymentsComponent implements OnInit {
        
     } 
 
-    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date | null, selectedStatus : boolean | undefined){
+    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : boolean){
       const paymentInformation = {
         trainerId: this.currentUserId,
         clientId: selectedClientId,
         amount: paymentAmount,
         numberOfSessions: numberOfSessions,
-        paymentDate: paymentDate?.toDateString,
+        paymentDate: this.formatDateForApi(paymentDate),
         confirmed: selectedStatus
       }
       // take in values then pass then into a payment-add-dto 
-      this.paymentService.addTrainerPayment(paymentInformation)
+      this.paymentService.addTrainerPayment(paymentInformation).subscribe({
+        next: (response) => {
+          this.toastService.showSuccess('Success Adding Payment', response.message)
+          this.addDialogVisible = false;
+        },
+        error: (response) => {
+          this.toastService.showError('Error Adding Payment', response.message)
+        }
+      })
       // including closing dialog if everything is successful
     }
 
@@ -168,5 +178,15 @@ export class ClientPaymentsComponent implements OnInit {
   getActivityLabel(isConfirmed: boolean) : string {
     return isConfirmed ? 'Confirmed' : 'Pending';
   }
+
+  formatDateForApi(date: Date | undefined): string {
+  if (!date) return '';
+  
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+    }
 
 }

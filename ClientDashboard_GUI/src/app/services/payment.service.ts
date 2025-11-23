@@ -15,7 +15,7 @@ export class PaymentService {
     return this.http.get(this.baseUrl + `payment/getAllTrainerPayments?trainerId=${trainerId}`);
   }
 
-  addTrainerPayment(paymentInfo: PaymentAddDto){
-    return this.http.post(this.baseUrl + `payment/addPayment`, paymentInfo); 
+  addTrainerPayment(paymentInfo: PaymentAddDto) : Observable<any> {
+    return this.http.post(this.baseUrl + 'payment/addPayment', paymentInfo); 
   }
 }
