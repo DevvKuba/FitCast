@@ -13,5 +13,7 @@
         public required int NumberOfSessions { get; set; }
 
         public required DateOnly PaymentDate { get; set; }
+
+        public required bool Confirmed { get; set; }
     }
 }
