@@ -3,6 +3,53 @@
 }
 @else {
     <p-toast />
+
+    <!-- Add Dialog - Moved outside table -->
+    <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem', height: 'auto'}" >
+        <span class="p-text-secondary block mb-8">Enter new payment details:</span>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="client-name" class="font-semibold w-24">Client Name</label>
+            <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="amount" class="font-semibold w-24">Amount</label>
+            <p-inputnumber inputId="amount" [(ngModel)]="amount" mode="currency" [currency]="currency || 'GBP'" class="flex-auto" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="session-count" class="font-semibold w-24">Sessions</label>
+            <p-inputnumber inputId="session-count" [(ngModel)]="numberOfSessions" class="flex-auto" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="payment-date" class="font-semibold w-24">Payment Date</label>
+            <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
+        </div>
+         <div class="flex items-center gap-4 mb-4">
+            <label for="payment-status" class="font-semibold w-24">Payment Status</label>
+            <p-select 
+                [appendTo]="'body'" 
+                [(ngModel)]="selectedStatus" 
+                [options]="paymentStatuses" 
+                optionLabel="name" 
+                placeholder="Select Status"
+                [style]="{'width':'50%'}" />
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
+            <p-button label="Save" (click)="addNewPayment(selectedClient.id, amount, numberOfSessions, paymentDate!, selectedStatus)" />
+        </div>
+    </p-dialog>
+
+    <!-- Delete Dialog - Moved outside table -->
+    <p-dialog header="Delete Payment" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
+        <div class="delete-message">
+          <span class="p-text-secondary block mb-8">Are you sure you want to delete this payment record from your table?</span>
+        </div>
+        <div class="flex justify-end gap-2">
+            <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
+            <p-button label="Delete" (click)="onRowDelete(deletePaymentId)" />
+        </div>
+    </p-dialog>
+
     <div class="table-container">
     <p-table
         [value]="payments"
@@ -21,40 +68,6 @@
             
             <div class="card flex justify-center">
                 <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
-                <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem', height: 'auto'}" >
-                    <span class="p-text-secondary block mb-8">Enter new payment details:</span>
-                    <div class="flex items-center gap-4 mb-4">
-                        <label for="client-name" class="font-semibold w-24">Client Name</label>
-                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="amount" class="font-semibold w-24">Amount</label>
-                        <p-inputnumber inputId="amount" [(ngModel)]="amount" mode="currency" [currency]="currency || 'GBP'" class="flex-auto" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="session-count" class="font-semibold w-24">Sessions</label>
-                        <p-inputnumber inputId="session-count" [(ngModel)]="numberOfSessions" class="flex-auto" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="payment-date" class="font-semibold w-24">Payment Date</label>
-                        <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
-                    </div>
-                     <div class="flex items-center gap-4 mb-4">
-                        <label for="payment-status" class="font-semibold w-24">Payment Status</label>
-                        <p-select 
-                            [appendTo]="'body'" 
-                            [(ngModel)]="selectedStatus" 
-                            [options]="paymentStatuses" 
-                            optionLabel="name" 
-                            placeholder="Select Status"
-                            [style]="{'width':'50%'}" />
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
-                        <p-button label="Save" (click)="addNewPayment(selectedClient.id, amount, numberOfSessions, paymentDate!, selectedStatus)" />
-                    </div>
-                   
-                </p-dialog>
             </div>
             <div class="mb-4">
                 <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
@@ -193,29 +206,17 @@
                         rounded
                         severity="secondary"
                     ></button>
-                    <div class="card flex justify-center">
-                      <p-button
+                    <button
                         *ngIf="editing"
                         pButton
                         pRipple
                         type="button"
-                        pCancelEditableRow
                         icon="pi pi-trash"
                         (click)="showDialogForDelete(payment.id)"
                         text
                         rounded
                         severity="secondary"
-                    ></p-button>
-                      <p-dialog header="Delete Payment" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
-                        <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete this payment record from your table?</span>
-                        </div>
-                          <div class="flex justify-end gap-2">
-                              <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
-                              <p-button label="Delete" (click)="onRowDelete(deletePaymentId)" />
-                          </div>
-                      </p-dialog>
-                    </div>
+                    ></button>
                     
                 </div>
             </td>

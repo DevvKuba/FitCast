@@ -9,6 +9,10 @@
     padding: 0.5rem ;
 }
 
+.delete-message {
+  margin-bottom: 20px;
+}
+
 /* Amount column - currency input */
 ::ng-deep .payment-amount-input {
     width: 100px ;
