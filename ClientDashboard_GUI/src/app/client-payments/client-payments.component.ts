@@ -185,7 +185,7 @@ export class ClientPaymentsComponent implements OnInit {
   }
 
    getActivities(isConfirmed : boolean) : string {
-    return isConfirmed ? 'success' : 'warning';
+    return isConfirmed ? 'success' : 'info';
   }
 
   getActivityLabel(isConfirmed: boolean) : string {
