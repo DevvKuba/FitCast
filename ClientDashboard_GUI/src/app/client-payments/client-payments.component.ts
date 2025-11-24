@@ -13,7 +13,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
-import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { PasswordModule } from 'primeng/password';
 import { PopoverModule } from 'primeng/popover';
 import { Payment } from '../models/payment';
@@ -27,7 +27,7 @@ import { ToastService } from '../services/toast.service';
   selector: 'app-client-payments',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule],
+     ToggleButtonModule, PasswordModule, PopoverModule],
   templateUrl: './client-payments.component.html',
   styleUrl: './client-payments.component.css'
 })
@@ -44,7 +44,7 @@ export class ClientPaymentsComponent implements OnInit {
   paymentStatuses: {name: string, value: boolean}[] = [];
   currentUserId: number = 0;
   selectedClient: {id: number, name: string} = {id: 0, name: ""};
-  selectedStatus: {name: string, value: boolean} = {name: "", value: false};
+  selectedStatus: {name: string, value: boolean} | null = null;
   amount: number = 0;
   currency: string = 'GBP';
   numberOfSessions: number = 1;
@@ -111,28 +111,43 @@ export class ClientPaymentsComponent implements OnInit {
        
     } 
 
-    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean}){
+    addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean} | null){
       // potentially null check the values
-      const paymentInformation = {
+      console.log('Selected Status:', selectedStatus);
+      console.log('Selected Status Value:', selectedStatus?.value);
+      
+      var paymentInformation = {
         trainerId: this.currentUserId,
         clientId: selectedClientId,
         amount: paymentAmount,
         numberOfSessions: numberOfSessions,
         paymentDate: this.formatDateForApi(paymentDate),
-        confirmed: selectedStatus.value
+        confirmed: selectedStatus?.value ?? false
       }
-      console.log(paymentInformation.confirmed)
+      console.log('Payment Information:', paymentInformation);
+      console.log('Confirmed value:', paymentInformation.confirmed);
+      
       // take in values then pass then into a payment-add-dto 
       this.paymentService.addTrainerPayment(paymentInformation).subscribe({
         next: (response) => {
           this.toastService.showSuccess('Success Adding Payment', response.message)
           this.addDialogVisible = false;
+          this.gatherAllTrainerPayments();
+          this.resetForm();
         },
         error: (response) => {
           this.toastService.showError('Error Adding Payment', response.message)
         }
       })
       // including closing dialog if everything is successful
+    }
+
+    resetForm() {
+      this.selectedClient = {id: 0, name: ""};
+      this.selectedStatus = null;
+      this.amount = 0;
+      this.numberOfSessions = 1;
+      this.paymentDate = null;
     }
 
     showDialogForAdd() {

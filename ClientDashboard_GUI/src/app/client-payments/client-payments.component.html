@@ -40,8 +40,14 @@
                         <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
                     </div>
                      <div class="flex items-center gap-4 mb-4">
-                        <label for="client-name" class="font-semibold w-24">Payment Status</label>
-                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedStatus" [dropdown]="true" [suggestions]="paymentStatuses" optionLabel="name" (onDropdownClick)="gatherStatuses()"/>
+                        <label for="payment-status" class="font-semibold w-24">Payment Status</label>
+                        <p-select 
+                            [appendTo]="'body'" 
+                            [(ngModel)]="selectedStatus" 
+                            [options]="paymentStatuses" 
+                            optionLabel="name" 
+                            placeholder="Select Status"
+                            [style]="{'width':'100%'}" />
                     </div>
                     <div class="flex justify-end gap-2">
                         <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
