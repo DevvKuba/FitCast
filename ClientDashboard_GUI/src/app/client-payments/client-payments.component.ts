@@ -22,12 +22,13 @@ import { AccountService } from '../services/account.service';
 import { ClientWorkouts } from '../client-workouts/client-workouts.component';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
+import { ClientNamePipe } from '../pipes/client-name.pipe';
 
 @Component({
   selector: 'app-client-payments',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, PasswordModule, PopoverModule],
+     ToggleButtonModule, PasswordModule, PopoverModule, ClientNamePipe],
   templateUrl: './client-payments.component.html',
   styleUrl: './client-payments.component.css'
 })
@@ -59,11 +60,12 @@ export class ClientPaymentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+    this.gatherClientNames();
+    this.gatherAllTrainerPayments();
     this.paymentStatuses = [
         {name: 'Confirmed', value: true},
         {name: 'Pending', value: false}
     ];
-    this.gatherAllTrainerPayments();
   }
 
   next() {
