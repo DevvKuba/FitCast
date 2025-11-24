@@ -18,4 +18,8 @@ export class PaymentService {
   addTrainerPayment(paymentInfo: PaymentAddDto) : Observable<any> {
     return this.http.post(this.baseUrl + 'payment/addPayment', paymentInfo); 
   }
+
+  deleteTrainerPayment(paymentId: number) : Observable<any> {
+    return this.http.delete(this.baseUrl + `payment/deletePayment?paymentId=${paymentId}`)
+  }
 }

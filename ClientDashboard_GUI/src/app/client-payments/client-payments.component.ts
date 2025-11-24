@@ -110,6 +110,16 @@ export class ClientPaymentsComponent implements OnInit {
 
     onRowDelete(paymentId: number){
       // method to remove payment including closing the delete dialog
+      this.paymentService.deleteTrainerPayment(paymentId).subscribe({
+        next: (response) => {
+          this.gatherAllTrainerPayments();
+          this.deleteDialogVisible = false;
+          this.toastService.showSuccess("Success removing payment", response.message);
+        },
+        error: (response) => {
+          this.toastService.showError('Error removing payment', response.message);
+        }
+      })
        
     } 
 
