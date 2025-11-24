@@ -112,10 +112,6 @@ export class ClientPaymentsComponent implements OnInit {
     } 
 
     addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean} | null){
-      // potentially null check the values
-      console.log('Selected Status:', selectedStatus);
-      console.log('Selected Status Value:', selectedStatus?.value);
-      
       var paymentInformation = {
         trainerId: this.currentUserId,
         clientId: selectedClientId,
@@ -125,7 +121,6 @@ export class ClientPaymentsComponent implements OnInit {
         confirmed: selectedStatus?.value ?? false
       }
       console.log('Payment Information:', paymentInformation);
-      console.log('Confirmed value:', paymentInformation.confirmed);
       
       // take in values then pass then into a payment-add-dto 
       this.paymentService.addTrainerPayment(paymentInformation).subscribe({

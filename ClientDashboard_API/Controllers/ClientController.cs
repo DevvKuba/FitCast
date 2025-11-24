@@ -21,6 +21,18 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<Client>> { Data = clients, Message = "clients gathered.", Success = true });
         }
 
+        [HttpGet("getClientById")]
+        public async Task<ActionResult<ApiResponseDto<string>>> GetClientByIdAsync([FromQuery] int clientId)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+
+            if(client == null)
+            {
+                return NotFound(new ApiResponseDto<int> { Data = 0, Message = $"client with id: {clientId} was not found", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"client: {client.FirstName}'s name retrieved seccessfully", Success = true });
+        }
+
         /// <summary>
         /// Client method allowing for the retrieval of the clients current session,
         /// within their respective block
