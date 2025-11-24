@@ -4,22 +4,37 @@
   align-items: center;
 }
 
-.p-inputtext {
-    max-width: 135px;
+.payment-td {
+    text-align: center;
+    padding: 0.5rem ;
 }
 
-.payment-amount-input {
-    max-width: 150px;
+/* Amount column - currency input */
+::ng-deep .payment-amount-input {
+    width: 100px ;
 }
+
+::ng-deep .payment-amount-input .p-inputnumber-input {
+    width: 100% ;
+    text-align: center;
+}
+
 
 .payment-currency-input {
-    max-width: 80px;
+    width: 60px;
+    text-align: center;
 }
 
-.payment-sessions-input {
-    max-width: 100px;
+::ng-deep .payment-sessions-input {
+    width: 60px ;
 }
 
-.payment-td {
+::ng-deep .payment-sessions-input .p-inputnumber-input {
+    width: 100%;
+    text-align: center;
+}
+
+::ng-deep .payment-td input[type="date"] {
+    width: 140px;
     text-align: center;
 }
