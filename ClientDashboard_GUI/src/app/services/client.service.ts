@@ -20,6 +20,10 @@ export class ClientService {
     return this.http.get<ApiResponse<Client[]>>( this.baseUrl + `client/allTrainerClients?trainerId=${trainerId}`)
   }
 
+  getClientNameById(clientId: number) : Observable<ApiResponse<string>>{
+    return this.http.get<ApiResponse<string>>(this.baseUrl + `client/getClientById?clientId=${clientId}`)
+  }
+
   updateClient(newClient : Client) : Observable<ApiResponse<any>>{
     return this.http.put<any>( this.baseUrl + "client/newClientInformation", newClient);
   }

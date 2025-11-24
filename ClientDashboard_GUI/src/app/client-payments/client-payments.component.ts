@@ -182,6 +182,16 @@ export class ClientPaymentsComponent implements OnInit {
     ];
   }
 
+  getClientName(clientId : number) : string {
+    this.clientService.getClientNameById(clientId).subscribe({
+      next: (response) => {
+        console.log(response.data)
+        return response.data;
+      }
+    })
+    return "";
+  }
+
    getActivities(isConfirmed : boolean) : string {
     return isConfirmed ? 'success' : 'warning';
   }

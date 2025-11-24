@@ -84,7 +84,7 @@
         </ng-template>
         <ng-template #body let-payment let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="payment">
-                <td class="payment-td">{{ payment.clientName }}</td>
+                <td class="payment-td">{{ payment.clientId }}</td>
                 <td class="payment-td">
                 <p-cellEditor>
                     <ng-template #input>
