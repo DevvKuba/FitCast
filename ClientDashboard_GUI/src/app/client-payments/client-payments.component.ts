@@ -42,7 +42,7 @@ export class ClientPaymentsComponent implements OnInit {
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
   clients: {id: number, name: string}[] = [];
-  paymentStatuses: {name: string, value: boolean}[] = [];
+  paymentStatuses: {label: string, value: boolean}[] = [];
   currentUserId: number = 0;
   selectedClient: {id: number, name: string} = {id: 0, name: ""};
   selectedStatus: {name: string, value: boolean} | null = null;
@@ -63,8 +63,8 @@ export class ClientPaymentsComponent implements OnInit {
     this.gatherClientNames();
     this.gatherAllTrainerPayments();
     this.paymentStatuses = [
-        {name: 'Confirmed', value: true},
-        {name: 'Pending', value: false}
+        {label: 'Confirmed', value: true},
+        {label: 'Pending', value: false}
     ];
   }
 
@@ -195,8 +195,8 @@ export class ClientPaymentsComponent implements OnInit {
 
     gatherStatuses(){
     this.paymentStatuses = [
-        {name: 'Confirmed', value: true},
-        {name: 'Pending', value: false}
+        {label: 'Confirmed', value: true},
+        {label: 'Pending', value: false}
     ];
   }
 
