@@ -23,12 +23,14 @@ import { ClientWorkouts } from '../client-workouts/client-workouts.component';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
 import { ClientNamePipe } from '../pipes/client-name.pipe';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-client-payments',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, PasswordModule, PopoverModule, ClientNamePipe],
+     ToggleButtonModule, PasswordModule, PopoverModule, IconFieldModule, InputIconModule],
   templateUrl: './client-payments.component.html',
   styleUrl: './client-payments.component.css'
 })
@@ -61,7 +63,6 @@ export class ClientPaymentsComponent implements OnInit {
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
     this.gatherClientNames();
-    this.gatherAllTrainerPayments();
     this.paymentStatuses = [
         {label: 'Confirmed', value: true},
         {label: 'Pending', value: false}
@@ -177,7 +178,11 @@ export class ClientPaymentsComponent implements OnInit {
     gatherAllTrainerPayments(){
       this.paymentService.getTrainerPayments(this.currentUserId).subscribe({
         next: (response) => {
-          this.payments = response.data;
+          // add clientName property to each element
+          this.payments = response.data.map((payment : Payment) => ({
+            ...payment,
+            clientName: this.clients.find(c => c.id === payment.clientId)?.name || `Client: #${payment.clientId}`
+          }));
         },
         error: (response) => {
           console.log(response.message)
@@ -189,6 +194,8 @@ export class ClientPaymentsComponent implements OnInit {
     this.clientService.gatherClientNames(this.currentUserId).subscribe({
         next: (response) => {
             this.clients = response
+            // loaded client names needed within below method hence calling it here
+            this.gatherAllTrainerPayments();
         }
     });
     }

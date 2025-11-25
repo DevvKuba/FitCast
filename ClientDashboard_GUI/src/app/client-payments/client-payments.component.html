@@ -52,7 +52,9 @@
 
     <div class="table-container">
     <p-table
+        #dt1
         [value]="payments"
+        [globalFilterFields] = "['clientName']"
         [paginator]="true"
         [rows]="10"
         [first]="first"
@@ -64,11 +66,22 @@
         dataKey="id"
         editMode="row"
     >
-        <ng-template #header>
-            
-            <div class="card flex justify-center">
+         <ng-template #caption>
+        <div class="payment-caption">
+            <div class="add-payment-button">
                 <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
             </div>
+            <div class="search-field">
+            <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" (input)="dt1.filterGlobal(($any($event.target)).value, 'contains')" placeholder="Search client name" />
+            </p-iconfield>
+            </div>
+        </div>
+         </ng-template>
+        <ng-template #header>
             <div class="mb-4">
                 <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
                 <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
@@ -97,7 +110,7 @@
         </ng-template>
         <ng-template #body let-payment let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="payment">
-                <td class="payment-td">{{ payment.clientId | clientName: clients}}</td>
+                <td class="payment-td">{{ payment.clientName}}</td>
                 <td class="payment-td">
                 <p-cellEditor>
                     <ng-template #input>

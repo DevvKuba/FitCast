@@ -9,6 +9,16 @@
     padding: 0.5rem ;
 }
 
+.search-field {
+    margin-right: 80px;
+}
+
+
+.payment-caption {
+    display: flex;
+    justify-content: space-between;
+}
+
 .delete-message {
   margin-bottom: 20px;
 }
