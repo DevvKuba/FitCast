@@ -97,8 +97,8 @@ export class ClientPaymentsComponent implements OnInit {
             this.clonedPayments[payment.id as number] = { ...payment };
     }
 
-    onRowEditSave(newPayment: Payment) {
-
+    onRowEditSave(updatedPayment: Payment) {
+      
     }
 
     onRowEditCancel(payment: Payment, index: number) {
@@ -109,7 +109,6 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     onRowDelete(paymentId: number){
-      // method to remove payment including closing the delete dialog
       this.paymentService.deleteTrainerPayment(paymentId).subscribe({
         next: (response) => {
           this.gatherAllTrainerPayments();
@@ -146,7 +145,6 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showError('Error Adding Payment', response.message)
         }
       })
-      // including closing dialog if everything is successful
     }
 
     resetForm() {

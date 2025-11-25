@@ -8,7 +8,9 @@ namespace ClientDashboard_API.Data
     {
         public async Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer)
         {
-            var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id).ToListAsync();
+            var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id)
+                .OrderBy(p => p.Confirmed)
+                .ToListAsync();
             return payments;
         }
 
