@@ -78,7 +78,9 @@
 
     <div class="table-container">
     <p-table
+        #dt2
         [value]="workouts"
+        [globalFilterFields] = "['clientName']"
         [paginator]="true"
         [rows]="10"
         [first]="first"
@@ -90,35 +92,50 @@
         dataKey="id"
         editMode="row"
     >
-        <ng-template #header>
-            <div class="header-buttons">
-                <p-button
-                    pButton
-                    pRipple
-                    type="button"
-                    icon="pi pi-globe"
-                    (click)="showDialogForAutoWorkoutRetrieval()"
-                    text
-                    rounded
-                    severity="secondary">
-                </p-button>
-                <p-togglebutton
-                    [disabled]="!validApiKeyProvided"
-                    (click)="gatherExternalWorkouts()"
-                    onLabel="Gather Workouts"
-                    offLabel="Gather Workouts"
-                    styleClass="w-full sm:w-40"
-                    ariaLabel="Gather Workouts"
-                    size="small">
-                </p-togglebutton>
+    <ng-template #caption>
+        <div class="workout-caption">
+            <div class="left-segment">   
+                <div class="workout-add-button">
+                    <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
+                    
+                </div>
+                <div class="header-buttons">
+                    <p-button
+                        pButton
+                        pRipple
+                        type="button"
+                        icon="pi pi-globe"
+                        (click)="showDialogForAutoWorkoutRetrieval()"
+                        text
+                        rounded
+                        severity="secondary">
+                    </p-button>
+                    <p-togglebutton
+                        [disabled]="!validApiKeyProvided"
+                        (click)="gatherExternalWorkouts()"
+                        onLabel="Gather Workouts"
+                        offLabel="Gather Workouts"
+                        styleClass="w-full sm:w-40"
+                        ariaLabel="Gather Workouts"
+                        size="small">
+                    </p-togglebutton>
+                </div>
             </div>
-            
-
-            
-            <div class="card flex justify-center">
-                <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
                 
-            </div>
+                <div class="workout-search">
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input class="workout-search-input" pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')" placeholder="Search keyword" />
+                    </p-iconfield>
+                </div>
+            
+        </div>
+    </ng-template>
+
+        <ng-template #header>
+            
             <div class="mb-4">
                 <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
                 <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />

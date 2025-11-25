@@ -24,12 +24,14 @@ import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
 import { PasswordModule } from 'primeng/password';
 import { TrainerService } from '../services/trainer.service';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule ],
+     ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule, IconFieldModule, InputIconModule ],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'

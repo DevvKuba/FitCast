@@ -8,6 +8,28 @@
     max-width: 135px;
 }
 
+.workout-caption {
+    display: flex;
+    justify-content: space-between;
+}
+
+.workout-search {
+    margin-right: 80px;
+}
+
+.workout-search-input {
+    max-width: none;
+}
+
+.workout-add-button {
+    margin-right: 40px;
+}
+
+.left-segment {
+    display: flex;
+    justify-content: space-between;
+}
+
 .exercise-count-input {
     max-width: 80px;
 }
@@ -20,7 +42,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
 }
 
 .info-button-container {
