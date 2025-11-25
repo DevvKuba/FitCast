@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
 
-        void UpdatePaymentDetails(PaymentUpdateDto newPaymentInfo, Payment payment);
+        void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo);
 
         Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed);
 

@@ -98,7 +98,15 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     onRowEditSave(updatedPayment: Payment) {
-      
+      this.paymentService.updatePaymentInfo(updatedPayment).subscribe({
+        next: (response) => {
+          this.toastService.showSuccess('Success Updating Payment', response.message);
+          this.gatherAllTrainerPayments();
+        },
+        error: (response) => {
+          this.toastService.showError('Error Updating Payment', response.message);
+        }
+      })
     }
 
     onRowEditCancel(payment: Payment, index: number) {

@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { PaymentAddDto } from '../models/dtos/payment-add-dto';
+import { PaymentRequestUpdateDto } from '../models/dtos/payment-update-request-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,10 @@ export class PaymentService {
 
   getTrainerPayments(trainerId: number) : Observable<any>{
     return this.http.get(this.baseUrl + `payment/getAllTrainerPayments?trainerId=${trainerId}`);
+  }
+
+  updatePaymentInfo(paymentInfo: PaymentRequestUpdateDto) : Observable<any> {
+    return this.http.put(this.baseUrl + 'payment/updateExistingPayment', paymentInfo);
   }
 
   addTrainerPayment(paymentInfo: PaymentAddDto) : Observable<any> {

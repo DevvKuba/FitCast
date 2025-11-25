@@ -32,9 +32,17 @@ namespace ClientDashboard_API.Data
             return payment;
         }
 
-        public void UpdatePaymentDetails(PaymentUpdateDto newPaymentInfo, Payment payment)
+        public void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo)
         {
-            mapper.Map(newPaymentInfo, payment);
+            PaymentUpdateDto paymentUpdateInfo = new PaymentUpdateDto
+            {
+                Amount = newPaymentInfo.Amount,
+                Currency = newPaymentInfo.Currency,
+                NumberOfSessions = newPaymentInfo.NumberOfSessions,
+                PaymentDate = DateOnly.Parse(newPaymentInfo.PaymentDate),
+                Confirmed = newPaymentInfo.Confirmed,
+            };
+            mapper.Map(paymentUpdateInfo, payment);
         }
 
 

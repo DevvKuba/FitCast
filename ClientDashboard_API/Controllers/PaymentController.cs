@@ -24,21 +24,22 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpPut("updateExistingPayment")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePaymentInformationAsync([FromBody] PaymentUpdateDto paymentInfo)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePaymentInformationAsync([FromBody] PaymentUpdateRequestDto paymentRequestInfo)
         {
-            var payment = await unitOfWork.PaymentRepository.GetPaymentByIdAsync(paymentInfo.Id);
+            var payment = await unitOfWork.PaymentRepository.GetPaymentByIdAsync(paymentRequestInfo.Id);
 
             if (payment == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {payment.Id} does not exist", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
             }
 
-            unitOfWork.PaymentRepository.UpdatePaymentDetails(paymentInfo, payment);
+            unitOfWork.PaymentRepository.UpdatePaymentDetails(payment, paymentRequestInfo);
 
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payment", Success = false });
             }
+            // we are returning payment within trainer or client
             return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} has been updated successfully", Success = true });
 
 

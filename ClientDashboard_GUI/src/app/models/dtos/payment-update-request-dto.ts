@@ -1,4 +1,4 @@
-export interface PaymentUpdateDto {
+export interface PaymentRequestUpdateDto {
   id: number;
   amount: number;
   currency: string;
