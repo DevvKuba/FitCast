@@ -1,10 +1,12 @@
-﻿using ClientDashboard_API.Entities;
+﻿using AutoMapper;
+using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class PaymentRepository(DataContext context) : IPaymentRepository
+    public class PaymentRepository(DataContext context, IMapper mapper) : IPaymentRepository
     {
         public async Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer)
         {
@@ -30,6 +32,13 @@ namespace ClientDashboard_API.Data
             return payment;
         }
 
+        public void UpdatePaymentDetails(PaymentUpdateDto newPaymentInfo, Payment payment)
+        {
+            mapper.Map(newPaymentInfo, payment);
+        }
+
+
+
         public async Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed)
         {
             var payment = new Payment
@@ -51,6 +60,5 @@ namespace ClientDashboard_API.Data
         {
             context.Remove(payment);
         }
-
     }
 }

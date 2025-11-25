@@ -4,14 +4,14 @@
     {
         public required int Id { get; set; }
 
-        public decimal? Amount { get; set; }
+        public required decimal Amount { get; set; }
 
-        public string? Currency { get; set; }
+        public required string Currency { get; set; }
 
-        public int? NumberOfSessions { get; set; }
+        public required int NumberOfSessions { get; set; }
 
-        public DateOnly? PaymentDate { get; set; }
+        public required DateOnly PaymentDate { get; set; }
 
-        public bool? Confirmed { get; set; }
+        public required bool Confirmed { get; set; }
     }
 }

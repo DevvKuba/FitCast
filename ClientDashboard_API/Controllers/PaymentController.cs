@@ -23,6 +23,27 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        [HttpPut("updateExistingPayment")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePaymentInformationAsync([FromBody] PaymentUpdateDto paymentInfo)
+        {
+            var payment = await unitOfWork.PaymentRepository.GetPaymentByIdAsync(paymentInfo.Id);
+
+            if (payment == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {payment.Id} does not exist", Success = false });
+            }
+
+            unitOfWork.PaymentRepository.UpdatePaymentDetails(paymentInfo, payment);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payment", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} has been updated successfully", Success = true });
+
+
+        }
+
         [HttpPost("addPayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromBody] PaymentAddDto paymentInfo)
         {

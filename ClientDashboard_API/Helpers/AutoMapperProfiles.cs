@@ -15,6 +15,7 @@ namespace ClientDashboard_API.Helpers
             CreateMap<ClientUpdateDto, Client>();
             CreateMap<WorkoutUpdateDto, Workout>();
             CreateMap<TrainerUpdateDto, Trainer>();
+            CreateMap<PaymentUpdateDto, Payment>();
         }
     }
 }

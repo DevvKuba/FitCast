@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -9,6 +10,8 @@ namespace ClientDashboard_API.Interfaces
         Task<Payment?> GetPaymentWithRelatedEntitiesById(int id);
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
+
+        void UpdatePaymentDetails(PaymentUpdateDto newPaymentInfo, Payment payment);
 
         Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed);
 
