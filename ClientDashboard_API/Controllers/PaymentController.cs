@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("updateExistingPayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdatePaymentInformationAsync([FromBody] PaymentUpdateRequestDto paymentRequestInfo)
         {
-            var payment = await unitOfWork.PaymentRepository.GetPaymentByIdAsync(paymentRequestInfo.Id);
+            var payment = await unitOfWork.PaymentRepository.GetPaymentWithClientByIdAsync(paymentRequestInfo.Id);
 
             if (payment == null)
             {
@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payment", Success = false });
             }
             // we are returning payment within trainer or client
-            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} has been updated successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for client: {payment.Client.FirstName} has been updated successfully", Success = true });
 
 
         }

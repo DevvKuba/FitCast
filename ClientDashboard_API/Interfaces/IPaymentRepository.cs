@@ -7,6 +7,8 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<Payment?> GetPaymentByIdAsync(int id);
 
+        Task<Payment?> GetPaymentWithClientByIdAsync(int id);
+
         Task<Payment?> GetPaymentWithRelatedEntitiesById(int id);
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
