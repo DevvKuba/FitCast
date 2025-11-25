@@ -38,7 +38,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id:{paymentInfo.ClientId} found", Success = false });
             }
 
-            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, DateOnly.Parse(paymentInfo.PaymentDate));
+            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, DateOnly.Parse(paymentInfo.PaymentDate), paymentInfo.Confirmed);
 
             if (!await unitOfWork.Complete())
             {

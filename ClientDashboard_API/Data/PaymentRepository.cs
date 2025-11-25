@@ -28,7 +28,7 @@ namespace ClientDashboard_API.Data
             return payment;
         }
 
-        public async Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate)
+        public async Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed)
         {
             var payment = new Payment
             {
@@ -37,7 +37,9 @@ namespace ClientDashboard_API.Data
                 Currency = trainer.DefaultCurrency ?? "£",
                 Amount = blockPrice,
                 NumberOfSessions = numberOfSessions,
-                PaymentDate = paymentDate
+                PaymentDate = paymentDate,
+                Confirmed = confirmed ?? false
+                
 
             };
             await context.Payments.AddAsync(payment);

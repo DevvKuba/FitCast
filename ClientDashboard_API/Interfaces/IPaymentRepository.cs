@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
 
-        Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate);
+        Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed);
 
         void DeletePayment(Payment payment);
 
