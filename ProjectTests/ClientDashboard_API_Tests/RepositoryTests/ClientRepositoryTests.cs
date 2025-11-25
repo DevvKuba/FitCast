@@ -35,7 +35,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context, _mapper);
             _notificationRepository = new NotificationRepository(_context);
-            _paymentRepository = new PaymentRepository(_context);
+            _paymentRepository = new PaymentRepository(_context, _mapper);
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository);
 
         }

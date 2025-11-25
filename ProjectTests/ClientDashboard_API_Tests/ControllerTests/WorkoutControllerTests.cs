@@ -43,7 +43,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context, _mapper);
             _notificationRepository = new NotificationRepository(_context);
-            _paymentRepository = new PaymentRepository(_context);
+            _paymentRepository = new PaymentRepository(_context, _mapper);
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository);
             _messageService = new TwillioMessageService();
             _notificationService = new NotificationService(_unitOfWork, _messageService);
@@ -285,7 +285,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var dailyWorkouts = okResult!.Value as ApiResponseDto<List<Workout>> ?? new ApiResponseDto<List<Workout>> { Data = null, Message = "", Success = false };
 
             var clientOne = dailyWorkouts!.Data!.Where(x => x.ClientName == "rob").FirstOrDefault();
-            var clientTwo = dailyWorkouts!.Data!.Where(x => x.ClientName == "mat").FirstOrDefault();
+            var clientTwo = dailyWorkouts!.Data!. Where(x => x.ClientName == "mat").FirstOrDefault();
 
             Assert.Equal(0, dailyWorkouts!.Data!.Count);
             Assert.Null(clientOne);
