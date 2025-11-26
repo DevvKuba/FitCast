@@ -31,6 +31,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IMessageService, TwillioMessageService>();
             services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
             services.AddScoped<ITrainerLoginService, TrainerLoginService>();
+            services.AddScoped<IAutoPaymentCreationService, AutoPaymentCreationService>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
