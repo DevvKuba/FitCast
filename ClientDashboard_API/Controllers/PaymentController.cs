@@ -1,12 +1,14 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Runtime.CompilerServices;
 
 namespace ClientDashboard_API.Controllers
 {
+    [Authorize]
     public class PaymentController(IUnitOfWork unitOfWork) : BaseAPIController
     {
         [HttpGet("getAllTrainerPayments")]
