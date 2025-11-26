@@ -25,6 +25,7 @@ import { ToastService } from '../services/toast.service';
 import { ClientNamePipe } from '../pipes/client-name.pipe';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { TrainerService } from '../services/trainer.service';
 
 @Component({
   selector: 'app-client-payments',
@@ -40,15 +41,16 @@ export class ClientPaymentsComponent implements OnInit {
   paymentService = inject(PaymentService);
   accountService = inject(AccountService);
   clientService = inject(ClientService);
+  trainerService = inject(TrainerService);
   toastService = inject(ToastService);
 
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
   autoPaymentSettingVisible: boolean = false;
 
+  currentUserId: number = 0;
   clients: {id: number, name: string}[] = [];
   paymentStatuses: {label: string, value: boolean}[] = [];
-  currentUserId: number = 0;
   selectedClient: {id: number, name: string} = {id: 0, name: ""};
   selectedStatus: {name: string, value: boolean} | null = null;
   automaticPaymentsChecked: boolean = false;
@@ -227,6 +229,14 @@ export class ClientPaymentsComponent implements OnInit {
         {label: 'Confirmed', value: true},
         {label: 'Pending', value: false}
     ];
+  }
+
+  getAutoPaymentSettingStatus(){
+    this.trainerService.getAutoPaymentSettingStatus(this.currentUserId).subscribe({
+      next: (response) => {
+        this.automaticPaymentsChecked = response.data;
+      }
+    })
   }
 
   setAutoPaymentInfoText(){

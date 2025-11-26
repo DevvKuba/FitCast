@@ -221,7 +221,7 @@ namespace ClientDashboard_API.Controllers
         //summary>
         /// Trainer method to retrieve a trainer's Auto Retrieval status
         /// </summary>
-        [HttpGet("getAutoRetrievalStatus")]
+        [HttpGet("getAutoRetrievalWorkoutStatus")]
         public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoRetrievalStatusAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);

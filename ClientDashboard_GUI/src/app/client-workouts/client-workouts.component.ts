@@ -70,7 +70,7 @@ export class ClientWorkouts {
     ngOnInit() {
         this.currentUserId = this.accountService.currentUser()?.id ?? 0;
         this.displayWorkouts();
-        this.getAutoRetrievalStatus();
+        this.getAutoWorkoutRetrievalStatus();
         this.setRetrievalInfoText();
         this.getTrainerApiKey();
         if(this.trainerApiKey !== null){
@@ -120,8 +120,8 @@ export class ClientWorkouts {
         })
     }
 
-    getAutoRetrievalStatus(){
-        this.trainerService.getAutoRetrievalStatus(this.accountService.currentUser()?.id ?? 0).subscribe({
+    getAutoWorkoutRetrievalStatus(){
+        this.trainerService.getAutoWorkoutRetrievalStatus(this.accountService.currentUser()?.id ?? 0).subscribe({
             next: (response) => {
                 this.automaticRetrievalChecked = response.data;
             }
