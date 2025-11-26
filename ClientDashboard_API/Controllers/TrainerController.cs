@@ -233,5 +233,21 @@ namespace ClientDashboard_API.Controllers
 
             return Ok(new ApiResponseDto<bool> { Data = trainer.AutoWorkoutRetrieval, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
         }
+
+        //summary>
+        /// Trainer method to retrieve a trainer's Auto Payment Setting status
+        /// </summary>
+        [HttpGet("getAutoPaymentSettingStatus")]
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoPaymentSettingStatusAsync([FromQuery] int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<bool> { Data = trainer.AutoPaymentSetting, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
+        }
     }
 }
