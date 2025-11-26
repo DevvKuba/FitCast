@@ -166,8 +166,6 @@ export class ClientPaymentsComponent implements OnInit {
       })
     }
 
-    // delete method
-
     automaticPaymentsSettingSave(){
       this.trainerService.updateTrainerPaymentSetting(this.currentUserId, this.automaticPaymentsChecked ).subscribe({
         next: (response) => {
