@@ -66,6 +66,11 @@ namespace ClientDashboard_API.Data
             trainer.AutoWorkoutRetrieval = enabled;
         }
 
+        public void UpdateTrainerPaymentSettingAsync(Trainer trainer, bool enabled)
+        {
+            trainer.AutoPaymentSetting = enabled;
+        }
+
         public void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey)
         {
             trainer.WorkoutRetrievalApiKey = apiKey;

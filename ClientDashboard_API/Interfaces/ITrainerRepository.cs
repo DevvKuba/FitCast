@@ -21,6 +21,8 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled);
 
+        void UpdateTrainerPaymentSettingAsync(Trainer trainer, bool enabled);
+
         void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey);
 
         void AssignClient(Trainer trainer, Client client);

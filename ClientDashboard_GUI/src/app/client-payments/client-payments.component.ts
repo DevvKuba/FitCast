@@ -71,6 +71,7 @@ export class ClientPaymentsComponent implements OnInit {
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
     this.gatherClientNames();
+    this.getAutoPaymentSettingStatus();
     this.setAutoPaymentInfoText();
     this.paymentStatuses = [
         {label: 'Confirmed', value: true},

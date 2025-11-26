@@ -167,6 +167,29 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        /// <summary>
+        /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
+        /// </summary>
+        [HttpPut("updateTrainerPaymentSetting")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPaymentSettingAsync([FromQuery] int trainerId, [FromQuery] bool enabled)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            unitOfWork.TrainerRepository.UpdateTrainerPaymentSettingAsync(trainer, enabled);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key and auto retrieval status successfully set up", Success = true });
+
+        }
+
 
         //summary>
         /// Trainer method to collect daily client workout's from Hevy Workout Tracker
