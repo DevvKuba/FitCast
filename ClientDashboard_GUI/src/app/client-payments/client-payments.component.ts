@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { PasswordModule } from 'primeng/password';
-import { PopoverModule } from 'primeng/popover';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { Payment } from '../models/payment';
 import { Client } from '../models/client';
 import { AccountService } from '../services/account.service';
@@ -35,6 +35,7 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrl: './client-payments.component.css'
 })
 export class ClientPaymentsComponent implements OnInit {
+   @ViewChild('op') op!: Popover;
 
   paymentService = inject(PaymentService);
   accountService = inject(AccountService);
@@ -43,11 +44,16 @@ export class ClientPaymentsComponent implements OnInit {
 
   addDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
+  autoPaymentSettingVisible: boolean = false;
+
   clients: {id: number, name: string}[] = [];
   paymentStatuses: {label: string, value: boolean}[] = [];
   currentUserId: number = 0;
   selectedClient: {id: number, name: string} = {id: 0, name: ""};
   selectedStatus: {name: string, value: boolean} | null = null;
+  automaticPaymentsChecked: boolean = false;
+
+  autoPaymentInfoText: string = "";
   amount: number = 0;
   currency: string = 'GBP';
   numberOfSessions: number = 1;
@@ -63,6 +69,7 @@ export class ClientPaymentsComponent implements OnInit {
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
     this.gatherClientNames();
+    this.setAutoPaymentInfoText();
     this.paymentStatuses = [
         {label: 'Confirmed', value: true},
         {label: 'Pending', value: false}
@@ -156,12 +163,23 @@ export class ClientPaymentsComponent implements OnInit {
       })
     }
 
+    // delete method
+
+    automaticPaymentsStatusSave(){
+      // send request to backend and update trainer status
+      // with specific property that is set being [{ngModel}]=automaticPaymentsChecked
+    }
+
     resetForm() {
       this.selectedClient = {id: 0, name: ""};
       this.selectedStatus = null;
       this.amount = 0;
       this.numberOfSessions = 1;
       this.paymentDate = null;
+    }
+
+    toggle(event: any) {
+        this.op.toggle(event);
     }
 
     showDialogForAdd() {
@@ -173,6 +191,10 @@ export class ClientPaymentsComponent implements OnInit {
       this.deleteDialogVisible = true;
       this.deletePaymentId = paymentId;
       // within on RowDelete to delete payment with that id
+    }
+
+    showDialogForAutoPaymentSetting(){
+      this.autoPaymentSettingVisible = true;
     }
 
     gatherAllTrainerPayments(){
@@ -205,6 +227,11 @@ export class ClientPaymentsComponent implements OnInit {
         {label: 'Confirmed', value: true},
         {label: 'Pending', value: false}
     ];
+  }
+
+  setAutoPaymentInfoText(){
+    this.autoPaymentInfoText = "Enabling this setting will automatically create a payment, for a given client that finalises their monthly " +
+    "session block. Further setting to a 'Pending' status for you to adjust, confirm or delete"
   }
 
    getActivities(isConfirmed : boolean) : string {
