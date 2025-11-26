@@ -168,10 +168,16 @@ export class ClientPaymentsComponent implements OnInit {
 
     // delete method
 
-    automaticPaymentsStatusSave(){
-      // send request to backend and update trainer status
-      // with specific property that is set being [{ngModel}]=automaticPaymentsChecked
-    }
+    automaticPaymentsSettingSave(){
+      this.trainerService.updateTrainerPaymentSetting(this.currentUserId, this.automaticPaymentsChecked ).subscribe({
+        next: (response) => {
+          this.toastService.showSuccess('Updated Payment Setting', response.message)
+        },
+        error: (response) => {
+          this.toastService.showError('Error Updating Payment Setting', response.message)
+        }
+      })
+      }
 
     resetForm() {
       this.selectedClient = {id: 0, name: ""};

@@ -31,14 +31,18 @@ export class TrainerService {
   }
 
   getAutoPaymentSettingStatus(trainerId: number) : Observable<any> {
-    return this.http.get(this.baseUrl + `getAutoPaymentSettingStatus?trainerId=${trainerId}`);
+    return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus?trainerId=${trainerId}`);
   }
 
   updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{
     return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails?trainerId=${trainerId}`, newProfile);
   }
 
-  updateTrainerRetrievalDetails(trainerId: number, providedApiKey: string, retrievalStatus: boolean) : Observable<any>{
-    return this.http.put(this.baseUrl + `trainer/updateTrainerRetrievalDetails?trainerId=${trainerId}&providedApiKey=${providedApiKey}&enabled=${retrievalStatus}`, null);
+  updateTrainerRetrievalDetails(trainerId: number, providedApiKey: string, enabled: boolean) : Observable<any>{
+    return this.http.put(this.baseUrl + `trainer/updateTrainerRetrievalDetails?trainerId=${trainerId}&providedApiKey=${providedApiKey}&enabled=${enabled}`, null);
+  }
+
+  updateTrainerPaymentSetting(trainerId: number, enabled: boolean) : Observable<any> {
+    return this.http.put(this.baseUrl +  `trainer/updateTrainerPaymentSetting?trainerId=${trainerId}&enabled=${enabled}`, null);
   }
 }

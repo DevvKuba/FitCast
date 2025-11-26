@@ -184,9 +184,9 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new payment setting status", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key and auto retrieval status successfully set up", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s payment setting status successfully set up", Success = true });
 
         }
 
