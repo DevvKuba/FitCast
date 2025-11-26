@@ -32,7 +32,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Trainer?>> GetTrainersWithAutoRetrievalAsync()
         {
-            var trainers = await context.Trainer.Where(x => x.AutoRetrieval == true).ToListAsync();
+            var trainers = await context.Trainer.Where(x => x.AutoWorkoutRetrieval == true).ToListAsync();
             return trainers;
         }
 
@@ -63,7 +63,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled)
         {
-            trainer.AutoRetrieval = enabled;
+            trainer.AutoWorkoutRetrieval = enabled;
         }
 
         public void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey)

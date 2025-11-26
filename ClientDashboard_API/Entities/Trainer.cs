@@ -8,7 +8,9 @@
 
         public string? WorkoutRetrievalApiKey { get; set; }
 
-        public bool AutoRetrieval { get; set; } = false;
+        public bool AutoWorkoutRetrieval { get; set; } = false;
+
+        public bool AutoPaymentSetting { get; set; } = false;
 
         public string? DefaultCurrency { get; set; }
 
