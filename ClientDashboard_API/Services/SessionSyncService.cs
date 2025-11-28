@@ -3,7 +3,8 @@ using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService, INotificationService notificationService) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService,
+        INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : ISessionSyncService
     {
         // PIPELINE only task currently - need to adjust to even remove in the future
         public async Task<bool> SyncDailyPipelineSessionsAsync()
@@ -79,6 +80,10 @@ namespace ClientDashboard_API.Services
                         if (client.CurrentBlockSession == client.TotalBlockSessions)
                         {
                             await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
+                            if (trainer.AutoPaymentSetting)
+                            {
+                                await autoPaymentService.CreatePendingPaymentAsync(trainer, client);
+                            }
                         }
                     }
                     else
