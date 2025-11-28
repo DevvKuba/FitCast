@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IMapper mapper) : BaseAPIController
+    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService,IAutoPaymentCreationService autoPaymentService, IMapper mapper) : BaseAPIController
     {
         /// <summary>
         /// Workout request for the retrieval of paginated workouts
@@ -130,7 +130,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("Manual/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewManualClientWorkoutAsync([FromBody] WorkoutAddDto newWorkout)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(newWorkout.ClientId);
+            var client = await unitOfWork.ClientRepository.GetClientByIdWithTrainerAsync(newWorkout.ClientId);
             if (client == null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {newWorkout.ClientName} not found", Success = false });
@@ -139,16 +139,24 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount);
 
+            // if given trainer has notifications enabled & mobile number provided
+            if (client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
+                if(client.Trainer != null)
+                {
+                    if (client.Trainer.AutoPaymentSetting)
+                    {
+                        await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
+                    }
+                }
+            }
+
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
             }
 
-            // if given trainer has notifications enabled & mobile number provided
-            if (client.CurrentBlockSession == client.TotalBlockSessions)
-            {
-                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
-            }
             return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for client: {newWorkout.ClientName}", Success = true });
 
         }
