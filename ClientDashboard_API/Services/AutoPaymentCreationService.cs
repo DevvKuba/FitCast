@@ -12,7 +12,7 @@ namespace ClientDashboard_API.Services
         public async Task CreatePendingPaymentAsync(Trainer trainer, Client client)
         {
             var blockPrice = client.TotalBlockSessions * trainer.AverageSessionPrice;
-            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, client.TotalBlockSessions ?? 0, blockPrice ?? 0m, DateOnly.Parse(DateTime.Now.ToString()), false);
+            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, client.TotalBlockSessions ?? 0, blockPrice ?? 0m, DateOnly.FromDateTime(DateTime.Now), false);
         }
     }
 }
