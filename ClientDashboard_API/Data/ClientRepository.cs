@@ -123,6 +123,11 @@ namespace ClientDashboard_API.Data
             var clientData = await context.Client.Where(x => x.Id == id).FirstOrDefaultAsync();
             return clientData;
         }
+        public async Task<Client> GetClientByIdWithTrainerAsync(int id)
+        {
+            var client = await context.Client.Where(c => c.Id == id).Include(x => x.Trainer).FirstOrDefaultAsync();
+            return client;
+        }
 
         public async Task<int> GetClientsCurrentSessionAsync(string clientName)
         {
