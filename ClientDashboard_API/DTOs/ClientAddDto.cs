@@ -6,6 +6,8 @@
 
         public required int TotalBlockSessions { get; set; }
 
+        public required string PhoneNumber { get; set; }
+
         public required int TrainerId { get; set; }
     }
 }
