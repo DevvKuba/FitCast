@@ -40,6 +40,7 @@ export class ClientInfoComponent implements OnInit {
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
   newClientName : string = "";
+  newPhoneNumber: string = "";
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   toastSummary: string = "";
@@ -110,11 +111,12 @@ export class ClientInfoComponent implements OnInit {
     })
   }
 
-  addNewClient(clientName: string, totalBlockSessions: number){
+  addNewClient(clientName: string, totalBlockSessions: number, phoneNumber: string){
     this.trainerId = this.accountService.currentUser()?.id ?? 0;
     const newClient = {
       firstName: clientName,
       totalBlockSessions: totalBlockSessions,
+      phoneNumber: phoneNumber,
       trainerId: this.trainerId,
     }
     this.clientService.addClient(newClient).subscribe({
