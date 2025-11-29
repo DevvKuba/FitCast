@@ -83,6 +83,7 @@ namespace ClientDashboard_API.Services
                             if (trainer.AutoPaymentSetting)
                             {
                                 await autoPaymentService.CreatePendingPaymentAsync(trainer, client);
+                                await unitOfWork.Complete();
                             }
                         }
                     }

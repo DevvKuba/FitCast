@@ -139,22 +139,23 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount);
 
-            // if given trainer has notifications enabled & mobile number provided
-            if (client.CurrentBlockSession == client.TotalBlockSessions)
-            {
-                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
-                if(client.Trainer != null)
-                {
-                    if (client.Trainer.AutoPaymentSetting)
-                    {
-                        await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
-                    }
-                }
-            }
 
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
+            }
+            // if given trainer has notifications enabled & mobile number provided
+            if (client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
+                if (client.Trainer != null)
+                {
+                    if (client.Trainer.AutoPaymentSetting)
+                    {
+                        await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
+                        await unitOfWork.Complete();
+                    }
+                }
             }
 
             return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for client: {newWorkout.ClientName}", Success = true });
