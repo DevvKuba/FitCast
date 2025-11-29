@@ -19,6 +19,7 @@ import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RouterLink } from "@angular/router";
+import { UserDto } from '../models/dtos/user-dto';
 
 @Component({
   selector: 'app-client-info',
@@ -34,7 +35,8 @@ export class ClientInfoComponent implements OnInit {
 
   clients: Client[] | null = null;
   activityStatuses!: SelectItem[];
-  clonedClients: { [s: string]: Client } = {}
+  clonedClients: { [s: string]: Client } = {};
+  currentUserId: number = 0;
 
   trainerId : number = 0;
   deleteDialogVisible: boolean = false;
@@ -49,12 +51,12 @@ export class ClientInfoComponent implements OnInit {
   deleteClientName: string = "";
 
   ngOnInit() {
+      this.currentUserId = this.accountService.currentUser()?.id ?? 0;
       this.getClients();
-
-       this.activityStatuses = [
-        {label: 'Active', value: true},
-        {label: 'Inactive', value: false}
-    ];
+      this.activityStatuses = [
+      {label: 'Active', value: true},
+      {label: 'Inactive', value: false}
+  ];
   }
 
   onRowEditInit(client: Client) {
@@ -112,12 +114,11 @@ export class ClientInfoComponent implements OnInit {
   }
 
   addNewClient(clientName: string, totalBlockSessions: number, phoneNumber: string){
-    this.trainerId = this.accountService.currentUser()?.id ?? 0;
     const newClient = {
       firstName: clientName,
       totalBlockSessions: totalBlockSessions,
       phoneNumber: phoneNumber,
-      trainerId: this.trainerId,
+      trainerId: this.currentUserId,
     }
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
@@ -138,8 +139,7 @@ export class ClientInfoComponent implements OnInit {
   }
 
   getClients(){
-    this.trainerId = this.accountService.currentUser()?.id ?? 0;
-    this.clientService.getAllTrainerClients(this.trainerId).subscribe({
+    this.clientService.getAllTrainerClients(this.currentUserId).subscribe({
       next: (response) => {
         this.clients = response.data ?? [];
       }

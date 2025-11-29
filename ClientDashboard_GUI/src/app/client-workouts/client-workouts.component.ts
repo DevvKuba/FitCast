@@ -113,7 +113,7 @@ export class ClientWorkouts {
     }
 
     getTrainerApiKey(){
-        this.trainerService.getWorkoutRetrievalApiKey(this.accountService.currentUser()?.id ?? 0).subscribe({
+        this.trainerService.getWorkoutRetrievalApiKey(this.currentUserId).subscribe({
             next: (response) => {
                 this.trainerApiKey = response.data;
             }
@@ -121,7 +121,7 @@ export class ClientWorkouts {
     }
 
     getAutoWorkoutRetrievalStatus(){
-        this.trainerService.getAutoWorkoutRetrievalStatus(this.accountService.currentUser()?.id ?? 0).subscribe({
+        this.trainerService.getAutoWorkoutRetrievalStatus(this.currentUserId).subscribe({
             next: (response) => {
                 this.automaticRetrievalChecked = response.data;
             }
@@ -129,7 +129,7 @@ export class ClientWorkouts {
     }
 
     updateWorkoutRetrievalDetails(apiKey: string, retrievalStatus: boolean){
-        this.trainerService.updateTrainerRetrievalDetails(this.accountService.currentUser()?.id ?? 0,
+        this.trainerService.updateTrainerRetrievalDetails(this.currentUserId,
         apiKey, retrievalStatus).subscribe({
             next: (response) => {
                 this.toastService.showSuccess('Success updated details', response.message);
@@ -215,7 +215,7 @@ export class ClientWorkouts {
     }
 
     displayWorkouts(){
-        this.trainerId = this.accountService.currentUser()?.id ?? 0;
+        this.trainerId = this.currentUserId;
         console.log(this.trainerId);
         this.workoutService.retrieveTrainerClientWorkouts(this.trainerId).subscribe({
             next: (response) => {
@@ -228,7 +228,7 @@ export class ClientWorkouts {
     }
 
   gatherExternalWorkouts(){
-    this.trainerService.gatherAndUpdateExternalWorkouts(this.accountService.currentUser()?.id ?? 0).subscribe({
+    this.trainerService.gatherAndUpdateExternalWorkouts(this.currentUserId).subscribe({
         next: (response) => {
             if(response.data == 0){
                 this.toastService.showNeutral('Success Gathering Workouts', `Accessed workouts successfully, No workouts found to retrieve`);
