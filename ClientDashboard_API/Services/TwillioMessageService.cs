@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using Quartz.Util;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
@@ -38,7 +39,12 @@ namespace ClientDashboard_API.Services
 
         public void SendSMSMessage(Trainer? trainer, Entities.Client? client, string senderPhoneNumber, string notificationMessage)
         {
-            var recieverPhoneNumber = trainer.PhoneNumber ?? client.PhoneNumber;
+            var recieverPhoneNumber = trainer?.PhoneNumber ?? client?.PhoneNumber ?? string.Empty;
+
+            if (string.IsNullOrEmpty(recieverPhoneNumber))
+            {
+                return;
+            }
 
             var messageOptions = new CreateMessageOptions(
               new PhoneNumber(recieverPhoneNumber));
