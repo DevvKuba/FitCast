@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Services
                 {
                     // client doesn't exist in this case so needs to be added first
                     // look over trainerId declaration
-                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null);
+                    await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null, null);
                     await unitOfWork.Complete();
 
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
@@ -94,7 +94,7 @@ namespace ClientDashboard_API.Services
                 }
                 else
                 {
-                    var newClient = await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, trainer.Id);
+                    var newClient = await unitOfWork.ClientRepository.AddNewClientAsync(clientName, null, null, trainer.Id);
                     await unitOfWork.Complete();
 
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(newClient);
