@@ -6,13 +6,13 @@ namespace ClientDashboard_API.Interfaces
     {
         // think of methods necessary to gather client data, within the ClientDataController
         Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId);
-        Task<Client> GetClientByNameAsync(string clientName);
+        Task<Client?> GetClientByNameAsync(string clientName);
 
-        Task<Client> GetClientByIdAsync(int? id);
+        Task<Client?> GetClientByIdAsync(int? id);
 
-        Task<Client> GetClientByIdWithTrainerAsync(int id);
+        Task<Client?> GetClientByIdWithTrainerAsync(int id);
 
-        Task<int> GetClientsCurrentSessionAsync(string name);
+        Task<int?> GetClientsCurrentSessionAsync(string name);
 
         Task<List<string>> GetClientsOnLastSessionAsync();
 
@@ -34,7 +34,7 @@ namespace ClientDashboard_API.Interfaces
 
         void UnassignTrainerAsync(Client client);
 
-        Task<Client> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId);
+        Task<Client?> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId);
 
         void RemoveClient(Client client);
 

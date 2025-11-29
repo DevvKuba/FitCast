@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class NotificationController(IUnitOfWork unitOfWork, INotificationService notificationService) : BaseAPIController
+    public class NotificationController(INotificationService notificationService) : BaseAPIController
     {
         [HttpPost("SendTrainerBlockCompletionReminder")]
         public async Task<ActionResult<ApiResponseDto<string>>> TrainerBlockCompletionReminderAsync(int trainerId, int clientId)

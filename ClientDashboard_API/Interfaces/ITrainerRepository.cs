@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Trainer?> GetTrainerByIdAsync(int id);
 
-        Task<List<Trainer?>> GetTrainersWithAutoRetrievalAsync();
+        Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync();
 
         Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
 

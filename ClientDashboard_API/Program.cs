@@ -57,7 +57,6 @@ namespace ClientDashboard_API
 
             builder.Services.AddQuartz(q =>
             {
-                q.UseMicrosoftDependencyInjectionJobFactory();
 
                 // key for background job
                 var jobKey = new JobKey("DailyWorkoutSyncJob");

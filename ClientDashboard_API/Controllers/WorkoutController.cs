@@ -197,8 +197,8 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
             }
-
-            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(clientWorkout.Client);
+            
+            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(clientWorkout.Client!);
             unitOfWork.WorkoutRepository.RemoveWorkout(clientWorkout);
 
             if (!await unitOfWork.Complete())
@@ -223,6 +223,11 @@ namespace ClientDashboard_API.Controllers
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(workout.ClientId);
+
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"client doesn't exist", Success = false });
+            }
 
             unitOfWork.WorkoutRepository.RemoveWorkout(workout);
             unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(client);

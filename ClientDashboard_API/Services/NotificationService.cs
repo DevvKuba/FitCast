@@ -11,14 +11,14 @@ namespace ClientDashboard_API.Services
             messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
-            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if (trainer == null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = $"Trainer with id: {trainerId} not retrieved successfully to send message", Success = false };
             }
 
-            Client client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            Client? client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
 
             if (client == null)
             {
@@ -45,14 +45,14 @@ namespace ClientDashboard_API.Services
             messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
-            Trainer trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if (trainer == null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = $"Trainer with id: {trainerId} not retrieved successfully to send message", Success = false };
             }
 
-            Client client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            Client? client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
 
             if (client == null)
             {

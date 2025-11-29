@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<UserDto> { Data = null, Message = "The user was not found", Success = false };
             }
 
-            bool verified = passwordHasher.Verify(loginDto.Password, trainer.PasswordHash);
+            bool verified = passwordHasher.Verify(loginDto.Password, trainer.PasswordHash!);
 
             if (!verified)
             {

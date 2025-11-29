@@ -48,6 +48,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository);
             _messageService = new TwillioMessageService();
             _notificationService = new NotificationService(_unitOfWork, _messageService);
+            _autoPaymentCreationService = new AutoPaymentCreationService(_unitOfWork);
             _workoutController = new WorkoutController(_unitOfWork, _notificationService, _autoPaymentCreationService, _mapper);
         }
 

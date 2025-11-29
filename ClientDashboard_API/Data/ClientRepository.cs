@@ -112,24 +112,24 @@ namespace ClientDashboard_API.Data
             client.PhoneNumber = phoneNumber;
         }
 
-        public async Task<Client> GetClientByNameAsync(string clientName)
+        public async Task<Client?> GetClientByNameAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).FirstOrDefaultAsync();
             return clientData;
         }
 
-        public async Task<Client> GetClientByIdAsync(int? id)
+        public async Task<Client?> GetClientByIdAsync(int? id)
         {
             var clientData = await context.Client.Where(x => x.Id == id).FirstOrDefaultAsync();
             return clientData;
         }
-        public async Task<Client> GetClientByIdWithTrainerAsync(int id)
+        public async Task<Client?> GetClientByIdWithTrainerAsync(int id)
         {
             var client = await context.Client.Where(c => c.Id == id).Include(x => x.Trainer).FirstOrDefaultAsync();
             return client;
         }
 
-        public async Task<int> GetClientsCurrentSessionAsync(string clientName)
+        public async Task<int?> GetClientsCurrentSessionAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
             return clientData;
@@ -159,7 +159,7 @@ namespace ClientDashboard_API.Data
         }
 
         // eventually when pipeline is no longer needed, maybe trainerId a non-nullable type
-        public async Task<Client> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId)
+        public async Task<Client?> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
             var newClient = new Client

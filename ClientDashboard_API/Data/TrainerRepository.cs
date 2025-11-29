@@ -30,7 +30,7 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
-        public async Task<List<Trainer?>> GetTrainersWithAutoRetrievalAsync()
+        public async Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync()
         {
             var trainers = await context.Trainer.Where(x => x.AutoWorkoutRetrieval == true).ToListAsync();
             return trainers;
