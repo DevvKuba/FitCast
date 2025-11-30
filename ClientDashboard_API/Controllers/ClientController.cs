@@ -106,8 +106,21 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing update of clien's phone number
         /// </summary>
         [HttpPut("setClientPhoneNumber")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync()
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync([FromBody] ClientPhoneNumberUpdateDto clientInfo)
         {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientInfo.Id);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to assign phone number", Success = false });
+            }
+
+            unitOfWork.ClientRepository.UpdateClientPhoneNumber(client, clientInfo.PhoneNumber);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {client.FirstName}'s phone number", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"{client.FirstName}'s phone number haas been updated successfully", Success = true });
 
         }
 
