@@ -29,7 +29,7 @@ namespace ClientDashboard_API.Controllers
             if (user.Data == null)
             {
                 // both error cases return null , response.Message contains specific error message
-                return BadRequest(new ApiResponseDto<UserDto> { Data = null, Message = user.Message, Success = false });
+                return NotFound(new ApiResponseDto<UserDto> { Data = null, Message = user.Message, Success = false });
             }
 
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });

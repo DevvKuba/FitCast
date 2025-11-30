@@ -235,7 +235,7 @@ namespace ClientDashboard_API.Controllers
             var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
             if (clientExists)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} already exists in the database", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} already exists in the database", Success = false });
             }
 
             await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions, phoneNumber, trainerId);

@@ -195,7 +195,7 @@ namespace ClientDashboard_API.Controllers
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(clientName, workoutDate);
             if (clientWorkout == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
             }
             
             unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(clientWorkout.Client!);

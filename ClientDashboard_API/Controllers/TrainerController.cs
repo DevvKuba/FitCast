@@ -24,7 +24,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             return Ok(new ApiResponseDto<Trainer> { Data = trainer, Message = $"trainer: {trainer.FirstName} successfully retrieved", Success = true });
@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             unitOfWork.TrainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updatedTrainerProfile);
@@ -62,14 +62,14 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
 
             if (client == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
 
             unitOfWork.TrainerRepository.AssignClient(trainer, client);
@@ -91,7 +91,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             await unitOfWork.TrainerRepository.UpdateTrainerPhoneNumberAsync(trainer.Id, phoneNumber);
@@ -113,7 +113,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
             // have a dummy / test method within HevySessionDataService can uses the apiKey to try and get a 200 response 
 
@@ -145,7 +145,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             if (!await hevyDataParser.IsApiKeyValidAsync(providedApiKey))
@@ -177,7 +177,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             unitOfWork.TrainerRepository.UpdateTrainerPaymentSettingAsync(trainer, enabled);
@@ -201,7 +201,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
             }
 
             if (trainer.WorkoutRetrievalApiKey == null)
@@ -228,7 +228,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var encryptedApiKey = trainer.WorkoutRetrievalApiKey;
@@ -251,7 +251,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             return Ok(new ApiResponseDto<bool> { Data = trainer.AutoWorkoutRetrieval, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
@@ -267,7 +267,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             return Ok(new ApiResponseDto<bool> { Data = trainer.AutoPaymentSetting, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });

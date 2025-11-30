@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Controllers
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
             var trainerPayments = await unitOfWork.PaymentRepository.GetAllPaymentsForTrainerAsync(trainer);
 
@@ -32,7 +32,7 @@ namespace ClientDashboard_API.Controllers
 
             if (payment == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
             }
 
             unitOfWork.PaymentRepository.UpdatePaymentDetails(payment, paymentRequestInfo);
@@ -53,7 +53,7 @@ namespace ClientDashboard_API.Controllers
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(paymentInfo.TrainerId);
             if (trainer == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(paymentInfo.ClientId);
@@ -79,7 +79,7 @@ namespace ClientDashboard_API.Controllers
 
             if (payment == null)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
             }
 
             unitOfWork.PaymentRepository.DeletePayment(payment);
