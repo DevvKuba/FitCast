@@ -174,9 +174,14 @@ export class ClientInfoComponent implements OnInit {
 
   showPhoneDialog(client: Client){
     this.phoneDialogVisible = true;
-    this.editingPhoneNumber = client.phoneNumber ?? "";
     this.editingClientName = client.firstName;
     this.editingClientId = client.id;
+
+    this.clientService.getClientPhoneNumber(client.id).subscribe({
+      next: (response) => {
+        this.editingPhoneNumber = response.data?? "";
+      }
+    })
   }
 
   showDialogForDelete(clientId: number, clientName: string){

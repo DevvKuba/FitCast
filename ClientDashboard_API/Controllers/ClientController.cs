@@ -80,6 +80,21 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<string>> { Data = clientSessions, Message = "Clients on first session retrieved successfully", Success = true });
         }
 
+        // <summary>
+        /// Client method allowing for the retrieval of all clients 
+        /// </summary>
+        [HttpGet("getClientPhoneNumber")]
+        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to retrieve phone number", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = client.PhoneNumber, Message = $"{client.FirstName}'s phone number returned successfully", Success = true });
+
+        }
+
         /// <summary>
         /// Client method allowing update all client information
         /// </summary>
