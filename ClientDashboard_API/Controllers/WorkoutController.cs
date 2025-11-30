@@ -59,7 +59,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("{clientName}/{workoutDate}/GetWorkoutAtDate")]
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
         {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(clientName, workoutDate);
             if (clientWorkout == null)
             {
                 return NotFound(new ApiResponseDto<Workout> { Data = null, Message = $"Client: {clientName}'s workout at {workoutDate} was not found.", Success = false });
@@ -192,7 +192,7 @@ namespace ClientDashboard_API.Controllers
         [HttpDelete("{clientName}/{sessionDate}")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteClientWorkoutAsync(string clientName, DateOnly workoutDate)
         {
-            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(clientName, workoutDate);
+            var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(clientName, workoutDate);
             if (clientWorkout == null)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });

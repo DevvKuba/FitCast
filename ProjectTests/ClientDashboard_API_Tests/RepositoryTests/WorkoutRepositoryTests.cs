@@ -156,7 +156,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             await _unitOfWork.Complete();
 
-            var workout = await _workoutRepository.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("19/06/2024"));
+            var workout = await _workoutRepository.GetClientWorkoutAtDateByNameAsync("rob", DateOnly.Parse("19/06/2024"));
 
             Assert.Equal(workout, testWorkout);
         }
@@ -174,7 +174,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             await _unitOfWork.Complete();
 
-            var workout = await _workoutRepository.GetClientWorkoutAtDateAsync("rob", DateOnly.Parse("19/06/2024"));
+            var workout = await _workoutRepository.GetClientWorkoutAtDateByNameAsync("rob", DateOnly.Parse("19/06/2024"));
 
             Assert.NotEqual(workout, testWorkout);
         }

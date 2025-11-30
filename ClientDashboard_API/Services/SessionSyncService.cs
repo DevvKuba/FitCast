@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Services
                 {
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
-                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client!.FirstName, workout.SessionDate);
+                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(client!.FirstName, workout.SessionDate);
                     // if workout is not a duplicate / not yet added
                     if (existingWorkout == null)
                     {
@@ -63,12 +63,13 @@ namespace ClientDashboard_API.Services
             foreach (var workout in dailyWorkouts)
             {
                 string clientName = workout.Title.Split(' ')[0];
+                // this client name will always be retrived during syncing
                 var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
                 if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                 {
 
-                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateAsync(client!.FirstName, workout.SessionDate);
+                    var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client!.Id, workout.SessionDate);
                     // if workout is not a duplicate / not yet added
                     if (existingWorkout == null)
                     {
