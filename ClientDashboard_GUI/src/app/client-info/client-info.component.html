@@ -37,6 +37,26 @@
       </div>
   </p-dialog>
 
+  <!-- Phone Number Dialog -->
+  <p-dialog header="Phone Number" [modal]="true" [(visible)]="phoneDialogVisible" [style]="{ width: '25rem' }">
+    <span class="p-text-secondary block mb-4">Set {{editingClientName}}'s phone number below:</span>
+    <div class="flex items-center gap-4 mb-8">
+        <label for="phoneNumber" class="font-semibold w-32">Phone Number</label>
+        <input 
+            pInputText 
+            [(ngModel)]="editingPhoneNumber" 
+            id="phoneNumber" 
+            class="flex-auto" 
+            placeholder="+44 7700 900000"
+            autocomplete="off" 
+        />
+    </div>
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="phoneDialogVisible = false" />
+        <p-button label="Save" (click)="savePhoneNumber()" />
+    </div>
+</p-dialog>
+
   <div class="table-container">
   <p-table [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
@@ -132,6 +152,12 @@
                       icon="pi pi-chart-line"
                       rounded
                     ></button>
+                    <p-button 
+                        *ngIf="editing"
+                        (onClick)="showPhoneDialog(client)"
+                        icon="pi pi-phone"
+                        severity="secondary"
+                    />
                     <button
                         *ngIf="!editing"
                         pButton

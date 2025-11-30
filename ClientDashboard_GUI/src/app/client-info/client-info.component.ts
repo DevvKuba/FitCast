@@ -3,7 +3,7 @@ import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ClientService } from '../services/client.service';
 import { Client } from '../models/client';
-import { MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Toast } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
@@ -20,11 +20,13 @@ import { ToastService } from '../services/toast.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RouterLink } from "@angular/router";
 import { UserDto } from '../models/dtos/user-dto';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 
 @Component({
   selector: 'app-client-info',
-  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule, Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, RouterLink],
-  providers: [MessageService],
+  imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule,
+     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, ConfirmPopupModule],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
@@ -32,6 +34,7 @@ export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
+  private confirmationService = inject(ConfirmationService);
 
   clients: Client[] | null = null;
   activityStatuses!: SelectItem[];
@@ -41,8 +44,11 @@ export class ClientInfoComponent implements OnInit {
   trainerId : number = 0;
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
+  phoneDialogVisible: boolean = false;
   newClientName : string = "";
   newPhoneNumber: string = "";
+  editingPhoneNumber: string = "";
+  editingClientName: string = "";
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   toastSummary: string = "";
@@ -89,6 +95,10 @@ export class ClientInfoComponent implements OnInit {
       }
   }
 
+  savePhoneNumber(){
+
+  }
+
   onRowEditCancel(client: Client, index: number) {
       this.clients![index] = this.clonedClients[client.id as number];
       delete this.clonedClients[client.id as number];
@@ -112,6 +122,7 @@ export class ClientInfoComponent implements OnInit {
       }
     })
   }
+
 
   addNewClient(clientName: string, totalBlockSessions: number, phoneNumber: string){
     const newClient = {
@@ -144,6 +155,12 @@ export class ClientInfoComponent implements OnInit {
         this.clients = response.data ?? [];
       }
     })
+  }
+
+  showPhoneDialog(client: Client){
+    this.phoneDialogVisible = true;
+    this.editingPhoneNumber = client.phoneNumber ?? "";
+    this.editingClientName = client.firstName;
   }
 
   showDialogForDelete(clientId: number, clientName: string){
