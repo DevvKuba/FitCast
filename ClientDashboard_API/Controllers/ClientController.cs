@@ -3,6 +3,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -100,6 +101,16 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = updatedClient.FirstName, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
 
         }
+
+        /// <summary>
+        /// Client method allowing update of clien's phone number
+        /// </summary>
+        [HttpPut("setClientPhoneNumber")]
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync()
+        {
+
+        }
+
 
         /// <summary>
         /// Client method allowing update of ones total sessions
