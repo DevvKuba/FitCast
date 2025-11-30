@@ -98,7 +98,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {updatedClient.FirstName}'s details", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = updatedClient.FirstName, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = updatedClient.PhoneNumber, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
 
         }
 

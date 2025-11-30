@@ -6,6 +6,7 @@ import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
 import { ClientAddDto } from '../models/dtos/client-add-dto';
 import { AccountService } from './account.service';
+import { ClientPhoneNumberUpdateDto } from '../models/dtos/client-phone-number-update-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,10 @@ export class ClientService {
 
   updateClient(newClient : Client) : Observable<ApiResponse<any>>{
     return this.http.put<any>( this.baseUrl + "client/newClientInformation", newClient);
+  }
+
+  updateClientPhoneNumber(clientInfo: ClientPhoneNumberUpdateDto) : Observable<ApiResponse<string>>{
+    return this.http.put<any>(this.baseUrl + 'client/setClientPhoneNumber', clientInfo);
   }
 
   deleteClient(clientId: number) : Observable<ApiResponse<any>>{

@@ -25,7 +25,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 @Component({
   selector: 'app-client-info',
   imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule,
-     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, ConfirmPopupModule],
+     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
@@ -34,7 +34,6 @@ export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
-  private confirmationService = inject(ConfirmationService);
 
   clients: Client[] | null = null;
   activityStatuses!: SelectItem[];
@@ -49,6 +48,7 @@ export class ClientInfoComponent implements OnInit {
   newPhoneNumber: string = "";
   editingPhoneNumber: string = "";
   editingClientName: string = "";
+  editingClientId: number = 0;
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   toastSummary: string = "";
@@ -96,7 +96,22 @@ export class ClientInfoComponent implements OnInit {
   }
 
   savePhoneNumber(){
-
+    if(this.editingPhoneNumber !== ""){
+      const clientInfo = {
+      id: this.editingClientId,
+      phoneNumber: this.editingPhoneNumber
+    }
+    this.clientService.updateClientPhoneNumber(clientInfo).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess('Success Updating Phone Number', response.message);
+        this.phoneDialogVisible = false;
+      },
+      error: (response) => {
+        this.toastService.showError('Error Updating Phone Number', response.error.message);
+      }
+    })
+    }
+    
   }
 
   onRowEditCancel(client: Client, index: number) {
@@ -161,6 +176,7 @@ export class ClientInfoComponent implements OnInit {
     this.phoneDialogVisible = true;
     this.editingPhoneNumber = client.phoneNumber ?? "";
     this.editingClientName = client.firstName;
+    this.editingClientId = client.id;
   }
 
   showDialogForDelete(clientId: number, clientName: string){
