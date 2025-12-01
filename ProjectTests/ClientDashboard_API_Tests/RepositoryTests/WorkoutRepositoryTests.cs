@@ -47,8 +47,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;
+            var duration = 60; // 60 minutes
 
-            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount);
+            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
             await _unitOfWork.Complete();
 
             var databaseWorkout = await _context.Workouts.FirstOrDefaultAsync();
@@ -67,8 +68,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;
+            var duration = 60; // 60 minutes
 
-            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount);
+            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
             await _unitOfWork.Complete();
 
             var databaseWorkout = await _context.Workouts.FirstOrDefaultAsync();
