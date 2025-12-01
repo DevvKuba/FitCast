@@ -13,5 +13,7 @@ namespace ClientDashboard_API.DTOs
         public required string SessionDate { get; set; }
 
         public int ExerciseCount { get; set; }
+
+        public int Duration { get; set; }
     }
 }

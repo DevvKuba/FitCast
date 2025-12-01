@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Services
                     if (existingWorkout == null)
                     {
                         unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
                         await unitOfWork.Complete();
 
                         // indicating that their block is finished
@@ -45,7 +45,7 @@ namespace ClientDashboard_API.Services
 
                     var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client!);
-                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(client!, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(client!, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
                     await unitOfWork.Complete();
                 }
             }
@@ -74,7 +74,7 @@ namespace ClientDashboard_API.Services
                     if (existingWorkout == null)
                     {
                         unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
                         await unitOfWork.Complete();
 
                         // indicating that their block is finished
@@ -99,7 +99,7 @@ namespace ClientDashboard_API.Services
                     await unitOfWork.Complete();
 
                     unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(newClient!);
-                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(newClient!, workout.Title, workout.SessionDate, workout.ExerciseCount);
+                    await unitOfWork.WorkoutRepository.AddWorkoutAsync(newClient!, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
                     await unitOfWork.Complete();
                 }
             }

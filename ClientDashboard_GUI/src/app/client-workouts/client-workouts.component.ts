@@ -47,7 +47,8 @@ export class ClientWorkouts {
     selectedClient :{id: number, name: string} = {id: 0, name: ""};
     workoutTitle: string = "";
     sessionDate: Date  = new Date();
-    exerciseCount: number = 0;
+    workoutDuration: number = 60;
+    exerciseCount: number = 8;
     currentUserId: number = 0;
     clients: {id: number, name: string}[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};

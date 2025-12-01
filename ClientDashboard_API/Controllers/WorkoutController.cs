@@ -103,7 +103,7 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
         /// </summary>
         [HttpPost("Auto/NewWorkout")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount)
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
             // TODO may need to change to Id even for SessionSyncService
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
@@ -113,7 +113,7 @@ namespace ClientDashboard_API.Controllers
             }
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
 
             if (!await unitOfWork.Complete())
             {
@@ -137,7 +137,7 @@ namespace ClientDashboard_API.Controllers
             }
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount, newWorkout.Duration);
 
 
             if (!await unitOfWork.Complete())

@@ -57,6 +57,10 @@
                         <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
                     </div>
                     <div class="flex items-center gap-4 mb-8">
+                        <label for="exercise-count" class="font-semibold w-24">Session Duration</label>
+                        <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="duration" class="flex-auto" autocomplete="off" />
+                    </div>
+                    <div class="flex items-center gap-4 mb-8">
                         <label for="exercise-count" class="font-semibold w-24">Exercise Count</label>
                         <p-inputnumber inputId="exercise-count" [(ngModel)]="exerciseCount" id="exercise-count" class="flex-auto" autocomplete="off" />
                     </div>
@@ -157,6 +161,9 @@
                  <th pSortableColumn="sessionDate" style="width:15%; text-align: center;" >
                     Session Date <p-sortIcon field="sessionDate" />
                 </th>
+                <th pSortableColumn="duration" style="width:15%; text-align: center;">
+                    Duration <p-sortIcon field="duration" />
+                </th>
                  <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
                     Exercises <p-sortIcon field="exerciseCount" />
                 </th>
@@ -191,6 +198,18 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
+              <td class="workout-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="number"
+                            [(ngModel)]= "workout.duration" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{workout.duration}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
                 <td class="workout-td">
                 <p-cellEditor>
                     <ng-template #input>
@@ -203,7 +222,6 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                
                 <td class="workout-td">
                 <div class="flex items-center justify-center gap-2">
                     <button
