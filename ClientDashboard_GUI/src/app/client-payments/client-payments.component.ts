@@ -115,7 +115,7 @@ export class ClientPaymentsComponent implements OnInit {
           this.gatherAllTrainerPayments();
         },
         error: (response) => {
-          this.toastService.showError('Error Updating Payment', response.message);
+          this.toastService.showError('Error Updating Payment', response.error.message);
         }
       })
     }
@@ -135,7 +135,7 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showSuccess("Success removing payment", response.message);
         },
         error: (response) => {
-          this.toastService.showError('Error removing payment', response.message);
+          this.toastService.showError('Error removing payment', response.error.message);
         }
       })
        
@@ -161,7 +161,7 @@ export class ClientPaymentsComponent implements OnInit {
           this.resetForm();
         },
         error: (response) => {
-          this.toastService.showError('Error Adding Payment', response.message)
+          this.toastService.showError('Error Adding Payment', response.error.message)
         }
       })
     }
@@ -172,7 +172,7 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showSuccess('Updated Payment Setting', response.message)
         },
         error: (response) => {
-          this.toastService.showError('Error Updating Payment Setting', response.message)
+          this.toastService.showError('Error Updating Payment Setting', response.error.message)
         }
       })
       }
@@ -214,7 +214,7 @@ export class ClientPaymentsComponent implements OnInit {
           }));
         },
         error: (response) => {
-          console.log(response.message)
+          console.log(response.error.message)
         }
       })
     }

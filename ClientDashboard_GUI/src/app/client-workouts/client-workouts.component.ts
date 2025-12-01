@@ -136,7 +136,7 @@ export class ClientWorkouts {
                 this.autoWorkoutRetrievalVisible = false
             }, 
             error: (response) => {
-                this.toastService.showError('Error updating details', response.message);
+                this.toastService.showError('Error updating details', response.error.message);
             }
         })
     }
@@ -209,7 +209,7 @@ export class ClientWorkouts {
                 this.displayWorkouts();
             },
             error: (response) => {
-                this.toastService.showError('Workout not added', response.message);
+                this.toastService.showError('Workout not added', response.error.message);
             }
         })
     }
@@ -222,7 +222,7 @@ export class ClientWorkouts {
                 this.workouts = response.data ?? [];
             },
             error: (response) => {
-                console.log(response.message)
+                console.log(response.error.message)
             }
         });
     }
