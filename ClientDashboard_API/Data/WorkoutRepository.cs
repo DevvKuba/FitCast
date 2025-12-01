@@ -72,7 +72,7 @@ namespace ClientDashboard_API.Data
         }
 
 
-        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount)
+        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
             await context.Workouts.AddAsync(new Workout
             {
