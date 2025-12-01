@@ -10,6 +10,9 @@ namespace Client_Session_Tracker_C_.Models
         [JsonPropertyName("start_time")]
         public string? Start_Time { get; set; }
 
+        [JsonPropertyName("end_time")]
+        public string? End_Time { get; set; }
+
         [JsonPropertyName("exercises")]
         public List<ExerciseModel>? Exercises { get; set; }
     }

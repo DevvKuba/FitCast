@@ -43,6 +43,7 @@ namespace ClientDashboard_API.Services
                     Title = x.Workout!.Title ?? "Unknown",
                     SessionDate = DateOnly.Parse(x.Workout.Start_Time?[0..10] ?? "1970-01-01"),
                     ExerciseCount = x.Workout.Exercises?.Count ?? 0,
+                    Duration = CalculateDurationInMinutes(x.Workout.Start_Time, x.Workout.End_Time)
                 }).ToList();
 
             return workoutDetails;
@@ -140,6 +141,21 @@ namespace ClientDashboard_API.Services
             {
                 return false;
             }
+        }
+
+        public int CalculateDurationInMinutes(string? startTime, string? endTime)
+        {
+            if (string.IsNullOrEmpty(startTime) || string.IsNullOrEmpty(endTime))
+            {
+                return 0;
+            }
+
+            var startDateTime = DateTime.Parse(startTime);
+            var endDateTime = DateTime.Parse(endTime);
+
+            int duration = (int)(endDateTime - startDateTime).TotalMinutes;
+
+            return duration;
         }
     }
 }

@@ -13,5 +13,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<bool> IsApiKeyValidAsync(string apiKey);
 
+        int CalculateDurationInMinutes(string startTime, string endTime);
+
     }
 }

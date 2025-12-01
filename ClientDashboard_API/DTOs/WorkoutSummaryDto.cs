@@ -6,6 +6,8 @@
 
         public required DateOnly SessionDate { get; set; }
 
+        public required int Duration { get; set; }
+
         public int ExerciseCount { get; set; }
     }
 }
