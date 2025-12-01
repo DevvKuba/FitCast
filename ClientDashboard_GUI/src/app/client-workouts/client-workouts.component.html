@@ -66,7 +66,7 @@
                     </div>
                     <div class="flex justify-end gap-2">
                         <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
-                        <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, exerciseCount)" />
+                        <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, exerciseCount, workoutDuration)" />
                     </div>
                 </p-dialog>
 
@@ -201,7 +201,7 @@
               <td class="workout-td">
                 <p-cellEditor>
                     <ng-template #input>
-                        <input
+                        <input class="duration-count-input"
                             pInputText type="number"
                             [(ngModel)]= "workout.duration" />
                     </ng-template>

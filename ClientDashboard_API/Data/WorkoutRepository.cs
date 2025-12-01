@@ -83,6 +83,7 @@ namespace ClientDashboard_API.Data
                 CurrentBlockSession = client.CurrentBlockSession,
                 TotalBlockSessions = client.TotalBlockSessions,
                 ExerciseCount = exerciseCount,
+                Duration = duration,
                 Client = client
             });
         }

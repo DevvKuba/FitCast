@@ -34,6 +34,10 @@
     max-width: 80px;
 }
 
+.duration-count-input {
+    max-width: 60px;
+}
+
 .workout-td {
     text-align: center;
 }

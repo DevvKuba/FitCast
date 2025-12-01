@@ -194,13 +194,14 @@ export class ClientWorkouts {
         })
     }
 
-    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number){
+    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number, duration: number){
         var newWorkout = {
             workoutTitle: workoutTitle,
             clientName: selectedClient.name,
             clientId: selectedClient.id,
             sessionDate: this.formatDateForApi(sessionDate),
-            exerciseCount: exerciseCount
+            exerciseCount: exerciseCount,
+            duration: duration
         }
 
         this.workoutService.addWorkout(newWorkout).subscribe({
