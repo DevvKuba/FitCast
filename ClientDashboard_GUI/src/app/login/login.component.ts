@@ -30,8 +30,6 @@ export class LoginComponent {
 
   email: string = "";
   password: string = "";
-  toastSummary: string = "";
-  toastDetail: string = "";
   storageItem = "token";
 
   trainerLogin(trainerEmail: string, trainerPassword: string){
@@ -43,18 +41,13 @@ export class LoginComponent {
       next: (response : ApiResponse<UserDto>) => {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
         this.accountService.currentUser.set(response.data ?? null);
+        
         console.log("User logged in: ", this.accountService.currentUser()?.firstName);
-
-        this.toastSummary = 'Logged In';
-        this.toastDetail = 'Redirected to client-info page';
-        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
+        this.toastService.showSuccess('Logged In','Redirected to client-info page' );
         this.router.navigateByUrl('client-info');
-        console.log(response);
       },
       error: (response) => {
-        this.toastSummary = 'Unable to log in';
-        this.toastDetail = response.error.message;
-        this.toastService.showError(this.toastSummary, this.toastDetail);
+        this.toastService.showError('Unable to log in', response.error.message);
         console.log("Error logging in and fetching jwt token ", response.error.message);
       }
     })

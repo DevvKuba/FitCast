@@ -51,8 +51,6 @@ export class ClientInfoComponent implements OnInit {
   editingClientId: number = 0;
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
-  toastSummary: string = "";
-  toastDetail: string = "";
   deleteClientId: number = 0;
   deleteClientName: string = "";
 
@@ -75,23 +73,14 @@ export class ClientInfoComponent implements OnInit {
 
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
-              console.log('Client updated successfully', response.message);
-              this.toastSummary = 'Success Updating';
-              this.toastDetail = `updated client: ${newClient.firstName} successfully`;
-              this.toastService.showSuccess(this.toastSummary, this.toastDetail);
+              this.toastService.showSuccess('Success Updating', response.message);
             },
             error: (response) => {
-              console.log('Update Failed', response.message);
-              this.toastSummary = 'Error Updating';
-              this.toastDetail = `client: ${newClient.firstName} not updated successfully`;
-              this.toastService.showError(this.toastSummary, this.toastDetail);
+              this.toastService.showError('Error Updating', response.error.message);
             }
           })
       } else {
-        console.log("Input values are not valid");
-        this.toastSummary = 'Incorrect Values';
-        this.toastDetail = `make sure correct update values are provided`;
-        this.toastService.showError(this.toastSummary, this.toastDetail)
+        this.toastService.showError('Incorrect Values', `Make sure correct update values are provided`)
       }
   }
 
@@ -122,18 +111,12 @@ export class ClientInfoComponent implements OnInit {
   onRowDelete(clientId: number){
     this.clientService.deleteClient(clientId).subscribe({
       next: (response) => {
-        console.log(response.message);
-        this.toastSummary = 'Success Deleting';
-        this.toastDetail = `successfully deleted client with id: ${clientId}`;
-        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
+        this.toastService.showSuccess('Success Deleting', response.message);
         this.deleteDialogVisible = false;
         this.getClients();
       },
       error: (response) => {
-        console.log(response.message);
-        this.toastSummary = 'Error Deleting';
-        this.toastDetail = `unsuccessful deletion process of client with id: ${clientId}`;
-        this.toastService.showError(this.toastSummary, this.toastDetail);
+        this.toastService.showError('Error Deleting', response.error.message);
       }
     })
   }
@@ -148,18 +131,12 @@ export class ClientInfoComponent implements OnInit {
     }
     this.clientService.addClient(newClient).subscribe({
       next: (response) => {
-        console.log(response.message)
-        this.toastSummary = 'Success Adding';
-        this.toastDetail = `added client: ${clientName} successfully`
-        this.toastService.showSuccess(this.toastSummary, this.toastDetail);
+        this.toastService.showSuccess('Success Adding', response.message);
         this.addDialogVisible = false;
         this.getClients();
       },
       error: (response) => {
-        console.log(response.message)
-        this.toastSummary = 'Error Adding';
-        this.toastDetail = `adding client: ${clientName} was not successful`
-        this.toastService.showError(this.toastSummary, this.toastDetail)
+        this.toastService.showError('Error Adding', response.error.message)
       }
     })
   }
