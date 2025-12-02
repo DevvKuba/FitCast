@@ -5,8 +5,6 @@ namespace ClientDashboard_API.Services
 {
     public class ClientDailyFeatureService : IClientDailyFeatureService
     {
-        // needs to run for every client under a specific trainer
-        // gather all trainers with their clients for each client..
 
         // set date as current date
         // sessions in 7d , declare a range , starting or current date-7 : current date how many have they completed return int
