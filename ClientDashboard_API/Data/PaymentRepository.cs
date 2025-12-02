@@ -55,6 +55,15 @@ namespace ClientDashboard_API.Data
             mapper.Map(paymentUpdateInfo, payment);
         }
 
+        public async Task<decimal> CalculateClientTotalLifetimeValueAsync(Client client, DateOnly tillDate)
+        {
+            var confirmedClientPayments = await context.Payments
+                .Where(p => p.ClientId == client.Id && p.Confirmed == true).ToListAsync();
+
+            decimal totalValue = confirmedClientPayments.Select(p => p.Amount).Sum();
+            return totalValue;
+        }
+
 
 
         public async Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed)
@@ -78,5 +87,6 @@ namespace ClientDashboard_API.Data
         {
             context.Remove(payment);
         }
+
     }
 }

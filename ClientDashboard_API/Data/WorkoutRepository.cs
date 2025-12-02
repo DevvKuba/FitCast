@@ -63,6 +63,28 @@ namespace ClientDashboard_API.Data
             return clientWorkout;
         }
 
+        public async Task<int> GetSessionCountAsync(Client client, DateOnly fromDate, DateOnly untilDate)
+        {
+            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate).ToListAsync();
+            return workoutsBetweenDates.Count;
+        }
+
+        public async Task<int> GetSessionCountLast7DaysAsync(Client client, DateOnly untilDate)
+        {
+            var dateFrom7DaysAgo = untilDate.AddDays(-7);
+
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate).ToListAsync();
+            return workoutsTillDate.Count;
+        }
+
+        public async Task<int> GetSessionCountLast28DaysAsync(Client client, DateOnly untilDate)
+        {
+            var dateFrom7DaysAgo = untilDate.AddDays(-28);
+
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate).ToListAsync();
+            return workoutsTillDate.Count;
+        }
+
         public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
@@ -70,6 +92,14 @@ namespace ClientDashboard_API.Data
             existingWorkout.ExerciseCount = exerciseCount;
             existingWorkout.Duration = duration;
 
+        }
+
+        public async Task<int> CalculateClientMeanWorkoutDurationAsync(Client client, DateOnly tillDate)
+        {
+           var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate <= tillDate).ToListAsync();
+
+            int meanDuration = (int)Math.Round(workoutsTillDate.Select(w => w.Duration).Average());
+            return meanDuration;
         }
 
 

@@ -32,7 +32,7 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateClientName(Client client, string name);
 
-        Task<int> GatherDailyClientStepsAsync(Client client);
+        int GatherDailyClientStepsAsync(Client client);
 
         void UnassignTrainerAsync(Client client);
 
