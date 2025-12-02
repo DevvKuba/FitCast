@@ -4,7 +4,7 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class ClientDailyDataGathering(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyService) : IJob
+    public class DailyClientDataGathering(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyService) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {

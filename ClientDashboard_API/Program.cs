@@ -59,17 +59,27 @@ namespace ClientDashboard_API
             {
 
                 // key for background job
-                var jobKey = new JobKey("DailyWorkoutSyncJob");
+                var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
 
                 // registering job for DI container
-                q.AddJob<DailyTrainerWorkoutRetrieval>(opts => opts.WithIdentity(jobKey));
+                q.AddJob<DailyTrainerWorkoutRetrieval>(opts => opts.WithIdentity(workoutSyncJobKey));
 
                 // setting up scheduled job trigger for midnight execution
                 q.AddTrigger(opts => opts
-                .ForJob(jobKey)
+                .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
                 .WithCronSchedule("0 0 0 * * ?")
                 .WithDescription("Runs daily at midnight - 12AM to sync Hevy workouts"));
+
+                var clientDataJobKey = new JobKey("DailyClientDataGathering");
+
+                q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey));
+
+                q.AddTrigger(opts => opts
+                .ForJob(clientDataJobKey)
+                .WithIdentity("DailyClientDataGathering-trigger")
+                .WithCronSchedule("0 0 0 * * ?")
+                .WithDescription("Runs daily at midnight - 12AM to gather Client Feature Data"));
 
             });
 
