@@ -26,7 +26,7 @@ export class ClientService {
   }
 
   getClientPhoneNumber(clientId: number) : Observable<ApiResponse<string>> {
-    return this.http.get<any>(this.baseUrl + `getClientPhoneNumber?clientId=${clientId}`);
+    return this.http.get<any>(this.baseUrl + `client/getClientPhoneNumber?clientId=${clientId}`);
   }
 
   updateClient(newClient : Client) : Observable<ApiResponse<any>>{

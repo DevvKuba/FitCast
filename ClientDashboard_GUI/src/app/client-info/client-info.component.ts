@@ -65,6 +65,12 @@ export class ClientInfoComponent implements OnInit {
 
   onRowEditInit(client: Client) {
         this.clonedClients[client.id as number] = { ...client };
+
+      this.clientService.getClientPhoneNumber(client.id).subscribe({
+      next: (response) => {
+        this.editingPhoneNumber = response.data?? "";
+      }
+    })
     }
 
   onRowEditSave(newClient: Client) {
@@ -153,12 +159,6 @@ export class ClientInfoComponent implements OnInit {
     this.phoneDialogVisible = true;
     this.editingClientName = client.firstName;
     this.editingClientId = client.id;
-
-    this.clientService.getClientPhoneNumber(client.id).subscribe({
-      next: (response) => {
-        this.editingPhoneNumber = response.data?? "";
-      }
-    })
   }
 
   showDialogForDelete(clientId: number, clientName: string){

@@ -84,7 +84,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
         [HttpGet("getClientPhoneNumber")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
+        public async Task<ActionResult<ApiResponseDto<string>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
             if (client == null)
@@ -135,7 +135,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {client.FirstName}'s phone number", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"{client.FirstName}'s phone number haas been updated successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = client.PhoneNumber, Message = $"{client.FirstName}'s phone number haas been updated successfully", Success = true });
 
         }
 
