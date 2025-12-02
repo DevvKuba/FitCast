@@ -14,7 +14,7 @@
 
         public int? DaysSinceLastSession { get; set; }
 
-        public int RemainingSessions { get; set; }
+        public int? RemainingSessions { get; set; }
 
         public int DailySteps { get; set; }
 

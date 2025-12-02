@@ -155,7 +155,7 @@ namespace ClientDashboard_API.Data
 
         public int GatherDailyClientStepsAsync(Client client)
         {
-            return client.DailySteps ?? 0;
+            return client.DailySteps;
         }
 
         public void UnassignTrainerAsync(Client client)

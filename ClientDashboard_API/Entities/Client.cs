@@ -8,7 +8,7 @@
 
         public int? TotalBlockSessions { get; set; }
 
-        public int? DailySteps { get; set; }
+        public int DailySteps { get; set; } = 0;
 
         public double? Weight { get; set; }
 
