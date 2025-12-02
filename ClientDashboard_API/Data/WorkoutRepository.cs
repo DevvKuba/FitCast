@@ -63,11 +63,12 @@ namespace ClientDashboard_API.Data
             return clientWorkout;
         }
 
-        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount)
+        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
             existingWorkout.SessionDate = sessionDate;
             existingWorkout.ExerciseCount = exerciseCount;
+            existingWorkout.Duration = duration;
 
         }
 

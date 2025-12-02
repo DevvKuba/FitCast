@@ -8,5 +8,7 @@
         public required string SessionDate { get; set; }
 
         public required int ExerciseCount { get; set; }
+
+        public required int Duration { get; set; }
     }
 }
