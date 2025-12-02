@@ -156,7 +156,8 @@ export class ClientWorkouts {
                 id: newWorkout.id,
                 workoutTitle: newWorkout.workoutTitle,
                 sessionDate: newWorkout.sessionDate,
-                exerciseCount: newWorkout.exerciseCount
+                exerciseCount: newWorkout.exerciseCount,
+                duration: newWorkout.duration
             }
             this.workoutService.updateWorkout(updatedInfo).subscribe({
                 next: (response) => {
