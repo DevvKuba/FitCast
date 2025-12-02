@@ -85,6 +85,18 @@ namespace ClientDashboard_API.Data
             return workoutsTillDate.Count;
         }
 
+        public async Task<int?> GetDaysFromLastSessionAsync(Client client, DateOnly untilDate)
+        {
+            var lastSession = await context.Workouts
+                .Where(w => w.ClientId == client.Id)
+                .OrderByDescending(w => w.SessionDate)
+                .FirstOrDefaultAsync();
+
+            int? daysFromLastSession = lastSession == null ? null : untilDate.Day - lastSession.SessionDate.Day;
+            return daysFromLastSession;
+
+        }
+
         public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
@@ -123,6 +135,5 @@ namespace ClientDashboard_API.Data
         {
             context.Workouts.Remove(workout);
         }
-
     }
 }

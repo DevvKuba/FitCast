@@ -12,7 +12,7 @@
 
         public int SessionsIn28d { get; set; }
 
-        public int DaysSinceLastSession { get; set; }
+        public int? DaysSinceLastSession { get; set; }
 
         public int RemainingSessions { get; set; }
 

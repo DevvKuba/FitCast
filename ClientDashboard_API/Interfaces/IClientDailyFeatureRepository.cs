@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IClientDailyFeatureRepository
     {
-        Task AddNewRecord(ClientDailyDataAddDto clientData);
+        Task AddNewRecordAsync(ClientDailyDataAddDto clientData);
     }
 }

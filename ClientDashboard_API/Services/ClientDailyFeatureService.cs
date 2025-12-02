@@ -23,6 +23,12 @@ namespace ClientDashboard_API.Services
         // return bool if status is currently active
         public Task ExecuteClientDailyGatheringAsync(Client client)
         {
+            //var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            //var sessionInLast7Days = unitOfWork.WorkoutRepository.GetSessionCountLast7DaysAsync(client, currentDate);
+            //var sessionsInLast28Days = unitOfWork.WorkoutRepository.GetSessionCountLast28DaysAsync(client, currentDate);
+
+            //var daysSinceLastSession
             throw new NotImplementedException();
         }
     }

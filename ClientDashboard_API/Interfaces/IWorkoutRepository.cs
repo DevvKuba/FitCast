@@ -23,6 +23,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<int> GetSessionCountLast28DaysAsync(Client client, DateOnly untilDate);
 
+        Task<int?> GetDaysFromLastSessionAsync(Client client, DateOnly untilDate);
+
         Task<int> CalculateClientMeanWorkoutDurationAsync(Client client, DateOnly tillDate);
 
         void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration);

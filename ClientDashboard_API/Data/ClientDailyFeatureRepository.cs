@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Data
 {
     public class ClientDailyFeatureRepository(DataContext context) : IClientDailyFeatureRepository
     {
-        public async Task AddNewRecord(ClientDailyDataAddDto clientData)
+        public async Task AddNewRecordAsync(ClientDailyDataAddDto clientData)
         {
             var clientDailyFeature = new ClientDailyFeature
             {
