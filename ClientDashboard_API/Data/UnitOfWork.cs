@@ -3,7 +3,8 @@
 namespace ClientDashboard_API.Data
 {
     public class UnitOfWork(DataContext context, IClientRepository clientRepository, IWorkoutRepository workoutRepository,
-        ITrainerRepository trainerRepository, INotificationRepository notificationRepository, IPaymentRepository paymentRepository) : IUnitOfWork
+        ITrainerRepository trainerRepository, INotificationRepository notificationRepository,
+        IPaymentRepository paymentRepository , IClientDailyFeatureRepository clientDailyFeatureRepository) : IUnitOfWork
     {
         public IClientRepository ClientRepository => clientRepository;
 
@@ -14,6 +15,8 @@ namespace ClientDashboard_API.Data
         public INotificationRepository NotificationRepository => notificationRepository;
 
         public IPaymentRepository PaymentRepository => paymentRepository;
+
+        public IClientDailyFeatureRepository ClientDailyFeatureRepository => clientDailyFeatureRepository;
 
         public async Task<bool> Complete()
         {

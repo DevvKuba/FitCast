@@ -3,7 +3,7 @@ using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public class ClientDailyFeatureService : IClientDailyFeatureService
+    public class ClientDailyFeatureService(IUnitOfWork unitOfWork) : IClientDailyFeatureService
     {
 
         // set date as current date

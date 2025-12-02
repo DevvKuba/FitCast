@@ -12,6 +12,8 @@
 
         IPaymentRepository PaymentRepository { get; }
 
+        IClientDailyFeatureRepository ClientDailyFeatureRepository { get; }
+
         Task<bool> Complete();
 
         bool HasChanges();
