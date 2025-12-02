@@ -17,8 +17,12 @@ namespace ClientDashboard_API.Jobs
                 foreach(Client client in trainerClients)
                 {
                     await dailyService.ExecuteClientDailyGatheringAsync(client);
+
+                    client.DailySteps = 0;
                 }
             }
+
+            await unitOfWork.Complete();
         }
     }
 }
