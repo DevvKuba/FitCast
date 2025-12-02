@@ -20,6 +20,11 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
+        public async Task<List<Trainer>> GetAllTrainersAsync()
+        {
+            return await context.Trainer.ToListAsync();
+        }
+
 
         public async Task<Trainer?> GetTrainerWithClientsByIdAsync(int id)
         {
@@ -90,6 +95,5 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
-
     }
 }

@@ -1,10 +1,13 @@
 ﻿using ClientDashboard_API.Interfaces;
+using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class ClientDailyDataGathering(IClientDailyFeatureService dailyService)
+    public class ClientDailyDataGathering(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyService) : IJob
     {
-        // needs to run for every client under a specific trainer
-        // gather all trainers with their clients for each client..
+        public async Task Execute(IJobExecutionContext context)
+        {
+            var trainers = await unitOfWork.TrainerRepository.GetTra
+        }
     }
 }
