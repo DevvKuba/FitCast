@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
@@ -22,6 +23,9 @@ namespace ClientDashboard_API.Services
         // LifeTimeValue from payments encapure all the *Confirmed* payments and their amounts under that client
 
         // return bool if status is currently active
-
+        public Task ExecuteClientDailyGatheringAsync(Client client)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

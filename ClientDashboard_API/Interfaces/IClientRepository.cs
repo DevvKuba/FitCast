@@ -32,6 +32,8 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateClientName(Client client, string name);
 
+        Task<int> GatherDailyClientStepsAsync(Client client);
+
         void UnassignTrainerAsync(Client client);
 
         Task<Client?> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId);
