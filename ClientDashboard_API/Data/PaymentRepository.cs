@@ -12,7 +12,7 @@ namespace ClientDashboard_API.Data
         {
             var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id)
                 .OrderBy(p => p.Confirmed)
-                .OrderByDescending(p => p.PaymentDate)
+                .ThenByDescending(p => p.PaymentDate)
                 .ToListAsync();
             return payments;
         }
