@@ -19,6 +19,7 @@ namespace ClientDashboard_API.Data
                 AverageSessionDuration = clientData.AverageSessionDuration,
                 LifeTimeValue = clientData.LifeTimeValue,
                 CurrentlyActive = clientData.CurrentlyActive,
+                ClientId = clientData.ClientId,
             };
 
             await context.ClientDailyFeature.AddAsync(clientDailyFeature);

@@ -19,5 +19,7 @@
         public decimal LifeTimeValue { get; set; }
 
         public bool CurrentlyActive { get; set; }
+
+        public int ClientId { get; set; }
     }
 }

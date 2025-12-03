@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ClientDashboard_API.Services
 {
@@ -49,7 +50,8 @@ namespace ClientDashboard_API.Services
                 DailySteps = client.DailySteps,
                 AverageSessionDuration = averageSessionDuration,
                 LifeTimeValue = lifeTimeValue,
-                CurrentlyActive = client.IsActive
+                CurrentlyActive = client.IsActive,
+                ClientId = client.Id
             };
 
             await unitOfWork.ClientDailyFeatureRepository.AddNewRecordAsync(clientDailyDataInfo);
