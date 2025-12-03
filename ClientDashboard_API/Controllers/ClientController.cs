@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class ClientController(IUnitOfWork unitOfWork, ISchedulerFactory schedulerFactory) : BaseAPIController
+    public class ClientController(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyClientService) : BaseAPIController
     {
         [HttpGet("allTrainerClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync([FromQuery] int trainerId)
@@ -316,25 +316,27 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("TriggerDailyDataGathering")]
         public async Task<ActionResult<ApiResponseDto<string>>> TriggerDailyDataGatheringAsync()
         {
-            try
-            {
-                var scheduler = await schedulerFactory.GetScheduler();
-                var jobKey = new JobKey("DailyClientDataGathering");
+            var trainers = await unitOfWork.TrainerRepository.GetAllTrainersAsync();
 
-                await scheduler.TriggerJob(jobKey);
-
-                return Ok(new ApiResponseDto<string>{Data = "Job triggered successfully", Message = "Daily client data gathering job has been queued for execution", Success = true});
-            }
-            catch (Exception ex)
+            foreach (Trainer trainer in trainers)
             {
-                return BadRequest(new ApiResponseDto<string>
+                var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
+
+                foreach (Client client in trainerClients)
                 {
-                    Data = null,
-                    Message = $"Failed to trigger job: {ex.Message}",
-                    Success = false
-                });
+                    await dailyClientService.ExecuteClientDailyGatheringAsync(client);
+
+                    client.DailySteps = 0;
+                }
             }
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Error", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Success gathering client daily data", Success = true });
         }
+   
         
     }
 }
