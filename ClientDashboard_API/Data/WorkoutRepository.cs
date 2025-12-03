@@ -65,7 +65,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> GetSessionCountAsync(Client client, DateOnly fromDate, DateOnly untilDate)
         {
-            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate).ToListAsync();
+            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
             return workoutsBetweenDates.Count;
         }
 
@@ -73,7 +73,7 @@ namespace ClientDashboard_API.Data
         {
             var dateFrom7DaysAgo = untilDate.AddDays(-7);
 
-            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate).ToListAsync();
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
             return workoutsTillDate.Count;
         }
 
@@ -81,7 +81,7 @@ namespace ClientDashboard_API.Data
         {
             var dateFrom7DaysAgo = untilDate.AddDays(-28);
 
-            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate).ToListAsync();
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
             return workoutsTillDate.Count;
         }
 
