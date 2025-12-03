@@ -3,12 +3,13 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 using System.Runtime.CompilerServices;
 
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class ClientController(IUnitOfWork unitOfWork) : BaseAPIController
+    public class ClientController(IUnitOfWork unitOfWork, ISchedulerFactory schedulerFactory) : BaseAPIController
     {
         [HttpGet("allTrainerClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync([FromQuery] int trainerId)
@@ -308,5 +309,32 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = clientId.ToString(), Message = $"Client with id: {clientId} removed", Success = true });
 
         }
+
+        /// <summary>
+        /// Manually trigger the daily client data gathering job (Admin/Testing only)
+        /// </summary>
+        [HttpPost("TriggerDailyDataGathering")]
+        public async Task<ActionResult<ApiResponseDto<string>>> TriggerDailyDataGatheringAsync()
+        {
+            try
+            {
+                var scheduler = await schedulerFactory.GetScheduler();
+                var jobKey = new JobKey("DailyClientDataGathering");
+
+                await scheduler.TriggerJob(jobKey);
+
+                return Ok(new ApiResponseDto<string>{Data = "Job triggered successfully", Message = "Daily client data gathering job has been queued for execution", Success = true});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponseDto<string>
+                {
+                    Data = null,
+                    Message = $"Failed to trigger job: {ex.Message}",
+                    Success = false
+                });
+            }
+        }
+        
     }
 }
