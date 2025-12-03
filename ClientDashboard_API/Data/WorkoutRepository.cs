@@ -110,7 +110,7 @@ namespace ClientDashboard_API.Data
         {
            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate <= tillDate && w.ClientId == client.Id).ToListAsync();
 
-            int meanDuration = (int)Math.Round(workoutsTillDate.Select(w => w.Duration).Average());
+            int meanDuration = workoutsTillDate.Count == 0 ? 0 : (int)Math.Round(workoutsTillDate.Select(w => w.Duration).Average());
             return meanDuration;
         }
 

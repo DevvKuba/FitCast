@@ -324,14 +324,17 @@ namespace ClientDashboard_API.Controllers
 
                 foreach (Client client in trainerClients)
                 {
-                    client.DailySteps = 0;
+
                     await dailyClientService.ExecuteClientDailyGatheringAsync(client);
+
+                    client.DailySteps = 0;
 
                 }
             }
 
+            await unitOfWork.Complete();
+
         }
    
-        
     }
 }
