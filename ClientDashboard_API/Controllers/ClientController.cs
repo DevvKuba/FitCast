@@ -314,7 +314,7 @@ namespace ClientDashboard_API.Controllers
         /// Manually trigger the daily client data gathering job (Admin/Testing only)
         /// </summary>
         [HttpPost("TriggerDailyDataGathering")]
-        public async Task<ActionResult<ApiResponseDto<string>>> TriggerDailyDataGatheringAsync()
+        public async Task TriggerDailyDataGatheringAsync()
         {
             var trainers = await unitOfWork.TrainerRepository.GetAllTrainersAsync();
 
@@ -324,17 +324,12 @@ namespace ClientDashboard_API.Controllers
 
                 foreach (Client client in trainerClients)
                 {
+                    client.DailySteps = 0;
                     await dailyClientService.ExecuteClientDailyGatheringAsync(client);
 
-                    client.DailySteps = 0;
                 }
             }
 
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Error", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Success gathering client daily data", Success = true });
         }
    
         

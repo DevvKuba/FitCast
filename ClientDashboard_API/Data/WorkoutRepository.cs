@@ -65,7 +65,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> GetSessionCountAsync(Client client, DateOnly fromDate, DateOnly untilDate)
         {
-            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
+            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate && w.ClientId == client.Id).ToListAsync();
             return workoutsBetweenDates.Count;
         }
 
@@ -73,7 +73,7 @@ namespace ClientDashboard_API.Data
         {
             var dateFrom7DaysAgo = untilDate.AddDays(-7);
 
-            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.ClientId == client.Id).ToListAsync();
             return workoutsTillDate.Count;
         }
 
@@ -81,7 +81,7 @@ namespace ClientDashboard_API.Data
         {
             var dateFrom7DaysAgo = untilDate.AddDays(-28);
 
-            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.Id == client.Id).ToListAsync();
+            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate >= dateFrom7DaysAgo && w.SessionDate <= untilDate && w.ClientId == client.Id).ToListAsync();
             return workoutsTillDate.Count;
         }
 
@@ -108,7 +108,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> CalculateClientMeanWorkoutDurationAsync(Client client, DateOnly tillDate)
         {
-           var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate <= tillDate).ToListAsync();
+           var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate <= tillDate && w.ClientId == client.Id).ToListAsync();
 
             int meanDuration = (int)Math.Round(workoutsTillDate.Select(w => w.Duration).Average());
             return meanDuration;
