@@ -92,7 +92,7 @@ namespace ClientDashboard_API.Data
                 .OrderByDescending(w => w.SessionDate)
                 .FirstOrDefaultAsync();
 
-            int? daysFromLastSession = lastSession == null ? null : untilDate.Day - lastSession.SessionDate.Day;
+            int? daysFromLastSession = lastSession == null ? null : untilDate.DayNumber - lastSession.SessionDate.DayNumber;
             return daysFromLastSession;
 
         }
