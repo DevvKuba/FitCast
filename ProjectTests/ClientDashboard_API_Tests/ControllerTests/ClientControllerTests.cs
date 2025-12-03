@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly PaymentRepository _paymentRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly UnitOfWork _unitOfWork;
+        private readonly ClientDailyFeatureService _clientDailyFeatureService;
         private readonly ClientController _clientController;
 
         public ClientControllerTests()
@@ -43,7 +45,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _paymentRepository = new PaymentRepository(_context, _mapper);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository);
-            _clientController = new ClientController(_unitOfWork);
+            _clientController = new ClientController(_unitOfWork, _clientDailyFeatureService);
         }
 
         [Fact]

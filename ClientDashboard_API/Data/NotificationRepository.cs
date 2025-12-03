@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Data
                 Message = message,
                 ReminderType = reminderType,
                 SentThrough = sentThrough,
-                SentAt = DateTime.UtcNow
+                SentAt = DateTime.UtcNow,
             };
             await context.Notification.AddAsync(newNotification);
         }
