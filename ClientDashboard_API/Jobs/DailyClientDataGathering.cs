@@ -13,13 +13,15 @@ namespace ClientDashboard_API.Jobs
             foreach(Trainer trainer in trainers)
             {
                 var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
-
-                foreach(Client client in trainerClients)
+                
+                foreach (Client client in trainerClients)
                 {
                     await dailyService.ExecuteClientDailyGatheringAsync(client);
 
                     client.DailySteps = 0;
                 }
+
+                Console.WriteLine($"Gathered Daily Data for: {trainerClients.Count} clients under trainer: {trainer.FirstName} at: {DateTime.UtcNow}");
             }
 
             await unitOfWork.Complete();
