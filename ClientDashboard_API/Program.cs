@@ -84,8 +84,8 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(clientDataJobKey)
                 .WithIdentity("DailyClientDataGathering-trigger")
-                .WithCronSchedule("0 0 0 * * ?")
-                .WithDescription("Runs daily at midnight - 12AM to gather Client Feature Data"));
+                .WithCronSchedule("0 5 0 * * ?")
+                .WithDescription("Runs daily 5 minutes past midnight - 12:05AM to gather Client Feature Data"));
 
             });
 
