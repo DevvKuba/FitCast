@@ -70,21 +70,8 @@ namespace ClientDashboard_API.Jobs
                             }
                         }
 
-                        logger.LogInformation(
-                            "Completed processing for trainer {TrainerName} (ID: {TrainerId}). Success: {SuccessCount}, Failed: {FailedCount}, Total: {TotalCount} at {Time} UTC",
-                            trainer.FirstName, trainer.Id, clientsProcessed, clientsFailed, trainerClients.Count, DateTime.UtcNow);
-
-                        // Attempt to save changes
-                        logger.LogInformation("Attempting to save changes for trainer: {TrainerName}. Total processed: {TotalProcessed}, Total failed: {TotalFailed}",
-                            trainer.FirstName, totalProcessed, totalFailed);
-
-                        if (!await unitOfWork.Complete())
-                        {
-                            logger.LogInformation(
-                                "DailyClientDataGathering NO clients to save. Gathered client data for trainer: {TrainerName} at {Time} UTC. Processed: {TotalProcessed}, Failed: {TotalFailed}",
-                                trainer.FirstName, DateTime.UtcNow, totalProcessed, totalFailed);
-                        }
-
+                        await unitOfWork.Complete();
+                        
                         logger.LogInformation(
                             "DailyClientDataGathering clients SAVED successfully for trainer: {TrainerName} at {EndTime} UTC. Total processed: {TotalProcessed}, Total failed: {TotalFailed}",
                             trainer.FirstName ,DateTime.UtcNow, totalProcessed, totalFailed);
