@@ -83,8 +83,6 @@ namespace ClientDashboard_API.Jobs
                             logger.LogInformation(
                                 "DailyClientDataGathering NO clients to save. Gathered client data for trainer: {TrainerName} at {Time} UTC. Processed: {TotalProcessed}, Failed: {TotalFailed}",
                                 trainer.FirstName, DateTime.UtcNow, totalProcessed, totalFailed);
-
-                            throw new Exception($"Failed to save changes to database. Processed: {totalProcessed}, Failed: {totalFailed}");
                         }
 
                         logger.LogInformation(
