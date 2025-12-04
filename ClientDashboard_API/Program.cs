@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
+using System.Globalization;
 using System.Text;
 
 namespace ClientDashboard_API
@@ -14,6 +15,11 @@ namespace ClientDashboard_API
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            var cultureInfo = new CultureInfo("en-GB");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             builder.Services.AddApplicationServices(builder.Configuration);
 
             builder.Services.AddCors(options =>
