@@ -62,7 +62,7 @@ namespace ClientDashboard_API.Data
         {
             var updatedData = new ClientUpdateDto
             {
-                FirstName = newClientName,
+                FirstName = newClientName.ToLower(),
                 IsActive = newActivity,
                 CurrentBlockSession = newCurrentSession,
                 TotalBlockSessions = newTotalSessions
