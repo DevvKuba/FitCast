@@ -29,7 +29,7 @@
   <!-- Delete Dialog - Moved outside table -->
   <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">
-      <span class="p-text-secondary block mb-8">Are you sure you want to delete client {{deleteClientName}} from your table?</span>
+      <span class="p-text-secondary block mb-8">Are you sure you want to delete {{deleteClientName}} from your client table?</span>
     </div>
       <div class="flex justify-end gap-2">
           <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
@@ -200,7 +200,7 @@
                         pRipple
                         type="button"
                         icon="pi pi-trash"
-                        (click)="showDialogForDelete(client.id, client.name)"
+                        (click)="showDialogForDelete(client.id, client.firstName)"
                         text
                         rounded
                         severity="secondary"
