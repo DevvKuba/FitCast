@@ -26,7 +26,12 @@ namespace ClientDashboard_API
             {
                 options.AddPolicy("AllowSelectiveOrigins", b =>
                 {
-                    b.WithOrigins("http://localhost:4200", "https://localhost:4200")
+                    b.WithOrigins(
+                        "http://localhost:4200",
+                        "https://localhost:4200",
+                        "https://fitcast.uk",
+                        "https://www.fitcast.uk"
+                        )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
@@ -137,8 +142,21 @@ namespace ClientDashboard_API
 
             app.MapControllers();
 
-            // fallback routing for Angular
-            app.MapFallbackToFile("index.html");
+            // Fallback to Angular SPA ONLY for non-API routes
+            // This prevents /api/* routes from being caught by the SPA fallback
+            app.MapFallback(context =>
+            {
+                // Don't intercept API calls
+                if (context.Request.Path.StartsWithSegments("/api"))
+                {
+                    context.Response.StatusCode = 404;
+                    return Task.CompletedTask;
+                }
+
+                // Serve Angular index.html for all other routes
+                context.Response.ContentType = "text/html";
+                return context.Response.SendFileAsync("wwwroot/index.html");
+            });
             app.Run();
         }
     }
