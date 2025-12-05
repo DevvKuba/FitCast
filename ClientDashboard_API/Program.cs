@@ -98,6 +98,22 @@ namespace ClientDashboard_API
 
             var app = builder.Build();
 
+            // allows for http redirection from old / default to custom domain
+            app.Use(async (context, next) =>
+            {
+                var host = context.Request.Host.Host.ToLower();
+
+                // Redirect from Azure default domain to custom domain
+                if (host.Contains("azurewebsites.net"))
+                {
+                    var newUrl = $"https://fitcast.uk{context.Request.Path}{context.Request.QueryString}";
+                    context.Response.Redirect(newUrl, permanent: true);
+                    return;
+                }
+
+                await next();
+            });
+
             app.MapGet("/google45f9e3f493489c5e.html",
                 () => Results.Content("google-site-verification: google45f9e3f493489c5e.html", "text/plain"));
 
@@ -131,8 +147,25 @@ namespace ClientDashboard_API
                 });
             }
 
-            // Enable serving static files from wwwroot
-            app.UseStaticFiles();
+            // Enable serving static files from wwwroot with cache control
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    // Cache static assets (JS, CSS) for 1 year since they have hashes
+                    if (ctx.File.Name.EndsWith(".js") || ctx.File.Name.EndsWith(".css"))
+                    {
+                        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=31536000,immutable");
+                    }
+                    // Don't cache index.html
+                    else if (ctx.File.Name == "index.html")
+                    {
+                        ctx.Context.Response.Headers.Append("Cache-Control", "no-cache,no-store,must-revalidate");
+                        ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+                        ctx.Context.Response.Headers.Append("Expires", "0");
+                    }
+                }
+            });
             app.UseHttpsRedirection();
             app.UseCors("AllowSelectiveOrigins");
             // Authentication should come before Authorization
