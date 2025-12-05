@@ -210,7 +210,7 @@ export class ClientPaymentsComponent implements OnInit {
           // add clientName property to each element
           this.payments = response.data.map((payment : Payment) => ({
             ...payment,
-            clientName: this.clients.find(c => c.id === payment.clientId)?.name || `Client: #${payment.clientId}`
+            clientName: this.clients.find(c => c.id === payment.clientId)?.name || `Deleted Client`
           }));
         },
         error: (response) => {

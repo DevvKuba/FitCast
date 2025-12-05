@@ -25,7 +25,8 @@ namespace ClientDashboard_API.Services
             messageOptions.Body = $"{clientName}'s monthly sessions have come to an end,\n" +
                 $"remember to message them in regards of a new payment.";
 
-            var message = MessageResource.Create(messageOptions);
+            // No notifications for pipeline usage
+            //var message = MessageResource.Create(messageOptions);
         }
 
 
