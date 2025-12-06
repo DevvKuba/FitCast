@@ -25,9 +25,11 @@ namespace ClientDashboard_API.Data
             return await context.Trainer.ToListAsync();
         }
 
-        public Task<List<Trainer>> GetAllTrainersEligibleForRevenueTrackingAsync()
+        public async Task<List<Trainer>> GetAllTrainersEligibleForRevenueTrackingAsync()
         {
-            throw new NotImplementedException();
+            var cutOffDate = DateTime.UtcNow.AddDays(-30);
+
+            return await context.Trainer.Where(t => t.CreatedAt <= cutOffDate).ToListAsync();
         }
 
 
