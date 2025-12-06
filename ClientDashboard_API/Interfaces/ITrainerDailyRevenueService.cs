@@ -13,5 +13,7 @@ namespace ClientDashboard_API.Interfaces
         int ReturnMonthlyClientSessionsThusFar(Trainer trainer, DateOnly startDate, DateOnly endDate);
 
         DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate);
+
+        DateOnly GatherLastDayOfPreviousMonth(DateOnly currentDate);
     }
 }

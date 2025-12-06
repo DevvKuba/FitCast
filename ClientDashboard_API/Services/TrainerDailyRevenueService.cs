@@ -32,6 +32,8 @@ namespace ClientDashboard_API.Services
             var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
             var totalSessionWithMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
+            var newClientsThisMonth = 
+
         }
 
         public decimal CalculateTotalClientGeneratedRevenueAtDate(Trainer trainer, DateOnly dateForSessions)
@@ -67,5 +69,10 @@ namespace ClientDashboard_API.Services
             return firstDayOfGivenMonth;
         }
 
+        public DateOnly GatherLastDayOfPreviousMonth(DateOnly currentDate)
+        {
+           var lastDayOfPreviousMonth = new DateOnly(currentDate.Year, currentDate.Month - 1, -1);
+            return lastDayOfPreviousMonth;
+        }
     }
 }
