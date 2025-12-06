@@ -5,6 +5,7 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerDailyRevenueService(IUnitOfWork unitOfWork) : ITrainerDailyRevenueService
     {
+
         // revenue today would just be getting all confirmed trainer payments form todays Date
         // retrieving their amount
 
@@ -21,9 +22,22 @@ namespace ClientDashboard_API.Services
 
         // average session price just takes the trainers set price - no need for excessive calculations
 
-        public Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer)
+        public async Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer)
         {
-            throw new NotImplementedException();
+            var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            var trainerClients = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainer.Id);
+
+            var totalRevenueToday = CalculateTotalDailyClientGeneratedRevenue(trainer, trainerClients!.Clients, todaysDate);
+
+        }
+
+        public decimal CalculateTotalDailyClientGeneratedRevenue(Trainer trainer, List<Client> clients, DateOnly dateForSessions)
+        {
+            var clientsWorkouts = clients.Select(c => c.Workouts).ToList();
+
+            var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate == dateForSessions)).ToList();
+
+            return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
         }
 
         public DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate)
@@ -31,5 +45,7 @@ namespace ClientDashboard_API.Services
             var firstDayOfGivenMonth = new DateOnly(currentDate.Year, currentDate.Month, 1);
             return firstDayOfGivenMonth;
         }
+
+
     }
 }
