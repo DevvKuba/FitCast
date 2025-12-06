@@ -30,6 +30,7 @@ namespace ClientDashboard_API.Services
             var totalRevenueToday = CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
 
             var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
+            var totalSessionWithMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
         }
 
@@ -51,12 +52,20 @@ namespace ClientDashboard_API.Services
             return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
         }
 
+        public int ReturnMonthlyClientSessionsThusFar(Trainer trainer, DateOnly startDate, DateOnly endDate)
+        {
+            var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
+
+            var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate)).ToList();
+
+            return workoutsToday.Count;
+        }
+
         public DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate)
         {
             var firstDayOfGivenMonth = new DateOnly(currentDate.Year, currentDate.Month, 1);
             return firstDayOfGivenMonth;
         }
 
-        
     }
 }
