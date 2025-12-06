@@ -100,20 +100,20 @@ namespace ClientDashboard_API
             var app = builder.Build();
 
             // allows for http redirection from old / default to custom domain
-            //app.Use(async (context, next) =>
-            //{
-            //    var host = context.Request.Host.Host.ToLower();
+            app.Use(async (context, next) =>
+            {
+                var host = context.Request.Host.Host.ToLower();
 
-            //    // Redirect from Azure default domain to custom domain
-            //    if (host.Contains("azurewebsites.net"))
-            //    {
-            //        var newUrl = $"https://fitcast.uk{context.Request.Path}{context.Request.QueryString}";
-            //        context.Response.Redirect(newUrl, permanent: true);
-            //        return;
-            //    }
+                // Redirect from Azure default domain to custom domain
+                if (host.Contains("azurewebsites.net"))
+                {
+                    var newUrl = $"https://fitcast.uk{context.Request.Path}{context.Request.QueryString}";
+                    context.Response.Redirect(newUrl, permanent: true);
+                    return;
+                }
 
-            //    await next();
-            //});
+                await next();
+            });
 
             app.MapGet("/google45f9e3f493489c5e.html",
                 () => Results.Content("google-site-verification: google45f9e3f493489c5e.html", "text/plain"));
