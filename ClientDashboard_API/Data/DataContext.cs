@@ -46,6 +46,11 @@ namespace ClientDashboard_API.Data
                 .ValueGeneratedOnAdd()
                 .UseIdentityColumn(1, 1);
 
+            builder.Entity<UserBase>()
+                .Property(u => u.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()")
+                .ValueGeneratedOnAdd();
+
 
             builder.Entity<Trainer>()
                 .Property(t => t.AverageSessionPrice)

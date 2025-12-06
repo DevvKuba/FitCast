@@ -25,6 +25,11 @@ namespace ClientDashboard_API.Data
             return await context.Trainer.ToListAsync();
         }
 
+        public Task<List<Trainer>> GetAllTrainersEligibleForRevenueTrackingAsync()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async Task<Trainer?> GetTrainerWithClientsByIdAsync(int id)
         {
@@ -95,5 +100,6 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
+
     }
 }
