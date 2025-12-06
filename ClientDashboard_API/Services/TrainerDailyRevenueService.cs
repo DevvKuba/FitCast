@@ -27,12 +27,13 @@ namespace ClientDashboard_API.Services
             var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
             var firstDayOfTodaysMonth = GatherFirstDayOfCurrentMonth(todaysDate);
 
+
             var totalRevenueToday = CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
 
             var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
             var totalSessionWithMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
-            var newClientsThisMonth = 
+            var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
 
         }
 
@@ -54,6 +55,18 @@ namespace ClientDashboard_API.Services
             return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
         }
 
+        public int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate)
+        {
+            var lastDayOfPreviousMonth = new DateOnly(currentDate.Year, currentDate.Month - 1, -1);
+            var clientsLastMonth = trainer.Clients.Where(c => DateOnly.FromDateTime(c.CreatedAt) <= lastDayOfPreviousMonth).Count();
+
+            var clientsThisMonth = trainer.Clients.Count;
+
+            return clientsThisMonth - clientsLastMonth;
+
+    
+        }
+
         public int ReturnMonthlyClientSessionsThusFar(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
             var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
@@ -69,10 +82,5 @@ namespace ClientDashboard_API.Services
             return firstDayOfGivenMonth;
         }
 
-        public DateOnly GatherLastDayOfPreviousMonth(DateOnly currentDate)
-        {
-           var lastDayOfPreviousMonth = new DateOnly(currentDate.Year, currentDate.Month - 1, -1);
-            return lastDayOfPreviousMonth;
-        }
     }
 }
