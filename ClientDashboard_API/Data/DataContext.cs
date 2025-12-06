@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Data
 
         public DbSet<Notification> Notification { get; set; }
 
-        public DbSet<MonthlyTrainerRevenue> MonthlyTrainerRevenue { get; set; }
+        public DbSet<TrainerDailyRevenue> TrainerDailyRevenue { get; set; }
 
         public DbSet<ClientDailyFeature> ClientDailyFeature { get; set; }
 
@@ -36,7 +36,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<Workout>().ToTable("Workouts");
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
-            builder.Entity<MonthlyTrainerRevenue>().ToTable("MonthlyTrainerRevenues");
+            builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
 
@@ -60,12 +60,16 @@ namespace ClientDashboard_API.Data
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
 
-            builder.Entity<MonthlyTrainerRevenue>()
+            builder.Entity<TrainerDailyRevenue>()
                 .Property(m => m.AverageSessionPrice)
                 .HasPrecision(18, 2);
 
-            builder.Entity<MonthlyTrainerRevenue>()
-                .Property(m => m.MonthlyRevenue)
+            builder.Entity<TrainerDailyRevenue>()
+                .Property(m => m.MonthlyRevenueThusFar)
+                .HasPrecision(18, 2);
+
+            builder.Entity<TrainerDailyRevenue>()
+                .Property(m => m.RevenueToday)
                 .HasPrecision(18, 2);
 
             builder.Entity<ClientDailyFeature>()
@@ -103,7 +107,7 @@ namespace ClientDashboard_API.Data
                 .IsRequired(false);
 
             builder.Entity<Trainer>()
-                .HasMany<MonthlyTrainerRevenue>()
+                .HasMany<TrainerDailyRevenue>()
                 .WithOne(t => t.Trainer)
                 .HasForeignKey(t => t.TrainerId)
                 .OnDelete(DeleteBehavior.Cascade)

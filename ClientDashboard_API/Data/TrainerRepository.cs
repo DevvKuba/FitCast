@@ -27,7 +27,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Trainer>> GetAllTrainersEligibleForRevenueTrackingAsync()
         {
-            var cutOffDate = DateTime.UtcNow.AddDays(-30);
+            var cutOffDate = DateTime.UtcNow.AddDays(-14);
 
             return await context.Trainer.Where(t => t.CreatedAt <= cutOffDate).ToListAsync();
         }
