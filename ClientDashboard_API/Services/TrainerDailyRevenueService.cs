@@ -25,17 +25,28 @@ namespace ClientDashboard_API.Services
         public async Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer)
         {
             var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            var trainerClients = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainer.Id);
+            var firstDayOfTodaysMonth = GatherFirstDayOfCurrentMonth(todaysDate);
 
-            var totalRevenueToday = CalculateTotalDailyClientGeneratedRevenue(trainer, trainerClients!.Clients, todaysDate);
+            var totalRevenueToday = CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
+
+            var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
 
         }
 
-        public decimal CalculateTotalDailyClientGeneratedRevenue(Trainer trainer, List<Client> clients, DateOnly dateForSessions)
+        public decimal CalculateTotalClientGeneratedRevenueAtDate(Trainer trainer, DateOnly dateForSessions)
         {
-            var clientsWorkouts = clients.Select(c => c.Workouts).ToList();
+            var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
 
             var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate == dateForSessions)).ToList();
+
+            return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
+        }
+
+        public decimal CalculateTotalClientGeneratedRevenueBetweenDates(Trainer trainer, DateOnly startDate, DateOnly endDate)
+        {
+            var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
+
+            var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate)).ToList();
 
             return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
         }
@@ -46,6 +57,6 @@ namespace ClientDashboard_API.Services
             return firstDayOfGivenMonth;
         }
 
-
+        
     }
 }

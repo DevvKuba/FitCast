@@ -6,7 +6,9 @@ namespace ClientDashboard_API.Interfaces
     {
         Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer);
 
-        decimal CalculateTotalDailyClientGeneratedRevenue(Trainer trainer, List<Client> clients, DateOnly dateForSessions);
+        decimal CalculateTotalClientGeneratedRevenueAtDate(Trainer trainer, DateOnly dateForSessions);
+
+        decimal CalculateTotalClientGeneratedRevenueBetweenDates(Trainer trainer, DateOnly startDate, DateOnly endDate);
 
         DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate);
     }
