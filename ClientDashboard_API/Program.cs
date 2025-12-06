@@ -102,10 +102,10 @@ namespace ClientDashboard_API
             // allows for http redirection from old / default to custom domain
             app.Use(async (context, next) =>
             {
-                var host = context.Request.Host.Host.ToLower();
+                var host = context.Request.Host.Host;
 
                 // Redirect from Azure default domain to custom domain
-                if (host.Contains("azurewebsites.net"))
+                if (host.EndsWith("azurewebsites.net", StringComparison.OrdinalIgnoreCase))
                 {
                     var newUrl = $"https://fitcast.uk{context.Request.Path}{context.Request.QueryString}";
                     context.Response.Redirect(newUrl, permanent: true);
