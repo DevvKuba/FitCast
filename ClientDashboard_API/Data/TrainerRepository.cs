@@ -57,6 +57,16 @@ namespace ClientDashboard_API.Data
             return clientList;
         }
 
+        public async Task<List<Client>> GetTrainerActiveClientsAsync(Trainer trainer)
+        {
+            var clientList = await context.Client
+                .Include(x => x.Workouts)
+                .Where(x => x.Trainer == trainer
+                 && x.IsActive == true)
+                .ToListAsync();
+            return clientList;
+        }
+
         public void AssignClient(Trainer trainer, Client client)
         {
             client.TrainerId = trainer.Id;
@@ -102,6 +112,5 @@ namespace ClientDashboard_API.Data
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
-
     }
 }
