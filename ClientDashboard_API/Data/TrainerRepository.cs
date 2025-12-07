@@ -29,7 +29,10 @@ namespace ClientDashboard_API.Data
         {
             var cutOffDate = DateTime.UtcNow.AddDays(-14);
 
-            return await context.Trainer.Where(t => t.CreatedAt <= cutOffDate).ToListAsync();
+            return await context.Trainer.Where(t => t.CreatedAt <= cutOffDate)
+                .Include(t => t.Clients)
+                .ThenInclude(c => c.Workouts)
+                .ToListAsync();
         }
 
 
