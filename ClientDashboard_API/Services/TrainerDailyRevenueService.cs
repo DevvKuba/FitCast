@@ -78,7 +78,6 @@ namespace ClientDashboard_API.Services
         {
             var lastDayOfPreviousMonth = currentDate.AddDays(-currentDate.Day);
 
-            // FIX
             var clientsLastMonth = trainer.Clients.Where(c => DateOnly.FromDateTime(c.CreatedAt) <= lastDayOfPreviousMonth).Count();
 
             var clientsThisMonth = trainer.Clients.Count;
