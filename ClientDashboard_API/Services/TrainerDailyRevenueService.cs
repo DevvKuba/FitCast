@@ -77,6 +77,8 @@ namespace ClientDashboard_API.Services
         public int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate)
         {
             var lastDayOfPreviousMonth = currentDate.AddDays(-currentDate.Day);
+
+            // FIX
             var clientsLastMonth = trainer.Clients.Where(c => DateOnly.FromDateTime(c.CreatedAt) <= lastDayOfPreviousMonth).Count();
 
             var clientsThisMonth = trainer.Clients.Count;

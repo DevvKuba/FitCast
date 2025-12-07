@@ -100,7 +100,7 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(trainerRevenueJobKey)
                 .WithIdentity("DailyTrainerRevenueGathering-trigger")
-                .WithCronSchedule("0 42 19 * * ?")
+                .WithCronSchedule("0 50 19 * * ?")
                 .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
 
             });

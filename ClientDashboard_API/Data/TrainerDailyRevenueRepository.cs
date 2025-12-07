@@ -10,6 +10,7 @@ namespace ClientDashboard_API.Data
         {
             var trainerRevenueRecord = new TrainerDailyRevenue
             {
+                TrainerId = trainerInfo.TrainerId,
                 RevenueToday = trainerInfo.RevenueToday,
                 MonthlyRevenueThusFar = trainerInfo.MonthlyRevenueThusFar,
                 TotalSessionsThisMonth = trainerInfo.TotalSessionsThisMonth,
