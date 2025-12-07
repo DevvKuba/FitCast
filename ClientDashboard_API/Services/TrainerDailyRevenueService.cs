@@ -32,7 +32,7 @@ namespace ClientDashboard_API.Services
             var totalRevenueToday = CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
 
             var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
-            var totalSessionThisMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
+            var totalSessionsThisMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
 
@@ -43,7 +43,7 @@ namespace ClientDashboard_API.Services
                 TrainerId = trainer.Id,
                 RevenueToday = totalRevenueToday,
                 MonthlyRevenueThusFar = monthlyRevenueThusFar,
-                TotalSessionsThisMonth = totalSessionThisMonth,
+                TotalSessionsThisMonth = totalSessionsThisMonth,
                 NewClientsThisMonth = newClientsThisMonth,
                 ActiveClients = currentActiveClientsList.Count,
                 AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
@@ -66,6 +66,7 @@ namespace ClientDashboard_API.Services
 
         public decimal CalculateTotalClientGeneratedRevenueBetweenDates(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
+            // just looking at workouts not payments ? think about 
             var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
 
             var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate)).ToList();
@@ -75,7 +76,7 @@ namespace ClientDashboard_API.Services
 
         public int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate)
         {
-            var lastDayOfPreviousMonth = new DateOnly(currentDate.Year, currentDate.Month - 1, -1);
+            var lastDayOfPreviousMonth = currentDate.AddDays(-currentDate.Day);
             var clientsLastMonth = trainer.Clients.Where(c => DateOnly.FromDateTime(c.CreatedAt) <= lastDayOfPreviousMonth).Count();
 
             var clientsThisMonth = trainer.Clients.Count;
