@@ -20,6 +20,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly NotificationRepository _notificationRepository;
         private readonly PaymentRepository _paymentRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
+        private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly TwillioMessageService _messageService;
         private readonly NotificationService _notificationService;
         private readonly AutoPaymentCreationService _autoPaymentCreationService;
@@ -47,7 +48,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _notificationRepository = new NotificationRepository(_context);
             _paymentRepository = new PaymentRepository(_context, _mapper);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository);
+            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository);
             _messageService = new TwillioMessageService();
             _notificationService = new NotificationService(_unitOfWork, _messageService);
             _autoPaymentCreationService = new AutoPaymentCreationService(_unitOfWork);

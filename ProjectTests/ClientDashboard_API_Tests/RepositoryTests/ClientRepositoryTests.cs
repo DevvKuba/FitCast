@@ -16,6 +16,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly NotificationRepository _notificationRepository;
         private readonly PaymentRepository _paymentRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
+        private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly UnitOfWork _unitOfWork;
 
         public ClientRepositoryTests()
@@ -38,7 +39,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _notificationRepository = new NotificationRepository(_context);
             _paymentRepository = new PaymentRepository(_context, _mapper);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository);
+            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository);
 
         }
 
