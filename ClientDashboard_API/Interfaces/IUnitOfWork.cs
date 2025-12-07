@@ -14,6 +14,8 @@
 
         IClientDailyFeatureRepository ClientDailyFeatureRepository { get; }
 
+        ITrainerDailyRevenueRepository TrainerDailyRevenueRepository { get; }
+
         Task<bool> Complete();
 
         bool HasChanges();
