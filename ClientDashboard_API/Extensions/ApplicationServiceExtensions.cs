@@ -36,6 +36,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ITrainerLoginService, TrainerLoginService>();
             services.AddScoped<IAutoPaymentCreationService, AutoPaymentCreationService>();
             services.AddScoped<IClientDailyFeatureService, ClientDailyFeatureService>();
+            services.AddScoped<ITrainerDailyRevenueService, TrainerDailyRevenueService>();
 
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
