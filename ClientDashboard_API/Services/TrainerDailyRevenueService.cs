@@ -50,7 +50,8 @@ namespace ClientDashboard_API.Services
                 AsOfDate = todaysDate
             };
 
-
+            await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
+            await unitOfWork.Complete();
 
         }
 
