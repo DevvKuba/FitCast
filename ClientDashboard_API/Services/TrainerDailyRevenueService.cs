@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
@@ -31,9 +32,25 @@ namespace ClientDashboard_API.Services
             var totalRevenueToday = CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
 
             var monthlyRevenueThusFar = CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
-            var totalSessionWithMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
+            var totalSessionThisMonth = ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
+
+            var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
+
+            var trainerInfo = new TrainerDailyDataAddDto
+            {
+                TrainerId = trainer.Id,
+                RevenueToday = totalRevenueToday,
+                MonthlyRevenueThusFar = monthlyRevenueThusFar,
+                TotalSessionsThisMonth = totalSessionThisMonth,
+                NewClientsThisMonth = newClientsThisMonth,
+                ActiveClients = currentActiveClientsList.Count,
+                AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
+                AsOfDate = todaysDate
+            };
+
+
 
         }
 
