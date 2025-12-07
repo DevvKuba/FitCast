@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Jobs
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            logger.LogInformation("DailyTrainerRevenueGathering process is beginning at: {DateToday}", DateOnly.FromDateTime(DateTime.UtcNow));
+            logger.LogInformation("DailyTrainerRevenueGathering process STARTING at: {DateToday}", DateOnly.FromDateTime(DateTime.UtcNow));
 
             var eligibleTrainers = await unitOfWork.TrainerRepository.GetAllTrainersEligibleForRevenueTrackingAsync();
 
@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Jobs
                 logger.LogDebug("Processed trainer: {TrainerName}'s revenue at: {DateToday}", trainer.FirstName, DateOnly.FromDateTime(DateTime.UtcNow));
             }
 
-            logger.LogInformation("DailyTrainerRevenueGathering process has finalised at: {DateToday}", DateOnly.FromDateTime(DateTime.UtcNow));
+            logger.LogInformation("DailyTrainerRevenueGathering process has FINALISED at: {DateToday}", DateOnly.FromDateTime(DateTime.UtcNow));
         }
     }
 }

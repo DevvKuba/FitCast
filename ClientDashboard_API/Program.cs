@@ -93,6 +93,16 @@ namespace ClientDashboard_API
                 .WithCronSchedule("0 5 0 * * ?")
                 .WithDescription("Runs daily 5 minutes past midnight - 12:05AM to gather Client Feature Data"));
 
+                var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
+
+                q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey));
+
+                q.AddTrigger(opts => opts
+                .ForJob(trainerRevenueJobKey)
+                .WithIdentity("DailyTrainerRevenueGathering-trigger")
+                .WithCronSchedule("0 10 * * ?")
+                .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data"));
+
             });
 
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
