@@ -179,6 +179,16 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     filterClientPayments(){
+      this.paymentService.filterOldClientPayments(this.currentUserId).subscribe({
+        next: (response) => {
+          this.toastService.showSuccess('Filtering Successful', response.message);
+          this.filterDialogVisible = false;
+          this.gatherAllTrainerPayments();
+        },
+        error: (response) => {
+          this.toastService.showError('Unsuccessful Filtering', response.error.message);
+        }
+      })
       
     }
 

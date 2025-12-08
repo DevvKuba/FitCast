@@ -24,6 +24,10 @@ export class PaymentService {
     return this.http.post(this.baseUrl + 'payment/addPayment', paymentInfo); 
   }
 
+  filterOldClientPayments(trainerId: number) : Observable<any> {
+    return this.http.delete(this.baseUrl + `payment/filterClientPayments?trainerId=${trainerId}`);
+  }
+
   deleteTrainerPayment(paymentId: number) : Observable<any> {
     return this.http.delete(this.baseUrl + `payment/deletePayment?paymentId=${paymentId}`)
   }

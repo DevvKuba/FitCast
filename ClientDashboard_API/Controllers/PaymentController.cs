@@ -92,22 +92,27 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpDelete("filterClientPayments")]
-        public async Task<ActionResult<ApiResponseDto<string>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
             if(trainer == null)
             {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"trainer was not found", Success = false });
+                return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"trainer was not found", Success = false });
             }
 
             var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
 
+            if(filteredPaymentCount == 0)
+            {
+                return NotFound(new ApiResponseDto<int?> { Data = 0, Message = $"no old client payments present to filter", Success = true });
+            }
+
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error filtering old trainer clients", Success = false });
+                return BadRequest(new ApiResponseDto<int?> { Data = null, Message = "error filtering old trainer clients", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"successfully filtered: {filteredPaymentCount} old client payments", Success = true });
+            return Ok(new ApiResponseDto<int?> { Data = filteredPaymentCount, Message = $"successfully filtered: {filteredPaymentCount} old client payments", Success = true });
 
         }
     }
