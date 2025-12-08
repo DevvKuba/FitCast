@@ -39,6 +39,17 @@
         </div>
     </p-dialog>
 
+     <!-- Filter Payment  Dialog -->
+    <p-dialog header="Filter  client payments" [modal]="true" [(visible)]="filterDialogVisible" [style]="{ width: '25rem' }">
+        <div class="flex justify-end gap-2">
+            <div class="delete-message">
+          <span class="p-text-secondary block mb-8">Are you sure you want to filter all old client payments?</span>
+        </div>
+            <p-button label="Cancel" severity="secondary" (click)="filterDialogVisible = false" />
+            <p-button label="Filter" severity="info" (click)="filterClientPayments()" />
+        </div>
+    </p-dialog>
+
     <!-- Auto Payment Setting Dialog -->
     <p-dialog header="Set up Automatic Client Payment creation" [modal]="true" [(visible)]="autoPaymentSettingVisible" [style]="{ width: '25rem' }">
         <div class="info-button-container">
@@ -104,6 +115,20 @@
             <div class="add-payment-button">
 
                 <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
+
+                <p-button
+                class="filter-payment-button"
+                pButton
+                pRipple
+                type="button"
+                icon="pi pi-trash"
+                (click)="showDialogForFilter()"
+                text
+                rounded
+                size="large"
+                severity="secondary">
+                </p-button>
+
                 <p-button
                 class="auto-setting-button"
                 pButton

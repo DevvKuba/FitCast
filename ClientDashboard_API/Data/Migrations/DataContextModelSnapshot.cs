@@ -169,7 +169,7 @@ namespace ClientDashboard_API.Data.Migrations
 
                     b.HasIndex("TrainerId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notification", (string)null);
                 });
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Payment", b =>

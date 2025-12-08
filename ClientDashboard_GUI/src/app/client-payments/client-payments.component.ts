@@ -45,6 +45,7 @@ export class ClientPaymentsComponent implements OnInit {
   toastService = inject(ToastService);
 
   addDialogVisible: boolean = false;
+  filterDialogVisible: boolean = false;
   deleteDialogVisible: boolean = false;
   autoPaymentSettingVisible: boolean = false;
 
@@ -175,7 +176,11 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showError('Error Updating Payment Setting', response.error.message)
         }
       })
-      }
+    }
+
+    filterClientPayments(){
+      
+    }
 
     resetForm() {
       this.selectedClient = {id: 0, name: ""};
@@ -193,6 +198,10 @@ export class ClientPaymentsComponent implements OnInit {
       this.addDialogVisible = true;
     }
 
+    showDialogForFilter(){
+      this.filterDialogVisible = true;
+    }
+
     showDialogForDelete(paymentId: number){
       // can use payment id to set a payment id variable then use 
       this.deleteDialogVisible = true;
@@ -203,14 +212,14 @@ export class ClientPaymentsComponent implements OnInit {
     showDialogForAutoPaymentSetting(){
       this.autoPaymentSettingVisible = true;
     }
-
+    
     gatherAllTrainerPayments(){
       this.paymentService.getTrainerPayments(this.currentUserId).subscribe({
         next: (response) => {
           // add clientName property to each element
           this.payments = response.data.map((payment : Payment) => ({
             ...payment,
-            clientName: this.clients.find(c => c.id === payment.clientId)?.name || `Deleted Client`
+            clientName: this.clients.find(c => c.id === payment.clientId)?.name || `Removed Client`
           }));
         },
         error: (response) => {
