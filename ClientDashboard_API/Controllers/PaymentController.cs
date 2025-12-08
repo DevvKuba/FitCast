@@ -101,13 +101,13 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"trainer was not found", Success = false });
             }
 
-            await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
+            var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
 
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error filtering old trainer clients", Success = false });
             }
-            return Ok(new ApiResponseDto<string> {Data = trainer.FirstName, Message = "successfully filtered " })
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"successfully filtered: {filteredPaymentCount} old client payments", Success = true });
 
         }
     }
