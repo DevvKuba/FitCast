@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Services
 
             var daysSinceLastSession = await unitOfWork.WorkoutRepository.GetDaysFromLastSessionAsync(client, currentDate);
             // similar case may need to make RemainingSessions nullable since clients can actually have TotalBlockSessions as nullable
-            var remainingSessions = client.TotalBlockSessions = client.CurrentBlockSession;
+            var remainingSessions = client.TotalBlockSessions - client.CurrentBlockSession;
 
             // this one is nullable but should probably just be set to an int and decalred as 0
 
