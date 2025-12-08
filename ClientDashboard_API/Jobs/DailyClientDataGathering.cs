@@ -49,7 +49,6 @@ namespace ClientDashboard_API.Jobs
                             try
                             {
                                 await dailyService.ExecuteClientDailyGatheringAsync(client);
-                                client.DailySteps = 0;
 
                                 clientsProcessed++;
                                 totalProcessed++;
@@ -70,8 +69,6 @@ namespace ClientDashboard_API.Jobs
                             }
                         }
 
-                        await unitOfWork.Complete();
-                        
                         logger.LogInformation(
                             "DailyClientDataGathering clients SAVED successfully for trainer: {TrainerName} at {EndTime} UTC. Total processed: {TotalProcessed}, Total failed: {TotalFailed}",
                             trainer.FirstName ,DateTime.UtcNow, totalProcessed, totalFailed);

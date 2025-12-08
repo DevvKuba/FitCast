@@ -39,6 +39,10 @@ namespace ClientDashboard_API.Services
             };
 
             await unitOfWork.ClientDailyFeatureRepository.AddNewRecordAsync(clientDailyDataInfo);
+
+            // reset client daily steps
+            client.DailySteps = 0;
+
             await unitOfWork.Complete();
         }
     }
