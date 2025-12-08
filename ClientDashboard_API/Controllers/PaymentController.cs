@@ -98,21 +98,21 @@ namespace ClientDashboard_API.Controllers
 
             if(trainer == null)
             {
-                return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"trainer was not found", Success = false });
+                return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"Trainer was not found", Success = false });
             }
 
             var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
 
             if(filteredPaymentCount == 0)
             {
-                return NotFound(new ApiResponseDto<int?> { Data = 0, Message = $"no old client payments present to filter", Success = true });
+                return Ok(new ApiResponseDto<int?> { Data = 0, Message = $"No old client payments present to filter", Success = true });
             }
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<int?> { Data = null, Message = "error filtering old trainer clients", Success = false });
+                return BadRequest(new ApiResponseDto<int?> { Data = null, Message = "Error filtering old trainer clients", Success = false });
             }
-            return Ok(new ApiResponseDto<int?> { Data = filteredPaymentCount, Message = $"successfully filtered: {filteredPaymentCount} old client payments", Success = true });
+            return Ok(new ApiResponseDto<int?> { Data = filteredPaymentCount, Message = $"Successfully filtered: {filteredPaymentCount} old client payment", Success = true });
 
         }
     }
