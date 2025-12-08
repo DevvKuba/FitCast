@@ -94,6 +94,20 @@ namespace ClientDashboard_API.Controllers
         [HttpDelete("filterClientPayments")]
         public async Task<ActionResult<ApiResponseDto<string>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if(trainer == null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"trainer was not found", Success = false });
+            }
+
+            await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error filtering old trainer clients", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> {Data = trainer.FirstName, Message = "successfully filtered " })
 
         }
     }
