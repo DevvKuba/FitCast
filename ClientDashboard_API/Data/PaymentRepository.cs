@@ -84,6 +84,17 @@ namespace ClientDashboard_API.Data
             await context.Payments.AddAsync(payment);
         }
 
+        public async Task FilterOldClientPaymentsAsync(Trainer trainer)
+        {
+            var oldPayments = await context.Payments.Where(p => p.ClientId == null).ToListAsync();
+
+            foreach(Payment oldPayment in oldPayments)
+            {
+                context.Remove(oldPayment);
+            }
+
+        }
+
         public void DeletePayment(Payment payment)
         {
             context.Remove(payment);

@@ -90,5 +90,11 @@ namespace ClientDashboard_API.Controllers
             }
             return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} and their client: {payment.Client!.FirstName} has been deleted successfully", Success = true });
         }
+
+        [HttpDelete("filterClientPayments")]
+        public async Task<ActionResult<ApiResponseDto<string>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
+        {
+
+        }
     }
 }
