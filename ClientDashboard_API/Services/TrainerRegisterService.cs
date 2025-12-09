@@ -12,7 +12,8 @@ namespace ClientDashboard_API.Services
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
         {
             // check if any fields are empty
-            if (request.FirstName.Length is 0 || request.Surname.Length is 0 || request.Password.Length is 0 || request.Email.Length is 0)
+            if (request.FirstName.Length is 0 || request.Surname.Length is 0 || request.Password.Length is 0 
+                || request.Email.Length is 0 || request.PhoneNumber.Length is 0 || request.UserType is null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
@@ -22,19 +23,36 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = "The email is already in use", Success = false };
             }
 
-            var trainer = new Trainer
+            // email / sms verification step
+
+            if (request.UserType == "trainer")
             {
-                Email = request.Email,
-                FirstName = request.FirstName,
-                Surname = request.Surname,
-                PasswordHash = passwordHasher.Hash(request.Password)
-            };
+                var trainer = new Trainer
+                {
+                    FirstName = request.FirstName,
+                    Surname = request.Surname,
+                    Email = request.Email,
+                    PasswordHash = passwordHasher.Hash(request.Password)
+                };
 
-            await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
+                await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
+                return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
+            }
+            else
+            {
+                var client = new Client
+                {
+                    FirstName = request.FirstName,
+                    Surname = request.Surname,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    PasswordHash = passwordHasher.Hash(request.Password)
+                };
 
-            // email verification 
+                await unitOfWork.ClientRepository.AddNewClientUserAsync(client, request.ClientsTrainerId);
 
-            return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
+                return new ApiResponseDto<string> { Data = client.FirstName, Message = $"{client.FirstName} successfully added", Success = true };
+            }
         }
     }
 }

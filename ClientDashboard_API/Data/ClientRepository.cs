@@ -164,7 +164,7 @@ namespace ClientDashboard_API.Data
         }
 
         // eventually when pipeline is no longer needed, maybe trainerId a non-nullable type
-        public async Task<Client?> AddNewClientAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId)
+        public async Task<Client?> AddNewClientUnderTrainerAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
             var newClient = new Client
@@ -181,7 +181,24 @@ namespace ClientDashboard_API.Data
             await context.Client.AddAsync(newClient);
 
             return newClient;
+        }
 
+        public async Task<Client?> AddNewClientUserAsync(Client client, int trainerId)
+        {
+            var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
+            var newClient = new Client
+            {
+                FirstName = client.FirstName.ToLower(),
+                Surname = client.Surname ?? "".ToLower(),
+                PhoneNumber = client.PhoneNumber,
+                IsActive = true,
+                TrainerId = trainerId,
+                Trainer = trainer,
+            };
+
+            await context.Client.AddAsync(newClient);
+
+            return newClient;
         }
 
         public void RemoveClient(Client client)

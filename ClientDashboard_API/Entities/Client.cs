@@ -12,7 +12,6 @@
 
         public double? Weight { get; set; }
 
-
         public List<Workout> Workouts { get; set; } = [];
 
         public int? TrainerId { get; set; }

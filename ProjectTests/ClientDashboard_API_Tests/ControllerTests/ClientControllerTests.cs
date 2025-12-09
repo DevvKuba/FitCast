@@ -54,7 +54,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestCorrectlyGettingCurrentClientBlockSessionAsync()
         {
             // by default adding a new client sets their current session to 0
-            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8, null, null);
+            await _unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync("Rob", 8, null, null);
             await _unitOfWork.Complete();
 
             var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");
@@ -69,7 +69,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestIncorrectlyGettingCurrentClientBlockSessionAsync()
         {
             // by default adding a new client sets their current session to 0
-            await _unitOfWork.ClientRepository.AddNewClientAsync("Rob", 8, null, null);
+            await _unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync("Rob", 8, null, null);
             await _unitOfWork.Complete();
 
             var actionResult = await _clientController.GetCurrentClientBlockSessionAsync("Rob");

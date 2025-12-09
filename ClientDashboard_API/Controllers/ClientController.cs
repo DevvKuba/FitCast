@@ -239,7 +239,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} already exists in the database", Success = false });
             }
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(clientName, blockSessions, phoneNumber, trainerId);
+            await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, blockSessions, phoneNumber, trainerId);
 
             if (!await unitOfWork.Complete())
             {
@@ -256,7 +256,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
 
-            await unitOfWork.ClientRepository.AddNewClientAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.PhoneNumber, newClient.TrainerId);
+            await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.PhoneNumber, newClient.TrainerId);
 
             if (!await unitOfWork.Complete())
             {
