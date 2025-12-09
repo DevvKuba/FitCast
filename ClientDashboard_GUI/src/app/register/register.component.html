@@ -1,11 +1,6 @@
 <div class="register-form-container">
   <h1 class="header">Register Below</h1>
     <div class="register-field">
-        <p-iftalabel>
-          <input pInputText id="email" [(ngModel)]="email" />
-          <label>Email</label>
-        </p-iftalabel>
-      </div>
       <div class="register-field">
         <p-iftalabel>
           <input pInputText id="firstName" [(ngModel)]="firstName" />
@@ -18,12 +13,38 @@
           <label>Surname</label>
         </p-iftalabel>
       </div>
+       <div class="register-field">
+        <p-iftalabel>
+          <input pInputText id="email" [(ngModel)]="email" />
+          <label>Email</label>
+        </p-iftalabel>
+      </div>
+        <div class="register-field">
+        <p-iftalabel>
+          <input pInputText id="phoneNumber" [(ngModel)]="phoneNumber" />
+          <label>Phone Number</label>
+        </p-iftalabel>
+      </div>
       <div class="register-field">
         <p-iftalabel>
             <p-password [(ngModel)]="password" toggleMask="true"/>
             <label>Password</label>
         </p-iftalabel>
       </div>
+       <div class="register-field radio-section">
+        <label class="user-type-label">User Type</label>
+        <div class="radio-buttons">
+          <div class="radio-button" >
+              <p-radiobutton name="userType" value="trainer" [(ngModel)]="userType" inputId="1" />
+              <label for="1" class="ml-2 radio-label">Trainer</label>
+          </div>
+
+          <div class="radio-button">
+              <p-radiobutton name="userType" value="client" [(ngModel)]="userType" inputId="2" />
+              <label for="2" class="ml-2 radio-label">Client</label>
+          </div>
+        </div>
+       </div>
       <div class="button-container">
           <p-button class="register-button" label="Register" severity="success" (click)="trainerRegister(email, firstName, surname, password)"/>
           <p-button class="to-login-button" label="To Login" severity="secondary" routerLink="/login"/>

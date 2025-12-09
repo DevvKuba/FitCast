@@ -12,10 +12,12 @@ import { Toast } from 'primeng/toast';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
 import { Router, RouterLink } from '@angular/router';
+import { RadioButton } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-register',
-  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule, RouterLink],
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule,
+     FloatLabelModule, ButtonModule, RouterLink, RadioButton],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -24,10 +26,12 @@ export class RegisterComponent {
   toastService = inject(ToastService);
   router = inject(Router);
 
-  email: string = "";
   firstName: string = "";
   surname: string = "";
+  email: string = "";
+  phoneNumber: string = "";
   password: string = "";
+  userType: string = "";
 
   trainerRegister(trainerEmail: string, trainerFirstName: string, trainerSurname: string, trainerPassword: string){
     const registerInfo: RegisterDto = {
