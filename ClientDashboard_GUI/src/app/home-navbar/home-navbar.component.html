@@ -1,0 +1,9 @@
+@if(!accountService.currentUser()){
+    <p-menubar [model]="leftMenuItems">
+        <ng-template #end>
+            <div class="flex align-items-center gap-2">
+                <p-menubar [model]="rightMenuItems" [style]="{'border': 'none', 'background': 'transparent'}"></p-menubar>
+            </div>
+        </ng-template>
+    </p-menubar>
+}
