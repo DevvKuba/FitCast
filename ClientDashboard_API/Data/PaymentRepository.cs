@@ -78,8 +78,6 @@ namespace ClientDashboard_API.Data
                 NumberOfSessions = numberOfSessions,
                 PaymentDate = paymentDate,
                 Confirmed = confirmed ?? false
-                
-
             };
             await context.Payments.AddAsync(payment);
         }

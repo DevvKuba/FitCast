@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Navbar } from './navbar/navbar';
 import { Toast } from 'primeng/toast';
 import { AccountService } from './services/account.service';
+import { UserNavbar } from './user-navbar/user-navbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Toast],
+  imports: [RouterOutlet, UserNavbar, Toast],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

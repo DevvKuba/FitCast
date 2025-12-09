@@ -9,10 +9,10 @@ import { AccountService } from '../services/account.service';
   selector: 'app-navbar',
   imports: [Menubar],
   providers: [LoginComponent],
-  templateUrl: './navbar.html',
-  styleUrl: './navbar.css'
+  templateUrl: './user-navbar.html',
+  styleUrl: './user-navbar.css'
 })
-export class Navbar implements OnInit {
+export class UserNavbar implements OnInit {
   functionItems: MenuItem[] | undefined;
   generalItems: MenuItem[] | undefined;
  
