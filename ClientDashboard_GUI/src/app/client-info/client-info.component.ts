@@ -21,11 +21,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { RouterLink } from "@angular/router";
 import { UserDto } from '../models/dtos/user-dto';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { InputMask } from 'primeng/inputmask';
 
 @Component({
   selector: 'app-client-info',
   imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule,
-     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule],
+     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, InputMask],
   providers: [MessageService, ConfirmationService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'

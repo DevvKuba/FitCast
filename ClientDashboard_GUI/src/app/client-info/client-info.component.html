@@ -18,7 +18,7 @@
       </div>
        <div class="flex items-center gap-4 mb-4">
           <label for="phoneNumber" class="font-semibold w-24">Phone Number</label>
-          <input pInputText [(ngModel)]="newPhoneNumber" id="phoneNumber" class="flex-auto" autocomplete="off" />
+          <p-inputmask [(ngModel)]="newPhoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
       </div>
       <div class="flex justify-end gap-2">
           <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
@@ -42,14 +42,7 @@
     <span class="p-text-secondary block mb-4">Set {{editingClientName}}'s phone number below:</span>
     <div class="flex items-center gap-4 mb-8">
         <label for="phoneNumber" class="font-semibold w-32">Phone Number</label>
-        <input 
-            pInputText 
-            [(ngModel)]="editingPhoneNumber" 
-            id="phoneNumber" 
-            class="flex-auto" 
-            placeholder="+447700900000"
-            autocomplete="off" 
-        />
+        <p-inputmask [(ngModel)]="newPhoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
     </div>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (click)="phoneDialogVisible = false" />

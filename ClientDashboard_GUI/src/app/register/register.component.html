@@ -21,7 +21,11 @@
       </div>
         <div class="register-field">
         <p-iftalabel>
-          <input pInputText id="phoneNumber" [(ngModel)]="phoneNumber" />
+          <p-inputmask
+          mask="+44 9999 999999"
+          [(ngModel)]="phoneNumber"
+          placeholder="+44 7700 900000"
+            />
           <label>Phone Number</label>
         </p-iftalabel>
       </div>
