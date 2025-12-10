@@ -58,7 +58,7 @@ namespace ClientDashboard_API.Controllers
 
             var clientVerifiedInfo = new ClientVerificationInfoDto { ClientId = client.Id, TrainerId = trainer.Id };
 
-            return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Client: ${clientFirstName} found under Trainer: {trainer.FirstName}", Success = true });
+            return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Client: {clientFirstName} found under Trainer: {trainer.FirstName}", Success = true });
         }
     }
 }

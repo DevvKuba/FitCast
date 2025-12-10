@@ -16,7 +16,9 @@ namespace ClientDashboard_API.Data
 
         public async Task<Trainer?> GetTrainerByPhoneNumberAsync(string phoneNumber)
         {
-            var trainer = await context.Trainer.Where(t => t.PhoneNumber == phoneNumber).FirstOrDefaultAsync();
+            var flatPhoneNumber = phoneNumber.Replace(" ", "");
+
+            var trainer = await context.Trainer.Where(t => t.PhoneNumber == flatPhoneNumber).FirstOrDefaultAsync();
             return trainer;
         }
 

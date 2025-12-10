@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { ApiResponse } from '../models/api-response';
 import { Observable } from 'rxjs';
@@ -25,8 +26,13 @@ export class AccountService {
   }
 
   clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
-    return this.http.get<ApiResponse<ClientVerificationInfoDto>>(this.baseUrl + 
-      `account/verifyClientUnderTrainer?trainerPhoneNumber=${trainerPhoneNumber}&clientFirstName=${clientFirstName}`)
+    const params = new HttpParams()
+    .set('trainerPhoneNumber', trainerPhoneNumber)
+    .set('clientFirstName', clientFirstName);
+    const url = `${this.baseUrl}account/verifyClientUnderTrainer`;
+
+    return this.http.get<ApiResponse<ClientVerificationInfoDto>>(url, {params})
+      
   }
 
   logout(storageItem: string){
