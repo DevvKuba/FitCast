@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class AccountController(IUnitOfWork unitOfWork, ITrainerRegisterService registerService, ITrainerLoginService loginService) : BaseAPIController
+    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService) : BaseAPIController
     {
         [AllowAnonymous]
         [HttpPost("register")]

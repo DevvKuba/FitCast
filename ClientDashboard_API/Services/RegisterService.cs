@@ -6,7 +6,7 @@ using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public sealed class TrainerRegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : ITrainerRegisterService
+    public sealed class RegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : IRegisterService
     {
 
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)

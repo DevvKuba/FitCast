@@ -33,8 +33,8 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IMessageService, TwillioMessageService>();
-            services.AddScoped<ITrainerRegisterService, TrainerRegisterService>();
-            services.AddScoped<ITrainerLoginService, TrainerLoginService>();
+            services.AddScoped<IRegisterService, RegisterService>();
+            services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IAutoPaymentCreationService, AutoPaymentCreationService>();
             services.AddScoped<IClientDailyFeatureService, ClientDailyFeatureService>();
             services.AddScoped<ITrainerDailyRevenueService, TrainerDailyRevenueService>();

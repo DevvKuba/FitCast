@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Interfaces
 {
-    public interface ITrainerLoginService
+    public interface ILoginService
     {
         Task<ApiResponseDto<UserDto>> Handle(LoginDto loginDto);
     }

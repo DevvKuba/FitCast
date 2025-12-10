@@ -3,7 +3,7 @@ using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
 {
-    public class TrainerLoginService(IUnitOfWork unitOfWork, ITokenProvider tokenProvider, IPasswordHasher passwordHasher) : ITrainerLoginService
+    public class LoginService(IUnitOfWork unitOfWork, ITokenProvider tokenProvider, IPasswordHasher passwordHasher) : ILoginService
     {
         public async Task<ApiResponseDto<UserDto>> Handle(LoginDto loginDto)
         {
