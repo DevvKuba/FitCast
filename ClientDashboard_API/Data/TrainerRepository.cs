@@ -14,6 +14,12 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
+        public async Task<Trainer?> GetTrainerByPhoneNumberAsync(string phoneNumber)
+        {
+            var trainer = await context.Trainer.Where(t => t.PhoneNumber == phoneNumber).FirstOrDefaultAsync();
+            return trainer;
+        }
+
         public async Task<Trainer?> GetTrainerByIdAsync(int id)
         {
             var trainer = await context.Trainer.Where(x => x.Id == id).FirstOrDefaultAsync();

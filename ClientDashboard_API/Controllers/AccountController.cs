@@ -38,11 +38,11 @@ namespace ClientDashboard_API.Controllers
 
         [AllowAnonymous]
         [HttpGet("verifyClientUnderTrainer")]
-        public async Task<ActionResult<ApiResponseDto<ClientVerificationInfoDto>>> VerfiyClientsTrainerStatusAsync([FromQuery] int trainerId, [FromQuery] string clientFirstName)
+        public async Task<ActionResult<ApiResponseDto<ClientVerificationInfoDto>>> VerfiyClientsTrainerStatusAsync([FromQuery] string trainerPhoneNumber, [FromQuery] string clientFirstName)
         {
             // checking if both trainer exists and if the client firstName is currently present under that trainer
 
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByPhoneNumberAsync(trainerPhoneNumber);
 
             if(trainer == null)
             {

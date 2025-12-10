@@ -7,6 +7,8 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<Trainer?> GetTrainerByEmailAsync(string email);
 
+        Task<Trainer?> GetTrainerByPhoneNumberAsync(string phoneNumber);
+
         Task<Trainer?> GetTrainerWithClientsByIdAsync(int id);
 
         Task<List<Trainer>> GetAllTrainersAsync();

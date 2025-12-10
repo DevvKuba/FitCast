@@ -23,6 +23,10 @@ export class AccountService {
     return this.http.post<ApiResponse<UserDto>>(this.baseUrl + "account/login", loginInfo);
   }
 
+  clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
+    return this.http.get<ApiResponse<>>
+  }
+
   logout(storageItem: string){
     localStorage.removeItem(storageItem);
     this.currentUser.set(null);
