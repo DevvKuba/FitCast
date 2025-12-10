@@ -32,7 +32,6 @@ export class AccountService {
     const url = `${this.baseUrl}account/verifyClientUnderTrainer`;
 
     return this.http.get<ApiResponse<ClientVerificationInfoDto>>(url, {params})
-      
   }
 
   logout(storageItem: string){
