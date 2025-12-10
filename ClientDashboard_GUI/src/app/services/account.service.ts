@@ -6,6 +6,7 @@ import { RegisterDto } from '../models/dtos/register-dto';
 import { LoginDto } from '../models/dtos/login-dto';
 import { UserDto } from '../models/dtos/user-dto';
 import { environment } from '../environments/environment';
+import { ClientVerificationInfoDto } from '../models/dtos/client-verification-info-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,8 @@ export class AccountService {
   }
 
   clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
-    return this.http.get<ApiResponse<>>
+    return this.http.get<ApiResponse<ClientVerificationInfoDto>>(this.baseUrl + 
+      `account/verifyClientUnderTrainer?trainerPhoneNumber=${trainerPhoneNumber}&clientFirstName=${clientFirstName}`)
   }
 
   logout(storageItem: string){

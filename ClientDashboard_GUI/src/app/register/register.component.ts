@@ -29,6 +29,9 @@ export class RegisterComponent {
   router = inject(Router);
 
   trainerNumberVerified: boolean = false;
+  trainerVerificationPhoneNumber: string = "";
+  verifiedClientId: number = 0;
+  verifiedTrainerId: number = 0;
 
   firstName: string = "";
   surname: string = "";
@@ -58,6 +61,17 @@ export class RegisterComponent {
   }
 
   verifyClientUnderTrainer(trainerPhoneNumber: string, clientFirstName: string){
-    // checking if both trainer exists and if the client firstName is currently present under that trainer
+    this.accountService.clientVerifyUnderTrainer(trainerPhoneNumber, clientFirstName).subscribe({
+      next: (response) => {
+        this.trainerNumberVerified = true;
+        this.verifiedClientId = response.data.clientId;
+        this.verifiedTrainerId = response.data.trainerId;
+
+        this.toastService.showSuccess('Verified Successfully', response.message);
+      },
+      error: (response) => {
+        this.toastService.showError('Unsuccessful Verification', response.error.message);
+      }
+    })
   }
 }

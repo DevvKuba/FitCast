@@ -54,7 +54,7 @@
             <p-iftalabel>
               <p-inputmask
               mask="+44 9999 999999"
-              [(ngModel)]="phoneNumber"
+              [(ngModel)]="trainerVerificationPhoneNumber"
               placeholder="+44 7700 900000"
                 />
               <label>Trainer Phone Number</label>
@@ -63,7 +63,7 @@
         <div class="card flex justify-center">
           <p-togglebutton disabled="true" onIcon="pi pi-check" offIcon="pi pi-times" [(ngModel)]="trainerNumberVerified" onLabel="" offLabel="" styleClass="w-full sm:w-40" ariaLabel="Confirmation" />
         </div>
-        <p-button class="client-verify-button" label="Verify" severity="info" (click)="trainerRegister(email, firstName, surname, password)"/>
+        <p-button class="client-verify-button" label="Verify" severity="info" (click)="verifyClientUnderTrainer(trainerVerificationPhoneNumber, firstName)"/>
         }
       </div>
     </div>
