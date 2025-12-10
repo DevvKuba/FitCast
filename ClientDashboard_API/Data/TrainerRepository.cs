@@ -119,9 +119,17 @@ namespace ClientDashboard_API.Data
             context.Trainer.Remove(trainer);
         }
 
-        public async Task<bool> DoesExistAsync(string email)
+        public async Task<bool> DoesEmailExistAsync(string email)
         {
             return await context.Trainer.AnyAsync(x => x.Email == email);
         }
+
+        public async Task<bool> DoesPhoneNumberExistAsync(string phoneNumber)
+        {
+            var flatPhoneNumber = phoneNumber.Replace(" ", "");
+
+            return await context.Trainer.AnyAsync(t => t.PhoneNumber == flatPhoneNumber);
+        }
+
     }
 }

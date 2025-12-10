@@ -66,6 +66,8 @@ export class RegisterComponent {
         this.trainerNumberVerified = true;
         this.verifiedClientId = response.data.clientId;
         this.verifiedTrainerId = response.data.trainerId;
+        console.log("Verified client id: " + this.verifiedClientId);
+        console.log("Verified trainer id: " + this.verifiedTrainerId)
 
         this.toastService.showSuccess('Verified Successfully', response.message);
       },

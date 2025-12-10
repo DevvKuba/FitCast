@@ -39,7 +39,9 @@ namespace ClientDashboard_API.Interfaces
 
         void DeleteTrainer(Trainer trainer);
 
-        Task<bool> DoesExistAsync(string email);
+        Task<bool> DoesEmailExistAsync(string email);
+
+        Task<bool> DoesPhoneNumberExistAsync(string phoneNumber);
 
     }
 }

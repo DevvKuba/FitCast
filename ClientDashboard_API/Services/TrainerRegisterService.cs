@@ -18,9 +18,14 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
 
-            if (await unitOfWork.TrainerRepository.DoesExistAsync(request.Email))
+            if (await unitOfWork.TrainerRepository.DoesEmailExistAsync(request.Email))
             {
                 return new ApiResponseDto<string> { Data = null, Message = "The email is already in use", Success = false };
+            }
+
+            if(await unitOfWork.TrainerRepository.DoesPhoneNumberExistAsync(request.PhoneNumber))
+            {
+                return new ApiResponseDto<string> { Data = null, Message = "The phone number is already is use", Success = false };
             }
 
             // email / sms verification step
