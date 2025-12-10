@@ -118,6 +118,12 @@ namespace ClientDashboard_API.Data
             return clientData;
         }
 
+        public async Task<Client?> GetClientByNameUnderTrainer(Trainer trainer, string clientName)
+        {
+            var client = await context.Client.Where(c => c.FirstName == clientName.ToLower() && c.TrainerId == trainer.Id).FirstOrDefaultAsync();
+            return client;
+        }
+
         public async Task<Client?> GetClientByIdAsync(int? id)
         {
             var clientData = await context.Client.Where(x => x.Id == id).FirstOrDefaultAsync();

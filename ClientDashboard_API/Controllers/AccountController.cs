@@ -35,5 +35,30 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
 
         }
+
+        [AllowAnonymous]
+        [HttpGet("verifyClientUnderTrainer")]
+        public async Task<ActionResult<ApiResponseDto<ClientVerificationInfoDto>>> VerfiyClientsTrainerStatusAsync([FromQuery] int trainerId, [FromQuery] string clientFirstName)
+        {
+            // checking if both trainer exists and if the client firstName is currently present under that trainer
+
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+
+            if(trainer == null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer not found for client {clientFirstName}", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByNameUnderTrainer(trainer, clientFirstName);
+
+            if(client == null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer does not have client under the name: ${clientFirstName}", Success = false });
+            }
+
+            var clientVerifiedInfo = new ClientVerificationInfoDto { ClientId = client.Id, TrainerId = trainer.Id };
+
+            return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Trainer does not have client under the name: ${clientFirstName}", Success = true });
+        }
     }
 }

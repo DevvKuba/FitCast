@@ -8,6 +8,8 @@ namespace ClientDashboard_API.Interfaces
         Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId);
         Task<Client?> GetClientByNameAsync(string clientName);
 
+        Task<Client?> GetClientByNameUnderTrainer(Trainer trainer, string clientName);
+
         Task<Client?> GetClientByIdAsync(int? id);
 
         Task<Client?> GetClientByIdWithTrainerAsync(int id);

@@ -14,6 +14,8 @@
 
         public required string UserType { get; set; }
 
+        public int ClientId { get; set; }
+
         public int ClientsTrainerId { get; set; }
     }
 }

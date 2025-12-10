@@ -61,8 +61,9 @@
             </p-iftalabel>
       </div>
         <div class="card flex justify-center">
-          <p-togglebutton onIcon="pi pi-check" [(ngModel)]="trainerNumberVerified" onLabel="Verified" offLabel="" styleClass="w-full sm:w-40" ariaLabel="Confirmation" />
+          <p-togglebutton disabled="true" onIcon="pi pi-check" offIcon="pi pi-times" [(ngModel)]="trainerNumberVerified" onLabel="" offLabel="" styleClass="w-full sm:w-40" ariaLabel="Confirmation" />
         </div>
+        <p-button class="client-verify-button" label="Verify" severity="info" (click)="trainerRegister(email, firstName, surname, password)"/>
         }
       </div>
     </div>

@@ -56,4 +56,8 @@ export class RegisterComponent {
       }
     });
   }
+
+  verifyClientUnderTrainer(trainerPhoneNumber: string, clientFirstName: string){
+    // checking if both trainer exists and if the client firstName is currently present under that trainer
+  }
 }
