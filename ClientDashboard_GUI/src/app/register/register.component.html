@@ -48,7 +48,24 @@
               <label for="2" class="ml-2 radio-label">Client</label>
           </div>
         </div>
-       </div>
+        <div class="client-verification">
+        @if(userType == "client"){
+          <div class="register-field">
+            <p-iftalabel>
+              <p-inputmask
+              mask="+44 9999 999999"
+              [(ngModel)]="phoneNumber"
+              placeholder="+44 7700 900000"
+                />
+              <label>Trainer Phone Number</label>
+            </p-iftalabel>
+      </div>
+        <div class="card flex justify-center">
+          <p-togglebutton onIcon="pi pi-check" [(ngModel)]="trainerNumberVerified" onLabel="Verified" offLabel="" styleClass="w-full sm:w-40" ariaLabel="Confirmation" />
+        </div>
+        }
+      </div>
+    </div>
       <div class="button-container">
           <p-button class="register-button" label="Register" severity="success" (click)="trainerRegister(email, firstName, surname, password)"/>
           <p-button class="to-login-button" label="To Login" severity="secondary" routerLink="/login"/>

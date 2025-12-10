@@ -40,6 +40,7 @@ namespace ClientDashboard_API.Services
             }
             else
             {
+                // 
                 var client = new Client
                 {
                     FirstName = request.FirstName,

@@ -14,11 +14,12 @@ import { ToastService } from '../services/toast.service';
 import { Router, RouterLink } from '@angular/router';
 import { RadioButton } from 'primeng/radiobutton';
 import { InputMask } from 'primeng/inputmask';
+import { ToggleButton } from 'primeng/togglebutton';
 
 @Component({
   selector: 'app-register',
   imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule,
-     FloatLabelModule, ButtonModule, RouterLink, RadioButton, InputMask],
+     FloatLabelModule, ButtonModule, RouterLink, RadioButton, InputMask, ToggleButton],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -26,6 +27,8 @@ export class RegisterComponent {
   accountService = inject(AccountService);
   toastService = inject(ToastService);
   router = inject(Router);
+
+  trainerNumberVerified: boolean = false;
 
   firstName: string = "";
   surname: string = "";
