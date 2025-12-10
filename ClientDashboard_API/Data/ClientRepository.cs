@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class ClientRepository(DataContext context, IMapper mapper) : IClientRepository
+    public class ClientRepository(DataContext context, IPasswordHasher passwordHasher, IMapper mapper) : IClientRepository
     {
         public async Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId)
         {
@@ -32,7 +33,14 @@ namespace ClientDashboard_API.Data
                 TotalBlockSessions = client.TotalBlockSessions
             };
             mapper.Map(updatedData, client);
+        }
 
+        public void UpdateClientDetailsUponRegisterationAsync(Trainer trainer, Client client, RegisterDto clientDetails)
+        {
+            client.Surname = clientDetails.Surname;
+            client.Email = clientDetails.Email;
+            client.PhoneNumber = clientDetails.PhoneNumber.Replace(" ", "");
+            client.PasswordHash = passwordHasher.Hash(clientDetails.Password);
         }
 
         public void UpdateDeletingClientCurrentSession(Client client)

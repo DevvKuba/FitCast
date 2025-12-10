@@ -37,6 +37,7 @@ namespace ClientDashboard_API.Services
                     FirstName = request.FirstName,
                     Surname = request.Surname,
                     Email = request.Email,
+                    PhoneNumber = request.PhoneNumber.Replace(" ", ""),
                     PasswordHash = passwordHasher.Hash(request.Password)
                 };
 
@@ -45,20 +46,31 @@ namespace ClientDashboard_API.Services
             }
             else
             {
-                // 
-                var client = new Client
+                // instead of actually creating a new client we will map the provided data over to the identified client upon verifying (via trainer phone number and client name)
+                var result = await MapClientDataUponRegistration(request);
+
+                if (!result)
                 {
-                    FirstName = request.FirstName,
-                    Surname = request.Surname,
-                    Email = request.Email,
-                    PhoneNumber = request.PhoneNumber,
-                    PasswordHash = passwordHasher.Hash(request.Password)
-                };
+                    return new ApiResponseDto<string> { Data = "Error", Message = "Unsuccessful processing of client link to trainer", Success = false };
+                }
 
-                await unitOfWork.ClientRepository.AddNewClientUserAsync(client, request.ClientsTrainerId);
-
-                return new ApiResponseDto<string> { Data = client.FirstName, Message = $"{client.FirstName} successfully added", Success = true };
+                return new ApiResponseDto<string> { Data = "Success", Message = $"Successfully registered as a client", Success = true };
             }
+        }
+
+        public async Task<bool> MapClientDataUponRegistration(RegisterDto request)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(request.ClientsTrainerId);
+
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(request.ClientId);
+
+            if(trainer == null || client == null)
+            {
+                return false;
+            }
+
+            unitOfWork.ClientRepository.UpdateClientDetailsUponRegisterationAsync(trainer, client, request);
+            return true;
         }
     }
 }
