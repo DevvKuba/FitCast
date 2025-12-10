@@ -76,7 +76,8 @@
       </div>
     </div>
       <div class="button-container">
-          <p-button class="register-button" label="Register" severity="success" (click)="trainerRegister(email, firstName, surname, password)"/>
+          <p-button class="register-button" label="Register" severity="success" 
+          (click)="trainerRegister(email, firstName, surname, phoneNumber, userType, verifiedClientId, verifiedTrainerId, password)"/>
           <p-button class="to-login-button" label="To Login" severity="secondary" routerLink="/login"/>
       </div>
 </div>

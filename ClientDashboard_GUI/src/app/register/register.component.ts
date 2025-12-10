@@ -40,12 +40,18 @@ export class RegisterComponent {
   password: string = "";
   userType: string = "";
 
-  trainerRegister(trainerEmail: string, trainerFirstName: string, trainerSurname: string, trainerPassword: string){
+  trainerRegister(email: string, firstName: string, surname: string,
+     phoneNumber: string, userType: string, clientId: number | null,
+    clientsTrainerId: number | null,  password: string){
     const registerInfo: RegisterDto = {
-      email : trainerEmail, 
-      firstName : trainerFirstName,
-      surname: trainerSurname,
-      password: trainerPassword
+      firstName : firstName,
+      surname: surname,
+      email : email, 
+      phoneNumber: phoneNumber,
+      userType : userType,
+      clientId : clientId || null,
+      clientsTrainerId : clientsTrainerId || null,
+      password: password
     }
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {

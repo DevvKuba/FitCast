@@ -47,20 +47,26 @@ namespace ClientDashboard_API.Services
             else
             {
                 // instead of actually creating a new client we will map the provided data over to the identified client upon verifying (via trainer phone number and client name)
-                var result = await MapClientDataUponRegistration(request);
-
-                if (!result)
+                if(request.ClientId != null && request.ClientsTrainerId != null)
                 {
-                    return new ApiResponseDto<string> { Data = "Error", Message = "Unsuccessful processing of client link to trainer", Success = false };
-                }
+                    var result = await MapClientDataUponRegistration(request);
 
-                return new ApiResponseDto<string> { Data = "Success", Message = $"Successfully registered as a client", Success = true };
+                    if (!result)
+                    {
+                        return new ApiResponseDto<string> { Data = "Error", Message = "Unsuccessful processing of client link to trainer", Success = false };
+                    }
+                    else
+                    {
+                        return new ApiResponseDto<string> { Data = "Success", Message = $"Successfully registered as a client", Success = true };
+                    }
+                }
+                return new ApiResponseDto<string> { Data = "Error", Message = "clientId or clientsTrainerId are null fields", Success = false };
             }
         }
 
         public async Task<bool> MapClientDataUponRegistration(RegisterDto request)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(request.ClientsTrainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(request.ClientsTrainerId ?? 0);
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(request.ClientId);
 
