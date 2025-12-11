@@ -13,6 +13,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
         private readonly DataContext _context;
+        private readonly UserRepository _userRepository;
         private readonly ClientRepository _clientRepository;
         private readonly WorkoutRepository _workoutRepository;
         private readonly TrainerRepository _trainerRepository;
@@ -37,6 +38,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
             _context = new DataContext(optionsBuilder.Options);
+            _userRepository = new UserRepository(_context);
             _clientRepository = new ClientRepository(_context, _passwordHasher, _mapper);
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context, _mapper);
@@ -44,7 +46,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _paymentRepository = new PaymentRepository(_context, _mapper);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository);
 
         }
 

@@ -47,9 +47,15 @@ export class LoginComponent {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
         this.accountService.currentUser.set(response.data ?? null);
         
-        console.log("User logged in: ", this.accountService.currentUser()?.firstName);
-        this.toastService.showSuccess('Logged In','Redirected to client-info page' );
-        this.router.navigateByUrl('client-info');
+        if(loginInfo.userType == "trainer"){
+          this.toastService.showSuccess('Logged In','Redirected to client-info page' );
+          this.router.navigateByUrl('client-info');
+        }
+        else {
+          this.toastService.showSuccess('Logged In','Redirected to personal workouts page' );
+          // this.router.navigateByUrl('client-info');
+        }
+        
       },
       error: (response) => {
         this.toastService.showError('Unable to log in', response.error.message);
