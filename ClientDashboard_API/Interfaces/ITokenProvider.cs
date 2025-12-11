@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITokenProvider
     {
-        string Create(Trainer trainer);
+        string Create(UserBase user);
     }
 }

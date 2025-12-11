@@ -25,7 +25,7 @@ namespace ClientDashboard_API.Services
 
             var token = tokenProvider.Create(user);
 
-            var userDto = new UserDto { FirstName = user.FirstName, Id = user.Id, Token = token };
+            var userDto = new UserDto { FirstName = user.FirstName, Id = user.Id, Token = token, UserType = loginDto.UserType };
 
             return new ApiResponseDto<UserDto> { Data = userDto, Message = "Token created successfully", Success = true };
         }

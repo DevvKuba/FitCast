@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Helpers
 {
     internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
     {
-        public string Create(Trainer trainer)
+        public string Create(UserBase user)
         {
             string secretKey = configuration["Jwt_Secret"]!;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -20,9 +20,9 @@ namespace ClientDashboard_API.Helpers
             {
                 Subject = new ClaimsIdentity(
                     [
-                    new Claim(JwtRegisteredClaimNames.Sub, trainer.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.GivenName, trainer.FirstName),
-                    new Claim(JwtRegisteredClaimNames.Email, trainer.Email!)
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email!)
                     ]),
                 Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInMinutes")),
                 SigningCredentials = credentials,
