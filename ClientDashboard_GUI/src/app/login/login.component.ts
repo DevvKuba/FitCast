@@ -36,10 +36,11 @@ export class LoginComponent {
   userType: string = "";
   storageItem = "token";
 
-  trainerLogin(trainerEmail: string, trainerPassword: string){
+  login(email: string, password: string, userType: string){
     const loginInfo: LoginDto = {
-      email: trainerEmail,
-      password: trainerPassword
+      email: email,
+      password: password,
+      userType: userType
     }
     this.accountService.login(loginInfo).subscribe({
       next: (response : ApiResponse<UserDto>) => {
