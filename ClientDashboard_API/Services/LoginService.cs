@@ -1,5 +1,7 @@
 ﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using System.Diagnostics.Contracts;
 
 namespace ClientDashboard_API.Services
 {
@@ -7,12 +9,26 @@ namespace ClientDashboard_API.Services
     {
         public async Task<ApiResponseDto<UserDto>> Handle(LoginDto loginDto)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(loginDto.Email);
-
-            if (trainer is null)
+            if(loginDto.UserType == "trainer")
             {
-                return new ApiResponseDto<UserDto> { Data = null, Message = "The user was not found", Success = false };
+                var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(loginDto.Email);
+
+                if (trainer is null)
+                {
+                    return new ApiResponseDto<UserDto> { Data = null, Message = "The trainer user was not found", Success = false };
+                }
             }
+            else
+            {
+                var client = await unitOfWork.ClientRepository.GetClientByEmailAsync(loginDto.Email);
+
+                if (client is null)
+                {
+                    return new ApiResponseDto<UserDto> { Data = null, Message = "The client user was not found", Success = false };
+                }
+            }
+
+
 
             bool verified = passwordHasher.Verify(loginDto.Password, trainer.PasswordHash!);
 
@@ -27,5 +43,6 @@ namespace ClientDashboard_API.Services
 
             return new ApiResponseDto<UserDto> { Data = user, Message = "Token created successfully", Success = true };
         }
+
     }
 }

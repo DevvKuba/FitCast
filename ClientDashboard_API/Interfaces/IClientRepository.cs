@@ -15,6 +15,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Client?> GetClientByIdWithTrainerAsync(int id);
 
+        Task<Client?> GetClientByEmailAsync(string email);
+
         Task<int?> GetClientsCurrentSessionAsync(string name);
 
         Task<List<string>> GetClientsOnLastSessionAsync();

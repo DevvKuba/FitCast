@@ -143,6 +143,12 @@ namespace ClientDashboard_API.Data
             return client;
         }
 
+        public async Task<Client?> GetClientByEmailAsync(string email)
+        {
+           var client = await context.Client.Where(c => c.Email == email).FirstOrDefaultAsync();
+            return client;
+        }
+
         public async Task<int?> GetClientsCurrentSessionAsync(string clientName)
         {
             var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
