@@ -2,11 +2,12 @@
 
 namespace ClientDashboard_API.Data
 {
-    public class UnitOfWork(DataContext context, IClientRepository clientRepository, IWorkoutRepository workoutRepository,
+    public class UnitOfWork(DataContext context, IUserRepository userRepository, IClientRepository clientRepository, IWorkoutRepository workoutRepository,
         ITrainerRepository trainerRepository, INotificationRepository notificationRepository,
         IPaymentRepository paymentRepository , IClientDailyFeatureRepository clientDailyFeatureRepository,
         ITrainerDailyRevenueRepository trainerDailyRevenueRepository) : IUnitOfWork
     {
+        public IUserRepository UserRepository => userRepository;
         public IClientRepository ClientRepository => clientRepository;
 
         public IWorkoutRepository WorkoutRepository => workoutRepository;

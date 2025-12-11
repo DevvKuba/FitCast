@@ -7,7 +7,5 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<ApiResponseDto<UserDto>> Handle(LoginDto loginDto);
 
-        Task<ApiResponseDto<UserDto>> VerifyUser(UserBase user);
-
     }
 }
