@@ -23,6 +23,7 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = "The email is already in use", Success = false };
             }
 
+            // shouldn't apply to client - since the trainer might have already set up their number
             if(await unitOfWork.TrainerRepository.DoesPhoneNumberExistAsync(request.PhoneNumber))
             {
                 return new ApiResponseDto<string> { Data = null, Message = "The phone number is already is use", Success = false };

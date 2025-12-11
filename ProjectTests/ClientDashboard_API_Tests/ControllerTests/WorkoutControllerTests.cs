@@ -4,6 +4,8 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
+using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
     public class WorkoutControllerTests
     {
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher _passwordHasher;
         private readonly DataContext _context;
         private readonly ClientRepository _clientRepository;
         private readonly WorkoutRepository _workoutRepository;
@@ -36,13 +39,14 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 cfg.CreateMap<ClientUpdateDto, Client>();
             });
             _mapper = config.CreateMapper();
+            _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()
                 // guid means a db will be created for each given test
                 .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
             _context = new DataContext(optionsBuilder.Options);
-            _clientRepository = new ClientRepository(_context, _mapper);
+            _clientRepository = new ClientRepository(_context, _passwordHasher, _mapper);
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context, _mapper);
             _notificationRepository = new NotificationRepository(_context);
