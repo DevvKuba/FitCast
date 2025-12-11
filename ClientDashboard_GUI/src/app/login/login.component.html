@@ -12,6 +12,19 @@
               <label>Password</label>
           </p-iftalabel>
         </div>
+        <div class="register-field radio-section">
+        <label class="user-type-label">User Type</label>
+        <div class="radio-buttons">
+          <div class="radio-button" >
+              <p-radiobutton name="userType" value="trainer" [(ngModel)]="userType" inputId="1" />
+              <label for="1" class="ml-2 radio-label">Trainer</label>
+          </div>
+
+          <div class="radio-button">
+              <p-radiobutton name="userType" value="client" [(ngModel)]="userType" inputId="2" />
+              <label for="2" class="ml-2 radio-label">Client</label>
+          </div>
+        </div>
         <div class="button-container">
             <p-button class="login-button" label="Login" severity="success" (click)="trainerLogin(email, password)"/>
             <p-button class="to-register-button" label="To Register" severity="secondary" routerLink="/register"/>

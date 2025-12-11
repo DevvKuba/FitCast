@@ -15,10 +15,13 @@ import { MessageService } from 'primeng/api';
 import { ApiResponse } from '../models/api-response';
 import { ToastService } from '../services/toast.service';
 import { UserDto } from '../models/dtos/user-dto';
+import { RadioButton } from 'primeng/radiobutton';
+import { ToggleButton } from 'primeng/togglebutton';
 
 @Component({
   selector: 'app-login',
-  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, FloatLabelModule, ButtonModule, RouterLink],
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule,
+     FloatLabelModule, ButtonModule, RouterLink, RadioButton, ToggleButton],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -30,6 +33,7 @@ export class LoginComponent {
 
   email: string = "";
   password: string = "";
+  userType: string = "";
   storageItem = "token";
 
   trainerLogin(trainerEmail: string, trainerPassword: string){
