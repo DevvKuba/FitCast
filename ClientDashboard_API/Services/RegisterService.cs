@@ -37,6 +37,7 @@ namespace ClientDashboard_API.Services
                 {
                     FirstName = request.FirstName,
                     Surname = request.Surname,
+                    Role = request.Role,
                     Email = request.Email,
                     PhoneNumber = request.PhoneNumber.Replace(" ", ""),
                     PasswordHash = passwordHasher.Hash(request.Password)

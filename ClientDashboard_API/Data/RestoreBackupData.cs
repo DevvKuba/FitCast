@@ -38,6 +38,7 @@ namespace ClientDashboard_API.Data
                 var userBase = new Client
                 {
                     FirstName = clientData.firstName,
+                    Role = "client",
                     Email = clientData.email,
                     PhoneNumber = clientData.phone,
                     IsActive = clientData.isActive,

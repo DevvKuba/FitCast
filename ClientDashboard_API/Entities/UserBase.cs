@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
 
+        public required string Role { get; set; }
+
         public required string FirstName { get; set; }
 
         public string? Email { get; set; }

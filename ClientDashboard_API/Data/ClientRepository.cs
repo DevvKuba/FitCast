@@ -190,6 +190,7 @@ namespace ClientDashboard_API.Data
             var newClient = new Client
             {
                 FirstName = clientName.ToLower(),
+                Role = "client",
                 IsActive = true,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions,
@@ -209,6 +210,7 @@ namespace ClientDashboard_API.Data
             var newClient = new Client
             {
                 FirstName = client.FirstName.ToLower(),
+                Role = "client",
                 Surname = client.Surname ?? "".ToLower(),
                 PhoneNumber = client.PhoneNumber,
                 IsActive = true,
