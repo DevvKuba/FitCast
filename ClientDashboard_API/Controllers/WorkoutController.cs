@@ -10,8 +10,23 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService,IAutoPaymentCreationService autoPaymentService, IMapper mapper) : BaseAPIController
     {
-        // [Authorize(Roles = "client")]
-        // TODO get all client specific workouts
+        [Authorize(Roles = "client")]
+        [HttpGet("GetClientSpecificWorkouts")]
+        public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientSpecificWorkouts([FromQuery] int clientId)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdWithWorkoutsAsync(clientId);
+            if (client == null)
+            {
+                return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No clients with that id found", Success = false });
+            }
+
+            if (!client.Workouts.Any())
+            {
+                return Ok(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = true });
+            }
+
+            return Ok(new ApiResponseDto<List<Workout>> { Data = client.Workouts, Message = " workouts returned", Success = true });
+        }
 
         /// <summary>
         /// Workout request for the retrieval of paginated workouts
@@ -26,9 +41,9 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No trainers with that id found", Success = false });
             }
 
-            var clientList = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
-
-            var workouts = unitOfWork.WorkoutRepository.GetSpecificClientWorkoutsAsync(clientList);
+            var clientList = await unitOfWork.TrainerRepository.GetTrainerClientsWithWorkoutsAsync(trainer);
+            
+            var workouts = unitOfWork.WorkoutRepository.GetSpecificClientsWorkoutsAsync(clientList);
 
             if (!workouts.Any())
             {

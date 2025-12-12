@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Data
 {
     public class WorkoutRepository(DataContext context) : IWorkoutRepository
     {
-        public List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList)
+        public List<Workout> GetSpecificClientsWorkoutsAsync(List<Client> clientList)
         {
             // is there a better way to do this
             List<Workout> workouts = [];

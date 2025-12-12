@@ -337,7 +337,7 @@ namespace ClientDashboard_API.Controllers
 
             foreach (Trainer trainer in trainers)
             {
-                var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
+                var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsWithWorkoutsAsync(trainer);
 
                 foreach (Client client in trainerClients)
                 {

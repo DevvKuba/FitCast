@@ -59,7 +59,7 @@ namespace ClientDashboard_API.Data
             return trainers;
         }
 
-        public async Task<List<Client>> GetTrainerClientsAsync(Trainer trainer)
+        public async Task<List<Client>> GetTrainerClientsWithWorkoutsAsync(Trainer trainer)
         {
             var clientList = await context.Client
                 .Include(x => x.Workouts)

@@ -4,6 +4,7 @@ using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ClientDashboard_API.Data
 {
@@ -136,6 +137,13 @@ namespace ClientDashboard_API.Data
         {
             var clientData = await context.Client.Where(x => x.Id == id).FirstOrDefaultAsync();
             return clientData;
+        }
+
+        public async Task<Client?> GetClientByIdWithWorkoutsAsync(int id)
+        {
+            var client = await context.Client.Where(c => c.Id == id).Include(x => x.Workouts).FirstOrDefaultAsync();
+            return client;
+
         }
         public async Task<Client?> GetClientByIdWithTrainerAsync(int id)
         {

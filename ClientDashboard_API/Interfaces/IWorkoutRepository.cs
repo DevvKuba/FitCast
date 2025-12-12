@@ -4,7 +4,7 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IWorkoutRepository
     {
-        List<Workout> GetSpecificClientWorkoutsAsync(List<Client> clientList);
+        List<Workout> GetSpecificClientsWorkoutsAsync(List<Client> clientList);
         Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate);
 
         Task<Workout?> GetWorkoutByIdAsync(int id);

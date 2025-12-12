@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Client?> GetClientByIdAsync(int? id);
 
+        Task<Client?> GetClientByIdWithWorkoutsAsync(int id);
+
         Task<Client?> GetClientByIdWithTrainerAsync(int id);
 
         Task<Client?> GetClientByEmailAsync(string email);

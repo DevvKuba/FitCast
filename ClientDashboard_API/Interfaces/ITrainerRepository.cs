@@ -19,7 +19,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync();
 
-        Task<List<Client>> GetTrainerClientsAsync(Trainer trainer);
+        Task<List<Client>> GetTrainerClientsWithWorkoutsAsync(Trainer trainer);
 
         Task<List<Client>> GetTrainerActiveClientsAsync(Trainer trainer);
 

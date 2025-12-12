@@ -32,7 +32,7 @@ namespace ClientDashboard_API.Jobs
 
                     try
                     {
-                        var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsAsync(trainer);
+                        var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsWithWorkoutsAsync(trainer);
 
                         if (trainerClients == null || trainerClients.Count == 0)
                         {
