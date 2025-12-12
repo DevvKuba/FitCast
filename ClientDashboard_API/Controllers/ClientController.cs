@@ -11,6 +11,7 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class ClientController(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyClientService) : BaseAPIController
     {
+        [Authorize(Roles = "trainer")]
         [HttpGet("allTrainerClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync([FromQuery] int trainerId)
         {
@@ -23,6 +24,7 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<Client>> { Data = clients, Message = "clients gathered.", Success = true });
         }
 
+        [Authorize(Roles = "trainer")]
         [HttpGet("getClientById")]
         public async Task<ActionResult<ApiResponseDto<string>>> GetClientByIdAsync([FromQuery] int clientId)
         {
@@ -39,6 +41,7 @@ namespace ClientDashboard_API.Controllers
         /// Client method allowing for the retrieval of the clients current session,
         /// within their respective block
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpGet("{clientName}/currentSession")]
         public async Task<ActionResult<ApiResponseDto<int>>> GetCurrentClientBlockSessionAsync(string clientName)
         {
@@ -54,6 +57,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing for the retrieval of all clients, on their last block session
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpGet("onLastSession")]
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnLastBlockSessionAsync()
         {
@@ -69,6 +73,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpGet("onFirstSession")]
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnFirstBlockSessionAsync()
         {
@@ -84,6 +89,7 @@ namespace ClientDashboard_API.Controllers
         // <summary>
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
+        [Authorize(Roles = "client")]
         [HttpGet("getClientPhoneNumber")]
         public async Task<ActionResult<ApiResponseDto<string>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
         {
@@ -99,6 +105,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update all client information
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("newClientInformation")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
@@ -121,6 +128,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update of clien's phone number
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("setClientPhoneNumber")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync([FromBody] ClientPhoneNumberUpdateDto clientInfo)
         {
@@ -144,6 +152,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update of ones total sessions
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
         {
@@ -166,6 +175,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update of ones current session
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("{clientName}/{currentSession}/newCurrentSession")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientCurrentSessionAsync(string clientName, int currentSession)
         {
@@ -187,6 +197,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method allowing update of client's given name
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("{currentName}/{newName}/newClientName")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientNameAsync(string currentName, string newName)
         {
@@ -209,6 +220,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing currently allocated trainer
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPut("unAssignTrainer")]
         public async Task<ActionResult<ApiResponseDto<string>>> UnAssignCurrentTrainerAsync([FromQuery] int clientId)
         {
@@ -230,6 +242,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for adding a new Client to the database via client params
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPost("ByParams")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions, [FromQuery] string phoneNumber, [FromQuery] int trainerId)
         {
@@ -252,6 +265,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for adding a new Client to the database via client object body
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPost("ByBody")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
@@ -269,6 +283,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via name
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpDelete("ByName")]
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientAsync([FromQuery] string clientName)
         {
@@ -291,6 +306,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Client method for removing an existing Client from the database via id
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpDelete("ById")]
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientByIdAsync([FromQuery] int clientId)
         {
@@ -313,6 +329,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Manually trigger the daily client data gathering job (Admin/Testing only)
         /// </summary>
+        [Authorize(Roles = "trainer")]
         [HttpPost("TriggerDailyDataGathering")]
         public async Task TriggerDailyDataGatheringAsync()
         {

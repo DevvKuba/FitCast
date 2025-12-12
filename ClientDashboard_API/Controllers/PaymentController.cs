@@ -11,6 +11,11 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class PaymentController(IUnitOfWork unitOfWork) : BaseAPIController
     {
+        // [Authorize(Roles = "client")]
+        // TODO get all client specific payments
+
+
+        [Authorize(Roles = "trainer")]
         [HttpGet("getAllTrainerPayments")]
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync([FromQuery] int trainerId)
         {
@@ -25,6 +30,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        [Authorize(Roles = "trainer")]
         [HttpPut("updateExistingPayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdatePaymentInformationAsync([FromBody] PaymentUpdateRequestDto paymentRequestInfo)
         {
@@ -47,6 +53,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        [Authorize(Roles = "trainer")]
         [HttpPost("addPayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromBody] PaymentAddDto paymentInfo)
         {
@@ -72,6 +79,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        [Authorize(Roles = "trainer")]
         [HttpDelete("deletePayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteTrainerPaymentAsync([FromQuery] int paymentId)
         {
@@ -91,6 +99,7 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} and their client: {payment.Client!.FirstName} has been deleted successfully", Success = true });
         }
 
+        [Authorize(Roles = "trainer")]
         [HttpDelete("filterClientPayments")]
         public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
         {

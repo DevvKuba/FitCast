@@ -1,9 +1,11 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
+    [Authorize(Roles = "trainer")]
     public class NotificationController(INotificationService notificationService) : BaseAPIController
     {
         [HttpPost("SendTrainerBlockCompletionReminder")]
