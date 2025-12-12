@@ -72,7 +72,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 60; // 60 minutes
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
 
@@ -112,7 +112,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 60;
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
 
@@ -133,7 +133,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 60;
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
 
@@ -154,7 +154,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 55; // 55 minutes
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount, duration);
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount, duration);
@@ -192,7 +192,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 50; // 50 minutes
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount, duration);
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount, duration);
@@ -214,7 +214,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 50;
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateOne, exerciseCount, duration);
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDateTwo, exerciseCount, duration);
@@ -234,7 +234,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 65; // 65 minutes
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
 
@@ -256,7 +256,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 65;
 
-            await _context.Client.AddAsync(new Client { FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
 
@@ -273,8 +273,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var todaysDateString = DateTime.Now.Date.ToString();
             var duration = 58; // 58 minutes
 
-            await _context.Client.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.Client.AddAsync(new Client { FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync("rob", "rob's workout", DateOnly.Parse(todaysDateString[0..10]), 10, duration);
             await _workoutController.AddNewAutoClientWorkoutAsync("mat", "mat's workout", DateOnly.Parse(todaysDateString[0..10]), 10, duration);
@@ -297,8 +297,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var date = DateOnly.Parse("19/06/2025");
             var duration = 58;
 
-            await _context.Client.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.Client.AddAsync(new Client { FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync("rob", "rob's workout", date, 10, duration);
             await _workoutController.AddNewAutoClientWorkoutAsync("mat", "mat's workout", date, 10, duration);

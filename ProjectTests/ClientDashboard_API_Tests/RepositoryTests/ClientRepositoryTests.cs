@@ -53,7 +53,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddingCorrectClientAsync()
         {
-            var testClient = new Client { FirstName = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
+            var testClient = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 0, TotalBlockSessions = 8 };
 
             await _clientRepository.AddNewClientUnderTrainerAsync(clientName: "Rob", blockSessions: 8, phoneNumber: null, trainerId: null);
             await _unitOfWork.Complete();
@@ -93,8 +93,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingAllClientsOnLastSessionsAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { FirstName = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientList = await _clientRepository.GetClientsOnLastSessionAsync();
@@ -106,8 +106,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingAllClientsOnFirstSessionsAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientList = await _clientRepository.GetClientsOnFirstSessionAsync();
@@ -119,7 +119,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingClientsCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var clientSession = await _clientRepository.GetClientsCurrentSessionAsync("rob");
@@ -131,7 +131,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGettingClientByNameAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _clientRepository.GetClientByNameAsync("rob");
@@ -144,7 +144,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateAddingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -157,7 +157,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateAddingClientCurrentSessionNewBlockAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -170,7 +170,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdateDeletingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -183,7 +183,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientTotalBlockSessionsAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -197,7 +197,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientCurrentSessionAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
@@ -211,7 +211,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatingClientNameAsync()
         {
-            await _context.AddAsync(new Client { FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
