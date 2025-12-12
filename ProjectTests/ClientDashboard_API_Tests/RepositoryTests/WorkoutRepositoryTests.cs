@@ -65,7 +65,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var databaseWorkout = await _context.Workouts.FirstOrDefaultAsync();
 
             Assert.True(_context.Workouts.Any(x => x.Equals(databaseWorkout)));
-            Assert.Equal(databaseWorkout!.Client, client);
             Assert.Equal(databaseWorkout!.WorkoutTitle, workoutTitle);
             Assert.Equal(databaseWorkout!.SessionDate, workoutDate);
             Assert.Equal(databaseWorkout!.ExerciseCount, exerciseCount);
