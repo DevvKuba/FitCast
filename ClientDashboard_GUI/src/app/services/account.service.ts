@@ -61,6 +61,7 @@ export class AccountService {
       return{
         id: payload.sub,
         firstName: payload.given_name,
+        role: payload.role,
         token: token
       };
     }
