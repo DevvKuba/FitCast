@@ -53,7 +53,7 @@ export class LoginComponent {
         }
         else {
           this.toastService.showSuccess('Logged In','Redirected to personal workouts page' );
-          // this.router.navigateByUrl('client-info');
+          this.router.navigateByUrl('client-personal-workouts');
         }
         
       },

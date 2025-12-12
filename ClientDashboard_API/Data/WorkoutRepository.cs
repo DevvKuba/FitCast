@@ -33,6 +33,16 @@ namespace ClientDashboard_API.Data
             Workout? workout = await context.Workouts.Where(x => x.Id == id).FirstOrDefaultAsync();
             return workout;
         }
+        public async Task<List<Workout>> GetClientWorkoutsAsync(Client client)
+        {
+            List<Workout> workouts = await context.Workouts.Where(w => w.ClientId == client.Id).ToListAsync();
+            
+            foreach(var workout  in workouts)
+            {
+                workout.Client = null;
+            }
+            return workouts;
+        }
         public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
             var clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();
@@ -127,7 +137,6 @@ namespace ClientDashboard_API.Data
                 TotalBlockSessions = client.TotalBlockSessions,
                 ExerciseCount = exerciseCount,
                 Duration = duration,
-                Client = client
             });
         }
 
@@ -135,5 +144,7 @@ namespace ClientDashboard_API.Data
         {
             context.Workouts.Remove(workout);
         }
+
+        
     }
 }

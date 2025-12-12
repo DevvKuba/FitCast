@@ -78,7 +78,7 @@ export class ClientPersonalWorkoutsComponent implements OnInit{
 
      displayWorkouts(){
         // call retrieve client workouts
-        this.workoutService.retrieveTrainerClientWorkouts(this.currentUser?.id ?? 0).subscribe({
+        this.workoutService.retrieveClientSpecificWorkouts(this.currentUser?.id ?? 0).subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },

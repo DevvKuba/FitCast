@@ -1,0 +1,80 @@
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.p-inputtext {
+    max-width: 135px;
+}
+
+.workout-caption {
+    display: flex;
+    justify-content: space-between;
+}
+
+.workout-search {
+    margin-right: 80px;
+}
+
+.workout-search-input {
+    max-width: none;
+}
+
+.workout-add-button {
+    margin-right: 40px;
+}
+
+.left-segment {
+    display: flex;
+    justify-content: space-between;
+}
+
+.exercise-count-input {
+    max-width: 80px;
+}
+
+.duration-count-input {
+    max-width: 60px;
+}
+
+.workout-td {
+    text-align: center;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-button-container {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.popover-content {
+    padding: 1rem;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.popover-text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #374151;
+}
+
+::ng-deep .p-popover {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+}
+
+::ng-deep .p-popover .p-popover-content {
+    padding: 0;
+    border-radius: 8px;
+}

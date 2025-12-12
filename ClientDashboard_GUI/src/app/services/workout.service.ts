@@ -19,7 +19,7 @@ export class WorkoutService {
   }
 
   retrieveClientSpecificWorkouts(clientId: number): Observable<ApiResponse<Workout[]>>{
-    return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + ``);
+    return this.http.get<ApiResponse<Workout[]>>(this.baseUrl + `workout/GetClientSpecificWorkouts?clientId=${clientId}`);
   }
 
   addWorkout(newWorkout : WorkoutAddDto) : Observable<ApiResponse<string>>{

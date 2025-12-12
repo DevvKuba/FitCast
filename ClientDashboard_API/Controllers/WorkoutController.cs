@@ -20,16 +20,18 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No clients with that id found", Success = false });
             }
 
-            if (!client.Workouts.Any())
+            var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsAsync(client);
+
+            if (!clientWorkouts.Any())
             {
                 return Ok(new ApiResponseDto<List<Workout>> { Data = [], Message = "No workout's found", Success = true });
             }
 
-            return Ok(new ApiResponseDto<List<Workout>> { Data = client.Workouts, Message = " workouts returned", Success = true });
+            return Ok(new ApiResponseDto<List<Workout>> { Data = clientWorkouts, Message = " workouts returned", Success = true });
         }
 
         /// <summary>
-        /// Workout request for the retrieval of paginated workouts
+        /// Workout request for the retrieval of paginated workoutsb
         /// </summary>
         [Authorize(Roles = "trainer")]
         [HttpGet("GetTrainerWorkouts")]
