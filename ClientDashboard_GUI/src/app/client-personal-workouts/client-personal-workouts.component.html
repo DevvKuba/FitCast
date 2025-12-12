@@ -1,0 +1,114 @@
+@if(workouts === null){
+    <app-spinner></app-spinner>
+}
+@else {
+    <p-toast />
+    <div class="table-container">
+    <p-table
+        #dt2
+        [value]="workouts"
+        [globalFilterFields] = "['clientName']"
+        [paginator]="true"
+        [rows]="10"
+        [first]="first"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'width': '1000px' , 'table-layout': 'fixed' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        (onPage)="pageChange($event)"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        dataKey="id"
+        editMode="row"
+    >
+        <ng-template #header>
+            
+            <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
+            <tr>
+                <th pSortableColumn="workoutTitle" style="width:22%; text-align: center;">
+                    Workout Title <p-sortIcon field="workoutTitle" />
+                </th>
+                 <th pSortableColumn="clientName" style="width:16%; text-align: center;">
+                    Client Name <p-sortIcon field="clientName" />
+                </th>
+                 <th pSortableColumn="currentBlockSession" style="width:16%; text-align: center;">
+                    Current Session <p-sortIcon field="currentBlockSession" />
+                </th>
+                 <th pSortableColumn="totalBlockSessions" style="width:16%; text-align: center;">
+                    Total Sessions <p-sortIcon field="totalBlockSessions" />
+                </th>
+                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;" >
+                    Session Date <p-sortIcon field="sessionDate" />
+                </th>
+                <th pSortableColumn="duration" style="width:15%; text-align: center;">
+                    Duration <p-sortIcon field="duration" />
+                </th>
+                 <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
+                    Exercises <p-sortIcon field="exerciseCount" />
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-workout let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="workout">
+                <td class="workout-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]= "workout.workoutTitle" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{workout.workoutTitle}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="workout-td">{{ workout.clientName }}</td>
+                <td class="workout-td">{{ workout.currentBlockSession }}</td>
+                <td class="workout-td">{{ workout.totalBlockSessions }}</td>
+                <td class="workout-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="date"
+                            [(ngModel)]= "workout.sessionDate" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{workout.sessionDate | date:'dd/MM/yyyy'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              <td class="workout-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input class="duration-count-input"
+                            pInputText type="number"
+                            [(ngModel)]= "workout.duration" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{workout.duration + ' mins'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="workout-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input class="exercise-count-input"
+                            pInputText type="number"
+                            [(ngModel)]= "workout.exerciseCount" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{workout.exerciseCount}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="workout-td">
+            </td>
+            </tr>
+        </ng-template>
+        
+    </p-table>
+</div>
+
+}
