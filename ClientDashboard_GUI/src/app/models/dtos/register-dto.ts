@@ -3,7 +3,7 @@ export interface RegisterDto {
   firstName: string;
   surname: string;
   phoneNumber: string;
-  userType: string;
+  role: string;
   password: string;
   clientId: number | null;
   clientsTrainerId: number | null;

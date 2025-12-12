@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Services
         {
             // check if any fields are empty
             if (request.FirstName.Length is 0 || request.Surname.Length is 0 || request.Password.Length is 0 
-                || request.Email.Length is 0 || request.PhoneNumber.Length is 0 || request.UserType is null)
+                || request.Email.Length is 0 || request.PhoneNumber.Length is 0 || request.Role is null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Services
 
             // email / sms verification step
 
-            if (request.UserType == "trainer")
+            if (request.Role == "trainer")
             {
                 var trainer = new Trainer
                 {

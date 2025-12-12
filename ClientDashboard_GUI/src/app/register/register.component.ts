@@ -48,7 +48,7 @@ export class RegisterComponent {
       surname: surname,
       email : email, 
       phoneNumber: phoneNumber,
-      userType : userType,
+      role : userType,
       clientId : clientId || null,
       clientsTrainerId : clientsTrainerId || null,
       password: password

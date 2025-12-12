@@ -40,14 +40,14 @@ export class LoginComponent {
     const loginInfo: LoginDto = {
       email: email,
       password: password,
-      userType: userType
+      role: userType
     }
     this.accountService.login(loginInfo).subscribe({
       next: (response : ApiResponse<UserDto>) => {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
         this.accountService.currentUser.set(response.data ?? null);
         
-        if(loginInfo.userType == "trainer"){
+        if(loginInfo.role == "trainer"){
           this.toastService.showSuccess('Logged In','Redirected to client-info page' );
           this.router.navigateByUrl('client-info');
         }

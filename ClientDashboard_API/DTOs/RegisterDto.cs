@@ -12,7 +12,7 @@
 
         public required string Password { get; set; }
 
-        public required string UserType { get; set; }
+        public required string Role { get; set; }
 
         public int? ClientId { get; set; }
 
