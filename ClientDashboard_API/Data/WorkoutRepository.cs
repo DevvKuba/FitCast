@@ -35,7 +35,10 @@ namespace ClientDashboard_API.Data
         }
         public async Task<List<Workout>> GetClientWorkoutsAsync(Client client)
         {
-            List<Workout> workouts = await context.Workouts.Where(w => w.ClientId == client.Id).ToListAsync();
+            List<Workout> workouts = await context.Workouts
+                .Where(w => w.ClientId == client.Id)
+                .OrderByDescending(w => w.SessionDate)
+                .ToListAsync();
             
             foreach(var workout  in workouts)
             {
