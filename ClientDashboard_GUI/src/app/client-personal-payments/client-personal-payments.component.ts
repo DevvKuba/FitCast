@@ -31,7 +31,7 @@ import { UserDto } from '../models/dtos/user-dto';
 @Component({
   selector: 'app-client-personal-payments',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
-       Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
+        FormsModule, AutoCompleteModule, InputNumberModule, TagModule, SelectModule,
        ToggleButtonModule, PasswordModule, PopoverModule, IconFieldModule, InputIconModule],
   templateUrl: './client-personal-payments.component.html',
   styleUrl: './client-personal-payments.component.css'
@@ -52,8 +52,9 @@ export class ClientPersonalPaymentsComponent implements OnInit{
     this.currentUser = this.accountService.currentUser();
     this.paymentStatuses = [
         {label: 'Confirmed', value: true},
-        {label: 'Pending', value: false}
-    ];
+        {label: 'Pending', value: false}];
+    this.gatherAllClientPayments();
+    
   }
 
   next() {
@@ -88,5 +89,16 @@ export class ClientPersonalPaymentsComponent implements OnInit{
   getActivityLabel(isConfirmed: boolean) : string {
     return isConfirmed ? 'Confirmed' : 'Pending';
   }
+
+  gatherAllClientPayments(){
+      this.paymentService.getClientSpecificPayments(this.currentUser?.id ?? 0).subscribe({
+        next: (response) => {
+          this.payments = response.data;
+        },
+        error: (response) => {
+          console.log(response.error.message)
+        }
+      })
+    }
 
 }

@@ -26,7 +26,6 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-
         [Authorize(Roles = "trainer")]
         [HttpGet("getAllTrainerPayments")]
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync([FromQuery] int trainerId)

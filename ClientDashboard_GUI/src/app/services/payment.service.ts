@@ -16,6 +16,10 @@ export class PaymentService {
     return this.http.get(this.baseUrl + `payment/getAllTrainerPayments?trainerId=${trainerId}`);
   }
 
+  getClientSpecificPayments(clientId: number) : Observable<any>{
+    return this.http.get(this.baseUrl + `payment/getClientSpecificPayments?clientId=${clientId}`);
+  }
+
   updatePaymentInfo(paymentInfo: PaymentRequestUpdateDto) : Observable<any> {
     return this.http.put(this.baseUrl + 'payment/updateExistingPayment', paymentInfo);
   }

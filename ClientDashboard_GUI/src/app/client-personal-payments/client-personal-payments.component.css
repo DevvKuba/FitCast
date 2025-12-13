@@ -1,0 +1,66 @@
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-td {
+    text-align: center;
+    padding: 0.5rem ;
+}
+
+.search-field {
+    margin-right: 80px;
+}
+
+
+.payment-caption {
+    display: flex;
+    justify-content: space-between;
+}
+
+.auto-setting-button {
+    margin-left: 40px;
+    margin-bottom: -30px;
+    margin-top: -30px;
+}
+
+.filter-payment-button {
+    margin-left: 40px;
+    margin-bottom: -30px;
+    margin-top: -30px;
+}
+
+.delete-message {
+  margin-bottom: 20px;
+}
+
+/* Amount column - currency input */
+::ng-deep .payment-amount-input {
+    width: 100px ;
+}
+
+::ng-deep .payment-amount-input .p-inputnumber-input {
+    width: 100% ;
+    text-align: center;
+}
+
+
+.payment-currency-input {
+    width: 60px;
+    text-align: center;
+}
+
+::ng-deep .payment-sessions-input {
+    width: 60px ;
+}
+
+::ng-deep .payment-sessions-input .p-inputnumber-input {
+    width: 100%;
+    text-align: center;
+}
+
+::ng-deep .payment-td input[type="date"] {
+    width: 140px;
+    text-align: center;
+}
