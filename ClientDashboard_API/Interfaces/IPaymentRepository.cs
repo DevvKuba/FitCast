@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
 
+        Task<List<Payment>> GetAllClientSpecificPaymentsAsync(Client client);
+
         void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo);
 
         Task<decimal> CalculateClientTotalLifetimeValueAsync(Client client, DateOnly tillDate);

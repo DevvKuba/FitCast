@@ -17,6 +17,15 @@ namespace ClientDashboard_API.Data
             return payments;
         }
 
+        public async Task<List<Payment>> GetAllClientSpecificPaymentsAsync(Client client)
+        {
+            var payments = await context.Payments.Where(p => p.ClientId == client.Id)
+                .OrderBy(p => p.Confirmed)
+                .ThenByDescending(p => p.PaymentDate)
+                .ToListAsync();
+            return payments;
+        }
+
         public async Task<Payment?> GetPaymentByIdAsync(int id)
         {
             var payment = await context.Payments.Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -66,7 +75,6 @@ namespace ClientDashboard_API.Data
         }
 
 
-
         public async Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed)
         {
             var payment = new Payment
@@ -98,6 +106,5 @@ namespace ClientDashboard_API.Data
         {
             context.Remove(payment);
         }
-
     }
 }
