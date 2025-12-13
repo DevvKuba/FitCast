@@ -30,22 +30,19 @@
                 <th pSortableColumn="workoutTitle" style="width:22%; text-align: center;">
                     Workout Title <p-sortIcon field="workoutTitle" />
                 </th>
-                 <th pSortableColumn="clientName" style="width:16%; text-align: center;">
-                    Client Name <p-sortIcon field="clientName" />
-                </th>
                  <th pSortableColumn="currentBlockSession" style="width:16%; text-align: center;">
                     Current Session <p-sortIcon field="currentBlockSession" />
                 </th>
                  <th pSortableColumn="totalBlockSessions" style="width:16%; text-align: center;">
                     Total Sessions <p-sortIcon field="totalBlockSessions" />
                 </th>
-                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;" >
+                 <th pSortableColumn="sessionDate" style="width:16%; text-align: center;" >
                     Session Date <p-sortIcon field="sessionDate" />
                 </th>
-                <th pSortableColumn="duration" style="width:15%; text-align: center;">
+                <th pSortableColumn="duration" style="width:12%; text-align: center;">
                     Duration <p-sortIcon field="duration" />
                 </th>
-                 <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
+                 <th pSortableColumn="exerciseCount" style="width:10%; text-align: center;">
                     Exercises <p-sortIcon field="exerciseCount" />
                 </th>
             </tr>
@@ -64,7 +61,6 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                <td class="workout-td">{{ workout.clientName }}</td>
                 <td class="workout-td">{{ workout.currentBlockSession }}</td>
                 <td class="workout-td">{{ workout.totalBlockSessions }}</td>
                 <td class="workout-td">
@@ -103,8 +99,6 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                <td class="workout-td">
-            </td>
             </tr>
         </ng-template>
         
