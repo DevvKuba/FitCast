@@ -21,7 +21,7 @@ import { ToggleButton } from 'primeng/togglebutton';
 @Component({
   selector: 'app-login',
   imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule,
-     FloatLabelModule, ButtonModule, RouterLink, RadioButton, ToggleButton],
+     FloatLabelModule, ButtonModule, RouterLink, RadioButton],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

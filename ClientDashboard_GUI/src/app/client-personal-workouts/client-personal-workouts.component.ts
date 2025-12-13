@@ -30,8 +30,8 @@ import { InputIconModule } from 'primeng/inputicon';
 @Component({
   selector: 'app-client-personal-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
-       Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-       ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule, IconFieldModule, InputIconModule],
+        FormsModule, AutoCompleteModule, InputNumberModule, TagModule, SelectModule,
+       ToggleButtonModule, PasswordModule, PopoverModule, IconFieldModule, InputIconModule],
   providers: [MessageService],
   templateUrl: './client-personal-workouts.component.html',
   styleUrl: './client-personal-workouts.component.css'

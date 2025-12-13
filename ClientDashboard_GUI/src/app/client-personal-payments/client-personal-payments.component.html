@@ -1,1 +1,130 @@
-<p>client-personal-payments works!</p>
+@if(payments === null){
+    <app-spinner></app-spinner>
+}
+@else {
+    <p-toast />
+    <div class="table-container">
+    <p-table
+        #dt1
+        [value]="payments"
+        [globalFilterFields] = "['clientName']"
+        [paginator]="true"
+        [rows]="10"
+        [first]="first"
+        [showCurrentPageReport]="true"
+        [tableStyle]="{ 'width': '1000px' , 'table-layout': 'fixed' }"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        (onPage)="pageChange($event)"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        dataKey="id"
+        editMode="row"
+    >
+        <ng-template #header>
+            <div class="mb-4">
+                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
+                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
+                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
+            </div>
+            <tr>
+                <th pSortableColumn="clientName" style="width:20%; text-align: center;">
+                    Client Name <p-sortIcon field="clientName" />
+                </th>
+                 <th pSortableColumn="amount" style="width:18%; text-align: center;">
+                    Amount <p-sortIcon field="amount" />
+                </th>
+                 <th pSortableColumn="currency" style="width:12%; text-align: center;">
+                    Currency <p-sortIcon field="currency" />
+                </th>
+                 <th pSortableColumn="numberOfSessions" style="width:18%; text-align: center;">
+                    Sessions <p-sortIcon field="numberOfSessions" />
+                </th>
+                 <th pSortableColumn="paymentDate" style="width:20%; text-align: center;" >
+                    Payment Date <p-sortIcon field="paymentDate" />
+                </th>
+                <th pSortableColumn="paymentDate" style="width:20%; text-align: center;" >
+                    Status <p-sortIcon field="paymentDate" />
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-payment let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="payment">
+                <td class="payment-td">{{ payment.clientName}}</td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-inputnumber
+                            [(ngModel)]="payment.amount"
+                            mode="currency"
+                            [currency]="payment.currency || 'GBP'"
+                            styleClass="payment-amount-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.amount | currency:payment.currency:'symbol':'1.2-2'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="text"
+                            [(ngModel)]="payment.currency"
+                            class="payment-currency-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.currency}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-inputnumber
+                            [(ngModel)]="payment.numberOfSessions"
+                            class="payment-sessions-input" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.numberOfSessions}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+                <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <input
+                            pInputText type="date"
+                            [(ngModel)]="payment.paymentDate" />
+                    </ng-template>
+                    <ng-template #output>
+                        {{payment.paymentDate | date:'dd/MM/yyyy'}}
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+
+              <td class="payment-td">
+                <p-cellEditor>
+                    <ng-template #input>
+                        <p-select
+                            [options]="paymentStatuses"
+                          appendTo="body"
+                            [(ngModel)]= "payment.confirmed"
+                            [style]="{'width':'100%'}" 
+                            />
+                    </ng-template>
+                    <ng-template #output>
+                         <p-tag
+                            [value]="getActivityLabel(payment.confirmed)"
+                            [severity]="getActivities(payment.confirmed)" />
+                    </ng-template>
+                </p-cellEditor>
+              </td>
+              
+            </tr>
+        </ng-template>
+        
+    </p-table>
+</div>
+
+}
+
+
