@@ -11,9 +11,7 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class PaymentController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-
-        // TODO get all client specific payments
-         [Authorize(Roles = "client")]
+        [Authorize(Roles = "client")]
         [HttpGet("getClientSpecificPayments")]
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetClientPaymentsAsync([FromQuery] int clientId)
         {
@@ -22,9 +20,9 @@ namespace ClientDashboard_API.Controllers
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
-            var trainerPayments = await unitOfWork.PaymentRepository.GetAllPaymentsForTrainerAsync(trainer);
+            var clientPayments = await unitOfWork.PaymentRepository.GetAllClientSpecificPaymentsAsync(client);
 
-            return Ok(new ApiResponseDto<List<Payment>> { Data = trainerPayments, Message = $"Successfully gathered trainer: {trainer.FirstName}'s payments", Success = true });
+            return Ok(new ApiResponseDto<List<Payment>> { Data = clientPayments, Message = $"Successfully gathered client: {client.FirstName}'s payments", Success = true });
 
         }
 
