@@ -15,7 +15,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientSpecificWorkouts([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdWithWorkoutsAsync(clientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No clients with that id found", Success = false });
             }
@@ -38,7 +38,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No trainers with that id found", Success = false });
             }
@@ -67,7 +67,7 @@ namespace ClientDashboard_API.Controllers
 
             var clientSessions = await unitOfWork.WorkoutRepository.GetClientWorkoutsAtDateAsync(todaysDate);
 
-            if (clientSessions == null || !clientSessions.Any())
+            if (clientSessions is null || !clientSessions.Any())
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = $"No client sessions found on specified date: {todaysDateString}", Success = false });
             }
@@ -83,7 +83,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(clientName, workoutDate);
-            if (clientWorkout == null)
+            if (clientWorkout is null)
             {
                 return NotFound(new ApiResponseDto<Workout> { Data = null, Message = $"Client: {clientName}'s workout at {workoutDate} was not found.", Success = false });
             }
@@ -116,7 +116,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetLatestClientWorkoutAsync(string clientName)
         {
             var latestWorkoutInfo = await unitOfWork.WorkoutRepository.GetLatestClientWorkoutAsync(clientName);
-            if (latestWorkoutInfo == null)
+            if (latestWorkoutInfo is null)
             {
                 return NotFound(new ApiResponseDto<Workout> { Data = null, Message = $"{clientName} has no workouts recorded", Success = false });
             }
@@ -133,7 +133,7 @@ namespace ClientDashboard_API.Controllers
         {
             // TODO may need to change to Id even for SessionSyncService
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });
             }
@@ -158,7 +158,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewManualClientWorkoutAsync([FromBody] WorkoutAddDto newWorkout)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdWithTrainerAsync(newWorkout.ClientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {newWorkout.ClientName} not found", Success = false });
             }
@@ -175,7 +175,7 @@ namespace ClientDashboard_API.Controllers
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
                 await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
-                if (client.Trainer != null)
+                if (client.Trainer is not null)
                 {
                     if (client.Trainer.AutoPaymentSetting)
                     {
@@ -198,7 +198,7 @@ namespace ClientDashboard_API.Controllers
         {
             var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(newWorkoutInfo.Id);
 
-            if (workout == null)
+            if (workout is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout not found", Success = false });
             }
@@ -222,7 +222,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteClientWorkoutAsync(string clientName, DateOnly workoutDate)
         {
             var clientWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByNameAsync(clientName, workoutDate);
-            if (clientWorkout == null)
+            if (clientWorkout is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Cannot find specified client: {clientName}'s workout at {workoutDate}", Success = false });
             }
@@ -247,14 +247,14 @@ namespace ClientDashboard_API.Controllers
         {
             var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(workoutId);
 
-            if (workout == null)
+            if (workout is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout doesn't exist", Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(workout.ClientId);
 
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"client doesn't exist", Success = false });
             }

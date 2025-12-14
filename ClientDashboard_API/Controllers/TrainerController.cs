@@ -22,7 +22,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -38,7 +38,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -60,14 +60,14 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
 
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
@@ -89,7 +89,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -111,7 +111,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -143,7 +143,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -175,7 +175,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -199,12 +199,12 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
             }
 
-            if (trainer.WorkoutRetrievalApiKey == null)
+            if (trainer.WorkoutRetrievalApiKey is null)
             {
                 return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not have an assigned api key ", Success = false });
             }
@@ -226,14 +226,14 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var encryptedApiKey = trainer.WorkoutRetrievalApiKey;
 
-            if (encryptedApiKey == null)
+            if (encryptedApiKey is null)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"trainer: {trainer.FirstName} does not have an api key set", Success = false });
             }
@@ -249,7 +249,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -265,7 +265,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }

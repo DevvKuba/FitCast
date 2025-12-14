@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetClientPaymentsAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Controllers
         {
             var payment = await unitOfWork.PaymentRepository.GetPaymentWithClientByIdAsync(paymentRequestInfo.Id);
 
-            if (payment == null)
+            if (payment is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
             }
@@ -69,7 +69,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromBody] PaymentAddDto paymentInfo)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(paymentInfo.TrainerId);
-            if (trainer == null)
+            if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
@@ -96,7 +96,7 @@ namespace ClientDashboard_API.Controllers
         {
             var payment = await unitOfWork.PaymentRepository.GetPaymentWithRelatedEntitiesById(paymentId);
 
-            if (payment == null)
+            if (payment is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
             }
@@ -116,7 +116,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if(trainer == null)
+            if(trainer is null)
             {
                 return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"Trainer was not found", Success = false });
             }

@@ -30,7 +30,7 @@ namespace ClientDashboard_API.Controllers
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
 
-            if(client == null)
+            if(client is null)
             {
                 return NotFound(new ApiResponseDto<int> { Data = 0, Message = $"client with id: {clientId} was not found", Success = false });
             }
@@ -46,7 +46,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<int>>> GetCurrentClientBlockSessionAsync(string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<int> { Data = 0, Message = $"{clientName} was not found", Success = false });
             }
@@ -62,7 +62,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnLastBlockSessionAsync()
         {
             var clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
-            if (clientSessions == null || !clientSessions.Any())
+            if (clientSessions is null || !clientSessions.Any())
             {
                 return NotFound(new ApiResponseDto<List<string>> { Data = [], Message = "No clients currently on their last block session", Success = false });
             }
@@ -78,7 +78,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnFirstBlockSessionAsync()
         {
             var clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
-            if (clientSessions == null || !clientSessions.Any())
+            if (clientSessions is null || !clientSessions.Any())
             {
                 return NotFound(new ApiResponseDto<List<string>> { Data = [], Message = "No clients currently on their first block session", Success = false });
             }
@@ -94,7 +94,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to retrieve phone number", Success = false });
             }
@@ -110,7 +110,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
             var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
-            if (oldClient == null)
+            if (oldClient is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
             }
@@ -133,7 +133,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync([FromBody] ClientPhoneNumberUpdateDto clientInfo)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientInfo.Id);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to assign phone number", Success = false });
             }
@@ -157,7 +157,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
             }
@@ -180,7 +180,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientCurrentSessionAsync(string clientName, int currentSession)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
             }
@@ -202,7 +202,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientNameAsync(string currentName, string newName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(currentName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {currentName} found", Success = false });
             }
@@ -225,7 +225,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> UnAssignCurrentTrainerAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id {clientId} found", Success = false });
             }
@@ -288,7 +288,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientAsync([FromQuery] string clientName)
         {
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} not found in the database", Success = false });
             }
@@ -311,7 +311,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-            if (client == null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not found in the database", Success = false });
             }

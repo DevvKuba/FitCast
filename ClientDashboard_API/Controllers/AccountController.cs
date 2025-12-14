@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Controllers
         {
             var user = await loginService.Handle(loginInfo);
 
-            if (user.Data == null)
+            if (user.Data is null)
             {
                 // both error cases return null , response.Message contains specific error message
                 return NotFound(new ApiResponseDto<UserDto> { Data = null, Message = user.Message, Success = false });
@@ -44,14 +44,14 @@ namespace ClientDashboard_API.Controllers
 
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByPhoneNumberAsync(trainerPhoneNumber);
 
-            if(trainer == null)
+            if(trainer is null)
             {
                 return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer not found for client {clientFirstName}", Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByNameUnderTrainer(trainer, clientFirstName);
 
-            if(client == null)
+            if(client is null)
             {
                 return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer does not have client under the name: ${clientFirstName}", Success = false });
             }
