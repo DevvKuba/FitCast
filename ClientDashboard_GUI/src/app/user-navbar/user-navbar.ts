@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
@@ -12,15 +12,27 @@ import { AccountService } from '../services/account.service';
   templateUrl: './user-navbar.html',
   styleUrl: './user-navbar.css'
 })
-export class UserNavbar implements OnInit {
+export class UserNavbar{
+
   functionItems: MenuItem[] | undefined;
   generalItems: MenuItem[] | undefined;
  
   loginComponent = inject(LoginComponent);
   accountService = inject(AccountService);
 
-    ngOnInit() {
-        this.functionItems = [
+    constructor(){
+        effect(() => {
+            const user = this.accountService.currentUser();
+
+            if(!user){
+                this.functionItems = [];
+                this.generalItems = [];
+                return;
+            }
+
+            if(this.accountService.currentUser()?.role == "trainer"){
+            console.log(this.accountService.currentUser()?.role)
+            this.functionItems = [
             {
                 label: 'Client Analytics',
                 routerLink: '/client-analytics',
@@ -65,5 +77,45 @@ export class UserNavbar implements OnInit {
                 command: () => this.loginComponent.trainerLogout(this.loginComponent.storageItem)
             },
         ]
+        }
+        else {
+            this.functionItems = [
+            {
+                label: 'Personal Info',
+                routerLink: '/client-info',
+                icon: 'pi pi-users'
+            },
+            {
+                label: 'Workouts',
+                routerLink: '/client-personal-workouts',
+                icon: 'pi pi-table'
+            },
+            {
+                label: 'Payments',
+                routerLink: '/client-personal-payments',
+                icon: 'pi pi-credit-card'
+            }
+            
+        ];
+        this.generalItems = [
+            {
+                label: 'Home',
+                routerLink: '/',
+                icon: 'pi pi-home'
+            },
+            // {
+            //     label: 'Profile',
+            //     routerLink: '/trainer-profile',
+            //     icon: 'pi pi-user-edit'
+            // },
+            {
+                label: 'Logout',
+                icon: 'pi pi-sign-out',
+                command: () => this.loginComponent.trainerLogout(this.loginComponent.storageItem)
+            },
+        ]
+        }
+        })
+        
     }
 }

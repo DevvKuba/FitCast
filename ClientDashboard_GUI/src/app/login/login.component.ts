@@ -46,6 +46,7 @@ export class LoginComponent {
       next: (response : ApiResponse<UserDto>) => {
         localStorage.setItem(this.storageItem, response.data?.token ?? '' );
         this.accountService.currentUser.set(response.data ?? null);
+        console.log(this.accountService.currentUser()?.role);
         
         if(loginInfo.role == "trainer"){
           this.toastService.showSuccess('Logged In','Redirected to client-info page' );

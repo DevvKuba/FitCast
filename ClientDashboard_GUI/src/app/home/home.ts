@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LoginComponent } from "../login/login.component";
 import { ButtonDirective, ButtonModule } from "primeng/button";
