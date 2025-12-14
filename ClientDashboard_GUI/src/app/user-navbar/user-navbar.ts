@@ -24,6 +24,8 @@ export class UserNavbar{
         effect(() => {
             const user = this.accountService.currentUser();
 
+            console.log('Effect triggered, user:', user);
+
             if(!user){
                 this.functionItems = [];
                 this.generalItems = [];
@@ -78,7 +80,7 @@ export class UserNavbar{
             },
         ]
         }
-        else {
+        else if (this.accountService.currentUser()?.role == "client") {
             this.functionItems = [
             {
                 label: 'Personal Info',
@@ -114,6 +116,21 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
+        }
+        else {
+            this.functionItems = [];
+            this.generalItems = [
+                {
+                label: 'Home',
+                routerLink: '/',
+                icon: 'pi pi-home'
+            },
+            {
+                label: 'Logout',
+                icon: 'pi pi-sign-out',
+                command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
+            },
+            ];
         }
         })
         
