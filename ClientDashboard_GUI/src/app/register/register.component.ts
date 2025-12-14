@@ -40,7 +40,7 @@ export class RegisterComponent {
   password: string = "";
   userType: string = "";
 
-  register(email: string, firstName: string, surname: string,
+  userRegister(email: string, firstName: string, surname: string,
      phoneNumber: string, userType: string, clientId: number | null,
     clientsTrainerId: number | null,  password: string){
     const registerInfo: RegisterDto = {

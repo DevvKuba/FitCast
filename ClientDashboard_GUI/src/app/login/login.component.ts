@@ -36,7 +36,7 @@ export class LoginComponent {
   userType: string = "";
   storageItem = "token";
 
-  login(email: string, password: string, userType: string){
+  userLogin(email: string, password: string, userType: string){
     const loginInfo: LoginDto = {
       email: email,
       password: password,
@@ -65,7 +65,7 @@ export class LoginComponent {
     })
   }
 
-  trainerLogout(storageItem: string){
+  userLogout(storageItem: string){
     this.accountService.logout(storageItem);
     this.accountService.currentUser.set(null);
     console.log("User logged out, current user is now: ", this.accountService.currentUser());

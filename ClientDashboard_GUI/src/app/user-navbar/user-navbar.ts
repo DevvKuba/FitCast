@@ -74,7 +74,7 @@ export class UserNavbar{
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
-                command: () => this.loginComponent.trainerLogout(this.loginComponent.storageItem)
+                command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
         }
@@ -111,7 +111,7 @@ export class UserNavbar{
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
-                command: () => this.loginComponent.trainerLogout(this.loginComponent.storageItem)
+                command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
         }
