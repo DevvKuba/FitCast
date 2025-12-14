@@ -46,13 +46,17 @@ export class AccountService {
     return false;
   }
 
-   initializeAuthState(): void {
-    const token = localStorage.getItem('token');
+   initializeAuthState(): Promise<void> {
+    return new Promise((resolve) => {
+      const token = localStorage.getItem('token');
 
     if(token && this.isTokenValid(token)){
       const userInfo = this.extractUserFromToken(token);
       this.currentUser.set(userInfo);
     }
+    resolve();
+    });
+    
   }
 
   private extractUserFromToken(token: string) : UserDto{
