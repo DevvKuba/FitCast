@@ -80,8 +80,8 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
-                .WithCronSchedule("0 0 0 * * ?")
-                .WithDescription("Runs daily at midnight - 12AM to sync Hevy workouts"));
+                .WithCronSchedule("0 45 11 * * ?")
+                .WithDescription("Runs daily at midnight - 11:45AM to sync Hevy workouts"));
 
                 var clientDataJobKey = new JobKey("DailyClientDataGathering");
 
