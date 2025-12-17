@@ -39,10 +39,10 @@ namespace ClientDashboard_API
                     .AllowCredentials();
                 });
             });
-
+            
             builder.Services
                 .AddFluentEmail(builder.Configuration["Email:SenderEmail"], builder.Configuration["Email:Sender"])
-                .AddSmtpSender(builder.Configuration["Email:Host"], builder.Configuration.GetValue<int>("Email:Post"));
+                .AddSmtpSender(builder.Configuration["Email:Host"], builder.Configuration.GetValue<int>("Email:Port"));
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenAuth();
