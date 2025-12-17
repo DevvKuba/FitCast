@@ -2,11 +2,12 @@
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using FluentEmail.Core;
 
 
 namespace ClientDashboard_API.Services
 {
-    public sealed class RegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher) : IRegisterService
+    public sealed class RegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, IFluentEmail fluentEmail) : IRegisterService
     {
 
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
@@ -44,6 +45,14 @@ namespace ClientDashboard_API.Services
                 };
 
                 await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
+
+                //email verification
+                await fluentEmail
+                    .To(trainer.Email)
+                    .Subject("Email verification for FitCast")
+                    .Body("To verify your email address click here")
+                    .SendAsync();
+
                 return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
             }
             else
