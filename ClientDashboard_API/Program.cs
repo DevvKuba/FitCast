@@ -4,6 +4,7 @@ using ClientDashboard_API.Jobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using System.Globalization;
@@ -38,6 +39,10 @@ namespace ClientDashboard_API
                     .AllowCredentials();
                 });
             });
+
+            builder.Services
+                .AddFluentEmail(builder.Configuration["Email:SenderEmail"], builder.Configuration["Email:Sender"])
+                .AddSmtpSender(builder.Configuration["Email:Host"], builder.Configuration.GetValue<int>("Email:Post"));
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenAuth();

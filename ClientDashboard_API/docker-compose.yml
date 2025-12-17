@@ -7,3 +7,9 @@ services:
       MSSQL_SA_PASSWORD: "Password@1"
     ports:
       - "1433:1433"
+  fitcast.papercut:
+    image: changemakerstudios/papercut-smtp:latest
+    container_name: FitCast.Papercut
+    ports:
+      - 8080:80
+      - 25:25
