@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService) : BaseAPIController
+    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService, IVerifyEmail verifyEmail) : BaseAPIController
     {
         [AllowAnonymous]
         [HttpPost("register")]
@@ -36,12 +36,12 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
 
         }
-        [AllowAnonymous]
-        [HttpGet("verify-email/{token}", Name = "VerifyEmail")]
-        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync( token)
-        {
+        //[AllowAnonymous]
+        //[HttpGet("verify-email/{token}", Name = "VerifyEmail")]
+        //public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync( token)
+        //{
 
-        }
+        //}
 
         [AllowAnonymous]
         [HttpGet("verifyClientUnderTrainer")]

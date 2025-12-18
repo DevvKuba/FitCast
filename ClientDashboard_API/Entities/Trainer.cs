@@ -8,6 +8,8 @@
 
         public string? WorkoutRetrievalApiKey { get; set; }
 
+        public bool EmailVerified { get; set; } = false;
+
         public bool AutoWorkoutRetrieval { get; set; } = false;
 
         public bool AutoPaymentSetting { get; set; } = false;
