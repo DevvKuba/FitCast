@@ -41,8 +41,8 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IAutoPaymentCreationService, AutoPaymentCreationService>();
             services.AddScoped<IClientDailyFeatureService, ClientDailyFeatureService>();
             services.AddScoped<ITrainerDailyRevenueService, TrainerDailyRevenueService>();
+            services.AddScoped<IEmailVerificationLinkFactory, EmailVerificationLinkFactory>();
 
-            services.AddSingleton<EmailVerificationLinkFactory>();
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();

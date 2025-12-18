@@ -1,8 +1,9 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Helpers
 {
-    internal sealed class EmailVerificationLinkFactory(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator)
+    internal sealed class EmailVerificationLinkFactory(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator) : IEmailVerificationLinkFactory
     {
         public string Create(EmailVerificationToken emailVerificationToken)
         {

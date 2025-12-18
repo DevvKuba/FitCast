@@ -1,13 +1,18 @@
 ﻿
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
 
 
 namespace ClientDashboard_API.Services
 {
-    public sealed class RegisterService(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, IFluentEmail fluentEmail) : IRegisterService
+    public sealed class RegisterService(
+        IUnitOfWork unitOfWork,
+        IPasswordHasher passwordHasher,
+        IFluentEmail fluentEmail,
+        IEmailVerificationLinkFactory linkFactory) : IRegisterService
     {
 
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
@@ -57,7 +62,7 @@ namespace ClientDashboard_API.Services
 
                 await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
 
-                string verificationLink = "";
+                string verificationLink = linkFactory.Create(verificationToken);
 
                 //email verification
                 await fluentEmail

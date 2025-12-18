@@ -38,7 +38,7 @@ namespace ClientDashboard_API.Controllers
         }
         [AllowAnonymous]
         [HttpGet("verify-email/{token}", Name = "VerifyEmail")]
-        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(string token)
+        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync( token)
         {
 
         }
