@@ -18,6 +18,8 @@ namespace ClientDashboard_API.Data
 
         public DbSet<Notification> Notification { get; set; }
 
+        public DbSet<EmailVerificationToken> EmailVerificationToken { get; set; }
+
         public DbSet<TrainerDailyRevenue> TrainerDailyRevenue { get; set; }
 
         public DbSet<ClientDailyFeature> ClientDailyFeature { get; set; }
@@ -29,13 +31,14 @@ namespace ClientDashboard_API.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            // do I need to apply migrations since we are renaming the database columns here ?
 
             builder.Entity<UserBase>().ToTable("Users");
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Workout>().ToTable("Workouts");
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
+            builder.Entity<Notification>().ToTable("Notifications");
+            builder.Entity<EmailVerificationToken>().ToTable("EmailVerificationTokens");
             builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
@@ -142,8 +145,6 @@ namespace ClientDashboard_API.Data
                 .HasForeignKey(p => p.TrainerId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
-
-
         }
 
     }
