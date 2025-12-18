@@ -46,11 +46,22 @@ namespace ClientDashboard_API.Services
 
                 await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
 
+                DateTime currentTime = DateTime.UtcNow;
+                var verificationToken = new EmailVerificationToken
+                {
+                    TrainerId = trainer.Id,
+                    CreatedOnUtc = currentTime,
+                    // TODO may need to change
+                    ExpiresOnUtc = currentTime.AddDays(1)
+                };
+
+                string verificationLink = "";
+
                 //email verification
                 await fluentEmail
                     .To(trainer.Email)
                     .Subject("Email verification for FitCast")
-                    .Body("To verify your email address click here")
+                    .Body($"To verify your email address <a href='{verificationLink}'>click here</a>", isHtml: true)
                     .SendAsync();
 
                 return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
