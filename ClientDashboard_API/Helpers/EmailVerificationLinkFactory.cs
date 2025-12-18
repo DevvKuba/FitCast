@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Helpers
             string? verificationLink = linkGenerator.GetUriByName(
                 httpContextAccessor.HttpContext!,
                 "VerifyEmail",
-                new { token = emailVerificationToken.Id });
+                new { tokenId = emailVerificationToken.Id });
 
             return verificationLink ?? throw new Exception("Could not create email verification link");
         }

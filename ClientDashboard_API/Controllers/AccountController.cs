@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> Register([FromBody] RegisterDto registerInfo)
         {
             var response = await registerService.Handle(registerInfo);
-            if (!await unitOfWork.Complete())
+            if (!response.Success)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
             }

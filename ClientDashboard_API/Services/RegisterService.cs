@@ -50,6 +50,8 @@ namespace ClientDashboard_API.Services
                 };
 
                 await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
+                // saving the trainer so EF core can auto increment Id that we later retrieve
+                await unitOfWork.Complete();
 
                 DateTime currentTime = DateTime.UtcNow;
                 var verificationToken = new EmailVerificationToken
@@ -61,6 +63,7 @@ namespace ClientDashboard_API.Services
                 };
 
                 await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
+                await unitOfWork.Complete();
 
                 string verificationLink = linkFactory.Create(verificationToken);
 
