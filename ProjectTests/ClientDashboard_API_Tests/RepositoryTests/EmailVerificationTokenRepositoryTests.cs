@@ -8,5 +8,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 {
     internal class EmailVerificationTokenRepositoryTests
     {
+        // Test methods will be implemented here in the future.
     }
 }
