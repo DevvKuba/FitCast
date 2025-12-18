@@ -32,6 +32,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IClientDailyFeatureRepository, ClientDailyFeatureRepository>();
             services.AddScoped<ITrainerDailyRevenueRepository, TrainerDailyRevenueRepository>();
 
+            services.AddScoped<IVerifyEmail, VerifyEmail>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<INotificationService, NotificationService>();

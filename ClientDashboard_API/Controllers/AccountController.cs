@@ -3,6 +3,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -36,12 +37,25 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
 
         }
-        //[AllowAnonymous]
-        //[HttpGet("verify-email/{token}", Name = "VerifyEmail")]
-        //public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync( token)
-        //{
+        [AllowAnonymous]
+        [HttpGet("verify-email/{tokenId}", Name = "VerifyEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(int tokenId)
+        {
+            var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(tokenId);
 
-        //}
+            if(verificationToken is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Could not find email verification token", Success = false});
+            }
+
+            bool success = await verifyEmail.Handle(verificationToken.Id);
+
+            if (!success)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Verification token expired", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = verificationToken.Trainer!.FirstName, Message = "Email verification successful", Success = true });
+        }
 
         [AllowAnonymous]
         [HttpGet("verifyClientUnderTrainer")]
