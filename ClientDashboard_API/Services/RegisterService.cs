@@ -55,6 +55,8 @@ namespace ClientDashboard_API.Services
                     ExpiresOnUtc = currentTime.AddDays(1)
                 };
 
+                await unitOfWork.
+
                 string verificationLink = "";
 
                 //email verification

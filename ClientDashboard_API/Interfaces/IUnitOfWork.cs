@@ -13,6 +13,8 @@
 
         IPaymentRepository PaymentRepository { get; }
 
+        IEmailVerificationTokenRepository EmailVerificationTokenRepository { get; }
+
         IClientDailyFeatureRepository ClientDailyFeatureRepository { get; }
 
         ITrainerDailyRevenueRepository TrainerDailyRevenueRepository { get; }

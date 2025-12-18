@@ -4,8 +4,8 @@ namespace ClientDashboard_API.Data
 {
     public class UnitOfWork(DataContext context, IUserRepository userRepository, IClientRepository clientRepository, IWorkoutRepository workoutRepository,
         ITrainerRepository trainerRepository, INotificationRepository notificationRepository,
-        IPaymentRepository paymentRepository , IClientDailyFeatureRepository clientDailyFeatureRepository,
-        ITrainerDailyRevenueRepository trainerDailyRevenueRepository) : IUnitOfWork
+        IPaymentRepository paymentRepository , IEmailVerificationTokenRepository emailVerificationTokenRepository, 
+        IClientDailyFeatureRepository clientDailyFeatureRepository, ITrainerDailyRevenueRepository trainerDailyRevenueRepository) : IUnitOfWork
     {
         public IUserRepository UserRepository => userRepository;
         public IClientRepository ClientRepository => clientRepository;
@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Data
         public INotificationRepository NotificationRepository => notificationRepository;
 
         public IPaymentRepository PaymentRepository => paymentRepository;
+
+        public IEmailVerificationTokenRepository EmailVerificationTokenRepository => emailVerificationTokenRepository;
 
         public IClientDailyFeatureRepository ClientDailyFeatureRepository => clientDailyFeatureRepository;
 
