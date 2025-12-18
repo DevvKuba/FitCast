@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,6 +34,12 @@ namespace ClientDashboard_API.Controllers
             }
 
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
+
+        }
+        [AllowAnonymous]
+        [HttpGet("verify-email/{token}", Name = "VerifyEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(string token)
+        {
 
         }
 

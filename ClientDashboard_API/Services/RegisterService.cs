@@ -55,7 +55,7 @@ namespace ClientDashboard_API.Services
                     ExpiresOnUtc = currentTime.AddDays(1)
                 };
 
-                await unitOfWork.
+                await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
 
                 string verificationLink = "";
 

@@ -13,6 +13,7 @@ namespace ClientDashboard_API.Extensions
         {
             // Add services to the container.
             services.AddControllers();
+            services.AddHttpContextAccessor();
             services.AddDbContext<DataContext>(opt =>
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
@@ -41,6 +42,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IClientDailyFeatureService, ClientDailyFeatureService>();
             services.AddScoped<ITrainerDailyRevenueService, TrainerDailyRevenueService>();
 
+            services.AddSingleton<EmailVerificationLinkFactory>();
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
