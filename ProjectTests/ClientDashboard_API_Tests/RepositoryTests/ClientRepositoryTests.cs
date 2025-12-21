@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
@@ -222,6 +223,269 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             Assert.Equal(newName, client!.FirstName);
+        }
+
+        [Fact]
+        public async Task TestGetAllTrainerClientDataAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, IsActive = true, TrainerId = trainer.Id, Workouts = [] });
+            await _context.AddAsync(new Client { Role = "client", FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, IsActive = false, TrainerId = trainer.Id, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var clients = await _clientRepository.GetAllTrainerClientDataAsync(trainer.Id);
+
+            Assert.Equal(2, clients.Count);
+            Assert.Contains(clients, c => c.FirstName == "rob");
+            Assert.Contains(clients, c => c.FirstName == "mark");
+            Assert.True(clients[0].IsActive);
+        }
+
+        [Fact]
+        public async Task TestUpdateClientDetailsUponRegisterationAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var registerDto = new RegisterDto
+            {
+                Email = "rob@example.com",
+                FirstName = "Rob",
+                Surname = "Smith",
+                PhoneNumber = "123 456 789",
+                Password = "password123",
+                Role = "client"
+            };
+
+            _clientRepository.UpdateClientDetailsUponRegisterationAsync(trainer, client!, registerDto);
+            await _unitOfWork.Complete();
+
+            Assert.Equal("Smith", client!.Surname);
+            Assert.Equal("rob@example.com", client.Email);
+            Assert.Equal("123456789", client.PhoneNumber);
+            Assert.NotNull(client.PasswordHash);
+            Assert.NotEqual("password123", client.PasswordHash);
+        }
+
+        [Fact]
+        public async Task TestUpdateClientDetailsAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, IsActive = true, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            _clientRepository.UpdateClientDetailsAsync(client!, "Robert", false, 3, 6);
+            await _unitOfWork.Complete();
+
+            Assert.Equal("robert", client!.FirstName);
+            Assert.False(client.IsActive);
+            Assert.Equal(3, client.CurrentBlockSession);
+            Assert.Equal(6, client.TotalBlockSessions);
+        }
+
+        [Fact]
+        public async Task TestUpdateClientPhoneNumberAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, PhoneNumber = "123456789", Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var newPhoneNumber = "987654321";
+            _clientRepository.UpdateClientPhoneNumber(client!, newPhoneNumber);
+            await _unitOfWork.Complete();
+
+            Assert.Equal(newPhoneNumber, client!.PhoneNumber);
+        }
+
+        [Fact]
+        public async Task TestGetClientByNameUnderTrainerAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _clientRepository.GetClientByNameUnderTrainer(trainer, "rob");
+
+            Assert.NotNull(client);
+            Assert.Equal("rob", client.FirstName);
+            Assert.Equal(trainer.Id, client.TrainerId);
+        }
+
+        [Fact]
+        public async Task TestGetClientByNameUnderTrainerReturnsNullForDifferentTrainerAsync()
+        {
+            var trainer1 = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer2 = new Trainer { FirstName = "jane", Surname = "smith", Role = "trainer" };
+            await _context.AddAsync(trainer1);
+            await _context.AddAsync(trainer2);
+            await _unitOfWork.Complete();
+
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer1.Id, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _clientRepository.GetClientByNameUnderTrainer(trainer2, "rob");
+
+            Assert.Null(client);
+        }
+
+        [Fact]
+        public async Task TestGetClientByIdAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var expectedClient = await _context.Client.FirstOrDefaultAsync();
+            var client = await _clientRepository.GetClientByIdAsync(expectedClient!.Id);
+
+            Assert.NotNull(client);
+            Assert.Equal(expectedClient.Id, client.Id);
+            Assert.Equal("rob", client.FirstName);
+        }
+
+        [Fact]
+        public async Task TestGetClientByIdWithWorkoutsAsync()
+        {
+            await _context.AddAsync(new Client 
+            { 
+                Role = "client", 
+                FirstName = "rob", 
+                CurrentBlockSession = 2, 
+                TotalBlockSessions = 4, 
+                Workouts = [new Workout { ClientName = "rob", WorkoutTitle = "rob's workout"}] 
+            });
+
+            await _unitOfWork.Complete();
+
+            var expectedClient = await _context.Client.FirstOrDefaultAsync();
+            var client = await _clientRepository.GetClientByIdWithWorkoutsAsync(expectedClient!.Id);
+
+            Assert.NotNull(client);
+            Assert.Equal(expectedClient.Id, client.Id);
+            Assert.NotNull(client.Workouts);
+            Assert.Single(client.Workouts);
+        }
+
+        [Fact]
+        public async Task TestGetClientByIdWithTrainerAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var expectedClient = await _context.Client.FirstOrDefaultAsync();
+            var client = await _clientRepository.GetClientByIdWithTrainerAsync(expectedClient!.Id);
+
+            Assert.NotNull(client);
+            Assert.Equal(expectedClient.Id, client.Id);
+            Assert.NotNull(client.Trainer);
+            Assert.Equal("john", client.Trainer.FirstName);
+        }
+
+        [Fact]
+        public async Task TestGetClientByEmailAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", Email = "rob@example.com", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _clientRepository.GetClientByEmailAsync("rob@example.com");
+
+            Assert.NotNull(client);
+            Assert.Equal("rob@example.com", client.Email);
+            Assert.Equal("rob", client.FirstName);
+        }
+
+        [Fact]
+        public async Task TestGetClientByEmailReturnsNullForNonExistentEmailAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", Email = "rob@example.com", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _clientRepository.GetClientByEmailAsync("nonexistent@example.com");
+
+            Assert.Null(client);
+        }
+
+        [Fact]
+        public async Task TestGatherDailyClientStepsAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, DailySteps = 10000, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var steps = _clientRepository.GatherDailyClientStepsAsync(client!);
+
+            Assert.Equal(10000, steps);
+        }
+
+        [Fact]
+        public async Task TestUnassignTrainerAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            _clientRepository.UnassignTrainerAsync(client!);
+            await _unitOfWork.Complete();
+
+            Assert.Null(client!.TrainerId);
+        }
+
+        [Fact]
+        public async Task TestAddNewClientUserAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            await _context.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var clientData = new Client
+            {
+                FirstName = "Rob",
+                Surname = "smith",
+                PhoneNumber = "123456789",
+                Role = "client",
+            };
+
+            var newClient = await _clientRepository.AddNewClientUserAsync(clientData, trainer.Id);
+            await _unitOfWork.Complete();
+
+            var databaseClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "rob");
+
+            Assert.NotNull(databaseClient);
+            Assert.Equal("rob", databaseClient.FirstName);
+            Assert.Equal("smith", databaseClient.Surname);
+            Assert.Equal("123456789", databaseClient.PhoneNumber);
+            Assert.Equal(trainer.Id, databaseClient.TrainerId);
+            Assert.True(databaseClient.IsActive);
+            Assert.Equal("client", databaseClient.Role);
+        }
+
+        [Fact]
+        public async Task TestUpdateDeletingClientCurrentSessionAtZeroAsync()
+        {
+            await _context.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _unitOfWork.Complete();
+
+            var client = await _context.Client.FirstOrDefaultAsync();
+            var expectedSession = 4;
+            _clientRepository.UpdateDeletingClientCurrentSession(client!);
+
+            Assert.Equal(expectedSession, client!.CurrentBlockSession);
         }
     }
 }
