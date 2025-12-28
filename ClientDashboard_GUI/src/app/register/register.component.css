@@ -79,6 +79,12 @@
   min-width: 2rem;
 }
 
+.email-verification-image {
+  margin-left: 70px;
+  width: 200px;
+  height: 200px;
+}
+
 /* smaller screens */
 @media (max-width: 768px) {
   .register-form-container {

@@ -1,7 +1,7 @@
-<p-dialog header="Further Verification" [modal]="true" [(visible)]="verifyEmailDialogVisible" [style]="{ width: '25rem' }">
+<p-dialog header="Further Verification Required" [modal]="true" [(visible)]="verifyEmailDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">
       <span class="p-text-secondary block mb-8">Now that your account is created ensure you verify your email before logging in</span>
-      <img src="/assets/images/plain-email-verification-image.png">
+      <img class="email-verification-image" src="/assets/images/plain-email-verification-image.png">
     </div>
       <div class="flex justify-end gap-2">
           <p-button label="Cancel" severity="secondary" (click)="verifyEmailDialogVisible = false" />
