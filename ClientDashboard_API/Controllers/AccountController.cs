@@ -2,8 +2,10 @@
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
+using Twilio.TwiML.Messaging;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -80,6 +82,30 @@ namespace ClientDashboard_API.Controllers
             var clientVerifiedInfo = new ClientVerificationInfoDto { ClientId = client.Id, TrainerId = trainer.Id };
 
             return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Client: {clientFirstName} found under Trainer: {trainer.FirstName}", Success = true });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resendVerificationEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> ResendEmailVerificationForTrainerAsync(string userEmail)
+        {
+            // check if user is a registered trainer
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(userEmail);
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer with email: {userEmail} does not exist", Success = false });
+            }
+
+            if(trainer.EmailVerified)
+            {
+                return BadRequest(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer's email is already verified", Success = false });
+            }
+
+            await registerService.CreateAndSendVerificationEmailAsync(trainer);
+            return Ok();
+
+
+
         }
     }
 }
