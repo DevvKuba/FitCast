@@ -53,26 +53,7 @@ namespace ClientDashboard_API.Services
                 // saving the trainer so EF core can auto increment Id that we later retrieve
                 await unitOfWork.Complete();
 
-                DateTime currentTime = DateTime.UtcNow;
-                var verificationToken = new EmailVerificationToken
-                {
-                    TrainerId = trainer.Id,
-                    CreatedOnUtc = currentTime,
-                    // TODO may need to change
-                    ExpiresOnUtc = currentTime.AddDays(1)
-                };
-
-                await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
-                await unitOfWork.Complete();
-
-                string verificationLink = linkFactory.Create(verificationToken);
-
-                //email verification
-                await fluentEmail
-                    .To(trainer.Email)
-                    .Subject("Email verification for FitCast")
-                    .Body($"To verify your email address <a href='{verificationLink}'>click here</a>", isHtml: true)
-                    .SendAsync();
+                await CreateAndSendVerificationEmailAsync(trainer);
 
                 return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
             }
@@ -81,7 +62,7 @@ namespace ClientDashboard_API.Services
                 // instead of actually creating a new client we will map the provided data over to the identified client upon verifying (via trainer phone number and client name)
                 if(request.ClientId != null && request.ClientsTrainerId != null)
                 {
-                    var result = await MapClientDataUponRegistration(request);
+                    var result = await MapClientDataUponRegistrationAsync(request);
 
                     if (!result)
                     {
@@ -96,7 +77,7 @@ namespace ClientDashboard_API.Services
             }
         }
 
-        public async Task<bool> MapClientDataUponRegistration(RegisterDto request)
+        public async Task<bool> MapClientDataUponRegistrationAsync(RegisterDto request)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(request.ClientsTrainerId ?? 0);
 
@@ -109,6 +90,29 @@ namespace ClientDashboard_API.Services
 
             unitOfWork.ClientRepository.UpdateClientDetailsUponRegisterationAsync(trainer, client, request);
             return true;
+        }
+
+        public async Task CreateAndSendVerificationEmailAsync(Trainer trainer)
+        {
+            DateTime currentTime = DateTime.UtcNow;
+            var verificationToken = new EmailVerificationToken
+            {
+                TrainerId = trainer.Id,
+                CreatedOnUtc = currentTime,
+                ExpiresOnUtc = currentTime.AddDays(1)
+            };
+
+            await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
+            await unitOfWork.Complete();
+
+            string verificationLink = linkFactory.Create(verificationToken);
+
+            //email verification
+            await fluentEmail
+                .To(trainer.Email)
+                .Subject("Email verification for FitCast")
+                .Body($"To verify your email address <a href='{verificationLink}'>click here</a>", isHtml: true)
+                .SendAsync();
         }
     }
 }

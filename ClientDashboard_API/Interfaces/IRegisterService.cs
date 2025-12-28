@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -6,6 +7,8 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<ApiResponseDto<string>> Handle(RegisterDto registerDto);
 
-        Task<bool> MapClientDataUponRegistration(RegisterDto registerDto);
+        Task<bool> MapClientDataUponRegistrationAsync(RegisterDto registerDto);
+
+        Task CreateAndSendVerificationEmailAsync(Trainer trainer);
     }
 }
