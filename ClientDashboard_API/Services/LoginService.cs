@@ -2,6 +2,7 @@
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using System.Diagnostics.Contracts;
+using Twilio.Rest.PreviewIam.Organizations;
 
 namespace ClientDashboard_API.Services
 {
@@ -13,8 +14,22 @@ namespace ClientDashboard_API.Services
 
             if (user is null)
             {
-                return new ApiResponseDto<UserDto> { Data = null, Message = "The  user was not found", Success = false };
+                return new ApiResponseDto<UserDto> { Data = null, Message = "The user was not found", Success = false };
             }
+
+            if (loginDto.Role == "trainer")
+            {
+                var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(loginDto.Email);
+                if (!trainer!.EmailVerified)
+                {
+                    return new ApiResponseDto<UserDto> { Data = null, Message = "You must verifiy your email, you can resend the verification below", Success = false };
+                }
+            }
+            else if(loginDto.Role is null)
+            {
+                return new ApiResponseDto<UserDto> { Data = null, Message = "User role type is not provided", Success = false };
+            }
+
 
             bool verified = passwordHasher.Verify(loginDto.Password, user.PasswordHash!);
 
