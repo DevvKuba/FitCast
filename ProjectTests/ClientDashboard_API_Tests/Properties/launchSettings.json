@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ClientDashboard_API_Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "AUTH_TOKEN": "65175b7c1566e0ec7cce8094b7e35287",
+        "ACCOUNT_SID": "ACfc9c7bdecec6f2349fd5156d560bdbe8"
+      }
+    }
+  }
+}
