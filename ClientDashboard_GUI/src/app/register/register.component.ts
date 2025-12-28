@@ -15,10 +15,11 @@ import { Router, RouterLink } from '@angular/router';
 import { RadioButton } from 'primeng/radiobutton';
 import { InputMask } from 'primeng/inputmask';
 import { ToggleButton } from 'primeng/togglebutton';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-register',
-  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule,
+  imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, Dialog,
      FloatLabelModule, ButtonModule, RouterLink, RadioButton, InputMask, ToggleButton],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
@@ -28,6 +29,7 @@ export class RegisterComponent {
   toastService = inject(ToastService);
   router = inject(Router);
 
+  verifyEmailDialogVisible = false;
   trainerNumberVerified: boolean = false;
   trainerVerificationPhoneNumber: string = "";
   verifiedClientId: number = 0;
@@ -56,7 +58,7 @@ export class RegisterComponent {
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {
         this.toastService.showSuccess('Success Registering', response.message);
-        
+        this.verifyEmailDialogVisible = true;
         console.log(response);
       },
       error: (response) => {
