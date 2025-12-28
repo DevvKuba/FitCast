@@ -102,10 +102,7 @@ namespace ClientDashboard_API.Controllers
             }
 
             await registerService.CreateAndSendVerificationEmailAsync(trainer);
-            return Ok();
-
-
-
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Verification send successfully sent to: {userEmail}", Success = true});
         }
     }
 }

@@ -25,6 +25,10 @@ export class AccountService {
     return this.http.post<ApiResponse<UserDto>>(this.baseUrl + "account/login", loginInfo);
   }
 
+  resendEmailVerification(userEmail : String){
+    
+  }
+
   clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
     const params = new HttpParams()
     .set('trainerPhoneNumber', trainerPhoneNumber)
