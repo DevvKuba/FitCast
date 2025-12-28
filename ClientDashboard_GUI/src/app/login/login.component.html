@@ -28,6 +28,6 @@
         <div class="button-container">
             <p-button class="login-button" label="Login" severity="success" (click)="userLogin(email, password, userType)"/>
             <p-button class="to-register-button" label="To Register" severity="secondary" routerLink="/register"/>
-            <p-button class="email-verification-button" label="Resend Email Verification" severity="secondary" (click)="userLogin(email, password, userType)"/>
+            <p-button class="email-verification-button" label="Resend Email Verification" severity="secondary" (click)="sendEmail(email)"/>
           </div>
 </div>

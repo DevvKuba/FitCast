@@ -65,6 +65,17 @@ export class LoginComponent {
     })
   }
 
+  sendEmail(userEmail: string){
+    this.accountService.resendEmailVerification(this.email).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess("Success", response.message);
+      },
+      error: (response) => {
+        this.toastService.showError("Error sending email", response.error.message);
+      }
+    })
+  }
+
   userLogout(storageItem: string){
     this.accountService.logout(storageItem);
     this.accountService.currentUser.set(null);
