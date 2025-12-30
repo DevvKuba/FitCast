@@ -109,7 +109,15 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("sendPasswordResetEmail")]
         public async Task<ActionResult<ApiResponseDto<string>>> SendPasswordResetEmailForUserAsync([FromQuery] string userEmail)
         {
-            throw new NotImplementedException();
+            // get user by email
+
+            // null check etc
+
+            // call service to send the user the reset email
+
+            // within the sent fluent link there should be a hyper link that routes to /password-reset
+
+            // should pass in the user's active Id during as the user clicks on the link
         }
 
         [AllowAnonymous]
