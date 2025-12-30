@@ -86,7 +86,7 @@ namespace ClientDashboard_API.Controllers
 
         [AllowAnonymous]
         [HttpPost("resendVerificationEmail")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ResendEmailVerificationForTrainerAsync(string userEmail)
+        public async Task<ActionResult<ApiResponseDto<string>>> ResendEmailVerificationForTrainerAsync([FromQuery] string userEmail)
         {
             // check if user is a registered trainer
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(userEmail);
@@ -103,6 +103,20 @@ namespace ClientDashboard_API.Controllers
 
             await registerService.CreateAndSendVerificationEmailAsync(trainer);
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Verification send successfully sent to: {userEmail}", Success = true});
+        }
+
+        [AllowAnonymous]
+        [HttpPost("sendPasswordResetEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> SendPasswordResetEmailForUserAsync([FromQuery] string userEmail)
+        {
+            throw new NotImplementedException();
+        }
+
+        [AllowAnonymous]
+        [HttpPut("changeUserPassword")]
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserPasswordAsync([FromBody] PasswordResetDto passwordResetDetails)
+        {
+            throw new NotImplementedException();
         }
     }
 }

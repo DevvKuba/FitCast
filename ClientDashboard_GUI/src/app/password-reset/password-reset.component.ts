@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { IftaLabelModule } from 'primeng/iftalabel';
@@ -11,9 +11,16 @@ import { RouterLink } from "@angular/router";
   templateUrl: './password-reset.component.html',
   styleUrl: './password-reset.component.css'
 })
-export class PasswordResetComponent {
+export class PasswordResetComponent implements OnInit {
   newPassword: string = '';
   confirmPassword: string = '';
+  userId: number = 0;
+
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+    // upon directing to this page, should let the userId
+    // to the user looking to change their password
+  }
 
   resetPassword() {
     //  password reset logic
