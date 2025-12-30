@@ -188,12 +188,12 @@
                     <ng-template #input>
                         <p-inputnumber
                             [(ngModel)]="payment.amount"
-                            mode="currency"
-                            [currency]="payment.currency || 'GBP'"
+                            [minFractionDigits]="2"
+                            [maxFractionDigits]="2"
                             styleClass="payment-amount-input" />
                     </ng-template>
                     <ng-template #output>
-                        {{payment.amount | currency:payment.currency:'symbol':'1.2-2'}}
+                        {{payment.amount | currency:(payment.currency || 'GBP'):'symbol':'1.2-2'}}
                     </ng-template>
                 </p-cellEditor>
               </td>
@@ -242,6 +242,8 @@
                             [options]="paymentStatuses"
                           appendTo="body"
                             [(ngModel)]= "payment.confirmed"
+                            optionLabel="label"
+                            optionValue="value"
                             [style]="{'width':'100%'}" 
                             />
                     </ng-template>
