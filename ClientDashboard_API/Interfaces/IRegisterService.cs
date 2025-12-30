@@ -8,7 +8,5 @@ namespace ClientDashboard_API.Interfaces
         Task<ApiResponseDto<string>> Handle(RegisterDto registerDto);
 
         Task<bool> MapClientDataUponRegistrationAsync(RegisterDto registerDto);
-
-        Task CreateAndSendVerificationEmailAsync(Trainer trainer);
     }
 }

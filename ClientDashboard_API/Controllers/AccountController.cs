@@ -9,7 +9,7 @@ using Twilio.TwiML.Messaging;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService, IVerifyEmail verifyEmail) : BaseAPIController
+    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService, IEmailVerificationService emailVerificationService, IVerifyEmail verifyEmail) : BaseAPIController
     {
         [AllowAnonymous]
         [HttpPost("register")]
@@ -101,7 +101,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer's email is already verified", Success = false });
             }
 
-            await registerService.CreateAndSendVerificationEmailAsync(trainer);
+            await emailVerificationService.CreateAndSendVerificationEmailAsync(trainer);
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Verification send successfully sent to: {userEmail}", Success = true});
         }
 

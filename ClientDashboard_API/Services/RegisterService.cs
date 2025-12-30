@@ -11,8 +11,7 @@ namespace ClientDashboard_API.Services
     public sealed class RegisterService(
         IUnitOfWork unitOfWork,
         IPasswordHasher passwordHasher,
-        IFluentEmail fluentEmail,
-        IEmailVerificationLinkFactory linkFactory) : IRegisterService
+        IEmailVerificationService emailVerificationService): IRegisterService
     {
 
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
@@ -53,7 +52,7 @@ namespace ClientDashboard_API.Services
                 // saving the trainer so EF core can auto increment Id that we later retrieve
                 await unitOfWork.Complete();
 
-                await CreateAndSendVerificationEmailAsync(trainer);
+                await emailVerificationService.CreateAndSendVerificationEmailAsync(trainer);
 
                 return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"{trainer.FirstName} successfully added", Success = true };
             }
@@ -90,29 +89,6 @@ namespace ClientDashboard_API.Services
 
             unitOfWork.ClientRepository.UpdateClientDetailsUponRegisterationAsync(trainer, client, request);
             return true;
-        }
-
-        public async Task CreateAndSendVerificationEmailAsync(Trainer trainer)
-        {
-            DateTime currentTime = DateTime.UtcNow;
-            var verificationToken = new EmailVerificationToken
-            {
-                TrainerId = trainer.Id,
-                CreatedOnUtc = currentTime,
-                ExpiresOnUtc = currentTime.AddDays(1)
-            };
-
-            await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
-            await unitOfWork.Complete();
-
-            string verificationLink = linkFactory.Create(verificationToken);
-
-            //email verification
-            await fluentEmail
-                .To(trainer.Email)
-                .Subject("Email verification for FitCast")
-                .Body($"To verify your email address <a href='{verificationLink}'>click here</a>", isHtml: true)
-                .SendAsync();
         }
     }
 }
