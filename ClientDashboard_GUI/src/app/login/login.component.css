@@ -90,7 +90,8 @@
 
 .register-button,
 .to-login-button,
-.email-verification-button
+.email-verification-button,
+.password-reset-button
  {
   flex: 1;
   display: flex;
@@ -102,7 +103,7 @@
   min-width: 2rem;
 }
 
-.email-verification-button {
+.password-reset-button {
   margin-top: 1rem;
 }
 
