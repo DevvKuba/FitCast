@@ -9,7 +9,13 @@ using Twilio.TwiML.Messaging;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class AccountController(IUnitOfWork unitOfWork, IRegisterService registerService, ILoginService loginService, IEmailVerificationService emailVerificationService, IVerifyEmail verifyEmail) : BaseAPIController
+    public class AccountController(
+        IUnitOfWork unitOfWork,
+        IRegisterService registerService,
+        ILoginService loginService,
+        IEmailVerificationService emailVerificationService,
+        IPasswordResetService passwordResetService,
+        IVerifyEmail verifyEmail) : BaseAPIController
     {
         [AllowAnonymous]
         [HttpPost("register")]
@@ -93,7 +99,7 @@ namespace ClientDashboard_API.Controllers
 
             if (trainer is null)
             {
-                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer with email: {userEmail} does not exist", Success = false });
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer with email: {userEmail} was not found", Success = false });
             }
 
             if(trainer.EmailVerified)
@@ -110,16 +116,19 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> SendPasswordResetEmailForUserAsync([FromQuery] string userEmail)
         {
             // get user by email
+            var user = await unitOfWork.UserRepository.GetUserByEmailAsync(userEmail);
 
-            // null check etc
+            if (user is null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"User with email: {userEmail} was not found", Success = false });
+            }
 
             // call service to send the user the reset email
+            await passwordResetService.CreateAndSendPasswordResetEmailAsync(user);
 
             // within the sent fluent link there should be a hyper link that routes to /password-reset
-
             // should pass in the user's active Id during as the user clicks on the link
-
-            throw new NotImplementedException();
+            return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Password reset email successfully sent to: {userEmail}", Success = true });
         }
 
         [AllowAnonymous]
