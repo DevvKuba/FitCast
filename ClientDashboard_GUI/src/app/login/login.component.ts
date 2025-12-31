@@ -65,13 +65,24 @@ export class LoginComponent {
     })
   }
 
-  sendEmail(userEmail: string){
+  sendVerificationEmail(userEmail: string){
     this.accountService.resendEmailVerification(this.email).subscribe({
       next: (response) => {
         this.toastService.showSuccess("Success", response.message);
       },
       error: (response) => {
         this.toastService.showError("Error sending email", response.error.message);
+      }
+    })
+  }
+
+  sendResetEmail(userEmail: string){
+    this.accountService.sendPasswordResetEmail(userEmail).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess("Success", response.message);
+      },
+      error: (response) => {
+        this.toastService.showError("Error", response.error.message);
       }
     })
   }

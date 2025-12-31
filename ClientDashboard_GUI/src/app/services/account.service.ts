@@ -29,6 +29,10 @@ export class AccountService {
     return this.http.post<ApiResponse<any>>(this.baseUrl + `account/resendVerificationEmail?userEmail=${userEmail}`, null);
   }
 
+  sendPasswordResetEmail(userEmail: string) : Observable<ApiResponse<any>>{
+    return this.http.post<ApiResponse<any>>(this.baseUrl + `account/sendPasswordResetEmail?userEmail=${userEmail}`, null);
+  }
+
   clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
     const params = new HttpParams()
     .set('trainerPhoneNumber', trainerPhoneNumber)
