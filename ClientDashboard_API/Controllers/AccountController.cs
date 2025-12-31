@@ -118,6 +118,8 @@ namespace ClientDashboard_API.Controllers
             // within the sent fluent link there should be a hyper link that routes to /password-reset
 
             // should pass in the user's active Id during as the user clicks on the link
+
+            throw new NotImplementedException();
         }
 
         [AllowAnonymous]

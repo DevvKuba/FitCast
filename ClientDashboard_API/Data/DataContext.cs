@@ -20,6 +20,8 @@ namespace ClientDashboard_API.Data
 
         public DbSet<EmailVerificationToken> EmailVerificationToken { get; set; }
 
+        public DbSet<PasswordResetToken> PasswordResetToken { get; set; }
+
         public DbSet<TrainerDailyRevenue> TrainerDailyRevenue { get; set; }
 
         public DbSet<ClientDailyFeature> ClientDailyFeature { get; set; }
@@ -39,6 +41,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<Payment>().ToTable("Payments");
             builder.Entity<Notification>().ToTable("Notifications");
             builder.Entity<EmailVerificationToken>().ToTable("EmailVerificationTokens");
+            builder.Entity<PasswordResetToken>().ToTable("PasswordResetTokens");
             builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");

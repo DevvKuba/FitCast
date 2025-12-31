@@ -10,7 +10,7 @@
 
         public DateTime ExpiresOnUtc { get; set; }
 
-        public bool IsConsumed { get; set; }
+        public bool IsConsumed { get; set; } = false;
 
         public UserBase? User { get; set; } = null;
     }
