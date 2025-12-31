@@ -136,17 +136,37 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserPasswordAsync([FromBody] PasswordResetDto passwordResetDetails)
         {
             var user = await unitOfWork.UserRepository.GetUserByPasswordResetTokenAsync(passwordResetDetails.TokenId);
+            var token = await unitOfWork.PasswordResetTokenRepository.GetPasswordResetTokenByIdAsync(passwordResetDetails.TokenId);
 
             if (user is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"User corresponding with reset token: {passwordResetDetails.TokenId} was not found", Success = false });
             }
+            if (token is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Password reset token was not found", Success = false });
+            }
+
+            if (passwordResetDetails.NewPassword.Length < 8)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password needs to be at least 8 characters", Success = false });
+            }
+            // token checks
+            if(token.IsConsumed)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password reset token has already been used", Success = false});
+            }
+            if(token.ExpiresOnUtc < DateTime.UtcNow)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password reset token has expired", Success = false });
+            }
 
             unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
+            token.IsConsumed = true;
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Cannot change password to already existing one", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Failed to update password. Please try again.", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Successfully changed {user.FirstName}'s password", Success = true });
         }

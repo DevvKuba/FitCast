@@ -19,7 +19,6 @@ export class PasswordResetComponent implements OnInit {
   tokenId: number = 0;
 
   ngOnInit(): void {
-    // upon directing to this page, should let the userId
     this.tokenId = Number(this.route.snapshot.queryParamMap.get('token'));
     console.log(this.tokenId);
   }

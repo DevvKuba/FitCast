@@ -8,6 +8,7 @@ import { LoginDto } from '../models/dtos/login-dto';
 import { UserDto } from '../models/dtos/user-dto';
 import { environment } from '../environments/environment';
 import { ClientVerificationInfoDto } from '../models/dtos/client-verification-info-dto';
+import { PasswordResetDto } from '../models/dtos/password-reset-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,10 @@ export class AccountService {
 
   sendPasswordResetEmail(userEmail: string) : Observable<ApiResponse<any>>{
     return this.http.post<ApiResponse<any>>(this.baseUrl + `account/sendPasswordResetEmail?userEmail=${userEmail}`, null);
+  }
+
+  changeUserPassword(passwordResetDetails : PasswordResetDto) : Observable<ApiResponse<any>>{
+    return this.http.put<ApiResponse<any>>(this.baseUrl + "account/changeUserPassword", passwordResetDetails);
   }
 
   clientVerifyUnderTrainer(trainerPhoneNumber: string, clientFirstName: string) : Observable<any>{
