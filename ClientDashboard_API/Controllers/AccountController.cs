@@ -135,14 +135,20 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("changeUserPassword")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserPasswordAsync([FromBody] PasswordResetDto passwordResetDetails)
         {
-            throw new NotImplementedException();
-            // use the token to gather the user
+            var user = await unitOfWork.UserRepository.GetUserByPasswordResetTokenAsync(passwordResetDetails.TokenId);
 
-            // null check the user
+            if (user is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"User corresponding with reset token: {passwordResetDetails.TokenId} was not found", Success = false });
+            }
 
-            // utilise userRepo method to change password or just do it manually
+            unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
 
-            // save changes 
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Cannot change password to already existing one", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Successfully changed {user.FirstName}'s password", Success = true });
         }
     }
 }

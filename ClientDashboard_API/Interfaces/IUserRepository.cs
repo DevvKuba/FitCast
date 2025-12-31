@@ -8,5 +8,7 @@ namespace ClientDashboard_API.Interfaces
         Task<UserBase?> GetUserByEmailAsync(string email);
 
         Task<UserBase?> GetUserByPasswordResetTokenAsync(int tokenId);
+
+        void ChangeUserPassword(UserBase user, string newPassword);
     }
 }
