@@ -15,6 +15,7 @@ namespace ClientDashboard_API.Controllers
         ILoginService loginService,
         IEmailVerificationService emailVerificationService,
         IPasswordResetService passwordResetService,
+        IPasswordHasher passwordHasher,
         IVerifyEmail verifyEmail) : BaseAPIController
     {
         [AllowAnonymous]
@@ -147,12 +148,21 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Password reset token was not found", Success = false });
             }
 
+            // verify that new password is not the same as the old one
+
+            bool isNewPasswordEqualToOld = passwordHasher.Verify(passwordResetDetails.NewPassword, user.PasswordHash!);
+
+            if (isNewPasswordEqualToOld)
+            {
+                return BadRequest( new ApiResponseDto<string> { Data = null, Message = "The new password cannot be the same as the current one", Success = false });
+            }
             if (passwordResetDetails.NewPassword.Length < 8)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password needs to be at least 8 characters", Success = false });
             }
+
             // token checks
-            if(token.IsConsumed)
+            if (token.IsConsumed)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password reset token has already been used", Success = false});
             }

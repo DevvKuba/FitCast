@@ -30,7 +30,6 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<UserDto> { Data = null, Message = "User role type is not provided", Success = false };
             }
 
-
             bool verified = passwordHasher.Verify(loginDto.Password, user.PasswordHash!);
 
             if (!verified)

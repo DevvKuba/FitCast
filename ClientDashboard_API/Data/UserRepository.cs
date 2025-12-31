@@ -14,8 +14,8 @@ namespace ClientDashboard_API.Data
 
         public async Task<UserBase?> GetUserByPasswordResetTokenAsync(int tokenId)
         {
-            var token = await context.PasswordResetToken.Where(p => p.Id == tokenId).FirstOrDefaultAsync();
-            var user = token == null ? null : token.User;
+            var token = await context.PasswordResetToken.Where(p => p.Id == tokenId).Include(p => p.User).FirstOrDefaultAsync();
+            var user = token != null ? token.User : null;
             return user;
         }
 

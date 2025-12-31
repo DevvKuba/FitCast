@@ -4,6 +4,8 @@ import { PasswordModule } from 'primeng/password';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { ButtonModule } from 'primeng/button';
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { AccountService } from '../services/account.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-password-reset',
@@ -14,9 +16,11 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 export class PasswordResetComponent implements OnInit {
   newPassword: string = '';
   confirmPassword: string = '';
-
-  route = inject(ActivatedRoute);
   tokenId: number = 0;
+
+  accountService = inject(AccountService);
+  toastService = inject(ToastService);
+  route = inject(ActivatedRoute);
 
   ngOnInit(): void {
     this.tokenId = Number(this.route.snapshot.queryParamMap.get('token'));
@@ -24,12 +28,23 @@ export class PasswordResetComponent implements OnInit {
   }
 
   resetPassword() {
-    //  password reset logic
     if (this.newPassword === this.confirmPassword) {
       console.log('Passwords match, proceed with reset');
-      // Call your service 
+
+      const passwordResetDetails = {
+        tokenId: this.tokenId,
+        newPassword: this.newPassword
+      }
+      this.accountService.changeUserPassword(passwordResetDetails).subscribe({
+        next: (response) => {
+          this.toastService.showSuccess("Success", response.message);
+        },
+        error: (response) => {
+          this.toastService.showError("Error", response.error.message);
+        }
+      })
     } else {
-      console.log('Passwords do not match');
+      this.toastService.showError("Error", 'Passwords do not match');
     }
   }
 }
