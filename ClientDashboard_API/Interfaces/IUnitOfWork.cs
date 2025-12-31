@@ -15,6 +15,8 @@
 
         IEmailVerificationTokenRepository EmailVerificationTokenRepository { get; }
 
+        IPasswordResetTokenRepository PasswordResetTokenRepository { get; }
+
         IClientDailyFeatureRepository ClientDailyFeatureRepository { get; }
 
         ITrainerDailyRevenueRepository TrainerDailyRevenueRepository { get; }
