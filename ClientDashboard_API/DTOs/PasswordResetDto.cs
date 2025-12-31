@@ -2,7 +2,7 @@
 {
     public class PasswordResetDto
     {
-        public required int UserId { get; set; }
+        public required int TokenId { get; set; }
 
         public required string NewPassword { get; set; }
     }
