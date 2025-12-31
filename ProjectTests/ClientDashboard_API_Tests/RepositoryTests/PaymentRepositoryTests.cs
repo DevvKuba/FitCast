@@ -26,6 +26,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly NotificationRepository _notificationRepository;
         private readonly PaymentRepository _paymentRepository;
         private readonly EmailVerificationTokenRepository _emailVerificationTokenRepository;
+        private readonly PasswordResetTokenRepository _passwordResetTokenRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly UnitOfWork _unitOfWork;
@@ -37,6 +38,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 cfg.CreateMap<Client, WorkoutDto>();
                 cfg.CreateMap<ClientUpdateDto, Client>();
                 cfg.CreateMap<PaymentUpdateDto, Payment>();
+                cfg.CreateMap<TrainerUpdateDto, Trainer>();
             });
             _mapper = config.CreateMapper();
             _passwordHasher = new PasswordHasher();
@@ -45,16 +47,17 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
             _context = new DataContext(optionsBuilder.Options);
-            _userRepository = new UserRepository(_context);
+            _userRepository = new UserRepository(_context, _passwordHasher);
             _clientRepository = new ClientRepository(_context, _passwordHasher, _mapper);
             _workoutRepository = new WorkoutRepository(_context);
             _trainerRepository = new TrainerRepository(_context, _mapper);
             _notificationRepository = new NotificationRepository(_context);
             _paymentRepository = new PaymentRepository(_context, _mapper);
             _emailVerificationTokenRepository = new EmailVerificationTokenRepository(_context);
+            _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
         }
 
         [Fact]
