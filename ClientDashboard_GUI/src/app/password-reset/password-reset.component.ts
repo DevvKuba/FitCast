@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { IftaLabelModule } from 'primeng/iftalabel';
 import { ButtonModule } from 'primeng/button';
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-password-reset',
@@ -14,12 +14,14 @@ import { RouterLink } from "@angular/router";
 export class PasswordResetComponent implements OnInit {
   newPassword: string = '';
   confirmPassword: string = '';
-  userId: number = 0;
+
+  route = inject(ActivatedRoute);
+  tokenId: number = 0;
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
     // upon directing to this page, should let the userId
-    // to the user looking to change their password
+    this.tokenId = Number(this.route.snapshot.queryParamMap.get('token'));
+    console.log(this.tokenId);
   }
 
   resetPassword() {

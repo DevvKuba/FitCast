@@ -136,6 +136,13 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserPasswordAsync([FromBody] PasswordResetDto passwordResetDetails)
         {
             throw new NotImplementedException();
+            // use the token to gather the user
+
+            // null check the user
+
+            // utilise userRepo method to change password or just do it manually
+
+            // save changes 
         }
     }
 }
