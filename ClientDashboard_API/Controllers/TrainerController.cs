@@ -306,7 +306,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [HttpDelete("deleteExcludedName")]
+        [HttpPut("deleteExcludedName")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(exclusionDetails.TrainerId);

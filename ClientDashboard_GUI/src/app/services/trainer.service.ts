@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable, ObservableLike } from 'rxjs';
+import { ExcludeNameDto } from '../models/dtos/exclude-name-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,10 @@ export class TrainerService {
     return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus?trainerId=${trainerId}`);
   }
 
+  getAllExcludedNames(trainerId: number) : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getAllExcludedNames?trainerId=${trainerId}`);
+  }
+
   updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{
     return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails?trainerId=${trainerId}`, newProfile);
   }
@@ -44,5 +49,9 @@ export class TrainerService {
 
   updateTrainerPaymentSetting(trainerId: number, enabled: boolean) : Observable<any> {
     return this.http.put(this.baseUrl +  `trainer/updateTrainerPaymentSetting?trainerId=${trainerId}&enabled=${enabled}`, null);
+  }
+
+  addExcludedName(excludedDetails : ExcludeNameDto) : Observable<any> {
+    return this.http.post(this.baseUrl + 'trainer/addExcludedName', excludedDetails);
   }
 }
