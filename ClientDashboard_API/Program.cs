@@ -24,6 +24,8 @@ namespace ClientDashboard_API
             CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
             CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
+            builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
+
             builder.Services.AddApplicationServices(builder.Configuration);
 
             builder.Services.AddCors(options =>
