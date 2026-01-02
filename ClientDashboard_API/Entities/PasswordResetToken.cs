@@ -12,6 +12,8 @@
 
         public bool IsConsumed { get; set; } = false;
 
+        public DateTime ConsumedAt { get; set; }
+
         public UserBase? User { get; set; } = null;
     }
 }

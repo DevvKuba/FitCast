@@ -172,7 +172,10 @@ namespace ClientDashboard_API.Controllers
             }
 
             unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
+
             token.IsConsumed = true;
+
+
 
             if (!await unitOfWork.Complete())
             {
