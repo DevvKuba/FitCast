@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using System.Xml.Serialization;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -37,7 +38,11 @@ namespace ClientDashboard_API.Interfaces
 
         Task AddNewTrainerAsync(Trainer trainer);
 
+        void AddNewExcludedNameAsync(Trainer trainer, string name);
+
         void DeleteTrainer(Trainer trainer);
+
+        void DeleteExcludedNameAsync(Trainer trainer, string name);
 
         Task<bool> DoesEmailExistAsync(string email);
 

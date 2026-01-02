@@ -114,9 +114,19 @@ namespace ClientDashboard_API.Data
             await context.Trainer.AddAsync(trainer);
         }
 
+        public void AddNewExcludedNameAsync(Trainer trainer, string name)
+        {
+            trainer.ExcludedNames.Add(name);
+        }
+
         public void DeleteTrainer(Trainer trainer)
         {
             context.Trainer.Remove(trainer);
+        }
+
+        public void DeleteExcludedNameAsync(Trainer trainer, string name)
+        {
+            trainer.ExcludedNames.Remove(name);
         }
 
         public async Task<bool> DoesEmailExistAsync(string email)
@@ -130,6 +140,5 @@ namespace ClientDashboard_API.Data
 
             return await context.Trainer.AnyAsync(t => t.PhoneNumber == flatPhoneNumber);
         }
-
     }
 }
