@@ -232,11 +232,35 @@ export class ClientWorkouts {
     }
 
     addNewExcludedName(name : string){
-       // send up as a object containing the trainerId + excluded name 
+       const excludeDetails = {
+        trainerId: this.currentUserId,
+        name: name
+       }
+
+       this.trainerService.addExcludedName(excludeDetails).subscribe({
+        next: (response) => {
+            this.toastService.showSuccess('Success', response.message);
+        },
+        error: (response) => {
+            this.toastService.showError('Error', response.error.message);
+        }
+       })
     }
 
     deleteExcludedName(name: string) {
-        // send up as a object containing the trainerId + excluded name 
+        const excludeDetails = {
+        trainerId: this.currentUserId,
+        name: name
+       }
+       
+       this.trainerService.deleteExcludedName(excludeDetails).subscribe({
+        next: (response) => {
+            this.toastService.showSuccess('Success', response.message);
+        },
+        error: (response) => {
+            this.toastService.showError('Error', response.error.message);
+        }
+       })
     }
 
     displayWorkouts(){
@@ -307,7 +331,11 @@ export class ClientWorkouts {
     }
 
   gatherExcludedNames(){
-    // for given trainer.. display their excluded names
+    this.trainerService.getAllExcludedNames(this.currentUserId).subscribe({
+        next: (response) => {
+            this.excludedNames = response.data;
+        }
+    })
   }
  
 }

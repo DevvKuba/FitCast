@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { Observable, ObservableLike } from 'rxjs';
+import { Observable, ObservableLike, ObservedValueOf } from 'rxjs';
 import { ExcludeNameDto } from '../models/dtos/exclude-name-dto';
 
 @Injectable({
@@ -53,5 +53,9 @@ export class TrainerService {
 
   addExcludedName(excludedDetails : ExcludeNameDto) : Observable<any> {
     return this.http.post(this.baseUrl + 'trainer/addExcludedName', excludedDetails);
+  }
+
+  deleteExcludedName(excludedDetails : ExcludeNameDto) : Observable<any> {
+    return this.http.put(this.baseUrl + 'trainer/deleteExcludedName', excludedDetails)
   }
 }
