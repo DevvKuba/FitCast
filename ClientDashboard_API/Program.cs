@@ -86,6 +86,9 @@ namespace ClientDashboard_API
                             .Select(e => e.ErrorMessage)
                             .ToList();
 
+                        // if at some point we want to create a combined messages
+                        // string. join all the errors through a bullet point or ';' for instance
+
                         // custom api response
                         var apiResponse = new ApiResponseDto<string>
                         {

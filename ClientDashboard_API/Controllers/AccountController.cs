@@ -156,10 +156,6 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest( new ApiResponseDto<string> { Data = null, Message = "The new password cannot be the same as the current one", Success = false });
             }
-            if (passwordResetDetails.NewPassword.Length < 8)
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password needs to be at least 8 characters", Success = false });
-            }
 
             // token checks
             if (token.IsConsumed)
