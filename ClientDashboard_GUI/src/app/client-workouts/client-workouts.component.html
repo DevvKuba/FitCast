@@ -99,11 +99,12 @@
                     </p-popover>
                     <div class="flex items-center gap-4 mb-8">
                         <label for="client-name" class="font-semibold w-24">Client Name</label>
-                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedExcludedName" [dropdown]="true" [suggestions]="excludedNames" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedExcludedName" [dropdown]="true" [suggestions]="excludedNames" optionLabel="name" (onDropdownClick)="gatherExcludedNames()" />
                     </div>
                     <div class="name-exclusion-buttons">
-                              <p-button label="Delete" severity="danger" (click)="deleteDialogVisible = false" />
-                              <p-button label="Add" (click)=" onRowDelete(deleteWorkoutId)" />
+                              <p-button label="Delete" severity="danger" (click)="deleteExcludedName(selectedExcludedName)"/>
+                              <p-button label="Add" (click)="addNewExcludedName(selectedExcludedName)" />
+                              
                     </div>
                 </div>
 

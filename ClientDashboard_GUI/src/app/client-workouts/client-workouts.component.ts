@@ -231,6 +231,14 @@ export class ClientWorkouts {
         })
     }
 
+    addNewExcludedName(name : string){
+       // send up as a object containing the trainerId + excluded name 
+    }
+
+    deleteExcludedName(name: string) {
+        // send up as a object containing the trainerId + excluded name 
+    }
+
     displayWorkouts(){
         this.trainerId = this.currentUserId;
         console.log(this.trainerId);
@@ -298,5 +306,8 @@ export class ClientWorkouts {
     });
     }
 
+  gatherExcludedNames(){
+    // for given trainer.. display their excluded names
+  }
  
 }
