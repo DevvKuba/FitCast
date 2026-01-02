@@ -140,5 +140,6 @@ namespace ClientDashboard_API.Data
 
             return await context.Trainer.AnyAsync(t => t.PhoneNumber == flatPhoneNumber);
         }
+
     }
 }
