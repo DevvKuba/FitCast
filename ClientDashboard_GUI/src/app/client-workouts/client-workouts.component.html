@@ -11,10 +11,10 @@
                         icon="pi pi-exclamation-circle" 
                         severity="secondary" 
                         size="small" 
-                        (onClick)="toggle($event)" 
+                        (onClick)="toggleForRetrieval($event)" 
                         styleClass="info-button" />
                     <p-popover 
-                        #op 
+                        #opRetrieval
                         [appendTo]="'body'"
                         [style]="{ 'max-width': '300px' }">
                         <div class="popover-content">
@@ -80,6 +80,35 @@
                           </div>
                 </p-dialog>
 
+                <p-dialog header="Set up excluded client names" [modal]="true" [(visible)]="nameExclusionVisible" [style]="{ width: '25rem' }">
+                <div class="info-button-container">
+                    <p-button 
+                        type="button" 
+                        icon="pi pi-exclamation-circle" 
+                        severity="secondary" 
+                        size="small" 
+                        (onClick)="toggleForExclusion($event)" 
+                        styleClass="info-button" />
+                    <p-popover 
+                        #opExclusion 
+                        [appendTo]="'body'"
+                        [style]="{ 'max-width': '300px' }">
+                        <div class="popover-content">
+                            <p class="popover-text">{{exclusionInfoText}}</p>
+                        </div>
+                    </p-popover>
+                    <div class="flex items-center gap-4 mb-8">
+                        <label for="client-name" class="font-semibold w-24">Client Name</label>
+                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedExcludedName" [dropdown]="true" [suggestions]="excludedNames" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+                    </div>
+                    <div class="name-exclusion-buttons">
+                              <p-button label="Delete" severity="danger" (click)="deleteDialogVisible = false" />
+                              <p-button label="Add" (click)=" onRowDelete(deleteWorkoutId)" />
+                    </div>
+                </div>
+
+            </p-dialog>
+
     <div class="table-container">
     <p-table
         #dt2
@@ -137,7 +166,7 @@
                     </p-iconfield>
                 </div>
 
-                <p-button icon="pi pi-times-circle" (click)="showDialogForAdd()" severity="secondary" label="Exclude" />
+                <p-button icon="pi pi-times-circle" (click)="showDialogForNameExclusions()" severity="secondary" label="Exclude" />
             </div>
             
         </div>

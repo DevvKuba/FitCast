@@ -37,25 +37,32 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrl: './client-workouts.component.css'
 })
 export class ClientWorkouts {
-    @ViewChild('op') op!: Popover;
+    @ViewChild('opRetrieval') opRetrieval!: Popover;
+    @ViewChild('opExclusion') opExclusion!: Popover;
     workouts: Workout[] | null = null;
     trainerId : number  = 0;
     autoWorkoutRetrievalVisible: boolean = false;
+    nameExclusionVisible: boolean = false;
     addDialogVisible: boolean = false;
     deleteDialogVisible: boolean = false;
 
     selectedClient :{id: number, name: string} = {id: 0, name: ""};
+    selectedExcludedName : string = "";
     workoutTitle: string = "";
     sessionDate: Date  = new Date();
     workoutDuration: number = 60;
     exerciseCount: number = 8;
     currentUserId: number = 0;
+
     clients: {id: number, name: string}[] = [];
+    excludedNames: string[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
+
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
     trainerApiKey: string = "";
     retrievalInfoText: string = "";
+    exclusionInfoText: string = "";
     automaticRetrievalChecked: boolean = false;
     validApiKeyProvided: boolean = false;
 
@@ -72,7 +79,7 @@ export class ClientWorkouts {
         this.currentUserId = this.accountService.currentUser()?.id ?? 0;
         this.displayWorkouts();
         this.getAutoWorkoutRetrievalStatus();
-        this.setRetrievalInfoText();
+        this.setUpInfoTexts();
         this.getTrainerApiKey();
         if(this.trainerApiKey !== null){
             this.validApiKeyProvided = true;
@@ -104,13 +111,20 @@ export class ClientWorkouts {
         return this.workouts ? this.first === 0 : true;
     }
 
-     toggle(event: any) {
-        this.op.toggle(event);
+     toggleForRetrieval(event: any) {
+        this.opRetrieval.toggle(event);
     }
 
-    setRetrievalInfoText(){
+    toggleForExclusion(event: any) {
+        this.opExclusion.toggle(event);
+    }
+
+    setUpInfoTexts(){
         this.retrievalInfoText = "You can configure your Hevy Workout Api for either manual or automated" +
-        " workout collection, the automatic background retrieval process occurs daily at midnight"
+        " workout collection, the automatic background retrieval process occurs daily at midnight";
+
+        this.exclusionInfoText = "You can set up any client names that will not be picked up" +
+        " during the automatic workout collection process";
     }
 
     getTrainerApiKey(){
@@ -261,6 +275,10 @@ export class ClientWorkouts {
     this.deleteWorkoutTitle = workoutTitle;
   }
 
+  showDialogForNameExclusions(){
+    this.nameExclusionVisible = true;
+  }
+
 
   formatDateForApi(date: Date | undefined): string {
   if (!date) return '';
@@ -279,4 +297,6 @@ export class ClientWorkouts {
         }
     });
     }
+
+ 
 }
