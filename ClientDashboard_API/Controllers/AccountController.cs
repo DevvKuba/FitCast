@@ -174,8 +174,7 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
 
             token.IsConsumed = true;
-
-
+            token.ConsumedAt = DateTime.UtcNow;
 
             if (!await unitOfWork.Complete())
             {
