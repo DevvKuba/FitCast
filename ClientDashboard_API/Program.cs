@@ -1,7 +1,9 @@
 using ClientDashboard_API.Data;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Extensions;
 using ClientDashboard_API.Jobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +71,30 @@ namespace ClientDashboard_API
                             logger.LogWarning("JWT authentication failed: {Message}", ctx.Exception.Message);
                             return Task.CompletedTask;
                         }
+                    };
+                });
+
+            builder.Services.AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = context =>
+                    {
+                        // all validation error messages through data annotations
+                        var errors = context.ModelState
+                            .Where(e => e.Value?.Errors.Count > 0)
+                            .SelectMany(e => e.Value!.Errors)
+                            .Select(e => e.ErrorMessage)
+                            .ToList();
+
+                        // custom api response
+                        var apiResponse = new ApiResponseDto<string>
+                        {
+                            Data = null,
+                            Message = errors.FirstOrDefault() ?? "Validation Failed",
+                            Success = false
+                        };
+
+                        return new BadRequestObjectResult(apiResponse);
                     };
                 });
 
