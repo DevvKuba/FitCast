@@ -16,6 +16,8 @@
 
         public string? DefaultCurrency { get; set; }
 
+        public List<string> ExcludedNames { get; set; } = [];
+
         public List<Client> Clients { get; set; } = [];
     }
 }
