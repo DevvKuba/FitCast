@@ -6,4 +6,5 @@ export interface UserBase {
   photoUrl?: string,
   phoneNumber?: string,
   passwordHash?: string;
+  createdAt: string;
 }
