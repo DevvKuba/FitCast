@@ -333,7 +333,7 @@ export class ClientWorkouts {
   gatherExcludedNames(){
     this.trainerService.getAllExcludedNames(this.currentUserId).subscribe({
         next: (response) => {
-            this.excludedNames = response.data;
+            this.excludedNames = response.data.map((name: string) => ({name: name}));
         }
     })
   }
