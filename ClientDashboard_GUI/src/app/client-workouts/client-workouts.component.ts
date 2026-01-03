@@ -55,7 +55,7 @@ export class ClientWorkouts {
     currentUserId: number = 0;
 
     clients: {id: number, name: string}[] = [];
-    excludedNames: string[] = [];
+    excludedNames: {name: string}[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
 
     deleteWorkoutId: number = 0;
@@ -231,36 +231,42 @@ export class ClientWorkouts {
         })
     }
 
-    addNewExcludedName(name : string){
-       const excludeDetails = {
-        trainerId: this.currentUserId,
-        name: name
-       }
-
-       this.trainerService.addExcludedName(excludeDetails).subscribe({
-        next: (response) => {
-            this.toastService.showSuccess('Success', response.message);
-        },
-        error: (response) => {
-            this.toastService.showError('Error', response.error.message);
+    addNewExcludedName(selectedName : {name: string} | string){
+        const name = typeof selectedName === 'string' ? selectedName : selectedName.name;
+        const excludeDetails = {
+            trainerId: this.currentUserId,
+            name: name
         }
-       })
+
+        this.trainerService.addExcludedName(excludeDetails).subscribe({
+            next: (response) => {
+                this.toastService.showSuccess('Success', response.message);
+                this.gatherExcludedNames();
+                this.selectedExcludedName = "";
+            },
+            error: (response) => {
+                this.toastService.showError('Error', response.error.message);
+            }
+        })
     }
 
-    deleteExcludedName(name: string) {
+    deleteExcludedName(selectedName: {name: string} | string) {
+        const name = typeof selectedName === 'string' ? selectedName : selectedName.name;
         const excludeDetails = {
-        trainerId: this.currentUserId,
-        name: name
-       }
-       
-       this.trainerService.deleteExcludedName(excludeDetails).subscribe({
-        next: (response) => {
-            this.toastService.showSuccess('Success', response.message);
-        },
-        error: (response) => {
-            this.toastService.showError('Error', response.error.message);
+            trainerId: this.currentUserId,
+            name: name
         }
-       })
+       
+        this.trainerService.deleteExcludedName(excludeDetails).subscribe({
+            next: (response) => {
+                this.toastService.showSuccess('Success', response.message);
+                this.gatherExcludedNames();
+                this.selectedExcludedName = "";
+            },
+            error: (response) => {
+                this.toastService.showError('Error', response.error.message);
+            }
+        })
     }
 
     displayWorkouts(){
@@ -308,6 +314,7 @@ export class ClientWorkouts {
   }
 
   showDialogForNameExclusions(){
+    this.gatherExcludedNames();
     this.nameExclusionVisible = true;
   }
 
