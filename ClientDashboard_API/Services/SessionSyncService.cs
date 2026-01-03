@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Services
                 // this client name will always be retrived during syncing
                 var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
 
-                if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
+                if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName) && !trainer.ExcludedNames.Contains(clientName))
                 {
 
                     var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client!.Id, workout.SessionDate);

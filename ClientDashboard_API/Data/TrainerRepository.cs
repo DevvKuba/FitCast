@@ -116,7 +116,7 @@ namespace ClientDashboard_API.Data
 
         public void AddNewExcludedNameAsync(Trainer trainer, string name)
         {
-            trainer.ExcludedNames.Add(name);
+            trainer.ExcludedNames.Add(name.ToLower());
         }
 
         public void DeleteTrainer(Trainer trainer)
