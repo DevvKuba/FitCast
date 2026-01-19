@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using ClientDashboard_API.Enums;
+
+namespace ClientDashboard_API.Entities
 {
     public class Notification
     {
@@ -10,9 +12,9 @@
 
         public required string Message { get; set; }
 
-        public required string ReminderType { get; set; }
+        public required NotificationType ReminderType { get; set; }
 
-        public required string SentThrough { get; set; } // email , sms.. 
+        public required string SentThrough { get; set; } // email , sms, app.. 
 
         public DateTime SentAt { get; set; }
 
