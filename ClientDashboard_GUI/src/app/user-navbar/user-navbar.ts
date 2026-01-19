@@ -4,10 +4,11 @@ import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
 import { LoginComponent } from '../login/login.component';
 import { AccountService } from '../services/account.service';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-navbar',
-  imports: [Menubar],
+  imports: [Menubar, DrawerModule],
   providers: [LoginComponent],
   templateUrl: './user-navbar.html',
   styleUrl: './user-navbar.css'
@@ -16,6 +17,7 @@ export class UserNavbar{
 
   functionItems: MenuItem[] | undefined;
   generalItems: MenuItem[] | undefined;
+  notificationVisibility: boolean = false;
  
   loginComponent = inject(LoginComponent);
   accountService = inject(AccountService);
@@ -63,6 +65,13 @@ export class UserNavbar{
             
         ];
         this.generalItems = [
+            {
+              icon: 'pi pi-bell',
+              command: () => {
+                this.notificationVisibility = true;
+              }
+              
+            },
             {
                 label: 'Home',
                 routerLink: '/',
