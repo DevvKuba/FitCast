@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Services
             messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
-                reminderType: "Trainer Client Block termination", sentThrough: "SMS");
+                reminderType: Enums.NotificationType.TrainerBlockCompletionReminder, sentThrough: "SMS");
 
             if (!await unitOfWork.Complete())
             {
@@ -67,7 +67,7 @@ namespace ClientDashboard_API.Services
             messageService.SendSMSMessage(trainer: null, client, SENDER_PHONE_NUMBER!, notificationMessage);
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
-                reminderType: "Trainer Client Block termination", sentThrough: "SMS");
+                reminderType: Enums.NotificationType.ClientBlockCompletionReminder, sentThrough: "SMS");
 
             if (!await unitOfWork.Complete())
             {
