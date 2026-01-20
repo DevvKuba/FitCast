@@ -58,7 +58,6 @@ namespace ClientDashboard_API.Services
             if (client == null)
             {
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
-
             }
 
             var notificationMessage = $"Hey {client.FirstName}! this is {trainer.FirstName} just wanted to" +

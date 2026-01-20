@@ -172,12 +172,15 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
             }
 
-            // TODO if given trainer has notifications enabled & mobile number provided
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
                 if (client.Trainer is not null)
                 {
+                    if (client.Trainer.NotificationsEnabled && client.Trainer.PhoneNumber is not null)
+                    {
+                        await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
+                    }
+
                     if (client.Trainer.AutoPaymentSetting)
                     {
                         await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);

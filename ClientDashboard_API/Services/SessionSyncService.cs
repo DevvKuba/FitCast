@@ -38,7 +38,10 @@ namespace ClientDashboard_API.Services
                             // indicating that their block is finished
                             if (client.CurrentBlockSession == client.TotalBlockSessions)
                             {
-                                await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
+                                if (trainer.NotificationsEnabled)
+                                {
+                                    await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
+                                }
                                 if (trainer.AutoPaymentSetting)
                                 {
                                     await autoPaymentService.CreatePendingPaymentAsync(trainer, client);
