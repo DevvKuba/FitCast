@@ -171,7 +171,8 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
             }
-            // if given trainer has notifications enabled & mobile number provided
+
+            // TODO if given trainer has notifications enabled & mobile number provided
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
                 await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);

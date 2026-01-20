@@ -18,6 +18,8 @@
 
         public string? PasswordHash { get; set; }
 
+        public bool NotificationsEnabled { get; set; } = false;
+
         public DateTime CreatedAt { get; private set; }
     }
 }
