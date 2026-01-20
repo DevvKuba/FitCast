@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRepository(DataContext context) : INotificationRepository
     {
-        public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, string sentThrough)
+        public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
         {
             var newNotification = new Notification
             {
