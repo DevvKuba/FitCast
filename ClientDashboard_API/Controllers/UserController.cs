@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Controllers
 {
     public class UserController(IUnitOfWork unitOfWork) : BaseAPIController
     {
-        [Authorize]
+        [Authorize(Roles = "trainer,client")]
         [HttpPost("changeNotificationStatus")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationStatusDto userInfo)
         {
