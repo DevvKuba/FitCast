@@ -5,6 +5,8 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IUserRepository
     {
+        Task<UserBase?> GetUserByIdAsync(int id);
+
         Task<UserBase?> GetUserByEmailAsync(string email);
 
         Task<UserBase?> GetUserByPasswordResetTokenAsync(int tokenId);

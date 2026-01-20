@@ -6,6 +6,10 @@ namespace ClientDashboard_API.Data
 {
     public class UserRepository(DataContext context, IPasswordHasher passwordHasher) : IUserRepository
     {
+        public async Task<UserBase?> GetUserByIdAsync(int id)
+        {
+            return await context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+        }
 
         public async Task<UserBase?> GetUserByEmailAsync(string email)
         {
