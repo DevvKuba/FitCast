@@ -3,6 +3,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -84,8 +85,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 trainer.Id,
                 client.Id,
                 "Test notification message",
-                "reminder",
-                "email"
+                NotificationType.TrainerBlockCompletionReminder,
+                CommunicationType.Email
             );
             await _unitOfWork.Complete();
 
@@ -95,8 +96,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal(trainer.Id, savedNotification.TrainerId);
             Assert.Equal(client.Id, savedNotification.ClientId);
             Assert.Equal("Test notification message", savedNotification.Message);
-            Assert.Equal("reminder", savedNotification.ReminderType);
-            Assert.Equal("email", savedNotification.SentThrough);
+            Assert.Equal(NotificationType.TrainerBlockCompletionReminder, savedNotification.ReminderType);
+            Assert.Equal(CommunicationType.Email, savedNotification.SentThrough);
             Assert.True(savedNotification.SentAt <= DateTime.UtcNow);
             Assert.True(savedNotification.SentAt >= DateTime.UtcNow.AddSeconds(-5));
         }
@@ -117,8 +118,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 trainer.Id,
                 null,
                 "General notification",
-                "system",
-                "sms"
+                NotificationType.NewClientConfigurationReminder,
+                CommunicationType.SMS
             );
             await _unitOfWork.Complete();
 
@@ -128,8 +129,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal(trainer.Id, savedNotification.TrainerId);
             Assert.Null(savedNotification.ClientId);
             Assert.Equal("General notification", savedNotification.Message);
-            Assert.Equal("system", savedNotification.ReminderType);
-            Assert.Equal("sms", savedNotification.SentThrough);
+            Assert.Equal(NotificationType.NewClientConfigurationReminder, savedNotification.ReminderType);
+            Assert.Equal(CommunicationType.SMS, savedNotification.SentThrough);
         }
 
         [Fact]
@@ -149,8 +150,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = null,
                 Message = "Test message",
-                ReminderType = "reminder",
-                SentThrough = "email",
+                ReminderType = NotificationType.ClientBlockCompletionReminder,
+                SentThrough = CommunicationType.Email,
                 SentAt = DateTime.UtcNow
             };
             await _context.Notification.AddAsync(notification);

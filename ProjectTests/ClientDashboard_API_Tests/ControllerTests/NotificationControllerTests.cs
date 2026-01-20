@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
@@ -130,8 +131,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(notification);
             Assert.Equal(trainer.Id, notification.TrainerId);
             Assert.Equal(client.Id, notification.ClientId);
-            Assert.Equal("Trainer Client Block termination", notification.ReminderType);
-            Assert.Equal("SMS", notification.SentThrough);
+            Assert.Equal(NotificationType.TrainerBlockCompletionReminder, notification.ReminderType);
+            Assert.Equal(CommunicationType.SMS, notification.SentThrough);
         }
 
         [Fact]
@@ -230,8 +231,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(notification);
             Assert.Equal(trainer.Id, notification.TrainerId);
             Assert.Equal(client.Id, notification.ClientId);
-            Assert.Equal("Trainer Client Block termination", notification.ReminderType);
-            Assert.Equal("SMS", notification.SentThrough);
+            Assert.Equal(NotificationType.ClientBlockCompletionReminder, notification.ReminderType);
+            Assert.Equal(CommunicationType.SMS, notification.SentThrough);
         }
 
         [Fact]
