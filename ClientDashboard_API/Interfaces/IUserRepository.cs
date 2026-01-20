@@ -10,5 +10,7 @@ namespace ClientDashboard_API.Interfaces
         Task<UserBase?> GetUserByPasswordResetTokenAsync(int tokenId);
 
         void ChangeUserPassword(UserBase user, string newPassword);
+
+        void ChangeUserNotificationStatus(UserBase user, bool status);
     }
 }

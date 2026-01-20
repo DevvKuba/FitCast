@@ -23,5 +23,10 @@ namespace ClientDashboard_API.Data
         {
             user.PasswordHash = passwordHasher.Hash(newPassword);
         }
+
+        public void ChangeUserNotificationStatus(UserBase user, bool status)
+        {
+            user.NotificationsEnabled = status;
+        }
     }
 }

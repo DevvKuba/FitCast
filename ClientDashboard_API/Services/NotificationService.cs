@@ -28,7 +28,8 @@ namespace ClientDashboard_API.Services
             var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
                 $"remember to message them in regards of a new monthly payment.";
 
-            messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            // IMP uncomment for testing with Twillio credits
+            //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.TrainerBlockCompletionReminder,
