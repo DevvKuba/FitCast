@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Controllers
     [Authorize]
     public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService,IAutoPaymentCreationService autoPaymentService, IMapper mapper) : BaseAPIController
     {
-        [Authorize(Roles = "client")]
+        [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientSpecificWorkouts([FromQuery] int clientId)
         {
@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of paginated workoutsb
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpGet("GetTrainerWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts([FromQuery] int trainerId)
         {
@@ -58,7 +58,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of all daily workouts
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpGet("GetAllDailySessions")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetAllDailyClientWorkoutsAsync()
         {
@@ -78,7 +78,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for retrieving a specific client workout, at a given date
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpGet("{clientName}/{workoutDate}/GetWorkoutAtDate")]
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetClientWorkoutAtDateAsync(string clientName, DateOnly workoutDate)
         {
@@ -95,7 +95,7 @@ namespace ClientDashboard_API.Controllers
         /// Workout request for retrieving a list of client workouts,
         /// from a given date
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpGet("{workoutDate}/GetWorkoutsFromDate")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
         {
@@ -111,7 +111,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for the retrieval of a specific client's last workout
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpGet("{clientName}/lastDate")]
         public async Task<ActionResult<ApiResponseDto<Workout>>> GetLatestClientWorkoutAsync(string clientName)
         {
@@ -127,7 +127,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
@@ -153,7 +153,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpPost("Manual/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewManualClientWorkoutAsync([FromBody] WorkoutAddDto newWorkout)
         {
@@ -196,7 +196,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for updating an existing workout for a specific client
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpPut("updateWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] WorkoutUpdateDto newWorkoutInfo)
         {
@@ -221,7 +221,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for removing a specific workout via client name & date
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpDelete("{clientName}/{sessionDate}")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteClientWorkoutAsync(string clientName, DateOnly workoutDate)
         {
@@ -245,7 +245,7 @@ namespace ClientDashboard_API.Controllers
         /// <summary>
         /// Workout request for removing a specific workout via client name & date
         /// </summary>
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpDelete("DeleteWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteWorkoutAsync([FromQuery] int workoutId)
         {

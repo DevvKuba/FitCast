@@ -11,7 +11,7 @@ using Twilio.Types;
 
 namespace ClientDashboard_API.Controllers
 {
-    [Authorize(Roles = "trainer")]
+    [Authorize(Roles = "Trainer")]
     public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>

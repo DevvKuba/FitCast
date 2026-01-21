@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +64,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetAllPaymentsForTrainerAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -71,7 +72,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 TrainerId = trainer.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -80,7 +81,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 TrainerId = trainer.Id,
                 Amount = 150.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -97,8 +98,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetAllClientSpecificPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -108,7 +109,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -118,7 +119,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 150.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -136,7 +137,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetPaymentByIdAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -144,7 +145,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 TrainerId = trainer.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -170,8 +171,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetPaymentWithClientByIdAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -181,7 +182,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -200,8 +201,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetPaymentWithRelatedEntitiesByIdAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -211,7 +212,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -231,7 +232,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestUpdatePaymentDetailsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -239,7 +240,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 TrainerId = trainer.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = false
@@ -270,8 +271,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestCalculateClientTotalLifetimeValueAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -281,7 +282,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -291,7 +292,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 150.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = true
@@ -301,7 +302,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 50.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 4,
                 PaymentDate = DateOnly.Parse("25/06/2024"),
                 Confirmed = false
@@ -316,8 +317,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestCalculateClientTotalLifetimeValueReturnsZeroWhenNoConfirmedPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -330,8 +331,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddNewPaymentAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", DefaultCurrency = "Â£" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -346,15 +347,15 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal(client.Id, payment.ClientId);
             Assert.Equal(8, payment.NumberOfSessions);
             Assert.Equal(120.00m, payment.Amount);
-            Assert.Equal("Â£", payment.Currency);
+            Assert.Equal("£", payment.Currency);
             Assert.True(payment.Confirmed);
         }
 
         [Fact]
         public async Task TestAddNewPaymentWithNullConfirmedDefaultsToFalseAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", DefaultCurrency = "$" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "$" };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -371,8 +372,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddNewPaymentUsesDefaultCurrencyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", DefaultCurrency = "â‚¬" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "€" };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -383,13 +384,13 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var payment = await _context.Payments.FirstOrDefaultAsync();
 
             Assert.NotNull(payment);
-            Assert.Equal("â‚¬", payment.Currency);
+            Assert.Equal("€", payment.Currency);
         }
 
         [Fact]
         public async Task TestFilterOldClientPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -398,7 +399,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = null,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -408,7 +409,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = null,
                 Amount = 150.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -425,8 +426,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestFilterOldClientPaymentsDoesNotRemovePaymentsWithClientsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
             await _context.AddAsync(client);
             await _unitOfWork.Complete();
@@ -436,7 +437,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -446,7 +447,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 TrainerId = trainer.Id,
                 ClientId = null,
                 Amount = 150.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -464,7 +465,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestDeletePaymentAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -472,7 +473,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 TrainerId = trainer.Id,
                 Amount = 100.00m,
-                Currency = "Â£",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true

@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +67,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john",
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -97,7 +98,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john",
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -134,7 +135,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john",
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();

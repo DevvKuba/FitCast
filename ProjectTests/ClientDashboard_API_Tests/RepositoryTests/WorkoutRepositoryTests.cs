@@ -1,7 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestAddingWorkoutAsync()
         {
-            var client = new Client { Role = "client", FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { Role = UserRole.Client, FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;
@@ -77,7 +78,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestRemovingWorkoutAsync()
         {
-            var client = new Client { Role = "client", FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { Role = UserRole.Client, FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
             var exerciseCount = 8;
@@ -226,7 +227,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client1 = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -234,7 +235,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             };
             var client2 = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "mark", 
                 CurrentBlockSession = 2, 
                 TotalBlockSessions = 8, 
@@ -304,7 +305,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -344,7 +345,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -375,7 +376,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -403,7 +404,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -428,7 +429,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -454,7 +455,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -481,7 +482,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -506,7 +507,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -549,7 +550,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 
@@ -575,7 +576,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             var client = new Client 
             { 
-                Role = "client", 
+                Role = UserRole.Client, 
                 FirstName = "rob", 
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4, 

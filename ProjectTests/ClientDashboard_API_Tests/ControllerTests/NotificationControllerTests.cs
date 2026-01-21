@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
@@ -88,7 +88,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _messageService = new TestTwillioMessageService();
             _notificationService = new NotificationService(_unitOfWork, _messageService);
-            _notificationController = new NotificationController(_notificationService);
+            _notificationController = new NotificationController(_unitOfWork, _notificationService);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -106,7 +106,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
@@ -140,7 +140,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
@@ -168,7 +168,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -196,7 +196,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -206,7 +206,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
@@ -240,7 +240,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
@@ -268,7 +268,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -296,7 +296,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -306,7 +306,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
@@ -334,7 +334,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainer = new Trainer
             {
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 FirstName = "John",
                 Surname = "Doe",
                 Email = "john@example.com",
@@ -344,7 +344,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client
             {
-                Role = "client",
+                Role = UserRole.Client,
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",

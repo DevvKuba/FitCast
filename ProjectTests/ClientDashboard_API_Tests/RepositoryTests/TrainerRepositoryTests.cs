@@ -1,8 +1,9 @@
-ï»¿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -69,7 +70,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe", 
                 Email = "john@example.com", 
-                Role = "trainer" 
+                Role = UserRole.Trainer 
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -97,7 +98,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe", 
                 PhoneNumber = "1234567890", 
-                Role = "trainer" 
+                Role = UserRole.Trainer 
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -117,7 +118,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe", 
                 PhoneNumber = "1234567890", 
-                Role = "trainer" 
+                Role = UserRole.Trainer 
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -135,7 +136,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer" 
+                Role = UserRole.Trainer 
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -158,8 +159,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetAllTrainersAsync()
         {
-            await _context.Trainer.AddAsync(new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" });
-            await _context.Trainer.AddAsync(new Trainer { FirstName = "jane", Surname = "smith", Role = "trainer" });
+            await _context.Trainer.AddAsync(new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer });
+            await _context.Trainer.AddAsync(new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer });
             await _unitOfWork.Complete();
 
             var trainers = await _trainerRepository.GetAllTrainersAsync();
@@ -176,13 +177,13 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 FirstName = "john",
                 Surname = "doe",
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 Clients =
                 [
                     new Client
                     {
                         FirstName = "rob",
-                        Role = "client",
+                        Role = UserRole.Client,
                         CurrentBlockSession = 1,
                         TotalBlockSessions = 4,
                         Workouts = [
@@ -198,7 +199,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "jane", 
                 Surname = "smith", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
             };
 
             await _context.Trainer.AddAsync(oldTrainer);
@@ -224,7 +225,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 Clients = []
             };
             await _context.Trainer.AddAsync(trainer);
@@ -233,7 +234,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Client.AddAsync(new Client 
             { 
                 FirstName = "rob", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4,
@@ -242,7 +243,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Client.AddAsync(new Client 
             { 
                 FirstName = "mark", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 8,
@@ -265,21 +266,21 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 AutoWorkoutRetrieval = true
             });
             await _context.Trainer.AddAsync(new Trainer 
             { 
                 FirstName = "jane", 
                 Surname = "smith", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 AutoWorkoutRetrieval = false
             });
             await _context.Trainer.AddAsync(new Trainer 
             { 
                 FirstName = "bob", 
                 Surname = "jones", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 AutoWorkoutRetrieval = true
             });
             await _unitOfWork.Complete();
@@ -299,7 +300,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -307,7 +308,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client1 = new Client 
             { 
                 FirstName = "rob", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 Trainer = trainer,
                 CurrentBlockSession = 1, 
@@ -317,7 +318,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client2 = new Client 
             { 
                 FirstName = "mark", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 Trainer = trainer,
                 CurrentBlockSession = 1, 
@@ -351,7 +352,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -359,7 +360,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Client.AddAsync(new Client 
             { 
                 FirstName = "rob", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 Trainer = trainer,
                 IsActive = true,
@@ -370,7 +371,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Client.AddAsync(new Client 
             { 
                 FirstName = "mark", 
-                Role = "client", 
+                Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 Trainer = trainer,
                 IsActive = false,
@@ -394,12 +395,12 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             var client = new Client 
             { 
                 FirstName = "rob", 
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1, 
                 TotalBlockSessions = 4,
                 Workouts = []
@@ -422,7 +423,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe", 
                 Email = "john@example.com",
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 BusinessName = "Old Business"
             };
             await _context.Trainer.AddAsync(trainer);
@@ -435,7 +436,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Email = "jonathan@example.com",
                 PhoneNumber = "1234567890",
                 BusinessName = "New Business",
-                DefaultCurrency = "Â£",
+                DefaultCurrency = "£",
                 AverageSessionPrice = 50.00m
             };
 
@@ -447,7 +448,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal("jonathan@example.com", trainer.Email);
             Assert.Equal("1234567890", trainer.PhoneNumber);
             Assert.Equal("New Business", trainer.BusinessName);
-            Assert.Equal("Â£", trainer.DefaultCurrency);
+            Assert.Equal("£", trainer.DefaultCurrency);
             Assert.Equal(50.00m, trainer.AverageSessionPrice);
         }
 
@@ -459,7 +460,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe", 
                 PhoneNumber = "1234567890",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -478,7 +479,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 AutoWorkoutRetrieval = false
             };
             await _context.Trainer.AddAsync(trainer);
@@ -497,7 +498,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 AutoPaymentSetting = false
             };
             await _context.Trainer.AddAsync(trainer);
@@ -516,7 +517,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer",
+                Role = UserRole.Trainer,
                 WorkoutRetrievalApiKey = null
             };
             await _context.Trainer.AddAsync(trainer);
@@ -537,7 +538,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
 
             await _trainerRepository.AddNewTrainerAsync(trainer);
@@ -555,7 +556,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             { 
                 FirstName = "john", 
                 Surname = "doe", 
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -574,7 +575,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -600,7 +601,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe",
                 PhoneNumber = "1234567890",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -626,7 +627,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john", 
                 Surname = "doe",
                 PhoneNumber = "1234567890",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();

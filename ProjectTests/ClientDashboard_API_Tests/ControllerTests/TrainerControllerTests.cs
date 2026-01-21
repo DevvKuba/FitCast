@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -159,7 +160,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestRetrieveTrainerByIdReturnsTrainerAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -187,7 +188,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerProfileSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Email = "john@example.com", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Email = "john@example.com", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -236,8 +237,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateClientAssignmentSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -257,7 +258,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateClientAssignmentReturnsNotFoundForNonExistentTrainerAsync()
         {
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -272,7 +273,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateClientAssignmentReturnsNotFoundForNonExistentClientAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -287,7 +288,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdatePhoneNumberSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", PhoneNumber = "1234567890", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", PhoneNumber = "1234567890", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -317,7 +318,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateWorkoutRetrievalApiKeySuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -349,7 +350,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateWorkoutRetrievalApiKeyReturnsBadRequestForInvalidKeyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -366,7 +367,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerRetrievalDetailsSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", AutoWorkoutRetrieval = false };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoWorkoutRetrieval = false };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -399,7 +400,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerRetrievalDetailsReturnsBadRequestForInvalidKeyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -416,7 +417,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerPaymentSettingSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", AutoPaymentSetting = false };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -446,7 +447,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGatherAndUpdateHevyClientWorkoutsSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", WorkoutRetrievalApiKey = "encrypted_test-key" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -464,7 +465,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsZeroWhenNoSessionsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", WorkoutRetrievalApiKey = "encrypted_test-key" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -493,7 +494,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsBadRequestWhenNoApiKeyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", WorkoutRetrievalApiKey = null };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = null };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -509,7 +510,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetWorkoutRetrievalApiKeySuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", WorkoutRetrievalApiKey = "encrypted_test-key" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -536,7 +537,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetWorkoutRetrievalApiKeyReturnsBadRequestWhenNoApiKeyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", WorkoutRetrievalApiKey = null };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = null };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -551,7 +552,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetAutoRetrievalStatusSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", AutoWorkoutRetrieval = true };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoWorkoutRetrieval = true };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -578,7 +579,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetAutoPaymentSettingStatusSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", AutoPaymentSetting = true };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = true };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 

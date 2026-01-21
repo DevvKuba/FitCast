@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
@@ -67,12 +67,12 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 FirstName = "john",
                 Surname = "doe",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             var client = new Client
             {
                 FirstName = "rob",
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1,
                 TotalBlockSessions = 4,
                 Workouts = []
@@ -109,7 +109,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 FirstName = "john",
                 Surname = "doe",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -140,7 +140,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 FirstName = "john",
                 Surname = "doe",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();

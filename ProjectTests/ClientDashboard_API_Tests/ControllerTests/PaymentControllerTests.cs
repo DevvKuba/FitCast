@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -63,8 +64,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientPaymentsReturnsPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -114,8 +115,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetTrainerPaymentsReturnsPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -165,8 +166,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdatePaymentInformationSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -233,8 +234,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestAddNewTrainerPaymentSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer", DefaultCurrency = "£" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -267,7 +268,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestAddNewTrainerPaymentReturnsNotFoundForNonExistentTrainerAsync()
         {
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -292,7 +293,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestAddNewTrainerPaymentReturnsNotFoundForNonExistentClientAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -317,8 +318,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestDeleteTrainerPaymentSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -362,7 +363,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestFilterClientPaymentsSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
@@ -403,8 +404,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestFilterClientPaymentsReturnsZeroWhenNoOldPaymentsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();

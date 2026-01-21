@@ -1,9 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -95,7 +96,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientSpecificWorkoutsReturnsWorkoutsAsync()
         {
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -115,7 +116,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientSpecificWorkoutsReturnsEmptyListWhenNoWorkoutsAsync()
         {
-            var client = new Client { FirstName = "rob", Role = "client", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -142,11 +143,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetTrainerWorkoutsReturnsWorkoutsAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client { FirstName = "rob", Role = "client", TrainerId = trainer.Id, Trainer = trainer, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, Trainer = trainer, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -179,8 +180,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var todaysDateString = DateTime.Now.Date.ToString();
             var todaysDate = DateOnly.Parse(todaysDateString[0..10]);
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = "mat", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             await _workoutController.AddNewAutoClientWorkoutAsync("rob", "rob's workout", todaysDate, 10, 60);
@@ -214,7 +215,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var workoutTitle = "workout 1";
             var workoutDate = DateOnly.Parse("19/06/2025");
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, 10, 65);
 
@@ -250,7 +251,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var workoutDateOne = DateOnly.Parse("19/06/2025");
             var workoutDateTwo = DateOnly.Parse("18/06/2025");
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, "workout 1", workoutDateOne, 10, 50);
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, "workout 2", workoutDateTwo, 10, 50);
@@ -283,7 +284,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var workoutDateOne = DateOnly.Parse("19/06/2025");
             var workoutDateTwo = DateOnly.Parse("18/06/2025");
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, "workout 1", workoutDateOne, 10, 55);
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, "workout 2", workoutDateTwo, 10, 55);
@@ -318,7 +319,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var exerciseCount = 10;
             var duration = 60;
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var result = await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
@@ -351,11 +352,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestSuccessfullyAddingNewClientWorkoutManualAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = "trainer" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client { Role = "client", FirstName = "rob", TrainerId = trainer.Id, Trainer = trainer, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", TrainerId = trainer.Id, Trainer = trainer, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -405,7 +406,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateWorkoutDetailsSuccessfullyAsync()
         {
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -470,7 +471,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var clientName = "rob";
             var workoutDate = DateOnly.Parse("19/06/2025");
 
-            await _context.Client.AddAsync(new Client { Role = "client", FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
+            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
             await _workoutController.AddNewAutoClientWorkoutAsync(clientName, "workout 1", workoutDate, 10, 60);
 
@@ -500,7 +501,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestSuccessfullyDeletingWorkoutByIdAsync()
         {
-            var client = new Client { Role = "client", FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 

@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
@@ -62,7 +63,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client = new Client
             {
                 FirstName = "rob",
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1,
                 TotalBlockSessions = 4,
                 Workouts = []
@@ -108,7 +109,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client = new Client
             {
                 FirstName = "rob",
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1,
                 TotalBlockSessions = 4,
                 Workouts = []

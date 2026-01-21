@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Controllers
 {
     public class NotificationController(IUnitOfWork unitOfWork, INotificationService notificationService) : BaseAPIController
     {
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpPost("SendTrainerBlockCompletionReminder")]
         public async Task<ActionResult<ApiResponseDto<string>>> TrainerBlockCompletionReminderAsync(int trainerId, int clientId)
         {
@@ -25,7 +25,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [Authorize(Roles = "trainer")]
+        [Authorize(Roles = "Trainer")]
         [HttpPost("SendClientBlockCompletionReminder")]
         public async Task<ActionResult<ApiResponseDto<string>>> ClientBlockCompletionReminderAsync(int trainerId, int clientId)
         {
@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [Authorize(Roles = "trainer,client")]
+        [Authorize(Roles = "Trainer,Client")]
         [HttpPost("changeNotificationStatus")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationStatusDto userInfo)
         {
@@ -63,7 +63,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         // return latest 10 notifications 
-        [Authorize(Roles = "trainer,client")]
+        [Authorize(Roles = "Trainer,Client")]
         [HttpPost("GatherLatestUserNotifications")]
         public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
         {

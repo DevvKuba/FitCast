@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +64,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john",
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
@@ -73,7 +74,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.NotNull(user);
             Assert.Equal("john@example.com", user.Email);
             Assert.Equal("john", user.FirstName);
-            Assert.Equal("trainer", user.Role);
+            Assert.Equal(UserRole.Trainer, user.Role);
             Assert.IsType<Trainer>(user);
         }
 
@@ -85,7 +86,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "rob",
                 Surname = "smith",
                 Email = "rob@example.com",
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1,
                 TotalBlockSessions = 4,
                 Workouts = []
@@ -98,7 +99,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.NotNull(user);
             Assert.Equal("rob@example.com", user.Email);
             Assert.Equal("rob", user.FirstName);
-            Assert.Equal("client", user.Role);
+            Assert.Equal(UserRole.Client, user.Role);
             Assert.IsType<Client>(user);
         }
 
@@ -118,14 +119,14 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "john",
                 Surname = "doe",
                 Email = "john@example.com",
-                Role = "trainer"
+                Role = UserRole.Trainer
             };
             var client = new Client
             {
                 FirstName = "rob",
                 Surname = "smith",
                 Email = "rob@example.com",
-                Role = "client",
+                Role = UserRole.Client,
                 CurrentBlockSession = 1,
                 TotalBlockSessions = 4,
                 Workouts = []
@@ -139,8 +140,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             Assert.NotNull(trainerUser);
             Assert.NotNull(clientUser);
-            Assert.Equal("trainer", trainerUser.Role);
-            Assert.Equal("client", clientUser.Role);
+            Assert.Equal(UserRole.Trainer, trainerUser.Role);
+            Assert.Equal(UserRole.Client, clientUser.Role);
             Assert.IsType<Trainer>(trainerUser);
             Assert.IsType<Client>(clientUser);
         }
