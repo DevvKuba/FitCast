@@ -60,5 +60,11 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Notifications successfully {statusTerm}", Success = true });
         }
 
+        // return latest 10 notifications 
+
+
+
+        // return set number of latest notifications
+
     }
 }
