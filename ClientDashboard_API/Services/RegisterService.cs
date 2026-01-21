@@ -17,9 +17,10 @@ namespace ClientDashboard_API.Services
         public async Task<ApiResponseDto<string>> Handle(RegisterDto request)
         {
             // check if any fields are empty
-            if (request.FirstName.Length is 0 || request.Surname.Length is 0 || request.Password.Length is 0 
-                || request.Email.Length is 0 || request.PhoneNumber.Length is 0 || request.Role is null)
-            {
+            if (request.FirstName.Length is 0 || request.Surname.Length is 0 ||
+                request.Password.Length is 0 ||request.Email.Length is 0 || request.PhoneNumber.Length is 0 ||
+                request.Role is not Enums.UserRole.Trainer && request.Role is not Enums.UserRole.Client)
+                {
                 return new ApiResponseDto<string> { Data = null, Message = "Must fill in all required fields", Success = false };
             }
 
@@ -36,7 +37,7 @@ namespace ClientDashboard_API.Services
 
             // email / sms verification step
 
-            if (request.Role == "trainer")
+            if (request.Role == Enums.UserRole.Trainer)
             {
                 var trainer = new Trainer
                 {

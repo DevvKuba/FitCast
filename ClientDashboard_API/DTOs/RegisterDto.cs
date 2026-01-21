@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.DTOs
+﻿using ClientDashboard_API.Enums;
+
+namespace ClientDashboard_API.DTOs
 {
     public class RegisterDto
     {
@@ -12,7 +14,7 @@
 
         public required string Password { get; set; }
 
-        public required string Role { get; set; }
+        public required UserRole Role { get; set; }
 
         public int? ClientId { get; set; }
 

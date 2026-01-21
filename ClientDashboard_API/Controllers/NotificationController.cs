@@ -76,11 +76,11 @@ namespace ClientDashboard_API.Controllers
 
             var latestNotifications = new List<Notification>();
 
-            if (user.Role == "trainer")
+            if (user.Role == Enums.UserRole.Trainer)
             {
                 latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestTrainerNotifications(user);
             }
-            else if(user.Role == "client")
+            else if(user.Role == Enums.UserRole.Client)
             {
                 latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
             }

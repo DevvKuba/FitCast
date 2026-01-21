@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<UserDto> { Data = null, Message = "The user was not found", Success = false };
             }
 
-            if (loginDto.Role == "trainer")
+            if (loginDto.Role == Enums.UserRole.Trainer)
             {
                 var trainer = await unitOfWork.TrainerRepository.GetTrainerByEmailAsync(loginDto.Email);
                 if (!trainer!.EmailVerified)
@@ -25,7 +25,7 @@ namespace ClientDashboard_API.Services
                     return new ApiResponseDto<UserDto> { Data = null, Message = "You must verifiy your email, you can resend the verification below", Success = false };
                 }
             }
-            else if(loginDto.Role is null)
+            else if(loginDto.Role is not Enums.UserRole.Trainer && loginDto.Role is not Enums.UserRole.Client)
             {
                 return new ApiResponseDto<UserDto> { Data = null, Message = "User role type is not provided", Success = false };
             }

@@ -1,10 +1,12 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using ClientDashboard_API.Enums;
+
+namespace ClientDashboard_API.Entities
 {
     public abstract class UserBase
     {
         public int Id { get; set; }
 
-        public required string Role { get; set; }
+        public required UserRole Role { get; set; }
 
         public required string FirstName { get; set; }
 
