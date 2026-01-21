@@ -5,10 +5,11 @@ import { Menubar } from 'primeng/menubar';
 import { LoginComponent } from '../login/login.component';
 import { AccountService } from '../services/account.service';
 import { DrawerModule } from 'primeng/drawer';
+import { NotificationToggleComponent } from '../notification-toggle/notification-toggle.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [Menubar, DrawerModule],
+  imports: [Menubar, DrawerModule, NotificationToggleComponent],
   providers: [LoginComponent],
   templateUrl: './user-navbar.html',
   styleUrl: './user-navbar.css'
