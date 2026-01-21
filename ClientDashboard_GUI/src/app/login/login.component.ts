@@ -17,6 +17,7 @@ import { ToastService } from '../services/toast.service';
 import { UserDto } from '../models/dtos/user-dto';
 import { RadioButton } from 'primeng/radiobutton';
 import { ToggleButton } from 'primeng/togglebutton';
+import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-login',
@@ -37,10 +38,21 @@ export class LoginComponent {
   storageItem = "token";
 
   userLogin(email: string, password: string, userType: string){
+    const roleMap: Record<string,UserRole> = {
+      'trainer': UserRole.Trainer,
+      'client': UserRole.Client
+    }
+    const userRole = roleMap[userType];
+
+    if(!userRole){
+      this.toastService.showError('Error Logging In', 'Need to select a role');
+      return;
+    }
+
     const loginInfo: LoginDto = {
       email: email,
       password: password,
-      role: userType
+      role: userRole
     }
     this.accountService.login(loginInfo).subscribe({
       next: (response : ApiResponse<UserDto>) => {
@@ -48,7 +60,7 @@ export class LoginComponent {
         this.accountService.currentUser.set(response.data ?? null);
         console.log(this.accountService.currentUser()?.role);
         
-        if(loginInfo.role == "trainer"){
+        if(loginInfo.role == UserRole.Trainer){
           this.toastService.showSuccess('Logged In','Redirected to client-info page' );
           this.router.navigateByUrl('client-info');
         }
