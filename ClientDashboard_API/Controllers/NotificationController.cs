@@ -88,7 +88,6 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-
         // return set number of new notifications
 
     }
