@@ -2,8 +2,8 @@
 {
     public enum CommunicationType
     {
-        Email,
-        SMS,
-        None
+        Email = 1,
+        SMS = 2,
+        None = 3
     }
 }

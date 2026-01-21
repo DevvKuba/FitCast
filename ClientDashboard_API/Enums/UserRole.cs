@@ -2,7 +2,7 @@
 {
     public enum UserRole
     {
-        Trainer,
-        Client
+        Trainer = 1,
+        Client = 2
     }
 }

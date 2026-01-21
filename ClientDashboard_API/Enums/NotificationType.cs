@@ -2,11 +2,10 @@
 {
     public enum NotificationType
     {
-        TrainerBlockCompletionReminder,
-        ClientBlockCompletionReminder,
-        // for when a client is automatically added through Hevy workout retrieval
-        NewClientConfigurationReminder,
-        ClientStepsTrackedNotification,
-        RetrievalWorkoutsCountNotification
+        TrainerBlockCompletionReminder = 1,
+        ClientBlockCompletionReminder = 2,
+        NewClientConfigurationReminder = 3, // for when a client is automatically added through Hevy workout retrieval
+        ClientStepsTrackedNotification = 4,
+        RetrievalWorkoutsCountNotification = 5
     }
 }
