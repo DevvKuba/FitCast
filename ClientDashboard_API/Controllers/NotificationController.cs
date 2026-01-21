@@ -1,8 +1,10 @@
 ﻿using ClientDashboard_API.Data;
 using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -61,10 +63,33 @@ namespace ClientDashboard_API.Controllers
         }
 
         // return latest 10 notifications 
+        [Authorize(Roles = "trainer,client")]
+        [HttpPost("GatherLatestUserNotifications")]
+        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
+        {
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            
+            if(user is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
+            }
+
+            var latestNotifications = new List<Notification>();
+
+            if (user.Role == "trainer")
+            {
+                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestTrainerNotifications(user);
+            }
+            else if(user.Role == "client")
+            {
+                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
+            }
+            return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
+
+        }
 
 
-
-        // return set number of latest notifications
+        // return set number of new notifications
 
     }
 }
