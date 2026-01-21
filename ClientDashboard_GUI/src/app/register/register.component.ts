@@ -16,6 +16,7 @@ import { RadioButton } from 'primeng/radiobutton';
 import { InputMask } from 'primeng/inputmask';
 import { ToggleButton } from 'primeng/togglebutton';
 import { Dialog } from 'primeng/dialog';
+import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-register',
@@ -43,14 +44,26 @@ export class RegisterComponent {
   userType: string = "";
 
   userRegister(email: string, firstName: string, surname: string,
-     phoneNumber: string, userType: string, clientId: number | null,
+    phoneNumber: string, userType: string, clientId: number | null,
     clientsTrainerId: number | null,  password: string){
+    
+    const roleMap: Record<string,UserRole> = {
+          'trainer': UserRole.Trainer,
+          'client': UserRole.Client
+        }
+    const userRole = roleMap[userType];
+    
+    if(!userRole){
+      this.toastService.showError('Error Logging In', 'Need to select a role');
+      return;
+    }
+
     const registerInfo: RegisterDto = {
       firstName : firstName,
       surname: surname,
       email : email, 
       phoneNumber: phoneNumber,
-      role : userType,
+      role : userRole,
       clientId : clientId || null,
       clientsTrainerId : clientsTrainerId || null,
       password: password
