@@ -71,6 +71,7 @@ export class UserNavbar{
               icon: 'pi pi-bell',
               command: () => {
                 this.notificationVisibility = true;
+
               }
               
             },

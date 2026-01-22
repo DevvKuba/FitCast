@@ -4,7 +4,6 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
-import { resetFakeAsyncZone } from '@angular/core/testing';
 
 @Component({
   selector: 'app-notification-toggle',
@@ -23,6 +22,8 @@ export class NotificationToggleComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+    this.gatherLatestNotifications();
+    console.log(this.latestNotifications);
   }
 
   onNotificationToggle(event: {checked: boolean}){

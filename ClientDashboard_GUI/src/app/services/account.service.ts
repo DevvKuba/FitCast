@@ -9,6 +9,7 @@ import { UserDto } from '../models/dtos/user-dto';
 import { environment } from '../environments/environment';
 import { ClientVerificationInfoDto } from '../models/dtos/client-verification-info-dto';
 import { PasswordResetDto } from '../models/dtos/password-reset-dto';
+import { UserRole } from '../enums/user-role';
 
 @Injectable({
   providedIn: 'root'
@@ -78,7 +79,7 @@ export class AccountService {
       return{
         id: payload.sub,
         firstName: payload.given_name,
-        role: payload.role,
+        role: UserRole[payload.role as keyof typeof UserRole],
         token: token
       };
     }
