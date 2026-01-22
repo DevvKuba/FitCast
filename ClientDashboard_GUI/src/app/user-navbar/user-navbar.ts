@@ -6,6 +6,7 @@ import { LoginComponent } from '../login/login.component';
 import { AccountService } from '../services/account.service';
 import { DrawerModule } from 'primeng/drawer';
 import { NotificationToggleComponent } from '../notification-toggle/notification-toggle.component';
+import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-navbar',
@@ -35,7 +36,7 @@ export class UserNavbar{
                 return;
             }
 
-            if(this.accountService.currentUser()?.role == "trainer"){
+            if(this.accountService.currentUser()?.role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
             {
@@ -90,7 +91,7 @@ export class UserNavbar{
             },
         ]
         }
-        else if (this.accountService.currentUser()?.role == "client") {
+        else if (this.accountService.currentUser()?.role == UserRole.Client) {
             this.functionItems = [
             {
                 label: 'Personal Info',
