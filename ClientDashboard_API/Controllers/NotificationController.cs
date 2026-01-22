@@ -77,7 +77,7 @@ namespace ClientDashboard_API.Controllers
 
         // return latest 10 notifications 
         [Authorize(Roles = "Trainer,Client")]
-        [HttpPost("GatherLatestUserNotifications")]
+        [HttpGet("gatherLatestUserNotifications")]
         public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
         {
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
