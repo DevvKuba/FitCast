@@ -1,4 +1,4 @@
 <div class="sms-notification-toggle">
-    <label for="switch1">SMS Notifications</label>
-    <p-toggleswitch inputId="switch1" [(ngModel)]="notificationsToggled"/>
+    <label for="notification-switch">SMS Notifications</label>
+    <p-toggleswitch inputId="notification-switch" [(ngModel)]="notificationsToggled" (onChange)="onNotificationToggle($event)" />
 </div>
