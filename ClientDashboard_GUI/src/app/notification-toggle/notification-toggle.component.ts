@@ -17,12 +17,14 @@ export class NotificationToggleComponent implements OnInit {
   toastService = inject(ToastService)
 
   currentUserId: number = 0;
-  notificationsToggled: boolean = false;
+  notificationsToggled: boolean | undefined;
   latestNotifications: Notification[] | null = null;
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+    // set current notification status so the right one can be displayed
     this.gatherLatestNotifications();
+    
     console.log(this.latestNotifications);
   }
 

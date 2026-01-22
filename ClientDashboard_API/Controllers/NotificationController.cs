@@ -41,6 +41,19 @@ namespace ClientDashboard_API.Controllers
         }
 
         [Authorize(Roles = "Trainer,Client")]
+        [HttpGet("getNotificationStatus")]
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetUserNotificationStatusAsync([FromQuery] int userId)
+        {
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+
+            if (user is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, notification status not retrived", Success = false });
+            }
+            return Ok(new ApiResponseDto<bool> { Data = user.NotificationsEnabled, Message = "Notification status successfully retrieved", Success = true });
+        }
+
+        [Authorize(Roles = "Trainer,Client")]
         [HttpPut("changeNotificationStatus")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationStatusDto userInfo)
         {
