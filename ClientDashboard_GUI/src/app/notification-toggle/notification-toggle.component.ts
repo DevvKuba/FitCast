@@ -17,22 +17,21 @@ export class NotificationToggleComponent implements OnInit {
   toastService = inject(ToastService)
 
   currentUserId: number = 0;
-  notificationsToggled: boolean | undefined;
+  smsNotificationsToggled: boolean | undefined;
+
   latestNotifications: Notification[] | null = null;
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
-    // set current notification status so the right one can be displayed
-    this.gatherLatestNotifications();
-    
-    console.log(this.latestNotifications);
+    this.gatherNotificationStatus();
+    // this.gatherLatestNotifications();
   }
 
   onNotificationToggle(event: {checked: boolean}){
-    this.notificationsToggled = event.checked;
+    this.smsNotificationsToggled = event.checked;
     const statusInfo = {
       id: this.currentUserId,
-      notificationStatus: this.notificationsToggled
+      notificationStatus: this.smsNotificationsToggled
     }
 
     this.notificationService.toggleUserSMSNotificationStatus(statusInfo).subscribe({
@@ -43,6 +42,15 @@ export class NotificationToggleComponent implements OnInit {
         this.toastService.showError('Error', response.error.message);
       }
     });
+  }
+
+  gatherNotificationStatus() {
+    this.notificationService.gatherUserNotificationStatus(this.currentUserId).subscribe({
+      next: (response) => {
+        this.smsNotificationsToggled = response.data ?? false;
+        console.log(this.smsNotificationsToggled);
+      }
+    })
   }
 
   gatherLatestNotifications(){

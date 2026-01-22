@@ -18,6 +18,10 @@ export class NotificationService {
     return this.http.put(this.baseUrl + 'notification/changeNotificationStatus', statusInfo);
   }
 
+  gatherUserNotificationStatus(userId: number) : Observable<ApiResponse<boolean>> {
+    return this.http.get<ApiResponse<boolean>>(this.baseUrl + `notification/getNotificationStatus?userId=${userId}`);
+  }
+
   gatherUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
     return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/GatherLatestUserNotifications?userId=${userId}`);
   }

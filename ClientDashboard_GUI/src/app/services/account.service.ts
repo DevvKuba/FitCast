@@ -70,7 +70,6 @@ export class AccountService {
     }
     resolve();
     });
-    
   }
 
   private extractUserFromToken(token: string) : UserDto{
