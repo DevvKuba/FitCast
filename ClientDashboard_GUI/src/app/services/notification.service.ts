@@ -5,6 +5,7 @@ import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { NotificationStatusDto } from '../models/dtos/notification-status-dto';
+import { Notification } from '../models/notification';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,6 @@ export class NotificationService {
   }
 
   gatherUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
-    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/GatherLatestUserNotifications?userId=${userId}`);
+    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications?userId=${userId}`);
   }
 }

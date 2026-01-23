@@ -2,3 +2,32 @@
     <label for="notification-switch">SMS Notifications</label>
     <p-toggleswitch inputId="notification-switch" [(ngModel)]="smsNotificationsToggled" (onChange)="onNotificationToggle($event)" />
 </div>
+
+<div class="notifications-list">
+    @if(latestNotifications && latestNotifications.length > 0) {
+        @for(notification of latestNotifications; track notification.id) {
+            <div class="notification-item">
+                <div class="notification-header">
+                    <span class="notification-type">{{ notification.reminderType }}</span>
+                    <span class="notification-date">{{ notification.sentAt | date: 'short' }}</span>
+                </div>
+                <p class="notification-message">{{ notification.message }}</p>
+                <div class="notification-footer">
+                    <span class="notification-method">
+                        <i class="pi" [ngClass]="{
+                            'pi-mobile': notification.sentThrough === 'SMS',
+                            'pi-envelope': notification.sentThrough === 'Email',
+                            'pi-bell': notification.sentThrough === 'InApp'
+                        }"></i>
+                        {{ notification.sentThrough }}
+                    </span>
+                </div>
+            </div>
+        }
+    } @else {
+        <div class="no-notifications">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: var(--text-color-secondary);"></i>
+            <p>No notifications yet</p>
+        </div>
+    }
+</div>

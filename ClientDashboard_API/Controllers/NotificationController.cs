@@ -75,7 +75,7 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Notifications successfully {statusTerm}", Success = true });
         }
 
-        // return latest 10 notifications 
+        // return latest 10 notifications OR might be better to return all notifications that have the status of new
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherLatestUserNotifications")]
         public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)

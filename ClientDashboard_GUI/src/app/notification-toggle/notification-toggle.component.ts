@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';import { CommonModule } from '@angular/common';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
+import { Notification } from '../models/notification';
 
 @Component({
   selector: 'app-notification-toggle',
-  imports: [ToggleSwitch, FormsModule],
+  imports: [ToggleSwitch, FormsModule, CommonModule],
   templateUrl: './notification-toggle.component.html',
   styleUrl: './notification-toggle.component.css'
 })
@@ -56,7 +57,6 @@ export class NotificationToggleComponent implements OnInit {
     this.notificationService.gatherUserNotifications(this.currentUserId).subscribe({
       next: (response) => {
         this.latestNotifications = response.data ?? [];
-        console.log(this.latestNotifications);
       }
     })
   }
