@@ -40,9 +40,15 @@ export class UserNavbar{
                 this.generalItems = [];
                 return;
             }
-            this.gatherUserUnreadNotifications(user.id);
 
-            if(user.role == UserRole.Trainer){
+            this.gatherUnreadNotificationCount(user.id);
+
+        })
+        
+    }
+
+    private buildMenuItems(role: UserRole){
+        if(role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
             {
@@ -75,7 +81,7 @@ export class UserNavbar{
         this.generalItems = [
             {
               icon: 'pi pi-bell',
-              badge: this.unreadNotificationCount.toString(),
+              badge: this.getBellBadge(),
               command: () => {
                 this.notificationVisibility = true;
               }
@@ -98,7 +104,7 @@ export class UserNavbar{
             },
         ]
         }
-        else if (user.role == UserRole.Client) {
+        else if (role == UserRole.Client) {
             this.functionItems = [
             {
                 label: 'Personal Info',
@@ -123,11 +129,7 @@ export class UserNavbar{
                 routerLink: '/',
                 icon: 'pi pi-home'
             },
-            // {
-            //     label: 'Profile',
-            //     routerLink: '/trainer-profile',
-            //     icon: 'pi pi-user-edit'
-            // },
+            // client profile
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
@@ -150,15 +152,23 @@ export class UserNavbar{
             },
             ];
         }
-        })
-        
     }
 
-    gatherUserUnreadNotifications(currentUserId: number){
-        this.notificationService.gatherUnreadUserNotifications(currentUserId).subscribe({
+    gatherUnreadNotificationCount(currentUserId: number){
+        this.notificationService.gatherUnreadUserNotificationCount(currentUserId).subscribe({
             next: (response) => {
-                this.unreadNotificationCount = response.data?.length ?? 0;
+                this.unreadNotificationCount = response.data ?? 0;
+                console.log(this.unreadNotificationCount);
+
+                const user = this.accountService.currentUser();
+                if(user){
+                    this.buildMenuItems(user.role);
+                }
             }
         })
+    }
+
+    getBellBadge(): string {
+        return this.unreadNotificationCount.toString();
     }
 }
