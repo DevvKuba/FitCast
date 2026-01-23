@@ -29,7 +29,7 @@ export class NotificationToggleComponent implements OnInit {
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
     this.gatherNotificationStatus();
-    this.gatherLatestNotifications();
+    this.gatherUnreadNotifications();
   }
 
   onNotificationToggle(event: {checked: boolean}){
@@ -57,8 +57,8 @@ export class NotificationToggleComponent implements OnInit {
     })
   }
 
-  gatherLatestNotifications(){
-    this.notificationService.gatherUserNotifications(this.currentUserId).subscribe({
+  gatherUnreadNotifications(){
+    this.notificationService.gatherUnreadUserNotifications(this.currentUserId).subscribe({
       next: (response) => {
         this.latestNotifications = response.data ?? [];
       }
