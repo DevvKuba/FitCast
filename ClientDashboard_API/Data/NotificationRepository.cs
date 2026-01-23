@@ -8,15 +8,21 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRepository(DataContext context) : INotificationRepository
     {
-        public async Task<List<Notification>> ReturnLatestTrainerNotifications(UserBase user)
+        public async Task<List<Notification>> ReturnUnreadTrainerNotifications(UserBase user)
         {
-            var latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt).Where(n => n.TrainerId == user.Id).Take(10).ToListAsync();
+            var latestNotifications = await context.Notification
+                .OrderByDescending(n => n.SentAt)
+                .Where(n => n.TrainerId == user.Id && n.IsRead == false)
+                .ToListAsync();
             return latestNotifications;
         }
 
-        public async Task<List<Notification>> ReturnLatestClientNotifications(UserBase user)
+        public async Task<List<Notification>> ReturnUnreadClientNotifications(UserBase user)
         {
-            var latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt).Where(n => n.ClientId == user.Id).Take(10).ToListAsync();
+            var latestNotifications = await context.Notification
+                .OrderByDescending(n => n.SentAt)
+                .Where(n => n.ClientId == user.Id && n.IsRead == false)
+                .ToListAsync();
             return latestNotifications;
         }
 

@@ -77,8 +77,8 @@ namespace ClientDashboard_API.Controllers
 
         // return latest 10 notifications OR might be better to return all notifications that have the status of new
         [Authorize(Roles = "Trainer,Client")]
-        [HttpGet("gatherLatestUserNotifications")]
-        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
+        [HttpGet("gatherUnreadUserNotifications")]
+        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherUnreadUserNotificationsAsync([FromQuery] int userId)
         {
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
             
@@ -87,17 +87,17 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
             }
 
-            var latestNotifications = new List<Notification>();
+            var unreadNotifications = new List<Notification>();
 
             if (user.Role == Enums.UserRole.Trainer)
             {
-                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestTrainerNotifications(user);
+                unreadNotifications = await unitOfWork.NotificationRepository.ReturnUnreadTrainerNotifications(user);
             }
             else if(user.Role == Enums.UserRole.Client)
             {
-                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
+                unreadNotifications = await unitOfWork.NotificationRepository.ReturnUnreadClientNotifications(user);
             }
-            return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
+            return Ok(new ApiResponseDto<List<Notification>> { Data = unreadNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
 
         // return set number of new notifications
