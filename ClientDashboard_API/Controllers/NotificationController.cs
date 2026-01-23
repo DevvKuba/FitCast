@@ -100,6 +100,29 @@ namespace ClientDashboard_API.Controllers
         }
 
         // return set number of new notifications
+        [Authorize(Roles = "Trainer,Client")]
+        [HttpGet("gatherUnreadUserNotificationCount")]
+        public async Task<ActionResult<ApiResponseDto<int?>>> GatherUnreadUserNotificationCountAsync([FromQuery] int userId)
+        {
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+
+            if (user is null)
+            {
+                return NotFound(new ApiResponseDto<int?> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
+            }
+
+            var unreadNotificationCount = 0;
+
+            if (user.Role == Enums.UserRole.Trainer)
+            {
+                unreadNotificationCount = await unitOfWork.NotificationRepository.ReturnUnreadTrainerNotificationCount(user);
+            }
+            else if (user.Role == Enums.UserRole.Client)
+            {
+                unreadNotificationCount = await unitOfWork.NotificationRepository.ReturnUnreadClientNotificationCount(user);
+            }
+            return Ok(new ApiResponseDto<int?> { Data = unreadNotificationCount, Message = "Successfully returned unread notification count", Success = true });
+        }
 
     }
 }

@@ -9,6 +9,10 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<Notification>> ReturnLatestClientNotifications(UserBase client);
 
+        Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer);
+
+        Task<int> ReturnUnreadClientNotificationCount(UserBase client);
+
         void DeleteNotification(Notification notification);
 
         Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough);

@@ -20,6 +20,18 @@ namespace ClientDashboard_API.Data
             return latestNotifications;
         }
 
+        public async Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer)
+        {
+            var unreadNotifications = await context.Notification.Where(n => n.TrainerId == trainer.Id).ToListAsync();
+            return unreadNotifications.Count;
+        }
+
+        public async Task<int> ReturnUnreadClientNotificationCount(UserBase client)
+        {
+            var unreadNotifications = await context.Notification.Where(n => n.ClientId == client.Id).ToListAsync();
+            return unreadNotifications.Count;
+        }
+
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
         {
             var newNotification = new Notification
@@ -38,5 +50,6 @@ namespace ClientDashboard_API.Data
         {
             context.Notification.Remove(notification);
         }
+
     }
 }
