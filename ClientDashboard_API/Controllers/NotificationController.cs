@@ -79,11 +79,11 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("markNotificationsAsRead")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeNotificationStatusesToReadAsync([FromBody] NotificationReadStatusDto notifications)
         {
-            unitOfWork.NotificationRepository.MarkNotificationsAsRead(notifications.ReadNotificationsList);
+            await unitOfWork.NotificationRepository.MarkNotificationsAsRead(notifications.ReadNotificationsList);
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Changing notifications to read status was unsuccessful", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "All notifications are currently set to read", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = "Changing notifications to read status was successful", Success = true });
         }

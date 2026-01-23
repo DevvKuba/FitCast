@@ -49,11 +49,21 @@ export class NotificationToggleComponent implements OnInit {
     });
   }
 
+  changeNotificationsToReadStatus(notifications: Notification[]){
+    const notificationList = {
+      readNotificationsList: notifications
+    }
+    this.notificationService.markUserNotificationsAsRead(notificationList).subscribe({
+      next: (response) => {
+        console.log(response.message);
+      }
+    })
+  }
+
   gatherNotificationStatus() {
     this.notificationService.gatherUserNotificationStatus(this.currentUserId).subscribe({
       next: (response) => {
         this.smsNotificationsToggled = response.data ?? false;
-        // here we pass in the array and mark them all as read
       }
     })
   }
@@ -62,6 +72,7 @@ export class NotificationToggleComponent implements OnInit {
     this.notificationService.gatherLatestUserNotifications(this.currentUserId).subscribe({
       next: (response) => {
         this.latestNotifications = response.data ?? [];
+        this.changeNotificationsToReadStatus(this.latestNotifications);
       }
     })
   }

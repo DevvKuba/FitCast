@@ -2,6 +2,7 @@
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 using Twilio.Rest.Api.V2010.Account.Usage.Record;
 
 namespace ClientDashboard_API.Data
@@ -22,22 +23,26 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer)
         {
-            var unreadNotifications = await context.Notification.Where(n => n.TrainerId == trainer.Id).ToListAsync();
+            var unreadNotifications = await context.Notification.Where(n => n.TrainerId == trainer.Id && n.IsRead == false).ToListAsync();
             return unreadNotifications.Count;
         }
 
         public async Task<int> ReturnUnreadClientNotificationCount(UserBase client)
         {
-            var unreadNotifications = await context.Notification.Where(n => n.ClientId == client.Id).ToListAsync();
+            var unreadNotifications = await context.Notification.Where(n => n.ClientId == client.Id && n.IsRead == false).ToListAsync();
             return unreadNotifications.Count;
         }
 
-        public void MarkNotificationsAsRead(List<Notification> notificationList)
+        public async Task MarkNotificationsAsRead(List<Notification> notificationList)
         {
-            foreach(var notification in notificationList)
+            // for each notificationList element get corresponding - then set IsRead to true
+             var notificationListData = await context.Notification.Where(n => notificationList.Contains(n)).ToListAsync();
+            foreach(var notification in notificationListData)
             {
-                notification.IsRead = false;
+                notification.IsRead = true;
+                notification.ReadAt = DateTime.UtcNow;
             }
+            
         }
 
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)

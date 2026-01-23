@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { NotificationSmsStatusDto } from '../models/dtos/notification-sms-status-dto';
 import { Notification } from '../models/notification';
+import { NotificationReadStatusDto } from '../models/dtos/notification-read-status-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,10 @@ export class NotificationService {
 
   toggleUserSMSNotificationStatus(statusInfo: NotificationSmsStatusDto): Observable<any>{
     return this.http.put(this.baseUrl + 'notification/changeNotificationStatus', statusInfo);
+  }
+
+  markUserNotificationsAsRead(notifications: NotificationReadStatusDto) : Observable<any>{
+    return this.http.put(this.baseUrl + 'notification/markNotificationsAsRead', notifications);
   }
 
   gatherUserNotificationStatus(userId: number) : Observable<ApiResponse<boolean>> {
