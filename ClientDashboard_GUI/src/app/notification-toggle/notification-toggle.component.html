@@ -8,17 +8,17 @@
         @for(notification of latestNotifications; track notification.id) {
             <div class="notification-item">
                 <div class="notification-header">
-                    <span class="notification-type">{{ notification.reminderType }}</span>
-                    <span class="notification-date">{{ notification.sentAt | date: 'short' }}</span>
+                    <span class="notification-date">{{ notification.sentAt | date:'dd/MM/yyyy' }}</span>
                 </div>
                 <p class="notification-message">{{ notification.message }}</p>
                 <div class="notification-footer">
                     <span class="notification-method">
                         <i class="pi" [ngClass]="{
-                            'pi-mobile': notification.sentThrough === 'SMS',
-                            'pi-envelope': notification.sentThrough === 'Email',
-                            'pi-bell': notification.sentThrough === 'InApp'
+                            'pi-mobile': notification.sentThrough === communicationType.Sms,
+                            'pi-envelope': notification.sentThrough === communicationType.Email,
+                            'pi-bell': notification.sentThrough === communicationType.InApp
                         }"></i>
+                        <!-- need a pipe -->
                         {{ notification.sentThrough }}
                     </span>
                 </div>

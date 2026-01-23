@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Services
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.TrainerBlockCompletionReminder,
-                sentThrough: Enums.CommunicationType.SMS);
+                sentThrough: Enums.CommunicationType.Sms);
 
             if (!await unitOfWork.Complete())
             {
@@ -69,7 +69,7 @@ namespace ClientDashboard_API.Services
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.ClientBlockCompletionReminder,
-                sentThrough: Enums.CommunicationType.SMS);
+                sentThrough: Enums.CommunicationType.Sms);
 
             if (!await unitOfWork.Complete())
             {

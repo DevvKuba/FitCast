@@ -5,6 +5,8 @@ import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { Notification } from '../models/notification';
+import { CommunicationType } from '../enums/communication-type';
+import { NotificationType } from '../enums/notification-type';
 
 @Component({
   selector: 'app-notification-toggle',
@@ -19,6 +21,8 @@ export class NotificationToggleComponent implements OnInit {
 
   currentUserId: number = 0;
   smsNotificationsToggled: boolean | undefined;
+  communicationType = CommunicationType;
+  notificationType = NotificationType;
 
   latestNotifications: Notification[] | null = null;
 

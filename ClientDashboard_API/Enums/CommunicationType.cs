@@ -3,7 +3,7 @@
     public enum CommunicationType
     {
         Email = 1,
-        SMS = 2,
-        None = 3
+        Sms = 2,
+        InApp = 3
     }
 }
