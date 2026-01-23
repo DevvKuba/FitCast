@@ -76,8 +76,8 @@ namespace ClientDashboard_API.Controllers
         }
 
         [Authorize(Roles = "Trainer,Client")]
-        [HttpGet("gatherUnreadUserNotifications")]
-        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherUnreadUserNotificationsAsync([FromQuery] int userId)
+        [HttpGet("gatherLatestUserNotifications")]
+        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
         {
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
             
@@ -86,17 +86,17 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
             }
 
-            var unreadNotifications = new List<Notification>();
+            var latestNotifications = new List<Notification>();
 
             if (user.Role == Enums.UserRole.Trainer)
             {
-                unreadNotifications = await unitOfWork.NotificationRepository.ReturnUnreadTrainerNotifications(user);
+                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestTrainerNotifications(user);
             }
             else if(user.Role == Enums.UserRole.Client)
             {
-                unreadNotifications = await unitOfWork.NotificationRepository.ReturnUnreadClientNotifications(user);
+                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
             }
-            return Ok(new ApiResponseDto<List<Notification>> { Data = unreadNotifications, Message = "Successfully returned the latest notifications", Success = true });
+            return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
 
         // return set number of new notifications

@@ -8,6 +8,8 @@ import { DrawerModule } from 'primeng/drawer';
 import { NotificationToggleComponent } from '../notification-toggle/notification-toggle.component';
 import { UserRole } from '../enums/user-role';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { NotificationService } from '../services/notification.service';
+import { Notification } from '../models/notification';
 
 @Component({
   selector: 'app-navbar',
@@ -18,12 +20,14 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 })
 export class UserNavbar{
 
-  functionItems: MenuItem[] | undefined;
-  generalItems: MenuItem[] | undefined;
-  notificationVisibility: boolean = false;
- 
-  loginComponent = inject(LoginComponent);
-  accountService = inject(AccountService);
+    loginComponent = inject(LoginComponent);
+    accountService = inject(AccountService);
+    notificationService = inject(NotificationService);
+
+    functionItems: MenuItem[] | undefined;
+    generalItems: MenuItem[] | undefined;
+    notificationVisibility: boolean = false;
+    unreadNotificationCount: number = 0;
 
     constructor(){
         effect(() => {
@@ -36,8 +40,9 @@ export class UserNavbar{
                 this.generalItems = [];
                 return;
             }
+            this.gatherUserUnreadNotifications(user.id);
 
-            if(this.accountService.currentUser()?.role == UserRole.Trainer){
+            if(user.role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
             {
@@ -70,7 +75,7 @@ export class UserNavbar{
         this.generalItems = [
             {
               icon: 'pi pi-bell',
-              badge: '5',
+              badge: this.unreadNotificationCount.toString(),
               command: () => {
                 this.notificationVisibility = true;
               }
@@ -93,7 +98,7 @@ export class UserNavbar{
             },
         ]
         }
-        else if (this.accountService.currentUser()?.role == UserRole.Client) {
+        else if (user.role == UserRole.Client) {
             this.functionItems = [
             {
                 label: 'Personal Info',
@@ -147,5 +152,13 @@ export class UserNavbar{
         }
         })
         
+    }
+
+    gatherUserUnreadNotifications(currentUserId: number){
+        this.notificationService.gatherUnreadUserNotifications(currentUserId).subscribe({
+            next: (response) => {
+                this.unreadNotificationCount = response.data?.length ?? 0;
+            }
+        })
     }
 }

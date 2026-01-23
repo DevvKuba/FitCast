@@ -24,6 +24,6 @@ export class NotificationService {
   }
 
   gatherUnreadUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
-    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherUnreadUserNotifications?userId=${userId}`);
+    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications?userId=${userId}`);
   }
 }

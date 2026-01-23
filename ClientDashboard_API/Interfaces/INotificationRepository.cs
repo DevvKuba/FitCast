@@ -5,9 +5,9 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface INotificationRepository
     {
-        Task<List<Notification>> ReturnUnreadTrainerNotifications(UserBase user);
+        Task<List<Notification>> ReturnLatestTrainerNotifications(UserBase trainer);
 
-        Task<List<Notification>> ReturnUnreadClientNotifications(UserBase user);
+        Task<List<Notification>> ReturnLatestClientNotifications(UserBase client);
 
         void DeleteNotification(Notification notification);
 
