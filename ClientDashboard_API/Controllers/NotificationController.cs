@@ -76,6 +76,19 @@ namespace ClientDashboard_API.Controllers
         }
 
         [Authorize(Roles = "Trainer,Client")]
+        [HttpPut("markNotificationsAsRead")]
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeNotificationStatusesToReadAsync([FromBody] NotificationReadStatusDto notifications)
+        {
+            unitOfWork.NotificationRepository.MarkNotificationsAsRead(notifications.ReadNotificationsList);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Changing notifications to read status was unsuccessful", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = null, Message = "Changing notifications to read status was successful", Success = true });
+        }
+
+        [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherLatestUserNotifications")]
         public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
         {

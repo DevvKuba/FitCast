@@ -32,6 +32,14 @@ namespace ClientDashboard_API.Data
             return unreadNotifications.Count;
         }
 
+        public void MarkNotificationsAsRead(List<Notification> notificationList)
+        {
+            foreach(var notification in notificationList)
+            {
+                notification.IsRead = false;
+            }
+        }
+
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
         {
             var newNotification = new Notification
@@ -50,6 +58,5 @@ namespace ClientDashboard_API.Data
         {
             context.Notification.Remove(notification);
         }
-
     }
 }
