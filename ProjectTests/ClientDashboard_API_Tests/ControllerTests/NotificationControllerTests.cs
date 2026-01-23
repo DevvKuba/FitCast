@@ -132,7 +132,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(trainer.Id, notification.TrainerId);
             Assert.Equal(client.Id, notification.ClientId);
             Assert.Equal(NotificationType.TrainerBlockCompletionReminder, notification.ReminderType);
-            Assert.Equal(CommunicationType.SMS, notification.SentThrough);
+            Assert.Equal(CommunicationType.Sms, notification.SentThrough);
         }
 
         [Fact]
@@ -232,7 +232,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(trainer.Id, notification.TrainerId);
             Assert.Equal(client.Id, notification.ClientId);
             Assert.Equal(NotificationType.ClientBlockCompletionReminder, notification.ReminderType);
-            Assert.Equal(CommunicationType.SMS, notification.SentThrough);
+            Assert.Equal(CommunicationType.Sms, notification.SentThrough);
         }
 
         [Fact]

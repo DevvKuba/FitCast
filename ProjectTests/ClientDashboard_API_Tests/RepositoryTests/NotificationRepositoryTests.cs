@@ -119,7 +119,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 null,
                 "General notification",
                 NotificationType.NewClientConfigurationReminder,
-                CommunicationType.SMS
+                CommunicationType.Sms
             );
             await _unitOfWork.Complete();
 
@@ -130,7 +130,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Null(savedNotification.ClientId);
             Assert.Equal("General notification", savedNotification.Message);
             Assert.Equal(NotificationType.NewClientConfigurationReminder, savedNotification.ReminderType);
-            Assert.Equal(CommunicationType.SMS, savedNotification.SentThrough);
+            Assert.Equal(CommunicationType.Sms, savedNotification.SentThrough);
         }
 
         [Fact]
