@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';import { CommonModule } from '@angular/common';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { NotificationService } from '../services/notification.service';
@@ -15,6 +15,8 @@ import { NotificationType } from '../enums/notification-type';
   styleUrl: './notification-toggle.component.css'
 })
 export class NotificationToggleComponent implements OnInit {
+  @Input() latestNotifications: Notification[] | null = null;
+
   accountService = inject(AccountService);
   notificationService = inject(NotificationService);
   toastService = inject(ToastService);
@@ -23,8 +25,6 @@ export class NotificationToggleComponent implements OnInit {
   smsNotificationsToggled: boolean | undefined;
   communicationType = CommunicationType;
   notificationType = NotificationType;
-
-  latestNotifications: Notification[] | null = null;
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
@@ -49,16 +49,17 @@ export class NotificationToggleComponent implements OnInit {
     });
   }
 
-  changeNotificationsToReadStatus(notifications: Notification[]){
-    const notificationList = {
-      readNotificationsList: notifications
-    }
-    this.notificationService.markUserNotificationsAsRead(notificationList).subscribe({
-      next: (response) => {
-        console.log(response.message);
-      }
-    })
-  }
+  // might not need at all since this is being done at the user-navbar / parent level 
+  // changeNotificationsToReadStatus(notifications: Notification[]){
+  //   const notificationList = {
+  //     readNotificationsList: notifications
+  //   }
+  //   this.notificationService.markUserNotificationsAsRead(notificationList).subscribe({
+  //     next: (response) => {
+  //       console.log(response.message);
+  //     }
+  //   })
+  // }
 
   gatherNotificationStatus() {
     this.notificationService.gatherUserNotificationStatus(this.currentUserId).subscribe({
@@ -72,7 +73,6 @@ export class NotificationToggleComponent implements OnInit {
     this.notificationService.gatherLatestUserNotifications(this.currentUserId).subscribe({
       next: (response) => {
         this.latestNotifications = response.data ?? [];
-        this.changeNotificationsToReadStatus(this.latestNotifications);
       }
     })
   }

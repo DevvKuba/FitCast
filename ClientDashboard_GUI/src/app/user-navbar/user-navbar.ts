@@ -26,6 +26,7 @@ export class UserNavbar{
 
     functionItems: MenuItem[] | undefined;
     generalItems: MenuItem[] | undefined;
+    latestNotifications: Notification[] = [];
     notificationVisibility: boolean = false;
     unreadNotificationCount: number = 0;
 
@@ -40,11 +41,24 @@ export class UserNavbar{
                 this.generalItems = [];
                 return;
             }
-
             this.gatherUnreadNotificationCount(user.id);
 
         })
         
+    }
+
+    gatherUnreadNotificationCount(currentUserId: number){
+        this.notificationService.gatherUnreadUserNotificationCount(currentUserId).subscribe({
+            next: (response) => {
+                this.unreadNotificationCount = response.data ?? 0;
+                console.log(this.unreadNotificationCount);
+
+                const user = this.accountService.currentUser();
+                if(user){
+                    this.buildMenuItems(user.role);
+                }
+            }
+        })
     }
 
     private buildMenuItems(role: UserRole){
@@ -84,6 +98,7 @@ export class UserNavbar{
               badge: this.getBellBadge(),
               command: () => {
                 this.notificationVisibility = true;
+                this.onNotificationDrawerOpen();
               }
               
             },
@@ -154,18 +169,21 @@ export class UserNavbar{
         }
     }
 
-    gatherUnreadNotificationCount(currentUserId: number){
-        this.notificationService.gatherUnreadUserNotificationCount(currentUserId).subscribe({
-            next: (response) => {
-                this.unreadNotificationCount = response.data ?? 0;
-                console.log(this.unreadNotificationCount);
+    onNotificationDrawerOpen(){
+        const userId = this.accountService.currentUser()?.id;
+        if(!userId) return;
 
-                const user = this.accountService.currentUser();
-                if(user){
-                    this.buildMenuItems(user.role);
+        this.notificationService.gatherLatestUserNotifications(userId).subscribe({
+            next: (response) => {
+                const list = {
+                    readNotificationsList: response.data ?? []
+                }
+
+                if(list.readNotificationsList.length > 0){
+                    this.notificationService.markUserNotificationsAsRead(list).subscribe();
                 }
             }
-        })
+        });
     }
 
     getBellBadge(): string {
