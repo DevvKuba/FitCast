@@ -14,9 +14,13 @@ namespace ClientDashboard_API.Entities
 
         public required NotificationType ReminderType { get; set; }
 
-        public required CommunicationType SentThrough { get; set; } // email , sms, app.. 
+        public required CommunicationType SentThrough { get; set; }
 
         public DateTime SentAt { get; set; }
+
+        public bool IsRead { get; set; } = false;
+
+        public DateTime? ReadAt { get; set; }
 
         public Trainer? Trainer { get; set; } = null;
 

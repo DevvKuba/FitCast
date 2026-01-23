@@ -18,7 +18,6 @@
                             'pi-envelope': notification.sentThrough === communicationType.Email,
                             'pi-bell': notification.sentThrough === communicationType.InApp
                         }"></i>
-                        <!-- need a pipe -->
                         {{ getCommunicationType(notification.sentThrough) }}
                     </span>
                 </div>
