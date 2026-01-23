@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.DTOs
 {
-    public class NotificationStatusDto
+    public class NotificationSmsStatusDto
     {
         public required int Id { get; set; }
 

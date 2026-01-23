@@ -1,4 +1,4 @@
-export interface NotificationStatusDto {
+export interface NotificationSmsStatusDto {
   id: number,
   notificationStatus: boolean
 }

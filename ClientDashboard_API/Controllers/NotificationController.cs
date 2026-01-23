@@ -55,7 +55,7 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer,Client")]
         [HttpPut("changeNotificationStatus")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationStatusDto userInfo)
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationSmsStatusDto userInfo)
         {
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userInfo.Id);
 
@@ -96,6 +96,7 @@ namespace ClientDashboard_API.Controllers
             {
                 latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
             }
+
             return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
 

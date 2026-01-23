@@ -4,7 +4,7 @@ import { UserDto } from '../models/dtos/user-dto';
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
-import { NotificationStatusDto } from '../models/dtos/notification-status-dto';
+import { NotificationSmsStatusDto } from '../models/dtos/notification-sms-status-dto';
 import { Notification } from '../models/notification';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class NotificationService {
   currentUser = signal<UserDto | null>(null);
   baseUrl = environment.apiUrl;
 
-  toggleUserSMSNotificationStatus(statusInfo: NotificationStatusDto): Observable<any>{
+  toggleUserSMSNotificationStatus(statusInfo: NotificationSmsStatusDto): Observable<any>{
     return this.http.put(this.baseUrl + 'notification/changeNotificationStatus', statusInfo);
   }
 
@@ -23,7 +23,7 @@ export class NotificationService {
     return this.http.get<ApiResponse<boolean>>(this.baseUrl + `notification/getNotificationStatus?userId=${userId}`);
   }
 
-  gatherUnreadUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
+  gatherLatestUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
     return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications?userId=${userId}`);
   }
 
