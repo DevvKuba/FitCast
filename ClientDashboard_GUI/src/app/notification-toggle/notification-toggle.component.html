@@ -8,7 +8,7 @@
         @for(notification of latestNotifications; track notification.id) {
             <div class="notification-item">
                 <div class="notification-header">
-                    <span class="notification-date">{{ notification.sentAt | date:'dd/MM/yyyy' }}</span>
+                    <span class="notification-date">{{ notification.sentAt | date:'dd/MM/yyyy,  h:mm a' }}</span>
                 </div>
                 <p class="notification-message">{{ notification.message }}</p>
                 <div class="notification-footer">
@@ -19,7 +19,7 @@
                             'pi-bell': notification.sentThrough === communicationType.InApp
                         }"></i>
                         <!-- need a pipe -->
-                        {{ notification.sentThrough }}
+                        {{ getCommunicationType(notification.sentThrough) }}
                     </span>
                 </div>
             </div>

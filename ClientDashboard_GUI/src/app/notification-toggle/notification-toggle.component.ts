@@ -17,7 +17,7 @@ import { NotificationType } from '../enums/notification-type';
 export class NotificationToggleComponent implements OnInit {
   accountService = inject(AccountService);
   notificationService = inject(NotificationService);
-  toastService = inject(ToastService)
+  toastService = inject(ToastService);
 
   currentUserId: number = 0;
   smsNotificationsToggled: boolean | undefined;
@@ -63,5 +63,18 @@ export class NotificationToggleComponent implements OnInit {
         this.latestNotifications = response.data ?? [];
       }
     })
+  }
+
+  getCommunicationType(type: CommunicationType) : string{
+    switch(type) {
+      case CommunicationType.Sms:
+        return 'SMS';
+      case CommunicationType.Email:
+        return 'Email';
+      case CommunicationType.InApp:
+        return 'In-App';
+      default:
+        return 'Unknown';
+    }
   }
 }
