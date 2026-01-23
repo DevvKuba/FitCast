@@ -1,3 +1,25 @@
 .navbar {
   margin-bottom: none;
 }
+
+::ng-deep .p-menubar .p-menuitem {
+  position: relative;
+}
+
+::ng-deep .p-menubar .p-menuitem-content {
+  position: relative;
+}
+
+::ng-deep .p-menubar .p-badge {
+  position: absolute !important;
+  top: 4px !important;
+  right: 4px !important;
+  transform: translate(15%, -15%) !important;
+  min-width: 1.125rem !important;
+  height: 1.125rem !important;
+  line-height: 1.125rem !important;
+  border-radius: 50% !important;
+  font-size: 0.8rem !important;
+  padding: 0 !important;
+  font-weight: 600 !important;
+}

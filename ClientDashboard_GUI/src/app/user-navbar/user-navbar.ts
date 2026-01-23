@@ -7,10 +7,11 @@ import { AccountService } from '../services/account.service';
 import { DrawerModule } from 'primeng/drawer';
 import { NotificationToggleComponent } from '../notification-toggle/notification-toggle.component';
 import { UserRole } from '../enums/user-role';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 
 @Component({
   selector: 'app-navbar',
-  imports: [Menubar, DrawerModule, NotificationToggleComponent],
+  imports: [Menubar, DrawerModule, NotificationToggleComponent, OverlayBadgeModule],
   providers: [LoginComponent],
   templateUrl: './user-navbar.html',
   styleUrl: './user-navbar.css'
@@ -69,9 +70,9 @@ export class UserNavbar{
         this.generalItems = [
             {
               icon: 'pi pi-bell',
+              badge: '5',
               command: () => {
                 this.notificationVisibility = true;
-
               }
               
             },
