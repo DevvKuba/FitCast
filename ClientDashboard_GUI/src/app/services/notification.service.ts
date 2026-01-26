@@ -13,7 +13,7 @@ import { NotificationReadStatusDto } from '../models/dtos/notification-read-stat
 })
 export class NotificationService {
   http = inject(HttpClient);
-  currentUser = signal<UserDto | null>(null);
+  unreadNotificationCount = signal<number>(0);
   baseUrl = environment.apiUrl;
 
   toggleUserSMSNotificationStatus(statusInfo: NotificationSmsStatusDto): Observable<any>{
