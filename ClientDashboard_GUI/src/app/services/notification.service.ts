@@ -16,6 +16,14 @@ export class NotificationService {
   unreadNotificationCount = signal<number>(0);
   baseUrl = environment.apiUrl;
 
+  refreshUnreadCount(userId: number) {
+    this.gatherUnreadUserNotificationCount(userId).subscribe({
+      next: (response) => {
+        this.unreadNotificationCount.set(response.data ?? 0);
+      }
+    })
+  }
+
   toggleUserSMSNotificationStatus(statusInfo: NotificationSmsStatusDto): Observable<any>{
     return this.http.put(this.baseUrl + 'notification/changeNotificationStatus', statusInfo);
   }

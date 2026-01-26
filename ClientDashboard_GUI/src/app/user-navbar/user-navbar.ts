@@ -28,40 +28,33 @@ export class UserNavbar{
     generalItems: MenuItem[] | undefined;
     latestNotifications: Notification[] = [];
     notificationVisibility: boolean = false;
-    unreadNotificationCount = signal<number>(0);
 
     constructor(){
         effect(() => {
             const user = this.accountService.currentUser();
-
-            console.log('Effect triggered, user:', user);
 
             if(!user){
                 this.functionItems = [];
                 this.generalItems = [];
                 return;
             }
-            this.gatherUnreadNotificationCount(user.id);
+            this.notificationService.refreshUnreadCount(user.id);
 
+        });
+
+        // watch signal and rebuild when the signal changes
+        effect(() => {
+            const count = this.notificationService.unreadNotificationCount();
+            const user = this.accountService.currentUser();
+
+            if(user){
+                this.buildMenuItems(user.role);
+            }
         })
         
     }
 
-    gatherUnreadNotificationCount(currentUserId: number){
-        this.notificationService.gatherUnreadUserNotificationCount(currentUserId).subscribe({
-            next: (response) => {
-                this.unreadNotificationCount.set(response.data ?? 0);
-                console.log(this.unreadNotificationCount);
-
-                const user = this.accountService.currentUser();
-                if(user){
-                    this.buildMenuItems(user.role);
-                }
-            }
-        })
-    }
-
-    private buildMenuItems(role: UserRole){
+    buildMenuItems(role: UserRole){
         if(role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
@@ -99,6 +92,7 @@ export class UserNavbar{
               command: () => {
                 this.notificationVisibility = true;
                 this.onNotificationDrawerOpen();
+                this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
               }
               
             },
@@ -182,13 +176,13 @@ export class UserNavbar{
                 if(list.readNotificationsList.length > 0){
                     this.notificationService.markUserNotificationsAsRead(list).subscribe();
                 }
-                this.gatherUnreadNotificationCount(this.accountService.currentUser()?.id ?? 0);
+                this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
                 this.buildMenuItems(UserRole.Trainer);
             }
         });
     }
 
     getBellBadge(): string {
-        return this.unreadNotificationCount().toString();
+        return this.notificationService.unreadNotificationCount().toString();
     }
 }

@@ -26,6 +26,7 @@ import { TrainerService } from '../services/trainer.service';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-client-workouts',
@@ -70,6 +71,7 @@ export class ClientWorkouts {
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
     private trainerService = inject(TrainerService);
+    private notificationService = inject(NotificationService);
     private toastService = inject(ToastService);
 
     first = 0; // offset
@@ -224,6 +226,7 @@ export class ClientWorkouts {
                 this.addDialogVisible = false;
                 this.toastService.showSuccess('Successfully added workout', response.message);
                 this.displayWorkouts();
+                this.notificationService.refreshUnreadCount(this.currentUserId);
             },
             error: (response) => {
                 this.toastService.showError('Workout not added', response.error.message);
