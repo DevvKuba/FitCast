@@ -92,7 +92,6 @@ export class UserNavbar{
               command: () => {
                 this.notificationVisibility = true;
                 this.onNotificationDrawerOpen();
-                this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
               }
               
             },
@@ -174,10 +173,12 @@ export class UserNavbar{
                 }
 
                 if(list.readNotificationsList.length > 0){
-                    this.notificationService.markUserNotificationsAsRead(list).subscribe();
+                    this.notificationService.markUserNotificationsAsRead(list).subscribe({
+                        next: () => {
+                            this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
+                        }
+                    });
                 }
-                this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
-                this.buildMenuItems(UserRole.Trainer);
             }
         });
     }
