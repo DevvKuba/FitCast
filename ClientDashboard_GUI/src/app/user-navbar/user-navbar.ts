@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
@@ -28,7 +28,7 @@ export class UserNavbar{
     generalItems: MenuItem[] | undefined;
     latestNotifications: Notification[] = [];
     notificationVisibility: boolean = false;
-    unreadNotificationCount: number = 0;
+    unreadNotificationCount = signal<number>(0);
 
     constructor(){
         effect(() => {
@@ -50,7 +50,7 @@ export class UserNavbar{
     gatherUnreadNotificationCount(currentUserId: number){
         this.notificationService.gatherUnreadUserNotificationCount(currentUserId).subscribe({
             next: (response) => {
-                this.unreadNotificationCount = response.data ?? 0;
+                this.unreadNotificationCount.set(response.data ?? 0);
                 console.log(this.unreadNotificationCount);
 
                 const user = this.accountService.currentUser();
@@ -182,11 +182,13 @@ export class UserNavbar{
                 if(list.readNotificationsList.length > 0){
                     this.notificationService.markUserNotificationsAsRead(list).subscribe();
                 }
+                this.gatherUnreadNotificationCount(this.accountService.currentUser()?.id ?? 0);
+                this.buildMenuItems(UserRole.Trainer);
             }
         });
     }
 
     getBellBadge(): string {
-        return this.unreadNotificationCount.toString();
+        return this.unreadNotificationCount().toString();
     }
 }

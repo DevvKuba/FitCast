@@ -49,18 +49,6 @@ export class NotificationToggleComponent implements OnInit {
     });
   }
 
-  // might not need at all since this is being done at the user-navbar / parent level 
-  // changeNotificationsToReadStatus(notifications: Notification[]){
-  //   const notificationList = {
-  //     readNotificationsList: notifications
-  //   }
-  //   this.notificationService.markUserNotificationsAsRead(notificationList).subscribe({
-  //     next: (response) => {
-  //       console.log(response.message);
-  //     }
-  //   })
-  // }
-
   gatherNotificationStatus() {
     this.notificationService.gatherUserNotificationStatus(this.currentUserId).subscribe({
       next: (response) => {
