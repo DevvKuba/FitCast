@@ -15,7 +15,6 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "API_KEY": "7a610df4-9944-4f6f-ad60-bcb0450f5682",
         "API_URL": "https://localhost:7217/api/HevyApi",
         "AUTH_TOKEN": "65175b7c1566e0ec7cce8094b7e35287",
         "ACCOUNT_SID": "ACfc9c7bdecec6f2349fd5156d560bdbe8",
