@@ -1,8 +1,11 @@
 # ClientDashboard Application
+FitCast is a predictive fitness and business intelligence platform that unifies training data, client management, and financial insights for personal trainers while supporting their clients
+The platform was built with .NET 9 and Angular 19.
 
-A full-stack fitness client management platform built with .NET 9 and Angular 19.
+## Deployed Environment
+https://fitcast.uk/
 
-## ?? Local Development Setup
+## Local Development Setup
 
 ### Prerequisites
 - .NET 9 SDK
@@ -97,7 +100,7 @@ npm start
 
 The frontend will be available at: `http://localhost:4200`
 
-## ?? Environment Variables Required
+## Environment Variables Required
 
 ### Twilio (SMS Notifications)
 - `ACCOUNT_SID` - Your Twilio Account SID
@@ -108,40 +111,16 @@ The frontend will be available at: `http://localhost:4200`
 - `API_KEY` - Your Hevy API key
 - `API_URL` - Hevy API endpoint URL
 
-## ??? Security Notes
+## Security Notes
 
 - **Never commit actual credentials to version control!**
 - All sensitive configuration files are gitignored
 - Use the `.example` files as templates
 - For production, use Azure App Service configuration or Azure Key Vault
 
-## ?? Running Tests
+## Running Tests
 
 ```powershell
 cd ProjectTests/ClientDashboard_API_Tests
 dotnet test
 ```
-
-## ?? Tech Stack
-
-### Backend
-- .NET 9
-- Entity Framework Core
-- SQL Server
-- Quartz.NET (scheduled jobs)
-- FluentEmail
-- Twilio SDK
-
-### Frontend
-- Angular 19
-- TypeScript
-- RxJS
-- Angular Material / PrimeNG
-
-## ?? License
-
-[Your License Here]
-
-## ????? Author
-
-[Your Name/GitHub]
