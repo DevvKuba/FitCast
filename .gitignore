@@ -566,3 +566,7 @@ appsettings.Staging.json
 docker-compose.yml
 **/docker-compose.yml
 docker-compose.*.yml
+
+# Launch settings with environment variables
+**/Properties/launchSettings.json
+**/launchSettings.json
