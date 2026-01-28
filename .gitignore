@@ -561,3 +561,8 @@ appsettings.Production.json
 appsettings.Staging.json
 **/appsettings.*.json
    !appsettings.json
+
+# Docker compose files with sensitive data
+docker-compose.yml
+**/docker-compose.yml
+docker-compose.*.yml
