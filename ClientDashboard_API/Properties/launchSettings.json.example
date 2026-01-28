@@ -15,10 +15,11 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "API_KEY": "your-hevy-api-key-here",
         "API_URL": "https://localhost:7217/api/HevyApi",
-        "AUTH_TOKEN": "65175b7c1566e0ec7cce8094b7e35287",
-        "ACCOUNT_SID": "ACfc9c7bdecec6f2349fd5156d560bdbe8",
-        "SENDER_PHONE_NUMBER": "+447366323139"
+        "AUTH_TOKEN": "your-twilio-auth-token",
+        "ACCOUNT_SID": "your-twilio-account-sid",
+        "SENDER_PHONE_NUMBER": "+1234567890"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7217;http://localhost:5114"

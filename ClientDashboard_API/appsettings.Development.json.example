@@ -1,0 +1,27 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "ClientDashboard_API.Jobs": "Debug",
+      "Quartz": "Debug"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost,1433;Database=ClientDataDb;User Id=SA;Password=YOUR_LOCAL_PASSWORD_HERE;TrustServerCertificate=True"
+  },
+  "Jwt_Issuer": "your-issuer",
+  "Jwt_Audience": "your-audience",
+  "Jwt_ExpirationInMinutes": "120",
+  "Jwt_Secret": "generate-a-secure-jwt-secret-key-minimum-32-chars",
+  "ApiKeyEncrypter": {
+    "Key": "generate-base64-encryption-key-using-powershell-command"
+  },
+  "FrontendUrl": "http://localhost:4200/",
+  "Email": {
+    "SenderEmail": "your-email@example.com",
+    "Sender": "YourAppName",
+    "Host": "localhost",
+    "Port": 1025
+  }
+}
