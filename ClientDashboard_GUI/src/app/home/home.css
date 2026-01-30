@@ -32,6 +32,14 @@
   margin-bottom: 3rem;
 }
 
+.stat-card:nth-child(5) {
+  grid-column: 2 / 3;
+}
+
+.stat-card:nth-child(6) {
+  grid-column: 3 / 4;
+}
+
 .stat-card {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
