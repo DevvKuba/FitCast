@@ -13,7 +13,7 @@ import { UserNavbar } from './user-navbar/user-navbar';
 })
 export class App implements OnInit {
   http = inject(HttpClient);
-  protected readonly title = signal('ClientDashboard_GUI');
+  protected readonly title = signal('FitCast');
   clients: any;
   accountService = inject(AccountService);
 

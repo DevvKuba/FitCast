@@ -74,6 +74,7 @@ export class Home implements OnInit {
       aspectRatio: 0.6,
       plugins: {
         legend: {
+          position: 'top',
           labels: {
             color: textColor
           }
