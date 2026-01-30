@@ -65,7 +65,7 @@ export class ClientInfoComponent implements OnInit {
   }
 
   onRowEditInit(client: Client) {
-        this.clonedClients[client.id as number] = { ...client };
+      this.clonedClients[client.id as number] = { ...client };
 
       this.clientService.getClientPhoneNumber(client.id).subscribe({
       next: (response) => {
