@@ -31,14 +31,6 @@ export class Home implements OnInit {
   sampleWorkouts: any[] = [];
   samplePayments: any[] = [];
 
-  // Quick stats
-  stats = {
-    totalClients: 10,
-    totalWorkouts: 47,
-    monthlyRevenue: 1840,
-    activeSessions: 35
-  };
-
   ngOnInit() {
     this.initializeCharts();
     this.loadSampleData();
