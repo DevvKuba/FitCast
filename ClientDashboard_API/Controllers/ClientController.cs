@@ -89,7 +89,7 @@ namespace ClientDashboard_API.Controllers
         // <summary>
         /// Client method allowing for the retrieval of all clients 
         /// </summary>
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Trainer,Client")]
         [HttpGet("getClientPhoneNumber")]
         public async Task<ActionResult<ApiResponseDto<string>>> GetClientPhoneNumberAsync([FromQuery] int clientId)
         {
