@@ -168,6 +168,7 @@ export class UserNavbar{
 
         this.notificationService.gatherLatestUserNotifications(userId).subscribe({
             next: (response) => {
+                this.latestNotifications = response.data ?? [];
                 const list = {
                     readNotificationsList: response.data ?? []
                 }
