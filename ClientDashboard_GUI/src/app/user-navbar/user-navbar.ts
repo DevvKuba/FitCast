@@ -58,16 +58,16 @@ export class UserNavbar{
         if(role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
-            {
-                label: 'Client Analytics',
-                routerLink: '/client-analytics',
-                icon: 'pi pi-chart-line'
-            },
-            {
-                label: 'Trainer Analytics',
-                routerLink: '/trainer-analytics',
-                icon: 'pi pi-chart-bar'
-            },
+            // {
+            //     label: 'Client Analytics',
+            //     routerLink: '/client-analytics',
+            //     icon: 'pi pi-chart-line'
+            // },
+            // {
+            //     label: 'Trainer Analytics',
+            //     routerLink: '/trainer-analytics',
+            //     icon: 'pi pi-chart-bar'
+            // },
             {
                 label: 'Client Info',
                 routerLink: '/client-info',
