@@ -1,3 +1,217 @@
 <app-home-navbar></app-home-navbar>
-<h1 class="header">Welcome to the FitCast Platform</h1>
 
+<div class="home-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <h1 class="main-title">Welcome to FitCast Platform</h1>
+    <p class="subtitle">Integrated Client & Trainer Management System</p>
+  </div>
+
+  <!-- Quick Stats Cards -->
+  <div class="stats-grid">
+    <p-card class="stat-card">
+      <div class="stat-content">
+        <i class="pi pi-users stat-icon"></i>
+        <div class="stat-details">
+          <span class="stat-value">{{stats.totalClients}}</span>
+          <span class="stat-label">Total Clients</span>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="stat-card">
+      <div class="stat-content">
+        <i class="pi pi-chart-line stat-icon"></i>
+        <div class="stat-details">
+          <span class="stat-value">{{stats.totalWorkouts}}</span>
+          <span class="stat-label">Workouts Logged</span>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="stat-card">
+      <div class="stat-content">
+        <i class="pi pi-pound stat-icon"></i>
+        <div class="stat-details">
+          <span class="stat-value">{{stats.monthlyRevenue}}</span>
+          <span class="stat-label">Monthly Revenue</span>
+        </div>
+      </div>
+    </p-card>
+
+    <p-card class="stat-card">
+      <div class="stat-content">
+        <i class="pi pi-check-circle stat-icon"></i>
+        <div class="stat-details">
+          <span class="stat-value">{{stats.activeSessions}}</span>
+          <span class="stat-label">Active Sessions</span>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Analytics Charts Section -->
+  <div class="charts-section">
+    <p-card class="chart-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h3>Revenue Analytics</h3>
+          <span class="badge">Monthly Overview</span>
+        </div>
+      </ng-template>
+      <p-chart type="line" [data]="revenueChartData" [options]="chartOptions" height="300px"></p-chart>
+    </p-card>
+
+    <p-card class="chart-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h3>Workout Activity</h3>
+          <span class="badge">Tracking Trends</span>
+        </div>
+      </ng-template>
+      <p-chart type="bar" [data]="workoutChartData" [options]="chartOptions" height="300px"></p-chart>
+    </p-card>
+  </div>
+
+  <!-- Feature Showcase Section -->
+  <div class="features-section">
+    <h2 class="section-title">Application Features</h2>
+    
+    <!-- Client Management Feature -->
+    <p-card class="feature-card">
+      <ng-template pTemplate="header">
+        <div class="feature-header">
+          <div class="feature-title-section">
+            <i class="pi pi-users feature-icon"></i>
+            <h3>Client Management</h3>
+          </div>
+          <a [routerLink]="['/client-info']" class="view-full-link">
+            View Full Page <i class="pi pi-arrow-right"></i>
+          </a>
+        </div>
+      </ng-template>
+      <p-table [value]="sampleClients" [tableStyle]="{'min-width': '50rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Client Name</th>
+            <th>Current Session</th>
+            <th>Block Sessions</th>
+            <th>Activity Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-client>
+          <tr>
+            <td>{{client.firstName}}</td>
+            <td>{{client.currentBlockSession}}</td>
+            <td>{{client.totalBlockSessions}}</td>
+            <td>
+              <p-tag [severity]="client.isActive ? 'success' : 'danger'" 
+                     [value]="client.isActive ? 'Active' : 'Inactive'">
+              </p-tag>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+
+    <!-- Workouts & Payments Side by Side -->
+    <div class="side-by-side-features">
+      <!-- Workout Tracking Feature -->
+      <p-card class="feature-card flex-card">
+        <ng-template pTemplate="header">
+          <div class="feature-header">
+            <div class="feature-title-section">
+              <i class="pi pi-chart-bar feature-icon"></i>
+              <h3>Workout Tracking</h3>
+            </div>
+            <a [routerLink]="['/client-workouts']" class="view-full-link">
+              View Full <i class="pi pi-arrow-right"></i>
+            </a>
+          </div>
+        </ng-template>
+        <p-table [value]="sampleWorkouts" [tableStyle]="{'min-width': '100%'}">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Workout Title</th>
+              <th>Client</th>
+              <th>Session</th>
+              <th>Date</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-workout>
+            <tr>
+              <td>{{workout.workoutTitle}}</td>
+              <td>{{workout.clientName}}</td>
+              <td>{{workout.currentBlockSession}}/{{workout.totalBlockSessions}}</td>
+              <td>{{workout.sessionDate | date:'dd/MM/yyyy'}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+
+      <!-- Payment Management Feature -->
+      <p-card class="feature-card flex-card">
+        <ng-template pTemplate="header">
+          <div class="feature-header">
+            <div class="feature-title-section">
+              <i class="pi pi-credit-card feature-icon"></i>
+              <h3>Payment Management</h3>
+            </div>
+            <a [routerLink]="['/client-payments']" class="view-full-link">
+              View Full <i class="pi pi-arrow-right"></i>
+            </a>
+          </div>
+        </ng-template>
+        <p-table [value]="samplePayments" [tableStyle]="{'min-width': '100%'}">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Client</th>
+              <th>Amount</th>
+              <th>Sessions</th>
+              <th>Status</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-payment>
+            <tr>
+              <td>{{payment.clientName}}</td>
+              <td>{{ "£" + payment.amount}}</td>
+              <td>{{payment.numberOfSessions}}</td>
+              <td>
+                <p-tag [severity]="payment.confirmed ? 'success' : 'info'" 
+                       [value]="payment.confirmed ? 'Confirmed' : 'Pending'">
+                </p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Platform Highlights -->
+  <div class="highlights-section">
+    <h2 class="section-title">Platform Capabilities</h2>
+    <div class="highlights-grid">
+      <div class="highlight-item">
+        <i class="pi pi-sync highlight-icon"></i>
+        <h4>Integrated System</h4>
+        <p>Unified platform connecting trainers and clients seamlessly</p>
+      </div>
+      <div class="highlight-item">
+        <i class="pi pi-chart-line highlight-icon"></i>
+        <h4>Progress Tracking</h4>
+        <p>Monitor client sessions, workouts, and performance metrics</p>
+      </div>
+      <div class="highlight-item">
+        <i class="pi pi-wallet highlight-icon"></i>
+        <h4>Payment Processing</h4>
+        <p>Track payments, sessions, and financial records efficiently</p>
+      </div>
+      <div class="highlight-item">
+        <i class="pi pi-bell highlight-icon"></i>
+        <h4>Smart Notifications</h4>
+        <p>Stay updated with automated alerts and reminders</p>
+      </div>
+    </div>
+  </div>
+</div>
