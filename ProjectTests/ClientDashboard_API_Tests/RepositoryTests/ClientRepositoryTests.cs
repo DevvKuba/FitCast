@@ -263,6 +263,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Surname = "Smith",
                 PhoneNumber = "123 456 789",
                 Password = "password123",
+                ConfirmPassword = "password123",
                 Role = UserRole.Client
             };
 

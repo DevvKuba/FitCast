@@ -118,7 +118,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientPhoneNumber(Client client, string phoneNumber)
         {
-            client.PhoneNumber = client.PhoneNumber!.Replace(" ", "");
+            client.PhoneNumber = phoneNumber.Replace(" ", "");
         }
 
         public async Task<Client?> GetClientByNameAsync(string clientName)
