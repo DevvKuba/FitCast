@@ -176,10 +176,7 @@ namespace ClientDashboard_API.Controllers
             {
                 if (client.Trainer is not null)
                 {
-                    if (client.Trainer.NotificationsEnabled && client.Trainer.PhoneNumber is not null)
-                    {
-                        await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
-                    }
+                    await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
 
                     if (client.Trainer.AutoPaymentSetting)
                     {

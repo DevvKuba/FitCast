@@ -25,11 +25,18 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
             }
 
+            var reminderType = Enums.NotificationType.TrainerBlockCompletionReminder;
+
+            // retrieve the notificaiton message based on the reminder type
+
             var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
                 $"remember to message them in regards of a new monthly payment.";
 
             // IMP uncomment for testing with Twillio credits
+            //if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
+            //{
             //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            //}
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.TrainerBlockCompletionReminder,
@@ -61,11 +68,15 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
             }
 
-            var notificationMessage = $"Hey {client.FirstName}! this is {trainer.FirstName} just wanted to" +
+            var notificationMessage = $"Hey {client.FirstName}! just wanted to" +
              "inform you that our monthly sessions have come to an end,\n" +
-                $"If you could place a block payment before our next session that would be great.";
+                $"If you could place a block payment before our next session block that would be great.";
 
-            messageService.SendSMSMessage(trainer: null, client, SENDER_PHONE_NUMBER!, notificationMessage);
+            // IMP uncomment for testing with Twillio credits
+            //if (client.NotificationsEnabled && client.PhoneNumber is not null)
+            //{
+            //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            //}
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.ClientBlockCompletionReminder,
