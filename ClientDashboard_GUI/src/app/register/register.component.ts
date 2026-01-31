@@ -41,11 +41,12 @@ export class RegisterComponent {
   email: string = "";
   phoneNumber: string = "";
   password: string = "";
+  confirmPassword: string = "";
   userType: string = "";
 
   userRegister(email: string, firstName: string, surname: string,
     phoneNumber: string, userType: string, clientId: number | null,
-    clientsTrainerId: number | null,  password: string){
+    clientsTrainerId: number | null,  password: string, confirmPassword: string){
     
     const roleMap: Record<string,UserRole> = {
           'trainer': UserRole.Trainer,
@@ -66,7 +67,8 @@ export class RegisterComponent {
       role : userRole,
       clientId : clientId || null,
       clientsTrainerId : clientsTrainerId || null,
-      password: password
+      password: password,
+      confirmPassword: confirmPassword
     }
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {

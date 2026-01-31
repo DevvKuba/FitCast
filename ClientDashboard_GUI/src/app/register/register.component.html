@@ -45,6 +45,12 @@
             <label>Password</label>
         </p-iftalabel>
       </div>
+      <div class="register-field">
+        <p-iftalabel>
+            <p-password [(ngModel)]="confirmPassword" toggleMask="true"/>
+            <label>Confirm Password</label>
+        </p-iftalabel>
+      </div>
        <div class="register-field radio-section">
         <label class="user-type-label">User Type</label>
         <div class="radio-buttons">
@@ -87,7 +93,7 @@
     </div>
       <div class="button-container">
           <p-button class="register-button" label="Register" severity="success" 
-          (click)="userRegister(email, firstName, surname, phoneNumber, userType, verifiedClientId, verifiedTrainerId, password)"/>
+          (click)="userRegister(email, firstName, surname, phoneNumber, userType, verifiedClientId, verifiedTrainerId, password, confirmPassword)"/>
           <p-button class="to-login-button" label="To Login" severity="secondary" routerLink="/login"/>
       </div>
 </div>
