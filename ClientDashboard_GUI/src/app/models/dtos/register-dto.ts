@@ -7,6 +7,7 @@ export interface RegisterDto {
   phoneNumber: string;
   role: UserRole;
   password: string;
+  confirmPassword: string;
   clientId: number | null;
   clientsTrainerId: number | null;
 }
