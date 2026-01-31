@@ -7,8 +7,11 @@ namespace ClientDashboard_API.DTOs
         [Required(ErrorMessage = "Token ID is required")]
         public required int TokenId { get; set; }
 
-        [Required(ErrorMessage = "New password is required")]
+        [DataType(DataType.Password)]
         [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters")]
+        [RegularExpression(
+        @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$",
+        ErrorMessage = "Password must contain uppercase, lowercase, number, and special character.")]
         public required string NewPassword { get; set; }
     }
 }
