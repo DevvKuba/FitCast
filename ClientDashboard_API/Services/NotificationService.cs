@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
@@ -29,8 +30,7 @@ namespace ClientDashboard_API.Services
 
             // retrieve the notificaiton message based on the reminder type
 
-            var notificationMessage = $"{client.FirstName}'s monthly sessions have come to an end,\n" +
-                $"remember to message them in regards of a new monthly payment.";
+            var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
             // IMP uncomment for testing with Twillio credits
             //if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
@@ -38,8 +38,7 @@ namespace ClientDashboard_API.Services
             //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
             //}
 
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
-                reminderType: Enums.NotificationType.TrainerBlockCompletionReminder,
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType,
                 sentThrough: Enums.CommunicationType.Sms);
 
             if (!await unitOfWork.Complete())
@@ -67,10 +66,9 @@ namespace ClientDashboard_API.Services
             {
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
             }
+            var reminderType = Enums.NotificationType.ClientBlockCompletionReminder;
 
-            var notificationMessage = $"Hey {client.FirstName}! just wanted to" +
-             "inform you that our monthly sessions have come to an end,\n" +
-                $"If you could place a block payment before our next session block that would be great.";
+            var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
             // IMP uncomment for testing with Twillio credits
             //if (client.NotificationsEnabled && client.PhoneNumber is not null)
