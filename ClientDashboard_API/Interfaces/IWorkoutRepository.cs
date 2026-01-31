@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration);
 
-        Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration);
+        Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? exerciseCount, int? duration);
 
         void RemoveWorkout(Workout workout);
 

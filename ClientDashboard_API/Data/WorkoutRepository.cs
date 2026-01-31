@@ -128,7 +128,7 @@ namespace ClientDashboard_API.Data
         }
 
 
-        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
+        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? exerciseCount, int? duration)
         {
             await context.Workouts.AddAsync(new Workout
             {
@@ -138,8 +138,8 @@ namespace ClientDashboard_API.Data
                 SessionDate = workoutDate,
                 CurrentBlockSession = client.CurrentBlockSession,
                 TotalBlockSessions = client.TotalBlockSessions,
-                ExerciseCount = exerciseCount,
-                Duration = duration,
+                ExerciseCount = exerciseCount ?? 0,
+                Duration = duration ?? 0,
             });
         }
 
