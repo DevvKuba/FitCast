@@ -118,7 +118,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateClientPhoneNumber(Client client, string phoneNumber)
         {
-            client.PhoneNumber = phoneNumber;
+            client.PhoneNumber = client.PhoneNumber!.Replace(" ", "");
         }
 
         public async Task<Client?> GetClientByNameAsync(string clientName)
@@ -202,7 +202,7 @@ namespace ClientDashboard_API.Data
                 IsActive = true,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions,
-                PhoneNumber = phoneNumber,
+                PhoneNumber = phoneNumber?.Replace(" ", ""),
                 TrainerId = trainerId,
                 Trainer = trainer,
             };
@@ -220,7 +220,7 @@ namespace ClientDashboard_API.Data
                 FirstName = client.FirstName.ToLower(),
                 Role = Enums.UserRole.Client,
                 Surname = client.Surname ?? "".ToLower(),
-                PhoneNumber = client.PhoneNumber,
+                PhoneNumber = client.PhoneNumber?.Replace(" ", ""),
                 IsActive = true,
                 TrainerId = trainerId,
                 Trainer = trainer,
