@@ -319,7 +319,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _unitOfWork.Complete();
 
             await _notificationController.TrainerBlockCompletionReminderAsync(trainer.Id, client.Id);
-
+            
             var notificationCount = await _context.Notification.CountAsync();
             Assert.Equal(1, notificationCount);
 

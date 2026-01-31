@@ -7,10 +7,10 @@ namespace ClientDashboard_API.Helpers
         private static readonly Dictionary<Enums.NotificationType, Func<Trainer, Client, string>> MessageTemplates = new()
         {
             [Enums.NotificationType.TrainerBlockCompletionReminder] =
-            (client, trainer) => $"{client.FirstName}'s monthly sessions have come to an end,\n" +
+            (trainer, client) => $"{client.FirstName}'s monthly sessions have come to an end,\n" +
                                     $"remember to message them in regards of a new monthly payment.",
             [Enums.NotificationType.ClientBlockCompletionReminder] =
-            (client, trainer) => $"Hey {client.FirstName}! just wanted to" +
+            (trainer, client) => $"Hey {client.FirstName}! just wanted to" +
                                     "inform you that our monthly sessions have come to an end,\n" +
                     $"If you could place a block payment before our next session block that would be great."
         };
