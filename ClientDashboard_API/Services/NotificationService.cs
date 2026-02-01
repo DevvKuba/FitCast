@@ -96,6 +96,11 @@ namespace ClientDashboard_API.Services
             }
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
+
+        public async Task<ApiResponseDto<string>> SendPendingPaymentCreatedAlertAsync(int trainerId)
+        {
+
+        }
     }
 }
 
