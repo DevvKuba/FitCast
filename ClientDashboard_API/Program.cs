@@ -140,7 +140,7 @@ namespace ClientDashboard_API
                 .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
 
             });
-
+            
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
             var app = builder.Build();

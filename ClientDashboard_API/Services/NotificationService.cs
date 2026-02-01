@@ -27,19 +27,23 @@ namespace ClientDashboard_API.Services
             }
 
             var reminderType = Enums.NotificationType.TrainerBlockCompletionReminder;
-
-            // retrieve the notificaiton message based on the reminder type
+            Enums.CommunicationType communicationType;
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
-            // IMP uncomment for testing with Twillio credits
-            //if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
-            //{
-            //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
-            //}
+            // TODO set up twillio to utilise
+            if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
+            {
+                messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+                communicationType = Enums.CommunicationType.Sms;
+            }
+            else
+            {
+                communicationType = Enums.CommunicationType.InApp;
+            }
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType,
-                sentThrough: Enums.CommunicationType.Sms);
+                sentThrough: communicationType);
 
             if (!await unitOfWork.Complete())
             {
@@ -67,18 +71,24 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
             }
             var reminderType = Enums.NotificationType.ClientBlockCompletionReminder;
+            Enums.CommunicationType communicationType;
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
-            // IMP uncomment for testing with Twillio credits
-            //if (client.NotificationsEnabled && client.PhoneNumber is not null)
-            //{
-            //messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
-            //}
+            // TODO set up twillio to utilise
+            if (client.NotificationsEnabled && client.PhoneNumber is not null)
+            {
+                communicationType = Enums.CommunicationType.Sms;
+                messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            }
+            else
+            {
+                communicationType = Enums.CommunicationType.InApp;
+            }
 
             await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
                 reminderType: Enums.NotificationType.ClientBlockCompletionReminder,
-                sentThrough: Enums.CommunicationType.Sms);
+                sentThrough: communicationType);
 
             if (!await unitOfWork.Complete())
             {
