@@ -25,10 +25,6 @@ namespace ClientDashboard_API.Services
                     return new ApiResponseDto<UserDto> { Data = null, Message = "You must verifiy your email, you can resend the verification below", Success = false };
                 }
             }
-            else if(loginDto.Role is not Enums.UserRole.Trainer && loginDto.Role is not Enums.UserRole.Client)
-            {
-                return new ApiResponseDto<UserDto> { Data = null, Message = "User role type is not provided", Success = false };
-            }
 
             bool verified = passwordHasher.Verify(loginDto.Password, user.PasswordHash!);
 

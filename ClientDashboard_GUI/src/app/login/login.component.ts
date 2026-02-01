@@ -45,7 +45,7 @@ export class LoginComponent {
     const userRole = roleMap[userType];
 
     if(!userRole){
-      this.toastService.showError('Error Logging In', 'Need to select a role');
+      this.toastService.showError('Error Logging In', 'You must select a user type');
       return;
     }
 
