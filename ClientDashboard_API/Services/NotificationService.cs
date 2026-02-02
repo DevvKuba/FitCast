@@ -42,8 +42,7 @@ namespace ClientDashboard_API.Services
                 communicationType = Enums.CommunicationType.InApp;
             }
 
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType,
-                sentThrough: communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
 
             if (!await unitOfWork.Complete())
             {
@@ -86,9 +85,7 @@ namespace ClientDashboard_API.Services
                 communicationType = Enums.CommunicationType.InApp;
             }
 
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage,
-                reminderType: Enums.NotificationType.ClientBlockCompletionReminder,
-                sentThrough: communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
 
             if (!await unitOfWork.Complete())
             {
@@ -97,9 +94,49 @@ namespace ClientDashboard_API.Services
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
 
-        public async Task<ApiResponseDto<string>> SendPendingPaymentCreatedAlertAsync(int trainerId)
+        // TODO test
+        public async Task<ApiResponseDto<string>> SendPendingPaymentCreatedAlertAsync(int trainerId, int clientId)
         {
+            messageService.InitialiseBaseTwillioClient();
+            var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
+            Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+
+            if (trainer == null)
+            {
+                return new ApiResponseDto<string> { Data = null, Message = $"Trainer with id: {trainerId} not retrieved successfully to send message", Success = false };
+            }
+
+            Client? client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+
+            if (client == null)
+            {
+                return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
+            }
+
+            var reminderType = Enums.NotificationType.PendingPaymentCreatedAlert;
+            Enums.CommunicationType communicationType;
+
+            var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
+
+            var notificationType = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
+
+            if(trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
+            {
+                communicationType = Enums.CommunicationType.Sms;
+                messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            }
+            else
+            {
+                communicationType = Enums.CommunicationType.InApp;
+            }
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
+
+            if (!await unitOfWork.Complete())
+            {
+                return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was unsuccessful", Success = false };
+            }
+            return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
     }
 }

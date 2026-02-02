@@ -8,6 +8,6 @@ namespace ClientDashboard_API.Interfaces
 
         Task<ApiResponseDto<string>> SendClientReminderAsync(int trainerId, int clientId);
 
-        Task<ApiResponseDto<string>> SendPendingPaymentCreatedAlertAsync(int trainerId);
+        Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId);
     }
 }
