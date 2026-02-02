@@ -101,7 +101,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Surname = "Doe",
                 Email = "john@example.com",
                 PhoneNumber = "+1234567890",
-                PasswordHash = "hash123"
+                PasswordHash = "hash123",
+                NotificationsEnabled = true,
+
             };
 
             var client = new Client
@@ -211,7 +213,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
                 CurrentBlockSession = 8,
-                TotalBlockSessions = 8
+                TotalBlockSessions = 8,
+                NotificationsEnabled = true
             };
 
             await _context.Trainer.AddAsync(trainer);
