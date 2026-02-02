@@ -95,7 +95,7 @@ namespace ClientDashboard_API.Services
         }
 
         // TODO test
-        public async Task<ApiResponseDto<string>> SendPendingPaymentCreatedAlertAsync(int trainerId, int clientId)
+        public async Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
         {
             messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");

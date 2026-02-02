@@ -20,14 +20,26 @@ namespace ClientDashboard_API_Tests.ControllerTests
             return Task.FromResult(new ApiResponseDto<string> { 
                 Data = "",
                 Message = $"Success sending message to client with id: {clientId}",
-                Success = true });
+                Success = true 
+            });
+        }
+
+        public Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
+        {
+            return Task.FromResult(new ApiResponseDto<string>
+            {
+                Data = "",
+                Message = $"Success sending message to trainer with id: {trainerId}",
+                Success = true
+            });
         }
 
         Task<ApiResponseDto<string>> INotificationService.SendTrainerReminderAsync(int trainerId, int clientId)
         {
             return Task.FromResult(new ApiResponseDto<string> { 
                 Data = "", Message = $"Success sending message to trainer with id: {trainerId}",
-                Success = true });
+                Success = true 
+            });
         }
     }
 
