@@ -181,7 +181,7 @@ namespace ClientDashboard_API.Controllers
                     if (client.Trainer.AutoPaymentSetting)
                     {
                         await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
-                        // create a pending payment created 
+                        await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
                         await unitOfWork.Complete();
                     }
                 }
