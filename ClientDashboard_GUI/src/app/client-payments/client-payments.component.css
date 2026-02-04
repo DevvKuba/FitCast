@@ -11,6 +11,9 @@
 
 .search-field {
     margin-right: 80px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 

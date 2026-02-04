@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { SpinnerComponent } from '../spinner/spinner.component';
@@ -79,6 +79,10 @@ export class ClientPaymentsComponent implements OnInit {
         {label: 'Pending', value: false}
     ];
   }
+
+  clear(table: Table){
+          table.clear();
+      }
 
   next() {
         this.first = this.first + this.rows;

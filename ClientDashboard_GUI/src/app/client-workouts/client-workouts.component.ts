@@ -1,5 +1,5 @@
 import { Component, inject, resolveForwardRef, ViewChild} from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Workout } from '../models/workout';
@@ -86,6 +86,10 @@ export class ClientWorkouts {
         if(this.trainerApiKey !== null){
             this.validApiKeyProvided = true;
         }
+    }
+
+    clear(table: Table){
+        table.clear();
     }
 
     next() {

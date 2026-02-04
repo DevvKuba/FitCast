@@ -150,7 +150,9 @@
                 </p-inputicon>
                 <input pInputText type="text" (input)="dt1.filterGlobal(($any($event.target)).value, 'contains')" placeholder="Search client name" />
             </p-iconfield>
+            <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
             </div>
+
         </div>
          </ng-template>
         <ng-template #header>

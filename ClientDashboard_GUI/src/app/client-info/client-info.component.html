@@ -54,8 +54,12 @@
   <p-table #dt1 [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #header>
         <div class="header-buttons">
-          <p-button icon="pi pi-plus" styleClass="add-button" label="New" severity="secondary" (onClick)="showDialogForAdd()"></p-button>
-          <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+          <div class="left-segment">
+            <p-button icon="pi pi-plus" styleClass="add-button" label="New" severity="secondary" (onClick)="showDialogForAdd()"></p-button>
+          </div>
+          <div class="right-segment">
+            <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+          </div>
         </div>
           <tr>
               <th pSortableColumn="firstName" style="width:25%; text-align: center;">
