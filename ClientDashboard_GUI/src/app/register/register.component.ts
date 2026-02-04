@@ -73,7 +73,9 @@ export class RegisterComponent {
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {
         this.toastService.showSuccess('Success Registering', response.message);
-        this.verifyEmailDialogVisible = true;
+        if(userRole == UserRole.Trainer){
+          this.verifyEmailDialogVisible = true;
+        }
         console.log(response);
       },
       error: (response) => {
