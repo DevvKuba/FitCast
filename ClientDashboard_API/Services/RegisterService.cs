@@ -81,6 +81,7 @@ namespace ClientDashboard_API.Services
             }
 
             unitOfWork.ClientRepository.UpdateClientDetailsUponRegisterationAsync(trainer, client, request);
+            await unitOfWork.Complete();
             return true;
         }
     }
