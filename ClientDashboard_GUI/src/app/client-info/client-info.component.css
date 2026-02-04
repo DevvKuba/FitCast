@@ -4,6 +4,12 @@
   align-items: center;
 }
 
+.header-buttons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .delete-message {
   margin-bottom: 20px;
 }
@@ -30,5 +36,9 @@
 }
 
 ::ng-deep .add-button {
+  margin-top: 10px;
+}
+
+::ng-deep .clear-button {
   margin-top: 10px;
 }

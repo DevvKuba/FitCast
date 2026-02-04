@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ClientService } from '../services/client.service';
 import { Client } from '../models/client';
@@ -62,6 +62,10 @@ export class ClientInfoComponent implements OnInit {
       {label: 'Active', value: true},
       {label: 'Inactive', value: false}
   ];
+  }
+
+  clear(table: Table) {
+    table.clear();
   }
 
   onRowEditInit(client: Client) {
