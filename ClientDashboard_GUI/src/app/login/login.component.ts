@@ -38,6 +38,11 @@ export class LoginComponent {
   storageItem = "token";
 
   userLogin(email: string, password: string, userType: string){
+    // Frontend validation
+    if(!this.validateLoginFields(email, password, userType)){
+      return;
+    }
+
     const roleMap: Record<string,UserRole> = {
       'trainer': UserRole.Trainer,
       'client': UserRole.Client
@@ -78,6 +83,11 @@ export class LoginComponent {
   }
 
   sendVerificationEmail(userEmail: string){
+    if(!userEmail || userEmail.trim() === ''){
+      this.toastService.showError('Validation Error', 'Email is required');
+      return;
+    }
+
     this.accountService.resendEmailVerification(this.email).subscribe({
       next: (response) => {
         this.toastService.showSuccess("Success", response.message);
@@ -89,6 +99,11 @@ export class LoginComponent {
   }
 
   sendResetEmail(userEmail: string){
+    if(!userEmail || userEmail.trim() === ''){
+      this.toastService.showError('Validation Error', 'Email is required');
+      return;
+    }
+
     this.accountService.sendPasswordResetEmail(userEmail).subscribe({
       next: (response) => {
         this.toastService.showSuccess("Success", response.message);
@@ -104,5 +119,24 @@ export class LoginComponent {
     this.accountService.currentUser.set(null);
     console.log("User logged out, current user is now: ", this.accountService.currentUser());
     this.router.navigateByUrl('');
+  }
+
+  private validateLoginFields(email: string, password: string, userType: string): boolean {
+    if(!email || email.trim() === ''){
+      this.toastService.showError('Validation Error', 'Email is required');
+      return false;
+    }
+
+    if(!password || password.trim() === ''){
+      this.toastService.showError('Validation Error', 'Password is required');
+      return false;
+    }
+
+    if(!userType || userType.trim() === ''){
+      this.toastService.showError('Validation Error', 'You must select a user type');
+      return false;
+    }
+
+    return true;
   }
 }

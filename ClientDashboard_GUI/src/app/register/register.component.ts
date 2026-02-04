@@ -48,6 +48,11 @@ export class RegisterComponent {
     phoneNumber: string, userType: string, clientId: number | null,
     clientsTrainerId: number | null,  password: string, confirmPassword: string){
     
+    // Frontend validation
+    if(!this.validateRegisterFields(email, firstName, surname, phoneNumber, password, confirmPassword, userType)){
+      return;
+    }
+    
     const roleMap: Record<string,UserRole> = {
           'trainer': UserRole.Trainer,
           'client': UserRole.Client
@@ -86,6 +91,16 @@ export class RegisterComponent {
   }
 
   verifyClientUnderTrainer(trainerPhoneNumber: string, clientFirstName: string){
+    if(!trainerPhoneNumber || trainerPhoneNumber.trim() === ''){
+      this.toastService.showError('Validation Error', 'Trainer phone number is required');
+      return;
+    }
+
+    if(!clientFirstName || clientFirstName.trim() === ''){
+      this.toastService.showError('Validation Error', 'Client first name is required');
+      return;
+    }
+
     this.accountService.clientVerifyUnderTrainer(trainerPhoneNumber, clientFirstName).subscribe({
       next: (response) => {
         this.trainerNumberVerified = true;
@@ -100,5 +115,51 @@ export class RegisterComponent {
         this.toastService.showError('Unsuccessful Verification', response.error.message);
       }
     })
+  }
+
+  private validateRegisterFields(email: string, firstName: string, surname: string, 
+    phoneNumber: string, password: string, confirmPassword: string, userType: string): boolean {
+    
+    if(!firstName || firstName.trim() === ''){
+      this.toastService.showError('Validation Error', 'First name is required');
+      return false;
+    }
+
+    if(!surname || surname.trim() === ''){
+      this.toastService.showError('Validation Error', 'Surname is required');
+      return false;
+    }
+
+    if(!email || email.trim() === ''){
+      this.toastService.showError('Validation Error', 'Email is required');
+      return false;
+    }
+
+    if(!phoneNumber || phoneNumber.trim() === ''){
+      this.toastService.showError('Validation Error', 'Phone number is required');
+      return false;
+    }
+
+    if(!password || password.trim() === ''){
+      this.toastService.showError('Validation Error', 'Password is required');
+      return false;
+    }
+
+    if(!confirmPassword || confirmPassword.trim() === ''){
+      this.toastService.showError('Validation Error', 'Confirm password is required');
+      return false;
+    }
+
+    if(password !== confirmPassword){
+      this.toastService.showError('Validation Error', 'Passwords do not match');
+      return false;
+    }
+
+    if(!userType || userType.trim() === ''){
+      this.toastService.showError('Validation Error', 'You must select a user type');
+      return false;
+    }
+
+    return true;
   }
 }
