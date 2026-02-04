@@ -114,11 +114,11 @@ export class UserNavbar{
         }
         else if (role == UserRole.Client) {
             this.functionItems = [
-            {
-                label: 'Personal Info',
-                routerLink: '/client-info',
-                icon: 'pi pi-users'
-            },
+            // {
+            //     label: 'Personal Info',
+            //     routerLink: '/client-info',
+            //     icon: 'pi pi-users'
+            // },
             {
                 label: 'Workouts',
                 routerLink: '/client-personal-workouts',
