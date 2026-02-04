@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Services
     {
         public async Task<ApiResponseDto<string>> SendTrainerReminderAsync(int trainerId, int clientId)
         {
-            messageService.InitialiseBaseTwillioClient();
+            //messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
             Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
@@ -53,7 +53,7 @@ namespace ClientDashboard_API.Services
 
         public async Task<ApiResponseDto<string>> SendClientReminderAsync(int trainerId, int clientId)
         {
-            messageService.InitialiseBaseTwillioClient();
+            //messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
             Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
@@ -97,7 +97,7 @@ namespace ClientDashboard_API.Services
         // TODO test
         public async Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
         {
-            messageService.InitialiseBaseTwillioClient();
+            //messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
             Trainer? trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);

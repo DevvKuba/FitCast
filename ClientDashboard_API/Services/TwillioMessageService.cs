@@ -8,6 +8,10 @@ namespace ClientDashboard_API.Services
 {
     public class TwillioMessageService : IMessageService
     {
+        public TwillioMessageService()
+        {
+            InitialiseBaseTwillioClient();
+        }
 
         // would need to change to id for more accurate retrieval rather than clientName
         public void PipelineClientBlockCompletionReminder(string clientName)
