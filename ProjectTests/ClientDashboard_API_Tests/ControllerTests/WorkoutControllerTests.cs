@@ -45,9 +45,14 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
     public class FakeAutoPaymentCreationService : IAutoPaymentCreationService
     {
-        public Task CreatePendingPaymentAsync(Trainer trainer, Client client)
+        public Task<ApiResponseDto<string>> CreatePendingPaymentAsync(Trainer trainer, Client client)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(new ApiResponseDto<string>
+            {
+                Data = "",
+                Message = $"Success creating pending payment for client with id: {client.Id}",
+                Success = true
+            });
         }
     }
 
