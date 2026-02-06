@@ -125,7 +125,7 @@ namespace ClientDashboard_API.Controllers
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
                 var response = await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
-                // response around updating client info but also if noitifications were sent out successfully
+
                 if (!response.Success)
                 {
                     return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });

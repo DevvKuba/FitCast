@@ -22,12 +22,18 @@ namespace ClientDashboard_API.Helpers
 
                 if (client.Trainer.AutoPaymentSetting)
                 {
-                    await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
+                    response = await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
+
+                    if (!response.Success)
+                    {
+                        return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however pending payment record was not created", Success = false };
+                    }
+
                     response = await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
 
                     if (!response.Success)
                     {
-                        return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however pending payment was not created", Success = false };
+                        return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however pending payment alert was not created", Success = false };
                     }
                 }
             }

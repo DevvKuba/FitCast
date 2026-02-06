@@ -1,9 +1,10 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
     public interface IAutoPaymentCreationService
     {
-        Task CreatePendingPaymentAsync(Trainer trainer, Client client);
+        Task<ApiResponseDto<string>> CreatePendingPaymentAsync(Trainer trainer, Client client);
     }
 }
