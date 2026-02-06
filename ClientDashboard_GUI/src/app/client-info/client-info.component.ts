@@ -137,6 +137,11 @@ export class ClientInfoComponent implements OnInit {
 
 
   addNewClient(clientName: string, totalBlockSessions: number, phoneNumber: string){
+    const validationSuccessful = this.validateClientAddFields(clientName, totalBlockSessions);
+    if(!validationSuccessful){
+      return;
+    }
+
     const newClient = {
       firstName: clientName,
       totalBlockSessions: totalBlockSessions,
@@ -185,6 +190,19 @@ export class ClientInfoComponent implements OnInit {
 
   getActivityLabel(isActive: boolean) : string {
     return isActive ? 'Active' : 'Inactive';
+  }
+
+  validateClientAddFields(clientName: string, totalBlockSessions: number) : boolean {
+    if(!clientName || clientName.trim() == ''){
+      this.toastService.showError('Error Adding client', 'Must provide the client name');
+      return false;
+    }
+    
+    if(!totalBlockSessions || totalBlockSessions == null){
+      this.toastService.showError('Error Adding client', 'Must provide the client total block sessions');
+      return false;
+    }
+    return true;
   }
 
 }
