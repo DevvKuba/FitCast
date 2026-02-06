@@ -4,8 +4,7 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IMessageService messageService,
-        INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IClientBlockTerminationHelper clientBlockTerminator) : ISessionSyncService
     {
         public async Task<int> SyncSessionsAsync(Trainer trainer)
         {
@@ -26,7 +25,6 @@ namespace ClientDashboard_API.Services
 
                     if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                     {
-
                         var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client!.Id, workout.SessionDate);
                         // if workout is not a duplicate / not yet added
                         if (existingWorkout == null)
@@ -35,18 +33,9 @@ namespace ClientDashboard_API.Services
                             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
                             await unitOfWork.Complete();
 
-                            // indicating that their block is finished
                             if (client.CurrentBlockSession == client.TotalBlockSessions)
                             {
-                                if (trainer.NotificationsEnabled)
-                                {
-                                    await notificationService.SendTrainerReminderAsync(trainer.Id, client.Id);
-                                }
-                                if (trainer.AutoPaymentSetting)
-                                {
-                                    await autoPaymentService.CreatePendingPaymentAsync(trainer, client);
-                                    await unitOfWork.Complete();
-                                }
+                                await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
                             }
                         }
                         else

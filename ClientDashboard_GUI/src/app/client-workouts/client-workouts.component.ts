@@ -298,6 +298,7 @@ export class ClientWorkouts {
                 this.toastService.showSuccess('Success Gathering Workouts', `All ${response.data} workouts have been added and client details updated`);
             }
             this.displayWorkouts();
+            this.notificationService.refreshUnreadCount(this.currentUserId);
         },
         error: () => {
             this.toastService.showError('Error Gathering Workouts', 'An error occurred calling the external api');
