@@ -73,6 +73,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly INotificationService _fakeNotificationService;
         private readonly IAutoPaymentCreationService _fakeAutoPaymentService;
+        private readonly ClientBlockTerminationHelper _fakeClientBlockTerminator;
         private readonly UnitOfWork _unitOfWork;
         private readonly WorkoutController _workoutController;
 
@@ -107,7 +108,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             
             _fakeNotificationService = new FakeNotificationService();
             _fakeAutoPaymentService = new FakeAutoPaymentCreationService();
-            _workoutController = new WorkoutController(_unitOfWork, _fakeNotificationService, _fakeAutoPaymentService, _mapper);
+            _fakeClientBlockTerminator = new ClientBlockTerminationHelper(_fakeNotificationService, _fakeAutoPaymentService);
+            _workoutController = new WorkoutController(_unitOfWork, _fakeClientBlockTerminator, _mapper);
         }
 
         [Fact]
