@@ -4,7 +4,7 @@ using ClientDashboard_API.Services;
 
 namespace ClientDashboard_API.Helpers
 {
-    public class ClientBlockTerminationHelper(IUnitOfWork unitOfWork, INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : IClientBlockTerminationHelper
+    public class ClientBlockTerminationHelper(INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : IClientBlockTerminationHelper
     {
         public async Task CreateAdequateTrainersRemindersAndPaymentsAsync(Client client)
         {
@@ -16,7 +16,6 @@ namespace ClientDashboard_API.Helpers
                 {
                     await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
                     await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
-                    await unitOfWork.Complete();
                 }
             }
         }

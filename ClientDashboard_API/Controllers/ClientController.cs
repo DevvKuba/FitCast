@@ -117,15 +117,17 @@ namespace ClientDashboard_API.Controllers
 
             unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
 
-            if(client.CurrentBlockSession == client.TotalBlockSessions)
-            {
-                await clientBlockTerminator.CreateAdequateTrainersRemindersAndPaymentsAsync(client);
-            }
-
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {updatedClient.FirstName}'s details", Success = false });
             }
+
+            if (client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await clientBlockTerminator.CreateAdequateTrainersRemindersAndPaymentsAsync(client);
+                return Ok(new ApiResponseDto<string> { Data = updatedClient.PhoneNumber, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true })
+            }
+            // default return 
             return Ok(new ApiResponseDto<string> { Data = updatedClient.PhoneNumber, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
 
         }
