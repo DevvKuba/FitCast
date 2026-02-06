@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IClientBlockTerminationHelper
     {
-        Task CreateAdequateRemindersAndPaymentsAsync(Client client);
+        Task CreateAdequateTrainersRemindersAndPaymentsAsync(Client client);
     }
 }

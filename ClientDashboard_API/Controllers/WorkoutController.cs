@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTermination, IMapper mapper) : BaseAPIController
+    public class WorkoutController(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper) : BaseAPIController
     {
         [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
@@ -176,7 +176,7 @@ namespace ClientDashboard_API.Controllers
             {
                 if (client.Trainer is not null)
                 {
-                    await clientBlockTermination.CreateAdequateRemindersAndPaymentsAsync(client);
+                    await clientBlockTerminator.CreateAdequateTrainersRemindersAndPaymentsAsync(client);
                 }
             }
 

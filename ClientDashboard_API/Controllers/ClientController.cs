@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class ClientController(IUnitOfWork unitOfWork, IClientDailyFeatureService dailyClientService) : BaseAPIController
+    public class ClientController(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTerminator, IClientDailyFeatureService dailyClientService) : BaseAPIController
     {
         [Authorize(Roles = "Trainer")]
         [HttpGet("allTrainerClients")]
@@ -109,15 +109,18 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("newClientInformation")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
-            var oldClient = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
-            if (oldClient is null)
+            var client = await unitOfWork.ClientRepository.GetClientByIdWithTrainerAsync(updatedClient.Id);
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
             }
 
-            unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
+            unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
 
-
+            if(client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await clientBlockTerminator.CreateAdequateTrainersRemindersAndPaymentsAsync(client);
+            }
 
             if (!await unitOfWork.Complete())
             {

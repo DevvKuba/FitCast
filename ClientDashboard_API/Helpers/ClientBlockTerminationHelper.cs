@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Helpers
 {
     public class ClientBlockTerminationHelper(IUnitOfWork unitOfWork, INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : IClientBlockTerminationHelper
     {
-        public async Task CreateAdequateRemindersAndPaymentsAsync(Client client)
+        public async Task CreateAdequateTrainersRemindersAndPaymentsAsync(Client client)
         {
             if (client.Trainer is not null)
             {
