@@ -117,6 +117,8 @@ namespace ClientDashboard_API.Controllers
 
             unitOfWork.ClientRepository.UpdateClientDetailsAsync(oldClient, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
 
+
+
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {updatedClient.FirstName}'s details", Success = false });

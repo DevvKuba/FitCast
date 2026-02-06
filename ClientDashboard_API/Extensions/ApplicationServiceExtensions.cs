@@ -47,6 +47,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             services.AddScoped<IPasswordResetService, PasswordResetService>();
             services.AddScoped<IPasswordResetLinkFactory, PasswordResetLinkFactory>();
+            services.AddScoped<IClientBlockTerminationHelper, ClientBlockTerminationHelper>();
 
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();

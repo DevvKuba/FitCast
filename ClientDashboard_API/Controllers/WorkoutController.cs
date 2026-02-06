@@ -174,6 +174,7 @@ namespace ClientDashboard_API.Controllers
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
+                // execute method
                 if (client.Trainer is not null)
                 {
                     await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
