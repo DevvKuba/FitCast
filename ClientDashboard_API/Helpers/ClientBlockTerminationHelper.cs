@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Helpers
                     }
                 }
             }
-            return new ApiResponseDto<string> { Data = null, Message = $"Client workout added successfully along with triggered notification and pending payment" , Success = true};
+            return new ApiResponseDto<string> { Data = null, Message = "process finalised without any processing errors", Success = true};
         }
     }
 }

@@ -169,12 +169,17 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client workout unsuccessful", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Adding workout for client: {client.FirstName} was unsuccessful", Success = false });
             }
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                
+                var response = await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+
+                if (!response.Success)
+                {
+                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
+                }
             }
 
             return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for client: {newWorkout.ClientName}", Success = true });
