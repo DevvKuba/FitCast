@@ -216,6 +216,11 @@ export class ClientWorkouts {
     }
 
     addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number | null, duration: number | null){
+        // Frontend validation
+        if(!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, exerciseCount, duration)){
+            return;
+        }
+
         var newWorkout = {
             workoutTitle: workoutTitle,
             clientName: selectedClient.name,
@@ -351,6 +356,35 @@ export class ClientWorkouts {
             this.excludedNames = response.data.map((name: string) => ({name: name}));
         }
     })
+  }
+
+  validateWorkoutAddFields(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number | null, duration: number | null) : boolean{
+    if(!selectedClient.id || !selectedClient.name || selectedClient.name.trim() === ''){
+        this.toastService.showError('Error adding workout', 'Must select a valid client');
+        return false;
+    }
+
+    if(!workoutTitle || workoutTitle.trim() === ''){
+        this.toastService.showError('Error adding workout', 'Must provide a workout title');
+        return false;
+    }
+
+    if(!sessionDate){
+        this.toastService.showError('Error adding workout', 'Must provide a session date');
+        return false;
+    }
+
+    if(!exerciseCount || exerciseCount === null || exerciseCount <= 0){
+        this.toastService.showError('Error adding workout', 'Must provide a valid exercise count');
+        return false;
+    }
+
+    if(!duration || duration === null || duration <= 0){
+        this.toastService.showError('Error adding workout', 'Must provide a valid duration');
+        return false;
+    }
+
+    return true;
   }
  
 }

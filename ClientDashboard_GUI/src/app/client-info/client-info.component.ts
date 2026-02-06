@@ -193,12 +193,12 @@ export class ClientInfoComponent implements OnInit {
   }
 
   validateClientAddFields(clientName: string, totalBlockSessions: number) : boolean {
-    if(!clientName || clientName.trim() == ''){
+    if(!clientName || clientName.trim() === ''){
       this.toastService.showError('Error Adding client', 'Must provide the client name');
       return false;
     }
     
-    if(!totalBlockSessions || totalBlockSessions == null){
+    if(!totalBlockSessions || totalBlockSessions === null){
       this.toastService.showError('Error Adding client', 'Must provide the client total block sessions');
       return false;
     }

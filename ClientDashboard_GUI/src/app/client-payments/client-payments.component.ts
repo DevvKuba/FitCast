@@ -147,6 +147,11 @@ export class ClientPaymentsComponent implements OnInit {
     } 
 
     addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean} | null){
+      // Frontend validation
+      if(!this.validatePaymentAddFields(selectedClientId, paymentAmount, numberOfSessions, paymentDate, selectedStatus)){
+        return;
+      }
+
       var paymentInformation = {
         trainerId: this.currentUserId,
         clientId: selectedClientId,
@@ -294,6 +299,35 @@ export class ClientPaymentsComponent implements OnInit {
   const year = date.getFullYear();
   
   return `${year}/${month}/${day}`;
+  }
+
+  validatePaymentAddFields(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate: Date, selectedStatus: {name: string, value: boolean} | null): boolean {
+    if(!selectedClientId || selectedClientId === 0){
+      this.toastService.showError('Error adding payment', 'Must select a valid client');
+      return false;
+    }
+
+    if(!paymentAmount || paymentAmount === null || paymentAmount <= 0){
+      this.toastService.showError('Error adding payment', 'Must provide a valid payment amount');
+      return false;
+    }
+
+    if(!numberOfSessions || numberOfSessions === null || numberOfSessions <= 0){
+      this.toastService.showError('Error adding payment', 'Must provide a valid number of sessions');
+      return false;
+    }
+
+    if(!paymentDate){
+      this.toastService.showError('Error adding payment', 'Must provide a payment date');
+      return false;
+    }
+
+    if(!selectedStatus || selectedStatus === null){
+      this.toastService.showError('Error adding payment', 'Must select a payment status');
+      return false;
+    }
+
+    return true;
   }
 
 }
