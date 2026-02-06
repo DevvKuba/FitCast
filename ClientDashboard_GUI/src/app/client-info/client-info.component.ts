@@ -22,6 +22,7 @@ import { RouterLink } from "@angular/router";
 import { UserDto } from '../models/dtos/user-dto';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { InputMask } from 'primeng/inputmask';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-client-info',
@@ -35,6 +36,7 @@ export class ClientInfoComponent implements OnInit {
   private clientService = inject(ClientService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
+  private notificationService = inject(NotificationService);
 
   clients: Client[] | null = null;
   activityStatuses!: SelectItem[];
@@ -85,6 +87,7 @@ export class ClientInfoComponent implements OnInit {
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               this.toastService.showSuccess('Success Updating', response.message);
+              this.notificationService.refreshUnreadCount(this.currentUserId);
             },
             error: (response) => {
               this.toastService.showError('Error Updating', response.error.message);
