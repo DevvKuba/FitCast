@@ -1,14 +1,20 @@
 ﻿using ClientDashboard_API.Data;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Services;
 using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyTrainerWorkoutRetrieval(IUnitOfWork unitOfWork, ISessionSyncService syncService, ILogger<DailyTrainerWorkoutRetrieval> logger) : IJob
+    public class DailyTrainerWorkoutRetrieval(IServiceScopeFactory scopeFactory, ILogger<DailyTrainerWorkoutRetrieval> logger) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
+            using var scope = scopeFactory.CreateScope();
+
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<UnitOfWork>();
+            var syncService = scope.ServiceProvider.GetRequiredService<SessionSyncService>(); 
+
             int totalRetrievedSessions = 0;
 
             logger.LogInformation("DailyTrainerWorkoutRetrieval process STARTING at: {Date}", DateTime.UtcNow);

@@ -38,7 +38,7 @@ export class ClientInfoComponent implements OnInit {
   @ViewChild('currentSessionPopover') currentSessionPopover!: Popover;
 
   showPopover(event: MouseEvent, popover: Popover){
-    popover.show(event);
+    popover.show(event, event.currentTarget);
   }
 
   hidePopover(popover: Popover){
