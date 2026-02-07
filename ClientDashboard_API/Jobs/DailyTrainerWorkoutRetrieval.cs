@@ -35,16 +35,17 @@ namespace ClientDashboard_API.Jobs
                 var trainerUnitOfWork = trainerScope.ServiceProvider.GetRequiredService<UnitOfWork>();
                 var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<SessionSyncService>();
 
-                var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
-                // if count was zero logging message that there were no sessions to sync
-                if (workoutCount == 0)
+                try 
                 {
-                    logger.LogWarning("Retrived no new workout for trainer: {TrainerName} at {Date}", trainer.FirstName, DateTime.UtcNow);
-                    continue;
-                }
+                    var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
 
-                logger.LogDebug("Retrieved {WorkoutCount} client workouts for trainer: {TrainerName} at {Date}", workoutCount, trainer.FirstName, DateTime.UtcNow);
-                totalRetrievedSessions += workoutCount;
+                    logger.LogDebug("Retrieved {WorkoutCount} client workouts for trainer: {TrainerName} at {Date}", workoutCount, trainer.FirstName, DateTime.UtcNow);
+                    totalRetrievedSessions += workoutCount;
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError(ex, "Failed to sync {TrainerName}", trainer.FirstName);
+                }
 
             }
 
