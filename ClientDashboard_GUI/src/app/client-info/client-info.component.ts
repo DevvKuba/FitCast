@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ClientService } from '../services/client.service';
@@ -23,16 +23,28 @@ import { UserDto } from '../models/dtos/user-dto';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { InputMask } from 'primeng/inputmask';
 import { NotificationService } from '../services/notification.service';
+import { Popover, PopoverModule } from 'primeng/popover';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-client-info',
   imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule,
-     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, InputMask],
+     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, InputMask, PopoverModule, TooltipModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
 })
 export class ClientInfoComponent implements OnInit {
+  @ViewChild('currentSessionPopover') currentSessionPopover!: Popover;
+
+  showPopover(event: MouseEvent, popover: Popover){
+    popover.show(event);
+  }
+
+  hidePopover(popover: Popover){
+    popover.hide();
+  }
+  
   private clientService = inject(ClientService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
