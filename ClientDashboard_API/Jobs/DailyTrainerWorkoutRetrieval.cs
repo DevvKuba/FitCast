@@ -31,7 +31,11 @@ namespace ClientDashboard_API.Jobs
 
             foreach (Trainer trainer in trainers)
             {
-                var workoutCount = await syncService.SyncSessionsAsync(trainer);
+                using var trainerScope = scopeFactory.CreateScope();
+                var trainerUnitOfWork = trainerScope.ServiceProvider.GetRequiredService<UnitOfWork>();
+                var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<SessionSyncService>();
+
+                var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
                 // if count was zero logging message that there were no sessions to sync
                 if (workoutCount == 0)
                 {
