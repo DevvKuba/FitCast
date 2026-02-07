@@ -31,7 +31,6 @@ namespace ClientDashboard_API.Services
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
-            // TODO set up twillio to utilise
             if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
             {
                 messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
@@ -74,7 +73,6 @@ namespace ClientDashboard_API.Services
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
-            // TODO set up twillio to utilise
             if (client.NotificationsEnabled && client.PhoneNumber is not null)
             {
                 communicationType = Enums.CommunicationType.Sms;
@@ -94,7 +92,6 @@ namespace ClientDashboard_API.Services
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
 
-        // TODO test
         public async Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
         {
             //messageService.InitialiseBaseTwillioClient();

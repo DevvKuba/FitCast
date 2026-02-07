@@ -131,7 +131,6 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
-            // TODO may need to change to Id even for SessionSyncService
             var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
             if (client is null)
             {
