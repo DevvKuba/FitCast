@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Services
 {
     public class NotificationService(IUnitOfWork unitOfWork, IMessageService messageService) : INotificationService
     {
-        public async Task<ApiResponseDto<string>> SendTrainerReminderAsync(int trainerId, int clientId)
+        public async Task<ApiResponseDto<string>> SendTrainerBlockReminderAsync(int trainerId, int clientId)
         {
             //messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
@@ -50,7 +50,7 @@ namespace ClientDashboard_API.Services
             return new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
 
-        public async Task<ApiResponseDto<string>> SendClientReminderAsync(int trainerId, int clientId)
+        public async Task<ApiResponseDto<string>> SendClientBlockReminderAsync(int trainerId, int clientId)
         {
             //messageService.InitialiseBaseTwillioClient();
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
@@ -134,6 +134,11 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was unsuccessful", Success = false };
             }
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
+        }
+
+        public Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(int trainerId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

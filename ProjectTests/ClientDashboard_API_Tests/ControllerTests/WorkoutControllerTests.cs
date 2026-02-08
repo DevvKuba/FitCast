@@ -15,7 +15,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
     // Fake implementations for testing
     public class FakeNotificationService : INotificationService
     {
-        public Task<ApiResponseDto<string>> SendClientReminderAsync(int trainerId, int clientId)
+        public Task<ApiResponseDto<string>> SendClientBlockReminderAsync(int trainerId, int clientId)
         {
             return Task.FromResult(new ApiResponseDto<string> { 
                 Data = "",
@@ -34,7 +34,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
         }
 
-        Task<ApiResponseDto<string>> INotificationService.SendTrainerReminderAsync(int trainerId, int clientId)
+        Task<ApiResponseDto<string>> INotificationService.SendTrainerBlockReminderAsync(int trainerId, int clientId)
         {
             return Task.FromResult(new ApiResponseDto<string> { 
                 Data = "", Message = $"Success sending message to trainer with id: {trainerId}",

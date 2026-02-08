@@ -38,6 +38,8 @@ namespace ClientDashboard_API.Jobs
                 {
                     var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
 
+                    // create a new notificationType for workouts retrieved for trainers 
+
                     logger.LogDebug("Retrieved {WorkoutCount} client workouts for trainer: {TrainerName} at {Date}", workoutCount, trainer.FirstName, DateTime.UtcNow);
                     totalRetrievedSessions += workoutCount;
                 }

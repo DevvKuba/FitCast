@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Helpers
 
             if (client.Trainer is not null)
             {
-                response = await notificationService.SendTrainerReminderAsync((int)client.TrainerId!, client.Id);
+                response = await notificationService.SendTrainerBlockReminderAsync((int)client.TrainerId!, client.Id);
 
                 if (!response.Success)
                 {

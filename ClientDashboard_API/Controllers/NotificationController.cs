@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("SendTrainerBlockCompletionReminder")]
         public async Task<ActionResult<ApiResponseDto<string>>> TrainerBlockCompletionReminderAsync(int trainerId, int clientId)
         {
-            var messageResponse = await notificationService.SendTrainerReminderAsync(trainerId, clientId);
+            var messageResponse = await notificationService.SendTrainerBlockReminderAsync(trainerId, clientId);
 
             if (messageResponse.Success == false)
             {
@@ -29,7 +29,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("SendClientBlockCompletionReminder")]
         public async Task<ActionResult<ApiResponseDto<string>>> ClientBlockCompletionReminderAsync(int trainerId, int clientId)
         {
-            var messageResponse = await notificationService.SendClientReminderAsync(trainerId, clientId);
+            var messageResponse = await notificationService.SendClientBlockReminderAsync(trainerId, clientId);
 
             if (messageResponse.Success == false)
             {
