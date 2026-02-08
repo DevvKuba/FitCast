@@ -13,7 +13,8 @@ namespace ClientDashboard_API.Jobs
             using var scope = scopeFactory.CreateScope();
 
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var syncService = scope.ServiceProvider.GetRequiredService<ISessionSyncService>(); 
+            var syncService = scope.ServiceProvider.GetRequiredService<ISessionSyncService>();
+            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
             int totalRetrievedSessions = 0;
 
@@ -37,8 +38,7 @@ namespace ClientDashboard_API.Jobs
                 try 
                 {
                     var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
-
-                    // create a new notificationType for workouts retrieved for trainers 
+                    await notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, workoutCount, DateTime.UtcNow);
 
                     logger.LogDebug("Retrieved {WorkoutCount} client workouts for trainer: {TrainerName} at {Date}", workoutCount, trainer.FirstName, DateTime.UtcNow);
                     totalRetrievedSessions += workoutCount;
