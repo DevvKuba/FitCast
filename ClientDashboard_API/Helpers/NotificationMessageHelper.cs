@@ -30,7 +30,7 @@ namespace ClientDashboard_API.Helpers
 
         public static string GetWorkoutCollectionMessage(int workoutCount, DateTime date)
         {
-            var formattedDate = $"{date:dddd} the {GetOrdinalDay(date.Day)} at {date:h:mm tt}";
+            var formattedDate = $"{date.AddDays(-1):dddd} the {GetOrdinalDay(date.Day)} at {date:h:mm tt}";
 
             return workoutCount switch
             {
