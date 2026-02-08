@@ -14,7 +14,8 @@ namespace ClientDashboard_API.Helpers
                                     "inform you that our monthly sessions have come to an end,\n" +
                     $"If you could place a block payment before our next session block that would be great.",
             [Enums.NotificationType.PendingPaymentCreatedAlert] = 
-            (trainer, client) => $"Pending payment for a block of {client.TotalBlockSessions} sessions, created for {client.FirstName}"
+            (trainer, client) => $"Pending payment for a block of {client.TotalBlockSessions} sessions, created for {client.FirstName}",
+            
         };
 
         public static string GetMessage (Enums.NotificationType notificationType, Trainer trainer, Client client)
@@ -26,6 +27,28 @@ namespace ClientDashboard_API.Helpers
 
             throw new ArgumentException($"No message template found for notification type: {notificationType}");
         }
-        
+
+        public static string GetWorkoutCollectionMessage(int workoutCount, DateTime date)
+        {
+            var formattedDate = $"{date:dddd} the {GetOrdinalDay(date.Day)} at {date:h:mm tt}";
+
+            return workoutCount switch
+            {
+                0 => $"No new workouts retrieved from Hevy on {formattedDate}",
+                1 => $"1 new workout retrieved from Hevy on {formattedDate}",
+                _ => $"{workoutCount} new workouts retrieved from Hevy on {formattedDate}"
+            };
+        }
+        private static string GetOrdinalDay(int day)
+        {
+            return day switch
+            {
+                1 or 21 or 31 => $"{day}st",
+                2 or 22 => $"{day}nd",
+                3 or 23 => $"{day}rd",
+                _ => $"{day}th"
+            };
+        }
+
     }
 }

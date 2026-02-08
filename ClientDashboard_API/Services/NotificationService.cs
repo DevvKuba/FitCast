@@ -69,6 +69,7 @@ namespace ClientDashboard_API.Services
                 return new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not retrieved successfully to send message", Success = false };
             }
             var reminderType = Enums.NotificationType.ClientBlockCompletionReminder;
+
             Enums.CommunicationType communicationType;
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
@@ -112,11 +113,10 @@ namespace ClientDashboard_API.Services
             }
 
             var reminderType = Enums.NotificationType.PendingPaymentCreatedAlert;
+
             Enums.CommunicationType communicationType;
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
-
-            var notificationType = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
             if(trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
             {
@@ -136,9 +136,17 @@ namespace ClientDashboard_API.Services
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
 
-        public Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(int trainerId)
+        public async Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount)
         {
-            throw new NotImplementedException();
+            var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
+
+            var reminderType = Enums.NotificationType.AutoRetrievalWorkoutsCountNotification;
+
+            Enums.CommunicationType communicationType;
+
+            
+
+            
         }
     }
 }

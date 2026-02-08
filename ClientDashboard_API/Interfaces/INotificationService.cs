@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -10,6 +11,6 @@ namespace ClientDashboard_API.Interfaces
 
         Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId);
 
-        Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(int trainerId);
+        Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount);
     }
 }
