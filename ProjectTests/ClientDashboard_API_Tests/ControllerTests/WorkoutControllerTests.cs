@@ -24,6 +24,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
         }
 
+        public Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount, DateTime date)
+        {
+            return Task.FromResult(new ApiResponseDto<string>
+            {
+                Data = "",
+                Message = $"Success sending message to trainer with id: {trainer.Id}",
+                Success = true
+            });
+        }
+
         public Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
         {
             return Task.FromResult(new ApiResponseDto<string>
