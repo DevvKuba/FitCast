@@ -9,11 +9,11 @@ namespace ClientDashboard_API.Jobs
     public class DailyTrainerWorkoutRetrieval(IServiceScopeFactory scopeFactory, ILogger<DailyTrainerWorkoutRetrieval> logger) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
-        {
+    {
             using var scope = scopeFactory.CreateScope();
 
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<UnitOfWork>();
-            var syncService = scope.ServiceProvider.GetRequiredService<SessionSyncService>(); 
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var syncService = scope.ServiceProvider.GetRequiredService<ISessionSyncService>(); 
 
             int totalRetrievedSessions = 0;
 
@@ -32,8 +32,7 @@ namespace ClientDashboard_API.Jobs
             foreach (Trainer trainer in trainers)
             {
                 using var trainerScope = scopeFactory.CreateScope();
-                var trainerUnitOfWork = trainerScope.ServiceProvider.GetRequiredService<UnitOfWork>();
-                var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<SessionSyncService>();
+                var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<ISessionSyncService>();
 
                 try 
                 {
