@@ -88,8 +88,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client1 = new Client { FirstName = "Alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            var client2 = new Client { FirstName = "Bob", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 3, TotalBlockSessions = 12 };
+            var client1 = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client2 = new Client { FirstName = "bob", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 3, TotalBlockSessions = 12 };
             await _context.Client.AddRangeAsync(client1, client2);
             await _unitOfWork.Complete();
 
@@ -122,7 +122,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientByIdReturnsClientSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -132,7 +132,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alice", response.Data);
+            Assert.Equal("alice", response.Data);
         }
 
         [Fact]
@@ -149,11 +149,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetCurrentClientBlockSessionReturnsSessionSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.GetCurrentClientBlockSessionAsync("Alice");
+            var result = await _clientController.GetCurrentClientBlockSessionAsync("alice");
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<int>;
 
@@ -176,9 +176,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientsOnLastSessionReturnsClientsSuccessfullyAsync()
         {
-            var client1 = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 8, TotalBlockSessions = 8 };
-            var client2 = new Client { FirstName = "Bob", Role = UserRole.Client, CurrentBlockSession = 12, TotalBlockSessions = 12 };
-            var client3 = new Client { FirstName = "Charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
+            var client1 = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 8, TotalBlockSessions = 8 };
+            var client2 = new Client { FirstName = "bob", Role = UserRole.Client, CurrentBlockSession = 12, TotalBlockSessions = 12 };
+            var client3 = new Client { FirstName = "charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
             await _context.Client.AddRangeAsync(client1, client2, client3);
             await _unitOfWork.Complete();
 
@@ -189,8 +189,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.Equal(2, response.Data!.Count);
-            Assert.Contains("Alice", response.Data);
-            Assert.Contains("Bob", response.Data);
+            Assert.Contains("alice", response.Data);
+            Assert.Contains("bob", response.Data);
         }
 
         [Fact]
@@ -207,9 +207,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientsOnFirstSessionReturnsClientsSuccessfullyAsync()
         {
-            var client1 = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            var client2 = new Client { FirstName = "Bob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 12 };
-            var client3 = new Client { FirstName = "Charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
+            var client1 = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client2 = new Client { FirstName = "bob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 12 };
+            var client3 = new Client { FirstName = "charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
             await _context.Client.AddRangeAsync(client1, client2, client3);
             await _unitOfWork.Complete();
 
@@ -220,8 +220,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.Equal(2, response.Data!.Count);
-            Assert.Contains("Alice", response.Data);
-            Assert.Contains("Bob", response.Data);
+            Assert.Contains("alice", response.Data);
+            Assert.Contains("bob", response.Data);
         }
 
         [Fact]
@@ -239,7 +239,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientPhoneNumberReturnsPhoneNumberSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -272,7 +272,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client 
             { 
-                FirstName = "Alice", 
+                FirstName = "alice", 
                 Role = UserRole.Client, 
                 TrainerId = trainer.Id,
                 IsActive = true,
@@ -287,7 +287,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 Id = client.Id,
                 Role = UserRole.Client,
-                FirstName = "Alice Updated",
+                FirstName = "alice updated",
                 IsActive = false,
                 CurrentBlockSession = 3,
                 TotalBlockSessions = 10,
@@ -302,7 +302,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.True(response.Success);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal("Alice Updated", savedClient!.FirstName);
+            Assert.Equal("alice updated", savedClient!.FirstName);
             Assert.False(savedClient.IsActive);
             Assert.Equal(3, savedClient.CurrentBlockSession);
             Assert.Equal(10, savedClient.TotalBlockSessions);
@@ -317,7 +317,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var client = new Client
             {
-                FirstName = "Alice",
+                FirstName = "alice",
                 Role = UserRole.Client,
                 TrainerId = trainer.Id,
                 IsActive = true,
@@ -332,7 +332,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 Id = client.Id,
                 Role = UserRole.Client,
-                FirstName = "Alice",
+                FirstName = "alice",
                 IsActive = true,
                 CurrentBlockSession = 8,
                 TotalBlockSessions = 8,
@@ -376,7 +376,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeClientPhoneNumberUpdatesSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -419,17 +419,17 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeClientTotalSessionsUpdatesSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.ChangeClientTotalSessionsAsync("Alice", 12);
+            var result = await _clientController.ChangeClientTotalSessionsAsync("alice", 12);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alice", response.Data);
+            Assert.Equal("alice", response.Data);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
             Assert.Equal(12, savedClient!.TotalBlockSessions);
@@ -450,17 +450,17 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeClientCurrentSessionUpdatesSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.ChangeClientCurrentSessionAsync("Alice", 5);
+            var result = await _clientController.ChangeClientCurrentSessionAsync("alice", 5);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alice", response.Data);
+            Assert.Equal("alice", response.Data);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
             Assert.Equal(5, savedClient!.CurrentBlockSession);
@@ -481,20 +481,20 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeClientNameUpdatesSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.ChangeClientNameAsync("Alice", "Alicia");
+            var result = await _clientController.ChangeClientNameAsync("alice", "alicia");
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alicia", response.Data);
+            Assert.Equal("alicia", response.Data);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal("Alicia", savedClient!.FirstName);
+            Assert.Equal("alicia", savedClient!.FirstName);
         }
 
         [Fact]
@@ -516,7 +516,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -549,15 +549,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.AddNewClientAsync("Alice", 8, "1234567890", trainer.Id);
+            var result = await _clientController.AddNewClientAsync("alice", 8, "1234567890", trainer.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alice", response.Data);
+            Assert.Equal("alice", response.Data);
 
-            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "Alice");
+            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "alice");
             Assert.NotNull(savedClient);
             Assert.Equal(8, savedClient.TotalBlockSessions);
             Assert.Equal("1234567890", savedClient.PhoneNumber);
@@ -571,11 +571,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.AddNewClientAsync("Alice", 8, "1234567890", trainer.Id);
+            var result = await _clientController.AddNewClientAsync("alice", 8, "1234567890", trainer.Id);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -592,7 +592,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var clientDto = new ClientAddDto
             {
-                FirstName = "Bob",
+                FirstName = "bob",
                 TotalBlockSessions = 12,
                 PhoneNumber = "0987654321",
                 TrainerId = trainer.Id
@@ -604,9 +604,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Bob", response.Data);
+            Assert.Equal("bob", response.Data);
 
-            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "Bob");
+            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "bob");
             Assert.NotNull(savedClient);
             Assert.Equal(12, savedClient.TotalBlockSessions);
             Assert.Equal("0987654321", savedClient.PhoneNumber);
@@ -616,19 +616,19 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestRemoveClientByNameSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.RemoveClientAsync("Alice");
+            var result = await _clientController.RemoveClientAsync("alice");
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("Alice", response.Data);
+            Assert.Equal("alice", response.Data);
 
-            var deletedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "Alice");
+            var deletedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "alice");
             Assert.Null(deletedClient);
         }
 
@@ -647,7 +647,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestRemoveClientByIdSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "Alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
