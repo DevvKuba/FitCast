@@ -72,7 +72,6 @@ namespace ClientDashboard_API.Services
         public async Task<bool> MapClientDataUponRegistrationAsync(RegisterDto request)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(request.ClientsTrainerId ?? 0);
-
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(request.ClientId);
 
             if(trainer == null || client == null)
