@@ -18,7 +18,7 @@ namespace ClientDashboard_API.ML.Helpers
                 .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
                 .ToList();
 
-            for(int  i = 0; i < monthlyGroups.Count; i++)
+            for(int i = 0; i < monthlyGroups.Count; i++)
             {
                 var currentMonth = monthlyGroups[i];
                 var nextMonth = monthlyGroups[i + 1];
@@ -27,13 +27,14 @@ namespace ClientDashboard_API.ML.Helpers
                 var lastDayOfMonth = currentMonth.OrderByDescending(r => r.AsOfDate).First();
 
                 // Calculating next month's total revenue
-                var nextMonthRevenue = nextMonth.Sum(r => r.RevenueToday);.
+                // in order to track next month revenue patterns
+                var nextMonthRevenue = nextMonth.Sum(r => r.RevenueToday);
 
                 var trainingExample = new TrainerRevenueData
                 {
                     // raw features
                     ActiveClients = lastDayOfMonth.ActiveClients,
-                    TotalSessionThisMonth = lastDayOfMonth.TotalSessionsThisMonth,
+                    TotalSessionsThisMonth = lastDayOfMonth.TotalSessionsThisMonth,
                     AverageSessionPrice = (float)lastDayOfMonth.AverageSessionPrice,
                     NewClientsThisMonth = lastDayOfMonth.NewClientsThisMonth,
                     MonthlyRevenueThusFar = (float)lastDayOfMonth.MonthlyRevenueThusFar,
@@ -56,5 +57,27 @@ namespace ClientDashboard_API.ML.Helpers
 
             return trainingData;
         }
+
+        // converts the current month's latest data into a predicition input
+        public static TrainerRevenueData PreparePredictionData(TrainerDailyRevenue currentMonthSnapshot)
+        {
+            return new TrainerRevenueData
+            {
+                ActiveClients = currentMonthSnapshot.ActiveClients,
+                TotalSessionsThisMonth = currentMonthSnapshot.TotalSessionsThisMonth,
+                AverageSessionPrice = (float)currentMonthSnapshot.AverageSessionPrice,
+                NewClientsThisMonth = currentMonthSnapshot.NewClientsThisMonth,
+                MonthlyRevenueThusFar = (float)currentMonthSnapshot.MonthlyRevenueThusFar,
+
+                SessionsPerClient = currentMonthSnapshot.ActiveClients > 0
+                    ? (float)currentMonthSnapshot.TotalSessionsThisMonth / currentMonthSnapshot.ActiveClients
+                    : 0,
+                DayOfMonth = currentMonthSnapshot.AsOfDate.Day,
+                GrowthRate = currentMonthSnapshot.ActiveClients > 0
+                    ? (float)currentMonthSnapshot.NewClientsThisMonth / currentMonthSnapshot.ActiveClients
+                    : 0,
+            };
+        }
     }
+
 }

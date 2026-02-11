@@ -10,7 +10,7 @@ namespace ClientDashboard_API.ML.Models
         public float ActiveClients { get; set; }
 
         [LoadColumn(1)]
-        public float TotalSessionThisMonth { get; set; }
+        public float TotalSessionsThisMonth { get; set; }
 
         [LoadColumn(2)]
         public float AverageSessionPrice { get; set; }
