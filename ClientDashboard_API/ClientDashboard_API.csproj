@@ -29,6 +29,7 @@
     <PackageReference Include="Twilio" Version="7.13.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ML\TrainedModels\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
