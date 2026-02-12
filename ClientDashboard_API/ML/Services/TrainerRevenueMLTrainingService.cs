@@ -3,6 +3,8 @@ using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
 using Microsoft.ML;
 using Quartz.Logging;
+using System.CodeDom;
+using Twilio.Rest.Api.V2010.Account.Usage.Record;
 
 namespace ClientDashboard_API.ML.Services
 {
@@ -26,15 +28,23 @@ namespace ClientDashboard_API.ML.Services
             Directory.CreateDirectory(_modelsPath);
         }
 
-        public Task<ModelMetrics> TrainModelAsync(int trainerId)
+        public async Task<ModelMetrics> TrainModelAsync(int trainerId)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Starting model training for Trainer ID: {TrainerId}", trainerId);
+
+            var trainer = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            if(trainer is null)
+            {
+                throw new ArgumentException($"Trainer {trainerId} not found");
+            }
+
+            var dailyRecords = await _unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
         }
 
         public Task<Dictionary<int, ModelMetrics>> TrainAllModelsAsync()
         {
             throw new NotImplementedException();
         }
-
+        
     }
 }

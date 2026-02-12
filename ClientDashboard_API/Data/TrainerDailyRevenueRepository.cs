@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
@@ -20,6 +21,12 @@ namespace ClientDashboard_API.Data
                 AsOfDate = trainerInfo.AsOfDate,
             };
             await context.TrainerDailyRevenue.AddAsync(trainerRevenueRecord);
+        }
+
+        public async Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId)
+        {
+            var trainerRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
+            return trainerRecords;
         }
     }
 }
