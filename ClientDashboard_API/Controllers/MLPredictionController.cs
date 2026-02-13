@@ -55,7 +55,35 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("trainRevenueModel")]
         public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> TrainRevenueModelAsync([FromQuery] int trainerId)
         {
+            try
+            {
+                var metrics = await trainingService.TrainModelAsync(trainerId);
 
+                return Ok(new ApiResponseDto<ModelMetrics>
+                {
+                    Data = metrics,
+                    Message = $"Model trained successfully. R² = {metrics.RSquared:F3}",
+                    Success = true
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ApiResponseDto<ModelMetrics>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    Success = false
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ApiResponseDto<ModelMetrics>
+                {
+                    Data = null,
+                    Message = ex.Message,
+                    Success = false
+                });
+            }
         }
     }
 }
