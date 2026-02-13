@@ -9,7 +9,7 @@ using Twilio.Rest.Api.V2010.Account.Usage.Record;
 
 namespace ClientDashboard_API.ML.Services
 {
-    public class TrainerRevenueMLTrainingService : Interfaces.IMLModelTrainingService
+    public class TrainerRevenueMLTrainingService : IMLModelTrainingService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<TrainerRevenueMLTrainingService> _logger;
