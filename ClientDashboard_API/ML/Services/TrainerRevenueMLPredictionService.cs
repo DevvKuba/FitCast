@@ -43,7 +43,7 @@ namespace ClientDashboard_API.ML.Services
 
             if(latestRecord is null)
             {
-                throw new Exception($"no daily revenue records found for Trainer: {trainerId}");
+                throw new FileNotFoundException($"no daily revenue records found for Trainer: {trainerId}");
             }
 
             // 3 prepare prediction input
