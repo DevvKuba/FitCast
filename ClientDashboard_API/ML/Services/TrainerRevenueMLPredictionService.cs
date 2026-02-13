@@ -27,13 +27,18 @@ namespace ClientDashboard_API.ML.Services
             _predictionEngines = new Dictionary<int, PredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>>();
         }
 
-        public Task<float> PredictNextMonthRevenueAsync(int trainerId)
+        public async Task<float> PredictNextMonthRevenueAsync(int trainerId)
         {
             // 1 get or load prediction engine
             if(!_predictionEngines.ContainsKey(trainerId))
             {
                 LoadModelForTrainer(trainerId);
             }
+
+            var predictionEngine = _predictionEngines[trainerId];
+
+            // 2 fetch latest data for trainer
+            var latestRecord = await _unitOfWork.TrainerDailyRevenueRepository.GetLatestRevenueRecordForTrainerAsync(trainerId);
         }
 
         public Task<Dictionary<int, float>> PredictForAllTrainersAsync()

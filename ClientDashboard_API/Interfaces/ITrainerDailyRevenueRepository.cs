@@ -8,5 +8,7 @@ namespace ClientDashboard_API.Interfaces
         Task AddTrainerDailyRevenueRecordAsync(TrainerDailyDataAddDto trainerInfo);
 
         Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId);
+
+        Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId);
     }
 }
