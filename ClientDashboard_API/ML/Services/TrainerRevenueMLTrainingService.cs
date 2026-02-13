@@ -61,6 +61,37 @@ namespace ClientDashboard_API.ML.Services
             // 4 Split into train/test (80/20 split)
             var traintTestSplit = _mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
 
+            // Pipele decalration
+            var pipeline = _mlContext.Transforms
+                // Normalise all numeric features to 0-1 range
+                .NormalizeMinMax("ActiveClients")
+                .Append(_mlContext.Transforms.NormalizeMinMax("TotalSessionsThisMonth"))
+                .Append(_mlContext.Transforms.NormalizeMinMax("AverageSessionPrice"))
+                .Append(_mlContext.Transforms.NormalizeMinMax("NewClientsThisMonth"))
+                .Append(_mlContext.Transforms.NormalizeMinMax("MonthlyRevenueThusFar"))
+                .Append(_mlContext.Transforms.NormalizeMinMax("SessionsPerClient"))
+                .Append(_mlContext.Transforms.NormalizeMinMax("GrowthRate"))
+
+                // Concatenate all features into a single "Features" column
+                .Append(_mlContext.Transforms.Concatenate("Features",
+                "ActiveClients",
+                "TotalSessionsThisMonth",
+                "AverageSessionPrice",
+                "NewClientsThisMonth",
+                "MonthlyRevenueThusFar",
+                "SessionsPerClient",
+                "DayOfMonth",
+                "GrowthRate"))
+
+                // Train using FastTree algorithm
+                .Append(_mlContext.Regression.Trainers.FastTree(
+                    labelColumnName: "Label",
+                    featureColumnName: "Features",
+                    numberOfLeaves: 20,  // free complexity
+                    numberOfTrees: 100,  // number of trees in ensemble,
+                    minimumExampleCountPerLeaf: 10)); // prevents overfitting
+
+
 
         }
 
