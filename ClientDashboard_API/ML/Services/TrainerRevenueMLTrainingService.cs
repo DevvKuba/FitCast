@@ -119,9 +119,28 @@ namespace ClientDashboard_API.ML.Services
 
         }
 
-        public Task<Dictionary<int, ModelMetrics>> TrainAllModelsAsync()
+        public async Task<Dictionary<int, ModelMetrics>> TrainAllModelsAsync()
         {
-            throw new NotImplementedException();
+            var trainers = await _unitOfWork.TrainerRepository.GetAllTrainersAsync();
+            var results = new Dictionary<int, ModelMetrics>();
+
+            foreach(var trainer in trainers)
+            {
+                try
+                {
+                    var metrics = await TrainModelAsync(trainer.Id);
+                    results[trainer.Id] = metrics;
+
+                    _logger.LogInformation(
+                        "Trainer {TrainerId}: R²={RSquared:F3}, MAE=${MAE:F2}",
+                        trainer.Id, metrics.RSquared, metrics.MeanAbsoluteError);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to train model for Trainer {trainerId}", trainer.Id);
+                }
+            }
+            return results;
         }
         
     }
