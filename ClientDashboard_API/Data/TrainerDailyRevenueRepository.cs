@@ -34,5 +34,16 @@ namespace ClientDashboard_API.Data
             var latestRecord = await context.TrainerDailyRevenue.OrderByDescending(r => r.AsOfDate).FirstOrDefaultAsync();
             return latestRecord;
         }
+
+        public async Task ResetTrainerDailyRevenueRecords(int trainerId)
+        {
+            var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
+            context.RemoveRange(trainerRevenueRecords);
+        }
+
+        public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
+        {
+            await context.TrainerDailyRevenue.AddAsync(trainerInfo);
+        }
     }
 }
