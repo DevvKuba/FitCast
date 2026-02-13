@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
 using Microsoft.ML;
@@ -39,6 +40,23 @@ namespace ClientDashboard_API.ML.Services
 
             // 2 fetch latest data for trainer
             var latestRecord = await _unitOfWork.TrainerDailyRevenueRepository.GetLatestRevenueRecordForTrainerAsync(trainerId);
+
+            if(latestRecord is null)
+            {
+                throw new Exception($"no daily revenue records found for Trainer: {trainerId}");
+            }
+
+            // 3 prepare prediction input
+            var inputData = FeatureEngineeringHelper.PreparePredictionData(latestRecord);
+
+            // 4 make prediction
+            var prediction = predictionEngine.Predict(inputData);
+
+            _logger.LogInformation(
+                "Predicted next month revenue for Trainer {TrainerId}: ${Revenue:F2}",
+                trainerId, prediction.PredictedRevenue);
+
+            return prediction.PredictedRevenue;
         }
 
         public Task<Dictionary<int, float>> PredictForAllTrainersAsync()
