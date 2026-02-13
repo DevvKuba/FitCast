@@ -59,9 +59,25 @@ namespace ClientDashboard_API.ML.Services
             return prediction.PredictedRevenue;
         }
 
-        public Task<Dictionary<int, float>> PredictForAllTrainersAsync()
+        public async Task<Dictionary<int, float>> PredictForAllTrainersAsync()
         {
-            throw new NotImplementedException();
+            var trainers = await _unitOfWork.TrainerRepository.GetAllTrainersAsync();
+            var predictions = new Dictionary<int, float>();
+
+            foreach(var trainer in trainers)
+            {
+                try
+                {
+                    var prediction = await PredictNextMonthRevenueAsync(trainer.Id);
+                    predictions[trainer.Id] = prediction;
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to predict for Trainer {TrainerId}", trainer.Id);
+                }
+            }
+
+            return predictions;
         }
 
         private void LoadModelForTrainer(int trainerId)
