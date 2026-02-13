@@ -1,6 +1,8 @@
 ﻿using ClientDashboard_API.Data;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.ML.Interfaces;
+using ClientDashboard_API.ML.Services;
 using ClientDashboard_API.Services;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
@@ -48,6 +50,9 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IPasswordResetService, PasswordResetService>();
             services.AddScoped<IPasswordResetLinkFactory, PasswordResetLinkFactory>();
             services.AddScoped<IClientBlockTerminationHelper, ClientBlockTerminationHelper>();
+
+            services.AddScoped<IMLModelTrainingService, TrainerRevenueMLTrainingService>();
+            services.AddScoped<IMLPredictionService, TrainerRevenueMLPredictionService>();
 
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
