@@ -99,7 +99,23 @@ namespace ClientDashboard_API.ML.Services
             var predicitions = model.Transform(trainTestSplit.TestSet);
             var metrics = _mlContext.Regression.Evaluate(predicitions, "Label", "Score");
 
+            // 8 save model to disk
+            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            _mlContext.Model.Save(model, dataView.Schema, modelPath);
+            _logger.LogInformation("Model saved to {Path}", modelPath);
 
+            // 9 return metrics
+            return new ModelMetrics
+            {
+                TrainerId = trainerId,
+                TrainerName = trainer.FirstName,
+                RSquared = metrics.RSquared,
+                MeanAbsoluteError = metrics.MeanAbsoluteError,
+                RootMeanSquaredError = metrics.RootMeanSquaredError,
+                TrainingExamplesCount = trainingData.Count,
+                TrainedAt = DateTime.UtcNow,
+                ModelFilePath = modelPath
+            };
 
         }
 
