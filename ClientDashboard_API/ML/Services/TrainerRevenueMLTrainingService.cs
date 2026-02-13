@@ -59,9 +59,9 @@ namespace ClientDashboard_API.ML.Services
             var dataView = _mlContext.Data.LoadFromEnumerable(trainingData);
 
             // 4 Split into train/test (80/20 split)
-            var traintTestSplit = _mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+            var trainTestSplit = _mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
 
-            // Pipele decalration
+            // 5 Pipele decalration
             var pipeline = _mlContext.Transforms
                 // Normalise all numeric features to 0-1 range
                 .NormalizeMinMax("ActiveClients")
@@ -90,6 +90,14 @@ namespace ClientDashboard_API.ML.Services
                     numberOfLeaves: 20,  // free complexity
                     numberOfTrees: 100,  // number of trees in ensemble,
                     minimumExampleCountPerLeaf: 10)); // prevents overfitting
+
+            // 6 training the model
+            _logger.LogInformation("Training model for Trainer {TrainerId}..", trainerId);
+            var model = pipeline.Fit(trainTestSplit.TrainSet);
+
+            // 7 evaluate on test set
+            var predicitions = model.Transform(trainTestSplit.TestSet);
+            var metrics = _mlContext.Regression.Evaluate(predicitions, "Label", "Score");
 
 
 
