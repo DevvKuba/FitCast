@@ -12,10 +12,7 @@ namespace ClientDashboard_API.ML.Helpers
         /// <param name="trainerId">Trainer to generate data for</param>
         /// <param name="numberOfMonths">How many months of data (default: 6 months = 180 days)</param>
         /// <param name="startDate">Starting date (default: 6 months ago)</param>
-        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(
-            int trainerId,
-            int numberOfMonths = 6,
-            DateOnly? startDate = null)
+        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths = 6, DateOnly? startDate = null)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); // Seed with trainerId for reproducibility
@@ -25,13 +22,11 @@ namespace ClientDashboard_API.ML.Helpers
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
             
             // === BASE PARAMETERS (realistic starting values) ===
-            int baseActiveClients = 8;  // Starting client base
+            int baseActiveClients = 12;  // Starting client base
             decimal baseSessionPrice = 40.0m;  // Average session price
-            int baseSessionsPerMonth = 24;  // Total monthly sessions
+            int baseSessionsPerMonth = 30;  // Total monthly sessions
             
             // === GROWTH TRENDS ===
-            double clientGrowthRate = 0.08;  // 8% monthly client growth
-            double priceGrowthRate = 0.02;   // 2% monthly price growth
             double sessionGrowthRate = 0.05; // 5% monthly session growth
             
             int currentMonth = currentDate.Month;
@@ -47,7 +42,6 @@ namespace ClientDashboard_API.ML.Helpers
                     
                     // Apply monthly growth with some randomness
                     baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
-                    baseSessionPrice *= (decimal)(1 + priceGrowthRate + random.NextDouble() * 0.01);
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
                 }
                 
@@ -63,7 +57,7 @@ namespace ClientDashboard_API.ML.Helpers
                 
                 // More sessions toward month-end (common pattern in fitness)
                 double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
-                int dailySessions = (int)(baseSessionsPerMonth / 30.0 * endOfMonthBoost * (0.7 + random.NextDouble() * 0.6));
+                double dailySessions = (int)(baseSessionsPerMonth / 30.0 * endOfMonthBoost);
                 dailySessions = Math.Max(0, dailySessions); // Can have 0 sessions on some days
                 
                 // New clients this month (cumulative through the month)
@@ -72,8 +66,7 @@ namespace ClientDashboard_API.ML.Helpers
                     : 0;
                 
                 // Revenue today (sessions * price with some variance)
-                decimal sessionPriceToday = baseSessionPrice * (decimal)(0.95 + random.NextDouble() * 0.1);
-                decimal revenueToday = dailySessions * sessionPriceToday;
+                decimal revenueToday = (int)dailySessions * baseSessionPrice;
                 
                 // Monthly revenue so far (sum of all days in current month)
                 var monthStartDate = new DateOnly(currentDate.Year, currentDate.Month, 1);
@@ -84,7 +77,7 @@ namespace ClientDashboard_API.ML.Helpers
                 // Total sessions this month (cumulative)
                 int totalSessionsThisMonth = records
                     .Where(r => r.TrainerId == trainerId && r.AsOfDate >= monthStartDate && r.AsOfDate < currentDate)
-                    .Sum(r => r.RevenueToday > 0 ? (int)(r.RevenueToday / r.AverageSessionPrice) : 0) + dailySessions;
+                    .Sum(r => r.RevenueToday > 0 ? (int)(r.RevenueToday / r.AverageSessionPrice) : 0) + (int)dailySessions;
                 
                 // Create the daily record
                 var record = new TrainerDailyRevenue
@@ -96,7 +89,7 @@ namespace ClientDashboard_API.ML.Helpers
                     TotalSessionsThisMonth = totalSessionsThisMonth,
                     NewClientsThisMonth = newClientsThisMonth,
                     ActiveClients = dailyActiveClients,
-                    AverageSessionPrice = Math.Round(sessionPriceToday, 2)
+                    AverageSessionPrice = Math.Round(baseSessionPrice, 2)
                 };
                 
                 records.Add(record);

@@ -35,30 +35,15 @@ namespace ClientDashboard_API.Controllers
                     PredictedDate = DateTime.Now,
                 };
 
-                return Ok(new ApiResponseDto<PredictionResultDto> 
-                { 
-                   Data = predictionResultData,
-                   Message = $"Predicted next month revenue: {prediction:F2}",
-                   Success = true 
-                });
+                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}", Success = true });
             }
             catch (FileNotFoundException)
             {
-                return NotFound(new ApiResponseDto<PredictionResultDto>
-                {
-                    Data = null,
-                    Message = "No trained model found. Please train the model first.",
-                    Success = false
-                });
+                return NotFound(new ApiResponseDto<PredictionResultDto>{ Data = null, Message = "No trained model found. Please train the model first.", Success = false });
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponseDto<PredictionResultDto>
-                {
-                    Data = null,
-                    Message = $"Prediction failed: {ex.Message}",
-                    Success = false
-                });
+                return BadRequest(new ApiResponseDto<PredictionResultDto>{ Data = null, Message = $"Prediction failed: {ex.Message}", Success = false });
             }
 
         }
@@ -70,62 +55,33 @@ namespace ClientDashboard_API.Controllers
             {
                 var metrics = await trainingService.TrainModelAsync(trainerId);
 
-                return Ok(new ApiResponseDto<ModelMetrics>
-                {
-                    Data = metrics,
-                    Message = $"Model trained successfully. R² = {metrics.RSquared:F3}",
-                    Success = true
-                });
+                return Ok(new ApiResponseDto<ModelMetrics>{ Data = metrics, Message = $"Model trained successfully. R² = {metrics.RSquared:F3}", Success = true });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ApiResponseDto<ModelMetrics>
-                {
-                    Data = null,
-                    Message = ex.Message,
-                    Success = false
-                });
+                return BadRequest(new ApiResponseDto<ModelMetrics>{ Data = null, Message = ex.Message, Success = false });
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new ApiResponseDto<ModelMetrics>
-                {
-                    Data = null,
-                    Message = ex.Message,
-                    Success = false
-                });
+                return BadRequest(new ApiResponseDto<ModelMetrics>{ Data = null, Message = ex.Message, Success = false });
             }
         }
 
         [HttpPost("generateDummyData")]
         [AllowAnonymous] // Remove this if you want to keep auth
-        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync(
-        [FromQuery] int trainerId,
-        [FromQuery] int numberOfMonths = 6,
-        [FromQuery] string scenario = "realistic")
+        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 6, [FromQuery] string scenario = "realistic")
         {
             if (!environment.IsDevelopment())
             {
-                return BadRequest(new ApiResponseDto<DummyDataSummaryDto>
-                {
-                    Data = null,
-                    Message = "Dummy data generation only allowed in Development environment",
-                    Success = false
-                });
+                return BadRequest(new ApiResponseDto<DummyDataSummaryDto>{ Data = null, Message = "Dummy data generation only allowed in Development environment", Success = false });
             }
 
             try
             {
-                // Verify trainer exists
                 var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
                 if (trainer == null)
                 {
-                    return NotFound(new ApiResponseDto<DummyDataSummaryDto>
-                    {
-                        Data = null,
-                        Message = $"Trainer {trainerId} not found",
-                        Success = false
-                    });
+                    return NotFound(new ApiResponseDto<DummyDataSummaryDto>{ Data = null, Message = $"Trainer {trainerId} not found", Success = false });
                 }
 
                 // Delete existing dummy data for this trainer (optional - clean slate)
@@ -137,6 +93,7 @@ namespace ClientDashboard_API.Controllers
                     logger.LogWarning("Trainer {TrainerId} already has {Count} records. These will be replaced.",
                         trainerId, existingRecords.Count);
                     await unitOfWork.TrainerDailyRevenueRepository.ResetTrainerDailyRevenueRecords(trainerId);
+                    await unitOfWork.Complete();
                     
                 }
 
@@ -156,12 +113,7 @@ namespace ClientDashboard_API.Controllers
 
                 if (!await unitOfWork.Complete())
                 {
-                    return BadRequest(new ApiResponseDto<DummyDataSummaryDto>
-                    {
-                        Data = null,
-                        Message = "Failed to save dummy data",
-                        Success = false
-                    });
+                    return BadRequest(new ApiResponseDto<DummyDataSummaryDto>{ Data = null, Message = "Failed to save dummy data", Success = false });
                 }
 
                 // Calculate summary statistics
@@ -179,22 +131,12 @@ namespace ClientDashboard_API.Controllers
                     Scenario = scenario
                 };
 
-                return Ok(new ApiResponseDto<DummyDataSummaryDto>
-                {
-                    Data = summary,
-                    Message = $"Generated {dummyData.Count} days of dummy data for Trainer {trainerId}",
-                    Success = true
-                });
+                return Ok(new ApiResponseDto<DummyDataSummaryDto>{ Data = summary, Message = $"Generated {dummyData.Count} days of dummy data for Trainer {trainerId}", Success = true });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Failed to generate dummy data for Trainer {TrainerId}", trainerId);
-                return BadRequest(new ApiResponseDto<DummyDataSummaryDto>
-                {
-                    Data = null,
-                    Message = $"Error: {ex.Message}",
-                    Success = false
-                });
+                return BadRequest(new ApiResponseDto<DummyDataSummaryDto>{ Data = null, Message = $"Error: {ex.Message}", Success = false });
             }
         }
     }
