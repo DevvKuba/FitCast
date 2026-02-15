@@ -54,9 +54,9 @@ namespace ClientDashboard_API.ML.Services
 
             _logger.LogInformation(
                 "Predicted next month revenue for Trainer {TrainerId}: ${Revenue:F2}",
-                trainerId, prediction.PredictedRevenue);
+                trainerId, Math.Round(prediction.PredictedRevenue, 0));
 
-            return prediction.PredictedRevenue;
+            return (float)Math.Round(prediction.PredictedRevenue, 0);
         }
 
         public async Task<Dictionary<int, float>> PredictForAllTrainersAsync()
