@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId)
         {
-            var latestRecord = await context.TrainerDailyRevenue.OrderByDescending(r => r.AsOfDate).FirstOrDefaultAsync();
+            var latestRecord = await context.TrainerDailyRevenue.Where(t => t.TrainerId == trainerId).OrderByDescending(r => r.AsOfDate).FirstOrDefaultAsync();
             return latestRecord;
         }
 
