@@ -21,7 +21,7 @@ namespace ClientDashboard_API.ML.Helpers
             for(int i = 0; i < monthlyGroups.Count; i++)
             {
                 var currentMonth = monthlyGroups[i];
-                var nextMonth = monthlyGroups[i + 1];
+                var nextMonth = i == monthlyGroups.Count - 1 ? monthlyGroups[i] : monthlyGroups[i + 1];
 
                 // last day of the month used as a snapshot
                 var lastDayOfMonth = currentMonth.OrderByDescending(r => r.AsOfDate).First();
