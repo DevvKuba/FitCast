@@ -69,7 +69,7 @@ namespace ClientDashboard_API.Controllers
 
         [HttpPost("generateDummyData")]
         [AllowAnonymous] // Remove this if you want to keep auth
-        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 6, [FromQuery] string scenario = "realistic")
+        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 12, [FromQuery] string scenario = "realistic")
         {
             if (!environment.IsDevelopment())
             {
