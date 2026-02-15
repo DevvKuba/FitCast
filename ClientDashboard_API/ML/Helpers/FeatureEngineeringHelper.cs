@@ -18,10 +18,11 @@ namespace ClientDashboard_API.ML.Helpers
                 .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
                 .ToList();
 
-            for(int i = 0; i < monthlyGroups.Count; i++)
+            // preparing all but the latest month - since each current needs a corresponding next 
+            for(int i = 0; i < monthlyGroups.Count - 1; i++)
             {
                 var currentMonth = monthlyGroups[i];
-                var nextMonth = i == monthlyGroups.Count - 1 ? monthlyGroups[i] : monthlyGroups[i + 1];
+                var nextMonth = monthlyGroups[i + 1];
 
                 // last day of the month used as a snapshot
                 var lastDayOfMonth = currentMonth.OrderByDescending(r => r.AsOfDate).First();
