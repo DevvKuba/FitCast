@@ -99,6 +99,15 @@ namespace ClientDashboard_API.ML.Services
             var predicitions = model.Transform(trainTestSplit.TestSet);
             var metrics = _mlContext.Regression.Evaluate(predicitions, "Label", "Score");
 
+            if(double.IsNaN(metrics.RSquared) || double.IsInfinity(metrics.RSquared))
+            {
+                _logger.LogError("Invalid R² value: {RSquared}. Training data likely has no variance.", metrics.RSquared);
+                throw new InvalidOperationException(
+                    $"Model training produced invalid metrics (R²={metrics.RSquared}). " +
+                    "This usually means insufficient data or no variance in features/labels. " +
+                    "Check your training data quality.");
+            }
+
             // 8 save model to disk
             var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
             _mlContext.Model.Save(model, dataView.Schema, modelPath);
