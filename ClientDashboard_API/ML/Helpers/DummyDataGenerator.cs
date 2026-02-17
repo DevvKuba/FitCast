@@ -25,9 +25,9 @@ namespace ClientDashboard_API.ML.Helpers
             int baseActiveClients = 12;  // Starting client base
             decimal baseSessionPrice = 40.0m;  // Average session price
             int baseSessionsPerMonth = 30;  // Total monthly sessions
-            
+
             // === GROWTH TRENDS ===
-            double sessionGrowthRate = 0.05; // 5% monthly session growth
+            double sessionGrowthRate = 0;
             
             int currentMonth = currentDate.Month;
             int monthCounter = 0;
@@ -43,7 +43,16 @@ namespace ClientDashboard_API.ML.Helpers
                     // Apply monthly growth with some randomness
                     baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
                     baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
+                    sessionGrowthRate = random.NextDouble();
+
+                    var growthIndicator = random.Next(0, 2);
+                    if(growthIndicator == 0)
+                    {
+                        sessionGrowthRate= sessionGrowthRate * 1;
+                    }
+
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
+
                 }
                 
                 // === DAILY CALCULATIONS ===
