@@ -51,6 +51,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("trainRevenueModel")]
         public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> TrainRevenueModelAsync([FromQuery] int trainerId)
         {
+            // TODO mess around with different approaches 
             try
             {
                 var metrics = await trainingService.TrainModelAsync(trainerId);

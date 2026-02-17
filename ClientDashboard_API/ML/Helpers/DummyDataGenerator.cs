@@ -42,14 +42,11 @@ namespace ClientDashboard_API.ML.Helpers
                     
                     // Apply monthly growth with some randomness
                     baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
+                    baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
                 }
                 
                 // === DAILY CALCULATIONS ===
-                
-                // Active clients (minor daily fluctuations)
-                int dailyActiveClients = baseActiveClients + random.Next(-1, 2);
-                dailyActiveClients = Math.Max(1, dailyActiveClients); // Never go below 1
                 
                 // Sessions per day (varies throughout month)
                 int dayOfMonth = currentDate.Day;
@@ -62,7 +59,7 @@ namespace ClientDashboard_API.ML.Helpers
                 
                 // New clients this month (cumulative through the month)
                 int newClientsThisMonth = monthCounter > 0 
-                    ? random.Next(1, 4)  // 1-3 new clients per month
+                    ? random.Next(1, 3)  // 1-2 new clients per month
                     : 0;
                 
                 // Revenue today (sessions * price with some variance)
@@ -88,7 +85,7 @@ namespace ClientDashboard_API.ML.Helpers
                     MonthlyRevenueThusFar = Math.Round(monthlyRevenueThusFar, 2),
                     TotalSessionsThisMonth = totalSessionsThisMonth,
                     NewClientsThisMonth = newClientsThisMonth,
-                    ActiveClients = dailyActiveClients,
+                    ActiveClients = baseActiveClients,
                     AverageSessionPrice = Math.Round(baseSessionPrice, 2)
                 };
                 
