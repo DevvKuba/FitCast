@@ -70,7 +70,7 @@ namespace ClientDashboard_API.Controllers
 
         [HttpPost("generateDummyData")]
         [AllowAnonymous] // Remove this if you want to keep auth
-        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 12, [FromQuery] string scenario = "realistic")
+        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 12)
         {
             if (!environment.IsDevelopment())
             {
@@ -99,12 +99,7 @@ namespace ClientDashboard_API.Controllers
                 }
 
                 // Generate data based on scenario
-                List<TrainerDailyRevenue> dummyData = scenario.ToLower() switch
-                {
-                    "highgrowth" => DummyDataGenerator.GenerateHighGrowthScenario(trainerId, numberOfMonths),
-                    "flat" => DummyDataGenerator.GenerateFlatScenario(trainerId, numberOfMonths),
-                    _ => DummyDataGenerator.GenerateRealisticRevenueData(trainerId, numberOfMonths)
-                };
+                List<TrainerDailyRevenue> dummyData = DummyDataGenerator.GenerateRealisticRevenueData(trainerId, numberOfMonths);
 
                 // Inject into database
                 foreach (var record in dummyData)
@@ -129,7 +124,7 @@ namespace ClientDashboard_API.Controllers
                         .Average(g => g.Sum(r => r.RevenueToday)),
                     StartingActiveClients = dummyData.First().ActiveClients,
                     EndingActiveClients = dummyData.Last().ActiveClients,
-                    Scenario = scenario
+                    Scenario = "realistic"
                 };
 
                 return Ok(new ApiResponseDto<DummyDataSummaryDto>{ Data = summary, Message = $"Generated {dummyData.Count} days of dummy data for Trainer {trainerId}", Success = true });
