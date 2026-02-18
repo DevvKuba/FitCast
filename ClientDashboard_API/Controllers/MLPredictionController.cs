@@ -101,16 +101,11 @@ namespace ClientDashboard_API.Controllers
 
             try
             {
-
-                // gather the last day of each months TrainerDailyRevenueRecords 
-
-                // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-
-                // pass a dto with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
+                // RevenueDataExtenderService.. 
 
                 // gather metrics through training
                 
-                // delete all dummy extended dat - leaving only the original records
+                // delete all dummy extended data - leaving only the original records
 
                 // return metrics 
             }
