@@ -570,3 +570,14 @@ docker-compose.*.yml
 # Launch settings with environment variables
 **/Properties/launchSettings.json
 **/launchSettings.json
+
+
+#############################################################################
+# ML.NET trained models
+#############################################################################
+
+# Ignore all trained model files (can be large and change frequently)
+ML/TrainedModels/*.zip
+
+# Keep the directory structure in git
+!ML/TrainedModels/.gitkeep
