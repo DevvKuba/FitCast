@@ -88,13 +88,19 @@ namespace ClientDashboard_API.Controllers
         /// <returns>An ActionResult containing an ApiResponseDto with the model training metrics if successful; otherwise, an
         /// error response with details about the failure.</returns>
         [HttpPost("extendAndTrainRevenueModel")]
-        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> ExtendTrainerRevenueRecordsAndTrainRevenueModelAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> ExtendTrainerRevenueRecordsAndTrainRevenueModelAsync([FromQuery] int trainerId)
         {
-           try
-            {
-                // need to check if there is at least 60 records under that trainer to allow the extension
 
-                // check how many months are present if over 60
+            // need to check if there is at least 60 records under that trainer to allow the extension
+            var trainerElegible = await unitOfWork.TrainerDailyRevenueRepository.CanTrainerExtendRevenueRecordsAsync(trainerId);
+
+            if (!trainerElegible) 
+            {
+                return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = "trainer must have at least 60 active records for extension", Success = false });
+            }
+
+            try
+            {
 
                 // gather the last day of each months TrainerDailyRevenueRecords 
 
