@@ -36,6 +36,16 @@ namespace ClientDashboard_API.Data
             return latestRecord;
         }
 
+        public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsForTrainerAsync(int trainerId)
+        {
+            var lastMonthsDayRecords = await context.TrainerDailyRevenue
+                .Where(r => r.TrainerId == trainerId &&
+                r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month))
+                .OrderBy(r => r.AsOfDate)
+                .ToListAsync();
+            return lastMonthsDayRecords;
+        }
+
         public async Task ResetTrainerDailyRevenueRecords(int trainerId)
         {
             var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
@@ -54,5 +64,6 @@ namespace ClientDashboard_API.Data
             if (records.Count < 60) return false;
             return true;
         }
+
     }
 }

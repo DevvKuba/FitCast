@@ -12,6 +12,8 @@ namespace ClientDashboard_API.ML.Services
             // gather the last day of each months TrainerDailyRevenueRecords 
             var trainerDailyRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
+            var lastMonthRecords = await 
+
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
 
             //var trainerRevenueStatistics = 
