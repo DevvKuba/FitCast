@@ -2,6 +2,7 @@
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Twilio.Rest.Trunking.V1;
 
 namespace ClientDashboard_API.Data
 {
@@ -44,6 +45,14 @@ namespace ClientDashboard_API.Data
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
+        }
+
+        public async Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId)
+        {
+            var records = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
+
+            if (records.Count < 60) return false;
+            return true;
         }
     }
 }

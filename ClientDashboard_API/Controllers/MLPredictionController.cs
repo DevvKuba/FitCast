@@ -47,11 +47,18 @@ namespace ClientDashboard_API.Controllers
             }
 
         }
-
+        /// <summary>
+        /// Trains a revenue prediction model for the specified trainer using all available tracked revenue records.
+        /// </summary>
+        /// <remarks>Returns a bad request response if the specified trainer does not exist or if model
+        /// training cannot be performed due to invalid input or state.</remarks>
+        /// <param name="trainerId">The unique identifier of the trainer for whom the revenue model will be trained. Must correspond to an
+        /// existing trainer.</param>
+        /// <returns>An ActionResult containing an ApiResponseDto with the model training metrics if successful; otherwise, an
+        /// error response with details about the failure.</returns>
         [HttpPost("trainRevenueModel")]
         public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> TrainRevenueModelAsync([FromQuery] int trainerId)
         {
-            // TODO mess around with different approaches 
             try
             {
                 var metrics = await trainingService.TrainModelAsync(trainerId);
@@ -65,6 +72,45 @@ namespace ClientDashboard_API.Controllers
             catch (InvalidOperationException ex)
             {
                 return BadRequest(new ApiResponseDto<ModelMetrics>{ Data = null, Message = ex.Message, Success = false });
+            }
+        }
+
+
+        /// <summary>
+        /// Alternative approach where if at least 60 records exist for trainer, they are analysed with specific metrics being collected.
+        /// Such as baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth, 
+        /// which in turn allows for more accurate creation of further revenue records
+        /// </summary>
+        /// <remarks>Returns a bad request response if the specified trainer does not exist or if model
+        /// training cannot be performed due to invalid input or state.</remarks>
+        /// <param name="trainerId">The unique identifier of the trainer for whom the revenue model will be trained. Must correspond to an
+        /// existing trainer.</param>
+        /// <returns>An ActionResult containing an ApiResponseDto with the model training metrics if successful; otherwise, an
+        /// error response with details about the failure.</returns>
+        [HttpPost("extendAndTrainRevenueModel")]
+        public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> ExtendTrainerRevenueRecordsAndTrainRevenueModelAsync([FromQuery] int trainerId)
+        {
+           try
+            {
+                // need to check if there is at least 60 records under that trainer to allow the extension
+
+                // check how many months are present if over 60
+
+                // gather the last day of each months TrainerDailyRevenueRecords 
+
+                // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
+
+                // pass a dto with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
+
+                // gather metrics through training
+                
+                // delete all dummy extended dat - leaving only the original records
+
+                // return metrics 
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = ex.Message, Success = false });
             }
         }
 

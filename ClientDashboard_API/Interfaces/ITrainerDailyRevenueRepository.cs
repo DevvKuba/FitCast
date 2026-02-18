@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId);
 
+        Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
+
         Task ResetTrainerDailyRevenueRecords(int trainerId);
     }
 }
