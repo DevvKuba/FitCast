@@ -18,7 +18,8 @@ namespace ClientDashboard_API.Controllers
         IMLModelTrainingService trainingService,
         ILogger<MLPredictionController> logger,
         IUnitOfWork unitOfWork,
-        IWebHostEnvironment environment
+        IWebHostEnvironment environment,
+        IRevenueDataExtenderService revenueDataService
         ) : BaseAPIController
     {
         [HttpGet("predictMyRevenue")]
@@ -102,14 +103,15 @@ namespace ClientDashboard_API.Controllers
             try
             {
                 // RevenueDataExtenderService.. 
+                await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
 
                 // gather metrics through training
-                
+
                 // delete all dummy extended data - leaving only the original records
 
                 // return metrics 
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = ex.Message, Success = false });
             }

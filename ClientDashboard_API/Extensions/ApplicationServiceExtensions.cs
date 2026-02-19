@@ -53,6 +53,7 @@ namespace ClientDashboard_API.Extensions
 
             services.AddScoped<IMLModelTrainingService, TrainerRevenueMLTrainingService>();
             services.AddScoped<IMLPredictionService, TrainerRevenueMLPredictionService>();
+            services.AddScoped<IRevenueDataExtenderService, RevenueDataExtenderService>();
 
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();

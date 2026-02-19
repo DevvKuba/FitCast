@@ -18,7 +18,7 @@ namespace ClientDashboard_API.ML.Services
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
             var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords);
 
-            DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
+            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
 
             // pass the model with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
         }
