@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
 
@@ -28,6 +29,37 @@ namespace ClientDashboard_API.ML.Services
         {
             // 2
             // delete all dummy extended data - leaving only the original records
+        }
+
+        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var activeClients = Math.Round(revenueRecords.Average(r => r.ActiveClients), 0);
+
+            var sessionPricing = Math.Round(revenueRecords.Average(r => r.AverageSessionPrice), 0);
+
+            var monthlySessions = Math.Round(revenueRecords.Average(r => r.TotalSessionsThisMonth), 0);
+
+            var monthlyGrowth = CalculateSessionMonthlyGrowth(revenueRecords.Select(r => r.TotalSessionsThisMonth).ToList());
+
+            var statistics = new TrainerStatistics
+            {
+                BaseActiveClients = (int)activeClients,
+                BaseSessionsPrice = sessionPricing,
+                BaseSessionsPerMonth = (int)monthlySessions,
+                SessionMonthlyGrowth = monthlyGrowth
+            };
+            return statistics;
+        }
+
+        private double CalculateSessionMonthlyGrowth(List<int> monthlySessions)
+        {
+            var totalPercentageChanges = 0;
+
+            for(int i = 0; i < monthlySessions.Count - 1; i++)
+            {
+                totalPercentageChanges += (monthlySessions[i + 1] - monthlySessions[i]) / monthlySessions[i] * 100;
+            }
+            return totalPercentageChanges / monthlySessions.Count - 1;
         }
 
     }
