@@ -21,6 +21,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
 
-        Task ResetTrainerDailyRevenueRecords(int trainerId);
+        Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
+
+        Task DeleteExtensionRecordsUpToDateAsync(TrainerDailyRevenue firstRealRecord);
     }
 }

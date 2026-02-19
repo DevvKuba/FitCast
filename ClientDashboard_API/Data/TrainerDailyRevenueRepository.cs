@@ -64,12 +64,6 @@ namespace ClientDashboard_API.Data
             return monthlyRecords;
         }
 
-        public async Task ResetTrainerDailyRevenueRecords(int trainerId)
-        {
-            var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
-            context.RemoveRange(trainerRevenueRecords);
-        }
-
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
@@ -83,5 +77,22 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
+        public async Task ResetTrainerDailyRevenueRecordsAsync(int trainerId)
+        {
+            var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
+            context.RemoveRange(trainerRevenueRecords);
+        }
+
+        public async Task DeleteExtensionRecordsUpToDateAsync(TrainerDailyRevenue firstRealRecord)
+        {
+            var trainerRecords = await GetAllRevenueRecordsForTrainerAsync(firstRealRecord.TrainerId);
+
+            var extendedRecords = trainerRecords.Where(r => r.AsOfDate < firstRealRecord.AsOfDate).ToList();
+
+            foreach(TrainerDailyRevenue record in extendedRecords)
+            {
+                context.TrainerDailyRevenue.Remove(record);
+            }
+        }
     }
 }

@@ -142,7 +142,7 @@ namespace ClientDashboard_API.Controllers
                 {
                     logger.LogWarning("Trainer {TrainerId} already has {Count} records. These will be replaced.",
                         trainerId, existingRecords.Count);
-                    await unitOfWork.TrainerDailyRevenueRepository.ResetTrainerDailyRevenueRecords(trainerId);
+                    await unitOfWork.TrainerDailyRevenueRepository.ResetTrainerDailyRevenueRecordsAsync(trainerId);
                     await unitOfWork.Complete();
                     
                 }
