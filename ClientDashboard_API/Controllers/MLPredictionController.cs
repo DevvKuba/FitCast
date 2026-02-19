@@ -102,14 +102,27 @@ namespace ClientDashboard_API.Controllers
 
             try
             {
-                // RevenueDataExtenderService.. 
-                await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
+               var firstRecord = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
 
                 // gather metrics through training
+                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
+
+                var predictionResultData = new PredictionResultDto
+                {
+                    TrainerId = trainerId,
+                    PredictedRevenue = prediction,
+                    PredictedDate = DateTime.Now,
+                };
 
                 // delete all dummy extended data - leaving only the original records
+                await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRecord);
 
-                // return metrics 
+                if (!await unitOfWork.Complete())
+                {
+                    return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = $"Extension records were not successfully removed from trainer with id: {trainerId}", Success = false });
+                }
+
+                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}", Success = true });
             }
             catch (Exception ex)
             {

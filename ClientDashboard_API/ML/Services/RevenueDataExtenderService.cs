@@ -8,7 +8,7 @@ namespace ClientDashboard_API.ML.Services
 {
     public class RevenueDataExtenderService(IUnitOfWork unitOfWork) : IRevenueDataExtenderService
     {
-        public async Task<ExtensionRecordsTracker> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
+        public async Task<TrainerDailyRevenue> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
             var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
 
@@ -20,7 +20,7 @@ namespace ClientDashboard_API.ML.Services
 
             var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
 
-            return new ExtensionRecordsTracker { RevenueRecords = revenueRecords , ExtendedFromRecord = firstRevenueRecord!};
+            return firstRevenueRecord!;
 
         }
 
