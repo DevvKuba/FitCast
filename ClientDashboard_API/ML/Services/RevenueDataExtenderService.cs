@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
 
@@ -9,18 +10,15 @@ namespace ClientDashboard_API.ML.Services
     {
         public async Task ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
-            // 1
-            // gather the last day of each months TrainerDailyRevenueRecords 
-            var trainerDailyRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
-
             var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
 
             // a month from the first recorded trainer daily revenue record
             var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
 
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-            // if 1 just set if more than that need to calculate
-            
+            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords);
+
+            DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
 
             // pass the model with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
         }

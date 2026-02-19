@@ -12,14 +12,13 @@ namespace ClientDashboard_API.ML.Helpers
         /// </summary>
         /// <param name="trainerId">Trainer to generate data for</param>
         /// <param name="numberOfMonths">How many months of data (default: 6 months = 180 days)</param>
-        /// <param name="startDate">Starting date (default: 6 months ago)</param>
-        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths = 6, DateOnly? startDate = null)
+        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths = 6)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); // Seed with trainerId for reproducibility
             
             // Start from X months ago if not specified
-            var currentDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
+            var currentDate =DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
             
             // === BASE PARAMETERS (realistic starting values) ===
@@ -109,13 +108,13 @@ namespace ClientDashboard_API.ML.Helpers
             return records;
         }
 
-        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, int trainerId, int numberOfMonths, DateOnly? startDate = null)
+        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, int trainerId, int numberOfMonths)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); 
 
             // Start from X months ago if not specified
-            var currentDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
+            var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // === BASE PARAMETERS (realistic starting values) ===
