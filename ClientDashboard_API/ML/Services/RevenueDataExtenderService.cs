@@ -12,13 +12,16 @@ namespace ClientDashboard_API.ML.Services
             // gather the last day of each months TrainerDailyRevenueRecords 
             var trainerDailyRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
-            var lastMonthRecords = await 
+            var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
+
+            // a month from the first recorded trainer daily revenue record
+            var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
 
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
+            // if 1 just set if more than that need to calculate
+            
 
-            //var trainerRevenueStatistics = 
-
-            // pass a dto with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
+            // pass the model with those properties into the newly declared dummyExtension method that extends more records based on real, current patterns
         }
 
         public Task FilterExtensionRevenueRecordsAsync(int trainerId)

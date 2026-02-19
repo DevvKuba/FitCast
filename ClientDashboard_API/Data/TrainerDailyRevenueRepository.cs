@@ -36,7 +36,12 @@ namespace ClientDashboard_API.Data
             return latestRecord;
         }
 
-        // maybe change to checking first day and then using that as the reference of sorts ?
+        public async Task<TrainerDailyRevenue?> GetFirstRevenueRecordForTrainerAsync(int trainerId)
+        {
+            var firstRecord = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).OrderBy(r => r.AsOfDate).FirstOrDefaultAsync();
+            return firstRecord;
+        }
+
         public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsForTrainerAsync(int trainerId)
         {
             var lastMonthsDayRecords = await context.TrainerDailyRevenue
@@ -47,12 +52,11 @@ namespace ClientDashboard_API.Data
             return lastMonthsDayRecords;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsBasedOnFirstRecordAsync(int trainerId)
+        // TODO test
+        public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsBasedOnFirstRecordAsync(TrainerDailyRevenue firstRecord)
         {
-            var firstRecord = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).OrderBy(r => r.AsOfDate).FirstOrDefaultAsync();
-
             var monthlyRecords = await context.TrainerDailyRevenue
-                .Where(r => r.TrainerId == trainerId &&
+                .Where(r => r.TrainerId == firstRecord.TrainerId &&
                 r.AsOfDate.Day == firstRecord!.AsOfDate.Day &&
                 r.AsOfDate.Month != firstRecord.AsOfDate.Month)
                 .OrderBy(r => r.AsOfDate)
@@ -78,5 +82,6 @@ namespace ClientDashboard_API.Data
             if (records.Count < 60) return false;
             return true;
         }
+
     }
 }
