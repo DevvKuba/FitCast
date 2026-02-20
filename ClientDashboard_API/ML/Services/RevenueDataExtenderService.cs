@@ -52,7 +52,10 @@ namespace ClientDashboard_API.ML.Services
             {
                 totalPercentageChanges += (monthlySessions[i + 1] - monthlySessions[i]) / monthlySessions[i] * 100;
             }
-            return totalPercentageChanges / monthlySessions.Count - 1;
+            // if no variance is present, add a slight increase
+            if (totalPercentageChanges == 0) return 0.05;
+
+            return totalPercentageChanges / (monthlySessions.Count - 1);
         }
 
     }

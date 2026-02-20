@@ -45,10 +45,11 @@ namespace ClientDashboard_API.ML.Helpers
                     baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
                     sessionGrowthRate = random.NextDouble();
 
-                    var growthIndicator = random.Next(0, 2);
+                    var growthIndicator = random.Next(0, 3);
+                    // minor chance of sessionsGrowthRate decrease
                     if(growthIndicator == 0)
                     {
-                        sessionGrowthRate= sessionGrowthRate * 1;
+                        sessionGrowthRate = sessionGrowthRate * -1;
                     }
 
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
@@ -139,14 +140,12 @@ namespace ClientDashboard_API.ML.Helpers
                     // Apply monthly growth with some randomness
                     baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
                     baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
-                    sessionGrowthRate = random.NextDouble();
 
-                    var growthIndicator = random.Next(0, 2);
-
-                    // make session growth just potentially increase 
+                    var growthIndicator = random.Next(0, 3);
+                    // minor chance of sessionsGrowthRate decrease
                     if (growthIndicator == 0)
                     {
-                        sessionGrowthRate = sessionGrowthRate * 1;
+                        sessionGrowthRate = sessionGrowthRate * -1;
                     }
 
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
@@ -160,8 +159,9 @@ namespace ClientDashboard_API.ML.Helpers
 
                 // More sessions toward month-end (common pattern in fitness)
                 double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
-                double dailySessions = (int)(baseSessionsPerMonth / 30.0 * endOfMonthBoost);
-                dailySessions = Math.Max(0, dailySessions); // Can have 0 sessions on some days
+                double dailySessions = (baseSessionsPerMonth / 30.0 * endOfMonthBoost);
+                //dailySessions = Math.Max(0, dailySessions); // Can have 0 sessions on some days
+                dailySessions = Math.Round(dailySessions, 0);
 
                 // New clients this month (cumulative through the month)
                 int newClientsThisMonth = monthCounter > 0
