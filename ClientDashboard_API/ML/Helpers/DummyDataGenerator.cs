@@ -12,7 +12,7 @@ namespace ClientDashboard_API.ML.Helpers
         /// </summary>
         /// <param name="trainerId">Trainer to generate data for</param>
         /// <param name="numberOfMonths">How many months of data (default: 6 months = 180 days)</param>
-        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths = 6)
+        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); // Seed with trainerId for reproducibility
@@ -49,13 +49,15 @@ namespace ClientDashboard_API.ML.Helpers
                     // Apply monthly growth with some randomness
                     baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
                     baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
+
+                    // redeclared each month
                     sessionGrowthRate = random.NextDouble();
 
-                    var growthIndicator = random.Next(0, 3);
+                    var growthIndicator = random.Next(0, 4);
                     // minor chance of sessionsGrowthRate decrease
                     if(growthIndicator == 0)
                     {
-                        sessionGrowthRate = sessionGrowthRate * -1;
+                        sessionGrowthRate = -(0.03 + random.NextDouble() * 0.05); // -0.03 - -0.08
                     }
 
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
