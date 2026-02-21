@@ -66,11 +66,11 @@ namespace ClientDashboard_API.ML.Services
             return totalPercentageChanges / (monthlySessions.Count - 1);
         }
 
-        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> revenueRecords)
+        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
         {
             int workingDays = 0;
 
-            foreach(var record in revenueRecords)
+            foreach(var record in fullMonthRecords)
             {
                 if(record.RevenueToday > 0)
                 {
@@ -78,6 +78,14 @@ namespace ClientDashboard_API.ML.Services
                 }
             }
             return workingDays;
+        }
+
+        private int CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
+        {
+            throw new NotImplementedException();
+
+            // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
+            // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) ?
         }
 
     }

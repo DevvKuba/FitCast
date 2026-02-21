@@ -132,11 +132,12 @@ namespace ClientDashboard_API.ML.Helpers
                 
                 // Move to next day
                 currentDate = currentDate.AddDays(1);
-
             }
             
             return records;
         }
+
+
 
         public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, int trainerId, int numberOfMonths)
         {
@@ -189,6 +190,8 @@ namespace ClientDashboard_API.ML.Helpers
                 // === DAILY CALCULATIONS ===
 
                 // 1. Weekly pattern (trainers have busy/rest days)
+
+                // TODO may be able to calc
                 var dayOfWeek = currentDate.DayOfWeek;
                 double weeklyMultiplier = dayOfWeek switch
                 {
@@ -202,7 +205,7 @@ namespace ClientDashboard_API.ML.Helpers
                     _ => 1.0
                 };
 
-                double workingDaysPerMonth = 22.0;
+                double workingDaysPerMonth = trainerStatistics.MonthlyWorkingDays;
                 double targetSessionsPerWorkingDay = baseSessionsPerMonth / workingDaysPerMonth;
 
                 // Sessions per day (varies throughout month)
@@ -213,6 +216,7 @@ namespace ClientDashboard_API.ML.Helpers
                 // More sessions toward month-end (common pattern in fitness)
                 double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
 
+                // TODO may be able to calc
                 double dailyVariance = 0.7 + (random.NextDouble() * 0.6);
 
                 // accounts many daily/weekly/monthly factors in determination
@@ -256,7 +260,6 @@ namespace ClientDashboard_API.ML.Helpers
                 currentDate = currentDate.AddDays(1);
 
             }
-
             return records;
         }
 
