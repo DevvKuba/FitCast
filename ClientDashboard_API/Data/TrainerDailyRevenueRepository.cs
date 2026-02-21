@@ -64,6 +64,11 @@ namespace ClientDashboard_API.Data
             return monthlyRecords;
         }
 
+        public Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);

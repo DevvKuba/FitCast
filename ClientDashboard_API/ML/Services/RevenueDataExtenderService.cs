@@ -11,9 +11,12 @@ namespace ClientDashboard_API.ML.Services
         public async Task<TrainerDailyRevenue> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
             var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
+            var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
             // a month from the first recorded trainer daily revenue record
             var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
+
+            var monthlyWorkingDays = CalculateMonthlyWorkingDays(allRevenueRecords);
 
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
             var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords);
@@ -56,6 +59,17 @@ namespace ClientDashboard_API.ML.Services
             if (totalPercentageChanges == 0) return 0.05;
 
             return totalPercentageChanges / (monthlySessions.Count - 1);
+        }
+
+        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> revenueRecords)
+        {
+            for (int i = 0; i < revenueRecords.Count - 1; i++)
+            {
+                // from the two months of data - gather a full months of records from 1st - 30th
+                // gather the amount of records where the revenue today is 0.00
+                // subtract from total days in the month
+                // return 
+            }
         }
 
     }

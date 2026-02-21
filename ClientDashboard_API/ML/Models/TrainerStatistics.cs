@@ -11,5 +11,7 @@
 
         // computed 
         public double SessionMonthlyGrowth { get; set; }
+
+        public int MonthlyWorkingDays { get; set; }
     }
 }
