@@ -64,9 +64,16 @@ namespace ClientDashboard_API.Data
             return monthlyRecords;
         }
 
-        public Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords)
+        public async Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords)
         {
-            throw new NotImplementedException();
+            // get next month of records
+            var firstRecord = await GetFirstRevenueRecordForTrainerAsync(revenueRecords.FirstOrDefault()!.TrainerId);
+
+            var firstDayOfNewMonth = new DateOnly(firstRecord!.AsOfDate.AddMonths(1).Year, firstRecord.AsOfDate.AddMonths(1).Month, 1);
+            var lastDayOfNewMonth = new DateOnly(firstRecord!.AsOfDate.AddMonths(1).Year, firstRecord.AsOfDate.AddMonths(2).Month, 1).AddDays(-1);
+
+            var firstNewMonthRecords = await context.TrainerDailyRevenue.Where(r => r.AsOfDate >= firstDayOfNewMonth && r.AsOfDate <= lastDayOfNewMonth).ToListAsync();
+            return firstNewMonthRecords;
         }
 
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
