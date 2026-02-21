@@ -13,13 +13,15 @@ namespace ClientDashboard_API.ML.Services
             var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
             var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
+            var firstNewMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetFirstFullMonthOfRevenueRecordsAsync(allRevenueRecords);
+
+            var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
+
             // a month from the first recorded trainer daily revenue record
             var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
 
-            var monthlyWorkingDays = CalculateMonthlyWorkingDays(allRevenueRecords);
-
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords);
+            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays);
 
             var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
 
@@ -27,7 +29,7 @@ namespace ClientDashboard_API.ML.Services
 
         }
 
-        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords)
+        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords, int workingDays)
         {
             var activeClients = Math.Round(revenueRecords.Average(r => r.ActiveClients), 0);
 
@@ -37,12 +39,15 @@ namespace ClientDashboard_API.ML.Services
 
             var monthlyGrowth = CalculateSessionMonthlyGrowth(revenueRecords.Select(r => r.TotalSessionsThisMonth).ToList());
 
+            var monthlyWorkingDays = workingDays;
+
             var statistics = new TrainerStatistics
             {
                 BaseActiveClients = (int)activeClients,
                 BaseSessionsPrice = sessionPricing,
                 BaseSessionsPerMonth = (int)monthlySessions,
-                SessionMonthlyGrowth = monthlyGrowth
+                SessionMonthlyGrowth = monthlyGrowth,
+                MonthlyWorkingDays = monthlyWorkingDays
             };
             return statistics;
         }
@@ -63,13 +68,16 @@ namespace ClientDashboard_API.ML.Services
 
         private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> revenueRecords)
         {
-            for (int i = 0; i < revenueRecords.Count - 1; i++)
+            int workingDays = 0;
+
+            foreach(var record in revenueRecords)
             {
-                // from the two months of data - gather a full months of records from 1st - 30th
-                // gather the amount of records where the revenue today is 0.00
-                // subtract from total days in the month
-                // return 
+                if(record.RevenueToday > 0)
+                {
+                    workingDays++;
+                }
             }
+            return workingDays;
         }
 
     }
