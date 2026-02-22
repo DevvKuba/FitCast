@@ -80,47 +80,33 @@ namespace ClientDashboard_API.ML.Services
             return workingDays;
         }
 
-        private int CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
+        private Dictionary<DayOfWeek, double> CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
         {
-            // weekday :  (number of occurances : totalSessionsValue)
-            Dictionary<int, (double, double)> weekdayDict = new Dictionary<int, (double, double)>
-            {
-                { 0, (0,0) }, // sun
-                { 1, (0,0) }, // mon
-                { 2, (0,0) }, // tues
-                { 3, (0,0) }, // wed
-                { 4, (0,0) }, // thu
-                { 5, (0,0) }, // fri
-                { 6, (0,0) }, // sat
-
-            };
-
             double averageSessions = CalculateAverageDailySessions(allrevenueRecords);
-            decimal averageTrainerSessionPrice = allrevenueRecords.FirstOrDefault()!.AverageSessionPrice;
+
+            decimal averageSessionPrice = allrevenueRecords.FirstOrDefault()!.AverageSessionPrice;
 
 
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
-            foreach (var record in allrevenueRecords)
+            var weekdayAverages = allrevenueRecords
+                .GroupBy(r => r.AsOfDate.DayOfWeek)
+                .ToDictionary(
+                g => g.Key,
+                g => g.Average(r => (double)(r.RevenueToday / averageSessionPrice))
+                );
+
+            // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
+            var multipliers = new Dictionary<DayOfWeek, double>();
+            
+            foreach(var day in weekdayAverages)
             {
-                var dayOfTheWeek = (int)record.AsOfDate.DayOfWeek;
-                double occurances;
-                double totalSessions;
-
-                switch (dayOfTheWeek)
-                {
-                    case 0:
-                        occurances = weekdayDict[0].Item2;
-                        totalSessions = weekdayDict[0].Item2;
-
-                        weekdayDict[0] = (occurances++, totalSessions += (double)(record.RevenueToday / averageTrainerSessionPrice));
-                        break;
-                }
-
+                multipliers[day.Key] = day.Value / averageSessions;
             }
-            // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) ?
+
+            return multipliers;
         }
 
-        public double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
+        private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.FirstOrDefault()!.Trainer.AverageSessionPrice;
             if (allSessions is null) return 0;
