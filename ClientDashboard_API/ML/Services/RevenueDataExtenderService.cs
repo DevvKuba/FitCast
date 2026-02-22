@@ -82,10 +82,20 @@ namespace ClientDashboard_API.ML.Services
 
         private int CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
         {
-            throw new NotImplementedException();
+            int mon = 0, tues = 0, wed = 0, thu = 0, fri = 0, sat = 0, sun = 0;
+
+            double averageSessions = 0;
 
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
             // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) ?
+        }
+
+        public double CalculateAverageDailySessionsAsync(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.FirstOrDefault()!.Trainer.AverageSessionPrice;
+            if (allSessions is null) return 0;
+
+            return (double)allSessions / revenueRecords.Count;
         }
 
     }
