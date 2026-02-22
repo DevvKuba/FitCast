@@ -50,6 +50,8 @@ namespace ClientDashboard_API.ML.Helpers
 
                     newClientsThisMonth = baseActiveClients - previousBaseClients;
 
+                    baseSessionsPerMonth += newClientsThisMonth;
+
                     // redeclared each month
                     sessionGrowthRate = random.NextDouble();
 
