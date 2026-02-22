@@ -65,7 +65,6 @@ namespace ClientDashboard_API.ML.Helpers
                 }
 
                 // === DAILY CALCULATIONS ===
-
                 // 1. Weekly pattern (trainers have busy/rest days)
                 var dayOfWeek = currentDate.DayOfWeek;
                 double weeklyMultiplier = dayOfWeek switch
@@ -186,7 +185,6 @@ namespace ClientDashboard_API.ML.Helpers
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
 
                 }
-
                 // === DAILY CALCULATIONS ===
 
                 // 1. Weekly pattern (trainers have busy/rest days)
@@ -216,13 +214,9 @@ namespace ClientDashboard_API.ML.Helpers
                 // More sessions toward month-end (common pattern in fitness)
                 double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
 
-                // TODO may be able to calc
-                double dailyVariance = 0.7 + (random.NextDouble() * 0.6);
-
                 // accounts many daily/weekly/monthly factors in determination
                 double dailySessions = targetSessionsPerWorkingDay
                     * endOfMonthBoost
-                    * dailyVariance
                     * weeklyMultiplier;
 
                 dailySessions = Math.Max(0, Math.Round(dailySessions, 0));
