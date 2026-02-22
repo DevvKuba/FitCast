@@ -159,7 +159,7 @@ namespace ClientDashboard_API.ML.Helpers
             int baseSessionsPerMonth = trainerStatistics.BaseSessionsPerMonth;  
 
             // === GROWTH TRENDS ===
-            double sessionGrowthRate = trainerStatistics.SessionMonthlyGrowth;
+            
 
             int currentMonth = currentDate.Month;
             int monthCounter = 0;
@@ -167,6 +167,8 @@ namespace ClientDashboard_API.ML.Helpers
 
             while (currentDate <= endDate)
             {
+                // TODO make sure logic works
+
                 // === DETECT MONTH CHANGE (apply growth) ===
                 if (currentDate.Month != currentMonth)
                 {
@@ -181,14 +183,8 @@ namespace ClientDashboard_API.ML.Helpers
 
                     newClientsThisMonth = baseActiveClients - previousBaseClients;
 
-                    var growthIndicator = random.Next(0, 3);
-                    // minor chance of sessionsGrowthRate decrease
-                    if (growthIndicator == 0)
-                    {
-                        sessionGrowthRate = sessionGrowthRate * -1;
-                    }
 
-                    baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
+                    //baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
 
                 }
                 // === DAILY CALCULATIONS ===

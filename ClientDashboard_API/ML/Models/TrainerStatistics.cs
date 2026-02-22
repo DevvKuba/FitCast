@@ -10,7 +10,10 @@
         public int BaseSessionsPerMonth { get; set; }
 
         // computed 
-        public double SessionMonthlyGrowth { get; set; }
+
+        public int MyProperty { get; set; }
+
+        public int MyProperty1 { get; set; }
 
         public int MonthlyWorkingDays { get; set; }
     }

@@ -3,6 +3,7 @@ using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
+using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.ML.Services
 {
@@ -26,13 +27,16 @@ namespace ClientDashboard_API.ML.Services
             var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
 
             // if there is at least 3 month of data
-            // - calculate churn rate & acqusition rate - rather than looking at totalActiveClients at the end of the month
-            // else use historical standards
-
+            if(allRevenueRecords.Count > 90)
+            {
+                // - calculate churn rate & acqusition rate - rather than looking at totalActiveClients at the end of the month
+            }
+            else
+            {
+                var historicalRevenuePatters = new MonthlyRevenuePatterns { acquisitionRate = 10, churnRate = 0.5 };
+            }
 
             // -48 in order to ensure exact 48 months output
-            // null = MonthlyRevenuePatterns
-
             var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, null, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
 
             return firstRevenueRecord!;
@@ -47,8 +51,6 @@ namespace ClientDashboard_API.ML.Services
 
             var monthlySessions = Math.Round(revenueRecords.Average(r => r.TotalSessionsThisMonth), 0);
 
-            var monthlyGrowth = CalculateSessionMonthlyGrowth(revenueRecords.Select(r => r.TotalSessionsThisMonth).ToList());
-
             var monthlyWorkingDays = workingDays;
 
             var statistics = new TrainerStatistics
@@ -56,13 +58,13 @@ namespace ClientDashboard_API.ML.Services
                 BaseActiveClients = (int)activeClients,
                 BaseSessionsPrice = sessionPricing,
                 BaseSessionsPerMonth = (int)monthlySessions,
-                SessionMonthlyGrowth = monthlyGrowth,
                 MonthlyWorkingDays = monthlyWorkingDays
             };
             return statistics;
         }
 
-        private double CalculateSessionMonthlyGrowth(List<int> monthlySessions)
+        // TODO refactor logic
+        private double CalculateSessionMonthlyAcquisitionRate(List<int> monthlySessions)
         {
             var totalPercentageChanges = 0;
 
@@ -74,6 +76,12 @@ namespace ClientDashboard_API.ML.Services
             if (totalPercentageChanges == 0) return 0.05;
 
             return totalPercentageChanges / (monthlySessions.Count - 1);
+        }
+
+        // TODO complete logic
+        private double CalculateSessionMonthlyChurnRate()
+        {
+            throw new NotImplementedException();
         }
 
         private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
