@@ -139,7 +139,7 @@ namespace ClientDashboard_API.ML.Helpers
 
 
 
-        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, int trainerId, int numberOfMonths)
+        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, Dictionary<DayOfWeek, double> multipliers, int trainerId, int numberOfMonths)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); 
@@ -195,13 +195,13 @@ namespace ClientDashboard_API.ML.Helpers
                 var dayOfWeek = currentDate.DayOfWeek;
                 double weeklyMultiplier = dayOfWeek switch
                 {
-                    DayOfWeek.Sunday => 0.4,       // Light sessions or rest
-                    DayOfWeek.Monday => 1.5,       // Busy start of week
-                    DayOfWeek.Tuesday => 1.3,      // Still busy
-                    DayOfWeek.Wednesday => 1.2,    // Mid-week
-                    DayOfWeek.Thursday => 1.4,     // Pre-weekend push
-                    DayOfWeek.Friday => 1.0,       // Lighter day
-                    DayOfWeek.Saturday => 0.4,     // Light sessions or rest
+                    DayOfWeek.Sunday => multipliers[DayOfWeek.Sunday],       
+                    DayOfWeek.Monday => multipliers[DayOfWeek.Monday],       
+                    DayOfWeek.Tuesday => multipliers[DayOfWeek.Tuesday],      
+                    DayOfWeek.Wednesday => multipliers[DayOfWeek.Wednesday],    
+                    DayOfWeek.Thursday => multipliers[DayOfWeek.Thursday],     
+                    DayOfWeek.Friday => multipliers[DayOfWeek.Friday],      
+                    DayOfWeek.Saturday => multipliers[DayOfWeek.Saturday],    
                     _ => 1.0
                 };
 

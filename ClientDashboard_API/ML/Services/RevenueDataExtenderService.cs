@@ -15,21 +15,24 @@ namespace ClientDashboard_API.ML.Services
 
             var firstNewMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetFirstFullMonthOfRevenueRecordsAsync(allRevenueRecords);
 
-            var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
-
             // a month from the first recorded trainer daily revenue record
             var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
+
+            var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
 
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
             var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays);
 
-            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, trainerId, 48 - monthlyRecords.Count);
+            var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
+
+            // -48 in order to ensure full 48 months including curret ones are present, as a sufficient pool of data
+            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
 
             return firstRevenueRecord!;
 
         }
 
-        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords, int workingDays)
+        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords ,int workingDays)
         {
             var activeClients = Math.Round(revenueRecords.Average(r => r.ActiveClients), 0);
 
