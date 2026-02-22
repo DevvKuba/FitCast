@@ -139,8 +139,12 @@ namespace ClientDashboard_API.ML.Helpers
         }
 
 
-
-        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(TrainerStatistics trainerStatistics, Dictionary<DayOfWeek, double> multipliers, int trainerId, int numberOfMonths)
+        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(
+            TrainerStatistics trainerStatistics,
+            MonthlyRevenuePatterns monthlyRevenuePatterns,
+            Dictionary<DayOfWeek, double> multipliers,
+            int trainerId,
+            int numberOfMonths)
         {
             var records = new List<TrainerDailyRevenue>();
             var random = new Random(trainerId); 

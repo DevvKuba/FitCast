@@ -25,8 +25,15 @@ namespace ClientDashboard_API.ML.Services
 
             var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
 
-            // -48 in order to ensure full 48 months including curret ones are present, as a sufficient pool of data
-            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
+            // if there is at least 3 month of data
+            // - calculate churn rate & acqusition rate - rather than looking at totalActiveClients at the end of the month
+            // else use historical standards
+
+
+            // -48 in order to ensure exact 48 months output
+            // null = MonthlyRevenuePatterns
+
+            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, null, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
 
             return firstRevenueRecord!;
 
