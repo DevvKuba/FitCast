@@ -63,26 +63,59 @@ namespace ClientDashboard_API.ML.Services
             return statistics;
         }
 
-        // TODO refactor logic
-        private double CalculateSessionMonthlyAcquisitionRate(List<int> monthlySessions)
+        // all revenue records
+        private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> revenueRecords)
         {
-            var totalPercentageChanges = 0;
+            var recordStartDay = revenueRecords.FirstOrDefault()!.AsOfDate.Day;
+            var recordStartMonth = revenueRecords.FirstOrDefault()!.AsOfDate.Month;
 
-            for(int i = 0; i < monthlySessions.Count - 1; i++)
+            var startingMonthActiveClients = revenueRecords.FirstOrDefault()!.ActiveClients;
+            var monthsAccountedFor = 0;
+            
+            double churnCount = 0;
+            double acquisitionCount = 0;
+
+            double churnRate = 0;
+            double acquisitionRate = 0;
+
+
+            for(int i = 0; i < revenueRecords.Count - 1; i++)
             {
-                totalPercentageChanges += (monthlySessions[i + 1] - monthlySessions[i]) / monthlySessions[i] * 100;
-            }
-            // if no variance is present, add a slight increase
-            if (totalPercentageChanges == 0) return 0.05;
+                // indicates that we've iterating through a whole months records
+                // can calculate the churn & acquisition rates and reset counts
+                if (revenueRecords[i].AsOfDate.Day == recordStartDay && revenueRecords[i].AsOfDate.Month != recordStartMonth)
+                {
+                    acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
+                    churnRate += (churnCount / startingMonthActiveClients) * 100;
+                    monthsAccountedFor++;
 
-            return totalPercentageChanges / (monthlySessions.Count - 1);
+                    acquisitionCount = 0;
+                    churnCount = 0;
+                }
+                else
+                {
+                    if (revenueRecords[i + 1].ActiveClients > revenueRecords[i].ActiveClients)
+                    {
+                        acquisitionCount++;
+                    }
+                    else if (revenueRecords[i + 1].ActiveClients < revenueRecords[i].ActiveClients)
+                    {
+                        churnCount++;
+                    }
+                }
+            }
+
+            acquisitionRate = acquisitionRate / monthsAccountedFor;
+            churnRate = churnRate / monthsAccountedFor;
+
+            return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
         }
 
         // TODO complete logic
-        private double CalculateSessionMonthlyChurnRate()
-        {
-            throw new NotImplementedException();
-        }
+        //private double CalculateSessionMonthlyChurnRate()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
         {
