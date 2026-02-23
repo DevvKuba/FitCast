@@ -138,7 +138,6 @@ namespace ClientDashboard_API.ML.Helpers
             return records;
         }
 
-
         public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(
             TrainerStatistics trainerStatistics,
             MonthlyRevenuePatterns monthlyRevenuePatterns,
