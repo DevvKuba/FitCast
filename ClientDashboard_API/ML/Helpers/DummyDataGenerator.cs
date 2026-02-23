@@ -24,7 +24,7 @@ namespace ClientDashboard_API.ML.Helpers
             // === BASE PARAMETERS (realistic starting values) ===
             int baseActiveClients = 12;  // Starting client base
             decimal baseSessionPrice = 40.0m;  // Average session price
-            int baseSessionsPerMonth = 30;  // Total monthly sessions
+            int baseSessionsPerMonth = 72;  // Total monthly sessions, middle park betweek 1/2 weekly sessions per client
 
             // === GROWTH TRENDS ===
             double sessionGrowthRate = 0;
@@ -154,12 +154,13 @@ namespace ClientDashboard_API.ML.Helpers
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // === BASE PARAMETERS (realistic starting values) ===
-            int baseActiveClients = trainerStatistics.BaseActiveClients;  
-            decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice; 
-            int baseSessionsPerMonth = trainerStatistics.BaseSessionsPerMonth;  
+            int baseActiveClients = trainerStatistics.BaseActiveClients;
+            double acquiredClients = 0;
+            double churnedClients = 0;
 
-            // === GROWTH TRENDS ===
-            
+            decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice; 
+            int baseSessionsPerMonth = trainerStatistics.BaseSessionsPerMonth;
+            // TODO baseSessionsPerMonth = baseActiveClients * averageClientMonthlySessions
 
             int currentMonth = currentDate.Month;
             int monthCounter = 0;
@@ -167,8 +168,6 @@ namespace ClientDashboard_API.ML.Helpers
 
             while (currentDate <= endDate)
             {
-                // TODO make sure logic works
-
                 // === DETECT MONTH CHANGE (apply growth) ===
                 if (currentDate.Month != currentMonth)
                 {
@@ -176,22 +175,20 @@ namespace ClientDashboard_API.ML.Helpers
                     monthCounter++;
 
                     var previousBaseClients = baseActiveClients;
+                    var randomMultiplier = random.Next(7, 13) / 10;
 
                     // Apply monthly growth with some randomness
-                    baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
-                    baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
+                    acquiredClients = Math.Round(previousBaseClients * monthlyRevenuePatterns.acquisitionRate * randomMultiplier, 0);
+                    churnedClients = Math.Round(previousBaseClients * monthlyRevenuePatterns.churnRate * randomMultiplier, 0);
 
+                    baseActiveClients = previousBaseClients - (int)churnedClients + (int)acquiredClients;
+                    // TODO calculate new baseSessionsPerMonth here using the baseActiveClients
                     newClientsThisMonth = baseActiveClients - previousBaseClients;
-
-
-                    //baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));
-
                 }
                 // === DAILY CALCULATIONS ===
 
                 // 1. Weekly pattern (trainers have busy/rest days)
 
-                // TODO may be able to calc
                 var dayOfWeek = currentDate.DayOfWeek;
                 double weeklyMultiplier = dayOfWeek switch
                 {

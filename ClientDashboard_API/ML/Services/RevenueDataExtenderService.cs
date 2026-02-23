@@ -24,6 +24,8 @@ namespace ClientDashboard_API.ML.Services
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
             var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays);
 
+            var monthlyRevenuePatterns = CalculateMonthlyClientChangeRates(allRevenueRecords);
+
             var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
 
             // if there is at least 3 month of data
@@ -37,7 +39,7 @@ namespace ClientDashboard_API.ML.Services
             }
 
             // -48 in order to ensure exact 48 months output
-            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, null, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
+            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, monthlyRevenuePatterns, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
 
             return firstRevenueRecord!;
 
@@ -63,14 +65,13 @@ namespace ClientDashboard_API.ML.Services
             return statistics;
         }
 
-        // all revenue records
-        private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> revenueRecords)
+        private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var recordStartDay = revenueRecords.FirstOrDefault()!.AsOfDate.Day;
-            var recordStartMonth = revenueRecords.FirstOrDefault()!.AsOfDate.Month;
+            var recordStartDay = allRevenueRecords.FirstOrDefault()!.AsOfDate.Day;
+            var recordStartMonth = allRevenueRecords.FirstOrDefault()!.AsOfDate.Month;
 
-            var startingMonthActiveClients = revenueRecords.FirstOrDefault()!.ActiveClients;
-            var monthsAccountedFor = 0;
+            var startingMonthActiveClients = allRevenueRecords.FirstOrDefault()!.ActiveClients;
+            var monthlyPairsAccountedFor = 0;
             
             double churnCount = 0;
             double acquisitionCount = 0;
@@ -79,43 +80,37 @@ namespace ClientDashboard_API.ML.Services
             double acquisitionRate = 0;
 
 
-            for(int i = 0; i < revenueRecords.Count - 1; i++)
+            for(int i = 0; i < allRevenueRecords.Count - 1; i++)
             {
                 // indicates that we've iterating through a whole months records
                 // can calculate the churn & acquisition rates and reset counts
-                if (revenueRecords[i].AsOfDate.Day == recordStartDay && revenueRecords[i].AsOfDate.Month != recordStartMonth)
+                if (allRevenueRecords[i].AsOfDate.Day == recordStartDay && allRevenueRecords[i].AsOfDate.Month != recordStartMonth)
                 {
                     acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
                     churnRate += (churnCount / startingMonthActiveClients) * 100;
-                    monthsAccountedFor++;
+                    monthlyPairsAccountedFor++;
 
                     acquisitionCount = 0;
                     churnCount = 0;
                 }
                 else
                 {
-                    if (revenueRecords[i + 1].ActiveClients > revenueRecords[i].ActiveClients)
+                    if (allRevenueRecords[i + 1].ActiveClients > allRevenueRecords[i].ActiveClients)
                     {
                         acquisitionCount++;
                     }
-                    else if (revenueRecords[i + 1].ActiveClients < revenueRecords[i].ActiveClients)
+                    else if (allRevenueRecords[i + 1].ActiveClients < allRevenueRecords[i].ActiveClients)
                     {
                         churnCount++;
                     }
                 }
             }
 
-            acquisitionRate = acquisitionRate / monthsAccountedFor;
-            churnRate = churnRate / monthsAccountedFor;
+            acquisitionRate = acquisitionRate / monthlyPairsAccountedFor;
+            churnRate = churnRate / monthlyPairsAccountedFor;
 
             return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
         }
-
-        // TODO complete logic
-        //private double CalculateSessionMonthlyChurnRate()
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
         {
@@ -165,5 +160,27 @@ namespace ClientDashboard_API.ML.Services
             return (double)allSessions / revenueRecords.Count;
         }
 
+        private int CalculateAverageClientMonthlySessions(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            // for all records look at the end of the month to gather the number of totalSessions
+            double averageMonthlySessions = 0;
+            var monthlyPairsAccountedFor = 0;
+
+            foreach(var record in allRevenueRecords)
+            {
+                var lastMonthsDate = new DateTime(record.AsOfDate.Year, record.AsOfDate.Month, 1).AddMonths(1).AddDays(-1);
+
+                if(record.AsOfDate.Day == lastMonthsDate.Day)
+                {
+                    var totalMonthlyClientSessions = record.TotalSessionsThisMonth;
+                    var totalActiveClients = record.ActiveClients;
+
+                    averageMonthlySessions += totalMonthlyClientSessions / totalActiveClients;
+                    monthlyPairsAccountedFor++;
+                }
+            }
+
+            return (int)Math.Round(averageMonthlySessions / monthlyPairsAccountedFor, 0);
+        }
     }
 }
