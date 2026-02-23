@@ -114,16 +114,8 @@ namespace ClientDashboard_API.ML.Services
 
         private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
         {
-            int workingDays = 0;
-
-            foreach(var record in fullMonthRecords)
-            {
-                if(record.RevenueToday > 0)
-                {
-                    workingDays++;
-                }
-            }
-            return workingDays;
+            var workingDays = fullMonthRecords.Where(r => r.RevenueToday > 0).ToList();
+            return workingDays.Count;
         }
 
         private Dictionary<DayOfWeek, double> CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
