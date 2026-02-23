@@ -11,6 +11,8 @@ namespace ClientDashboard_API.ML.Services
     {
         public async Task<TrainerDailyRevenue> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
+            MonthlyRevenuePatterns monthlyRevenuePatterns;
+
             var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
             var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
@@ -26,18 +28,16 @@ namespace ClientDashboard_API.ML.Services
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
             var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays, averageMonthlySessionsPerClient);
 
-            var monthlyRevenuePatterns = CalculateMonthlyClientChangeRates(allRevenueRecords);
 
             var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
 
-            // if there is at least 3 month of data
             if(allRevenueRecords.Count > 90)
             {
-                // - calculate churn rate & acqusition rate - rather than looking at totalActiveClients at the end of the month
+                monthlyRevenuePatterns = CalculateMonthlyClientChangeRates(allRevenueRecords);
             }
             else
             {
-                var historicalRevenuePatters = new MonthlyRevenuePatterns { acquisitionRate = 10, churnRate = 0.5 };
+                monthlyRevenuePatterns = new MonthlyRevenuePatterns { acquisitionRate = 10, churnRate = 0.5 };
             }
 
             // -48 in order to ensure exact 48 months output
