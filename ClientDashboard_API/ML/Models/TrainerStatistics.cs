@@ -7,13 +7,9 @@
 
         public decimal BaseSessionsPrice { get; set; }
 
-        public int BaseSessionsPerMonth { get; set; }
-
         // computed 
 
-        public int MyProperty { get; set; }
-
-        public int MyProperty1 { get; set; }
+        public int AverageClientMonthlySessions { get; set; }
 
         public int MonthlyWorkingDays { get; set; }
     }

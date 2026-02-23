@@ -158,9 +158,10 @@ namespace ClientDashboard_API.ML.Helpers
             double acquiredClients = 0;
             double churnedClients = 0;
 
-            decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice; 
-            int baseSessionsPerMonth = trainerStatistics.BaseSessionsPerMonth;
-            // TODO baseSessionsPerMonth = baseActiveClients * averageClientMonthlySessions
+            decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice;
+            int averageMonthlySessionsPerClient = trainerStatistics.AverageClientMonthlySessions;
+
+            int baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
 
             int currentMonth = currentDate.Month;
             int monthCounter = 0;
@@ -182,7 +183,8 @@ namespace ClientDashboard_API.ML.Helpers
                     churnedClients = Math.Round(previousBaseClients * monthlyRevenuePatterns.churnRate * randomMultiplier, 0);
 
                     baseActiveClients = previousBaseClients - (int)churnedClients + (int)acquiredClients;
-                    // TODO calculate new baseSessionsPerMonth here using the baseActiveClients
+                    baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
+
                     newClientsThisMonth = baseActiveClients - previousBaseClients;
                 }
                 // === DAILY CALCULATIONS ===

@@ -21,8 +21,10 @@ namespace ClientDashboard_API.ML.Services
 
             var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
 
+            var averageMonthlySessionsPerClient = CalculateAverageClientMonthlySessions(allRevenueRecords); 
+
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays);
+            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays, averageMonthlySessionsPerClient);
 
             var monthlyRevenuePatterns = CalculateMonthlyClientChangeRates(allRevenueRecords);
 
@@ -45,13 +47,11 @@ namespace ClientDashboard_API.ML.Services
 
         }
 
-        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords ,int workingDays)
+        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
             var activeClients = Math.Round(revenueRecords.Average(r => r.ActiveClients), 0);
 
             var sessionPricing = Math.Round(revenueRecords.Average(r => r.AverageSessionPrice), 0);
-
-            var monthlySessions = Math.Round(revenueRecords.Average(r => r.TotalSessionsThisMonth), 0);
 
             var monthlyWorkingDays = workingDays;
 
@@ -59,7 +59,7 @@ namespace ClientDashboard_API.ML.Services
             {
                 BaseActiveClients = (int)activeClients,
                 BaseSessionsPrice = sessionPricing,
-                BaseSessionsPerMonth = (int)monthlySessions,
+                AverageClientMonthlySessions = averageMonthlySessionsPerClient,
                 MonthlyWorkingDays = monthlyWorkingDays
             };
             return statistics;
