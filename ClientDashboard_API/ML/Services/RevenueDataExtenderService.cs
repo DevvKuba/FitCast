@@ -131,7 +131,8 @@ namespace ClientDashboard_API.ML.Services
                 }
                 if(record.AsOfDate.Day == firstRecord.AsOfDate.Day && record.AsOfDate.Month != firstRecord.AsOfDate.Month)
                 {
-                    var daysInbetween = (int)(DateTime.Parse(record.AsOfDate.ToString()) - DateTime.Parse(record.AsOfDate.ToString())).TotalDays;
+                    var previousMonth = record.AsOfDate.AddMonths(-1);
+                    var daysInbetween = (int)(DateTime.Parse(record.AsOfDate.ToString()) - DateTime.Parse(previousMonth.ToString())).TotalDays;
 
                     monthlyWorkingDays += daysInbetween - nonWorkingDays;
 
