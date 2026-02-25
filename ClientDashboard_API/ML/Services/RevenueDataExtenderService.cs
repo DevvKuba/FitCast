@@ -67,10 +67,10 @@ namespace ClientDashboard_API.ML.Services
 
         private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var recordStartDay = allRevenueRecords.FirstOrDefault()!.AsOfDate.Day;
-            var recordStartMonth = allRevenueRecords.FirstOrDefault()!.AsOfDate.Month;
+            var recordStartDay = allRevenueRecords.First().AsOfDate.Day;
+            var recordStartMonth = allRevenueRecords.First().AsOfDate.Month;
 
-            var startingMonthActiveClients = allRevenueRecords.FirstOrDefault()!.ActiveClients;
+            var startingMonthActiveClients = allRevenueRecords.First().ActiveClients;
             var monthlyPairsAccountedFor = 0;
             
             double churnCount = 0;
@@ -122,7 +122,7 @@ namespace ClientDashboard_API.ML.Services
         {
             double averageSessions = CalculateAverageDailySessions(allrevenueRecords);
 
-            decimal averageSessionPrice = allrevenueRecords.FirstOrDefault()!.AverageSessionPrice;
+            decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
 
 
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
@@ -146,7 +146,7 @@ namespace ClientDashboard_API.ML.Services
 
         private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
-            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.FirstOrDefault()!.Trainer.AverageSessionPrice;
+            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().Trainer.AverageSessionPrice;
             if (allSessions is null) return 0;
 
             return (double)allSessions / revenueRecords.Count;
@@ -154,15 +154,16 @@ namespace ClientDashboard_API.ML.Services
 
         private int CalculateAverageClientMonthlySessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            // for all records look at the end of the month to gather the number of totalSessions
             double averageMonthlySessions = 0;
             var monthlyPairsAccountedFor = 0;
 
+            var firstRevenueRecord = allRevenueRecords.First();
+
             foreach(var record in allRevenueRecords)
             {
-                var lastMonthsDate = new DateTime(record.AsOfDate.Year, record.AsOfDate.Month, 1).AddMonths(1).AddDays(-1);
+                //var lastMonthsDate = new DateTime(record.AsOfDate.Year, record.AsOfDate.Month, 1).AddMonths(1).AddDays(-1);
 
-                if(record.AsOfDate.Day == lastMonthsDate.Day)
+                if(record.AsOfDate.Day == firstRevenueRecord.AsOfDate.Day && record.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month)
                 {
                     var totalMonthlyClientSessions = record.TotalSessionsThisMonth;
                     var totalActiveClients = record.ActiveClients;
