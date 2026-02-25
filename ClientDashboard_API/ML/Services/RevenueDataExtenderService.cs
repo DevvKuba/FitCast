@@ -96,6 +96,7 @@ namespace ClientDashboard_API.ML.Services
                 }
                 else
                 {
+                    // compares if the next record's active clients have increased / decreased comapred to the current records
                     if (allRevenueRecords[i + 1].ActiveClients > allRevenueRecords[i].ActiveClients)
                     {
                         acquisitionCount++;
@@ -150,7 +151,6 @@ namespace ClientDashboard_API.ML.Services
 
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
 
-
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
             var weekdayAverages = allrevenueRecords
                 .GroupBy(r => r.AsOfDate.DayOfWeek)
@@ -172,8 +172,8 @@ namespace ClientDashboard_API.ML.Services
 
         private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
-            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().Trainer.AverageSessionPrice;
-            if (allSessions is null) return 0;
+            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
+            if (allSessions == 0) return 0;
 
             return (double)allSessions / revenueRecords.Count;
         }
