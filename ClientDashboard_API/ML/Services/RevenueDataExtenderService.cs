@@ -99,11 +99,11 @@ namespace ClientDashboard_API.ML.Services
                     // compares if the next record's active clients have increased / decreased comapred to the current records
                     if (allRevenueRecords[i + 1].ActiveClients > allRevenueRecords[i].ActiveClients)
                     {
-                        acquisitionCount++;
+                        acquisitionCount += allRevenueRecords[i + 1].ActiveClients - allRevenueRecords[i].ActiveClients;
                     }
                     else if (allRevenueRecords[i + 1].ActiveClients < allRevenueRecords[i].ActiveClients)
                     {
-                        churnCount++;
+                        churnCount += allRevenueRecords[i].ActiveClients - allRevenueRecords[i + 1].ActiveClients;
                     }
                 }
             }
