@@ -18,7 +18,11 @@ namespace ClientDashboard_API.ML.Services
 
             var firstNewMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetFirstFullMonthOfRevenueRecordsAsync(allRevenueRecords);
 
-            var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
+            // a month from the first recorded trainer daily revenue record
+            var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
+
+            // approach with same strategy of checking first record
+            var monthlyWorkingDays = CalculateMonthlyWorkingDays(allRevenueRecords);
 
             var averageMonthlySessionsPerClient = CalculateAverageClientMonthlySessions(allRevenueRecords); 
 
@@ -109,10 +113,34 @@ namespace ClientDashboard_API.ML.Services
             return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
         }
 
-        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> fullMonthRecords)
+        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var workingDays = fullMonthRecords.Where(r => r.RevenueToday > 0).ToList();
-            return workingDays.Count;
+            // get working days from first record day to next month with that same record day
+            var monthlyWorkingDays = 0;
+
+            var monthlyPairsAccountedFor = 0;
+            var nonWorkingDays = 0;
+
+            var firstRecord = allRevenueRecords.First();
+
+            foreach(var record in allRevenueRecords)
+            {
+                if (record.RevenueToday == 0)
+                {
+                    nonWorkingDays++;
+                }
+                if(record.AsOfDate.Day == firstRecord.AsOfDate.Day && record.AsOfDate.Month != firstRecord.AsOfDate.Month)
+                {
+                    var daysInbetween = (int)(DateTime.Parse(record.AsOfDate.ToString()) - DateTime.Parse(record.AsOfDate.ToString())).TotalDays;
+
+                    monthlyWorkingDays += daysInbetween - nonWorkingDays;
+
+                    monthlyPairsAccountedFor++;
+                    nonWorkingDays = 0;
+                }
+            }
+
+            return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
         private Dictionary<DayOfWeek, double> CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
