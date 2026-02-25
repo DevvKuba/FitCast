@@ -18,15 +18,12 @@ namespace ClientDashboard_API.ML.Services
 
             var firstNewMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetFirstFullMonthOfRevenueRecordsAsync(allRevenueRecords);
 
-            // a month from the first recorded trainer daily revenue record
-            var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
-
             var monthlyWorkingDays = CalculateMonthlyWorkingDays(firstNewMonthsRevenueRecords);
 
             var averageMonthlySessionsPerClient = CalculateAverageClientMonthlySessions(allRevenueRecords); 
 
             // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-            var trainerStatistics = GenerateTrainerRevenueStatistics(monthlyRecords, monthlyWorkingDays, averageMonthlySessionsPerClient);
+            var trainerStatistics = GenerateTrainerRevenueStatistics(allRevenueRecords, monthlyWorkingDays, averageMonthlySessionsPerClient);
 
 
             var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
@@ -47,11 +44,11 @@ namespace ClientDashboard_API.ML.Services
 
         }
 
-        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> revenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
+        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
-            var activeClients = Math.Round(revenueRecords.Average(r => r.ActiveClients), 0);
+            var activeClients = Math.Round(allRevenueRecords.Average(r => r.ActiveClients), 0);
 
-            var sessionPricing = Math.Round(revenueRecords.Average(r => r.AverageSessionPrice), 0);
+            var sessionPricing = Math.Round(allRevenueRecords.Average(r => r.AverageSessionPrice), 0);
 
             var monthlyWorkingDays = workingDays;
 
@@ -161,7 +158,6 @@ namespace ClientDashboard_API.ML.Services
 
             foreach(var record in allRevenueRecords)
             {
-                //var lastMonthsDate = new DateTime(record.AsOfDate.Year, record.AsOfDate.Month, 1).AddMonths(1).AddDays(-1);
 
                 if(record.AsOfDate.Day == firstRevenueRecord.AsOfDate.Day && record.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month)
                 {
