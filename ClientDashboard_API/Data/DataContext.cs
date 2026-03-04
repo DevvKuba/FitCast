@@ -46,7 +46,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
 
-            // explicit identiy configuration
+            // explicit identity configuration
             builder.Entity<UserBase>()
                 .Property(u => u.Id)
                 .ValueGeneratedOnAdd()

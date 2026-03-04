@@ -45,21 +45,26 @@ namespace ClientDashboard_API.ML.Helpers
                     var previousBaseClients = baseActiveClients;
 
                     // Apply monthly growth with some randomness
-                    baseActiveClients += random.Next(0, 3); // Add 0-2 new clients per month
-                    baseActiveClients -= random.Next(0, 1); // Remove 0-1 new clients per month
+
+                    var acquiredClients = random.Next(0, 3);
+                    var churnedClients = random.Next(0, 2);
+
+                    baseActiveClients += acquiredClients;  // Add 0-2 new clients per month
+                    baseActiveClients -= churnedClients; // Remove 0-1 new clients per month
 
                     newClientsThisMonth = baseActiveClients - previousBaseClients;
 
-                    baseSessionsPerMonth += newClientsThisMonth;
+                    // 6 being the average client monthly sessions
+                    baseSessionsPerMonth += newClientsThisMonth * 6;
 
-                    // redeclared each month
-                    sessionGrowthRate = random.NextDouble();
+                    sessionGrowthRate = (0.03 + random.NextDouble() * 0.05); // 0.03 : 0.08
 
                     var growthIndicator = random.Next(0, 4);
+
                     // minor chance of sessionsGrowthRate decrease
                     if(growthIndicator == 0)
                     {
-                        sessionGrowthRate = -(0.03 + random.NextDouble() * 0.05); // -0.03 - -0.08
+                        sessionGrowthRate = -(0.03 + random.NextDouble() * 0.05); // -0.03 : -0.08
                     }
 
                     baseSessionsPerMonth = (int)(baseSessionsPerMonth * (1 + sessionGrowthRate));

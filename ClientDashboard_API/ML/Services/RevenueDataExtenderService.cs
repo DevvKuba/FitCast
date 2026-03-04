@@ -41,9 +41,10 @@ namespace ClientDashboard_API.ML.Services
                 monthlyRevenuePatterns = new MonthlyRevenuePatterns { acquisitionRate = 10, churnRate = 0.5 };
             }
 
-            // -48 in order to ensure exact 48 months output
-            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, monthlyRevenuePatterns, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
+            // in order to ensure exact 24 months / two years output
+            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, monthlyRevenuePatterns, weeklyMultipliers, trainerId, 24 - monthlyRecords.Count);
 
+            // need to save the records for the given trainer so they can be accounted for during the model training process
             return firstRevenueRecord!;
 
         }
