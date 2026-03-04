@@ -183,9 +183,9 @@ namespace ClientDashboard_API.ML.Services
         {
             double averageMonthlySessions = 0;
             var monthlyPairsAccountedFor = 0;
+            var totalMonthlyClientSessions = 0;
 
             var firstMonthlyRevenueRecord = allRevenueRecords.First();
-            var totalMonthlyClientSessions = 0;
 
             for(int i = 0; i < allRevenueRecords.Count; ++i)
             {
@@ -214,7 +214,9 @@ namespace ClientDashboard_API.ML.Services
                     var totalActiveClients = currentRecord.ActiveClients;
 
                     averageMonthlySessions += totalMonthlyClientSessions / totalActiveClients;
+
                     monthlyPairsAccountedFor++;
+                    totalMonthlyClientSessions = 0;
                     firstMonthlyRevenueRecord = currentRecord;
                 }
             }
