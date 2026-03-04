@@ -184,18 +184,38 @@ namespace ClientDashboard_API.ML.Services
             double averageMonthlySessions = 0;
             var monthlyPairsAccountedFor = 0;
 
-            var firstRevenueRecord = allRevenueRecords.First();
+            var firstMonthlyRevenueRecord = allRevenueRecords.First();
+            var totalMonthlyClientSessions = 0;
 
-            foreach(var record in allRevenueRecords)
+            for(int i = 0; i < allRevenueRecords.Count; ++i)
             {
+                var currentRecord = allRevenueRecords[i];
 
-                if(record.AsOfDate.Day == firstRevenueRecord.AsOfDate.Day && record.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month)
+                // acculumate monthly sessions
+
+                if (currentRecord == firstMonthlyRevenueRecord) 
                 {
-                    var totalMonthlyClientSessions = record.TotalSessionsThisMonth;
-                    var totalActiveClients = record.ActiveClients;
+                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
+                }
+                // accumulation stopped - likely new month start
+                else if(currentRecord.TotalSessionsThisMonth < allRevenueRecords[i - 1].TotalSessionsThisMonth)
+                {
+                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
+                }
+                // gather difference between current and previous record, in terms of totalSessionsThisMonth
+                else
+                {
+                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth - allRevenueRecords[i - 1].TotalSessionsThisMonth;
+                }
+
+                // check if a months has passed from firstMonthlyRevenueRecord
+                if (currentRecord.AsOfDate.Day == firstMonthlyRevenueRecord.AsOfDate.Day && currentRecord.AsOfDate.Month != firstMonthlyRevenueRecord.AsOfDate.Month)
+                {
+                    var totalActiveClients = currentRecord.ActiveClients;
 
                     averageMonthlySessions += totalMonthlyClientSessions / totalActiveClients;
                     monthlyPairsAccountedFor++;
+                    firstMonthlyRevenueRecord = currentRecord;
                 }
             }
 
