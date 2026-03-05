@@ -62,7 +62,7 @@ namespace ClientDashboard_API.Controllers
         {
             try
             {
-                var metrics = await trainingService.TrainModelAsync(trainerId);
+                var metrics = await trainingService.TrainModelAsync(trainerId, false);
 
                 return Ok(new ApiResponseDto<ModelMetrics>{ Data = metrics, Message = $"Model trained successfully. R² = {metrics.RSquared:F3}", Success = true });
             }
@@ -112,7 +112,7 @@ namespace ClientDashboard_API.Controllers
                 }
 
                 // train new temporary model
-                var metrics = await trainingService.TrainModelAsync(trainerId);
+                var metrics = await trainingService.TrainModelAsync(trainerId, true);
 
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
