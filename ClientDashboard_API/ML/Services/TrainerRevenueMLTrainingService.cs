@@ -2,6 +2,7 @@
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.ML;
 using Quartz.Logging;
 using System.CodeDom;
@@ -29,7 +30,7 @@ namespace ClientDashboard_API.ML.Services
             Directory.CreateDirectory(_modelsPath);
         }
 
-        public async Task<ModelMetrics> TrainModelAsync(int trainerId)
+        public async Task<ModelMetrics> TrainModelAsync(int trainerId, string? tempModelPath)
         {
             _logger.LogInformation("Starting model training for Trainer ID: {TrainerId}", trainerId);
 
@@ -109,7 +110,16 @@ namespace ClientDashboard_API.ML.Services
             }
 
             // 8 save model to disk
-            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            string modelPath;
+
+            if(tempModelPath is not null)
+            {
+                modelPath = Path.Combine(_modelsPath, tempModelPath);
+            }
+            else
+            {
+                modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            }
             _mlContext.Model.Save(model, dataView.Schema, modelPath);
             _logger.LogInformation("Model saved to {Path}", modelPath);
 

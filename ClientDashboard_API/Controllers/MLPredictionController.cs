@@ -111,7 +111,9 @@ namespace ClientDashboard_API.Controllers
                     await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
                 }
 
-                // gather metrics through training
+                // train new temporary model
+                var metrics = await trainingService.TrainModelAsync(trainerId);
+
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
                 var predictionResultData = new PredictionResultDto
@@ -120,6 +122,8 @@ namespace ClientDashboard_API.Controllers
                     PredictedRevenue = prediction,
                     PredictedDate = DateTime.Now,
                 };
+
+                // delete temporary model 
 
                 // delete all dummy extended data - leaving only the original records
                 await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);

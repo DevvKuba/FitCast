@@ -6,7 +6,7 @@ namespace ClientDashboard_API.ML.Interfaces
     public interface IMLModelTrainingService
     {
         // trainers a model for a specific trainer
-        Task<ModelMetrics> TrainModelAsync(int trainerId);
+        Task<ModelMetrics> TrainModelAsync(int trainerId, string? tempModelPath);
 
         // trainers models for all trainers with sufficient data
         Task<Dictionary<int, ModelMetrics>> TrainAllModelsAsync();
