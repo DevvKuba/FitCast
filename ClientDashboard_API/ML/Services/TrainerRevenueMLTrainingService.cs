@@ -30,7 +30,7 @@ namespace ClientDashboard_API.ML.Services
             Directory.CreateDirectory(_modelsPath);
         }
 
-        public async Task<ModelMetrics> TrainModelAsync(int trainerId, bool tempModelPath)
+        public async Task<ModelMetrics> TrainModelAsync(int trainerId, bool isTempModel)
         {
             _logger.LogInformation("Starting model training for Trainer ID: {TrainerId}", trainerId);
 
@@ -112,7 +112,7 @@ namespace ClientDashboard_API.ML.Services
             // 8 save model to disk
             string modelPath;
 
-            if(tempModelPath)
+            if(isTempModel)
             {
                 modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model_TEMP.zip");
             }

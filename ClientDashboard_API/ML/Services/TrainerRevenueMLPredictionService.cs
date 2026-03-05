@@ -28,12 +28,12 @@ namespace ClientDashboard_API.ML.Services
             _predictionEngines = new Dictionary<int, PredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>>();
         }
 
-        public async Task<float> PredictNextMonthRevenueAsync(int trainerId)
+        public async Task<float> PredictNextMonthRevenueAsync(int trainerId, bool isTempModel)
         {
             // 1 get or load prediction engine
             if(!_predictionEngines.ContainsKey(trainerId))
             {
-                LoadModelForTrainer(trainerId);
+                LoadModelForTrainer(trainerId, isTempModel);
             }
 
             var predictionEngine = _predictionEngines[trainerId];
@@ -68,7 +68,7 @@ namespace ClientDashboard_API.ML.Services
             {
                 try
                 {
-                    var prediction = await PredictNextMonthRevenueAsync(trainer.Id);
+                    var prediction = await PredictNextMonthRevenueAsync(trainer.Id, false);
                     predictions[trainer.Id] = prediction;
                 }
                 catch(Exception ex)
@@ -80,9 +80,17 @@ namespace ClientDashboard_API.ML.Services
             return predictions;
         }
 
-        private void LoadModelForTrainer(int trainerId)
+        private void LoadModelForTrainer(int trainerId, bool isTempModel)
         {
-            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            string modelPath;
+            if (isTempModel)
+            {
+                modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model_TEMP.zip");
+            }
+            else
+            {
+                modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            }
 
             if(!File.Exists(modelPath))
             {
