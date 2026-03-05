@@ -27,7 +27,7 @@ namespace ClientDashboard_API.Controllers
         {
             try
             {
-                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
+                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId, false);
 
                 var predictionResultData = new PredictionResultDto
                 {
@@ -100,21 +100,25 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = "trainer must have at least 60 active records for extension", Success = false });
             }
 
+            TrainerDailyRevenue? firstRealRecord = null;
+
             try
             {
                 var extendedRevenueRecords = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
 
-                var firstRealRecord = extendedRevenueRecords.Last();
+                firstRealRecord = extendedRevenueRecords.Last();
 
+                // can maybe abstract
                 foreach(var record in extendedRevenueRecords)
                 {
                     await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
                 }
+                await unitOfWork.Complete();
 
                 // train new temporary model
                 var metrics = await trainingService.TrainModelAsync(trainerId, true);
 
-                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
+                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId, true);
 
                 var predictionResultData = new PredictionResultDto
                 {
@@ -123,21 +127,37 @@ namespace ClientDashboard_API.Controllers
                     PredictedDate = DateTime.Now,
                 };
 
-                // delete temporary model 
-
-                // delete all dummy extended data - leaving only the original records
-                await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);
-
-                if (!await unitOfWork.Complete())
+                // may not need complete here instead return adequate response depending on r squard value returned through metrics
+                if(metrics.RSquared < 0.8)
                 {
-                    return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = $"Extension records were not successfully removed from trainer with id: {trainerId}", Success = false });
+                    return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with insufficient R squard coefficient", Success = false });
                 }
-
-                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}", Success = true });
+                else
+                {
+                    return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with sufficient R squard coefficient", Success = true });
+                }
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = ex.Message, Success = false });
+                return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = null, Message = ex.Message, Success = false });
+            }
+            finally
+            {
+                // delete all dummy extended data - leaving only the original records
+                if (firstRealRecord != null)
+                {
+                    // TODO check if correct
+                    await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);
+                    await unitOfWork.Complete();
+                }
+
+                // delete temporary model 
+                var tempModelPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels", $"trainer_{trainerId}_revenue_model_TEMP.zip");
+                if (System.IO.File.Exists( tempModelPath))
+                {
+                    System.IO.File.Delete(tempModelPath);
+                    logger.LogInformation("Deleted temporary model for Trainer {TrainerId}", trainerId);
+                }
             }
         }
 
