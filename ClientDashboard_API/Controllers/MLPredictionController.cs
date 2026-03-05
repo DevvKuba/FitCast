@@ -102,7 +102,14 @@ namespace ClientDashboard_API.Controllers
 
             try
             {
-               var firstRecord = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
+                var extendedRevenueRecords = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
+
+                var firstRealRecord = extendedRevenueRecords.Last();
+
+                foreach(var record in extendedRevenueRecords)
+                {
+                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
+                }
 
                 // gather metrics through training
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
@@ -115,7 +122,7 @@ namespace ClientDashboard_API.Controllers
                 };
 
                 // delete all dummy extended data - leaving only the original records
-                await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRecord);
+                await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);
 
                 if (!await unitOfWork.Complete())
                 {

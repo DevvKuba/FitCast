@@ -9,7 +9,7 @@ namespace ClientDashboard_API.ML.Services
 {
     public class RevenueDataExtenderService(IUnitOfWork unitOfWork) : IRevenueDataExtenderService
     {
-        public async Task<TrainerDailyRevenue> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
+        public async Task<List<TrainerDailyRevenue>> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
             MonthlyRevenuePatterns monthlyRevenuePatterns;
 
@@ -44,8 +44,7 @@ namespace ClientDashboard_API.ML.Services
             // in order to ensure exact 24 months / two years output
             var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, monthlyRevenuePatterns, weeklyMultipliers, trainerId, 24 - monthlyRecords.Count);
 
-            // need to save the records for the given trainer so they can be accounted for during the model training process
-            return firstRevenueRecord!;
+            return revenueRecords;
 
         }
 

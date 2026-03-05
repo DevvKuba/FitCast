@@ -5,6 +5,6 @@ namespace ClientDashboard_API.ML.Interfaces
 {
     public interface IRevenueDataExtenderService
     {
-        Task<TrainerDailyRevenue> ProvideExtensionRecordsForRevenueDataAsync(int trainerId);
+        Task<List<TrainerDailyRevenue>> ProvideExtensionRecordsForRevenueDataAsync(int trainerId);
     }
 }

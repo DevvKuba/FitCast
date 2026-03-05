@@ -183,8 +183,8 @@ namespace ClientDashboard_API.ML.Helpers
                     double randomMultiplier = random.Next(7, 13) / 10.0;
 
                     // Apply monthly growth with some randomness
-                    acquiredClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.acquisitionRate / 100 + 1), 0) - previousBaseClients * randomMultiplier;
-                    churnedClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.churnRate / 100 + 1) - previousBaseClients * randomMultiplier, 0);
+                    acquiredClients = Math.Round(((previousBaseClients * (monthlyRevenuePatterns.acquisitionRate / 100 + 1)) - previousBaseClients) * randomMultiplier, 0);
+                    churnedClients = Math.Round(((previousBaseClients * (monthlyRevenuePatterns.churnRate / 100 + 1)) - previousBaseClients) * randomMultiplier, 0);
 
                     baseActiveClients = previousBaseClients - (int)churnedClients + (int)acquiredClients;
                     baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
