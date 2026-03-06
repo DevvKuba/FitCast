@@ -37,7 +37,7 @@ namespace ClientDashboard_API.ML.Helpers
 
             while (currentDate <= endDate)
             {
-                // === DETECT MONTH CHANGE (apply growth) ===
+                // * DETECT MONTH CHANGE (apply growth) *
                 if (currentDate.Month != currentMonth)
                 {
                     currentMonth = currentDate.Month;
