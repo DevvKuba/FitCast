@@ -53,11 +53,13 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsForTrainerAsync(int trainerId)
         {
-            var lastMonthsDayRecords = await context.TrainerDailyRevenue
+            var allRecords = await GetAllRevenueRecordsForTrainerAsync(trainerId);
+
+            var lastMonthsDayRecords = allRecords
                 .Where(r => r.TrainerId == trainerId &&
                 r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month))
                 .OrderBy(r => r.AsOfDate)
-                .ToListAsync();
+                .ToList();
             return lastMonthsDayRecords;
         }
 
