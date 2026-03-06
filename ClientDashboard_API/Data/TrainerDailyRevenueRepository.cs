@@ -126,7 +126,7 @@ namespace ClientDashboard_API.Data
         {
             var lastDayOfMonthlyRecords = await GetLastMonthsDayRecordsForTrainerAsync(trainerId);
 
-            return lastDayOfMonthlyRecords.OrderByDescending(r => r.AsOfDate).First();
+            return lastDayOfMonthlyRecords.Last();
         }
     }
 }
