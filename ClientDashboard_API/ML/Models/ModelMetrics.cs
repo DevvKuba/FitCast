@@ -7,7 +7,7 @@
         public string TrainerName { get; set; } = string.Empty;
 
         // Regression Metrics
-        public double RSquared { get; set; } // 0-1 (0.8+ is classified as good)
+        public double RSquared { get; set; } // 0-1 (0.7+ is classified as good data wise)
 
         public double MeanAbsoluteError { get; set; } // Average $ prediction error
 
