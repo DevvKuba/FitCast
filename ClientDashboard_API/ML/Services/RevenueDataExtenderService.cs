@@ -38,7 +38,7 @@ namespace ClientDashboard_API.ML.Services
             }
             else
             {
-                monthlyRevenuePatterns = new MonthlyRevenuePatterns { acquisitionRate = 10, churnRate = 0.5 };
+                monthlyRevenuePatterns = new MonthlyRevenuePatterns { acquisitionRate = 0.9, churnRate = 0.7 };
             }
 
             // in order to ensure exact 48 months / 4 years output
