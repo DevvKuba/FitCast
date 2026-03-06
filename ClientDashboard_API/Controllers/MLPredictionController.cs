@@ -38,6 +38,8 @@ namespace ClientDashboard_API.Controllers
                 {
                     return BadRequest(new ApiResponseDto<PredictionResultDto> {Data = null, Message = $"Need at least 2 months of data to make predictions. You have {monthsOfData} month(s).", Success = false});
                 }
+
+                var metrics = await trainingService.TrainModelAsync(trainerId);
                 
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
