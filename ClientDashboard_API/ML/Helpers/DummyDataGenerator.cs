@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.ML.Models;
+using Twilio.Rest.Api.V2010.Account.Recording;
 
 namespace ClientDashboard_API.ML.Helpers
 {
@@ -219,10 +220,13 @@ namespace ClientDashboard_API.ML.Helpers
                 // More sessions toward month-end (common pattern in fitness)
                 double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
 
+                double dailyVariance = 0.7 + (random.NextDouble() * 0.6); // 0.7 - 1.3 
+
                 // accounts many daily/weekly/monthly factors in determination
                 double dailySessions = targetSessionsPerWorkingDay
                     * endOfMonthBoost
-                    * weeklyMultiplier;
+                    * weeklyMultiplier
+                    * dailyVariance;
 
                 dailySessions = Math.Max(0, Math.Round(dailySessions, 0));
 

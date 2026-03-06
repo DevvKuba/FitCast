@@ -50,6 +50,8 @@ namespace ClientDashboard_API.ML.Services
 
         private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
+            // TODO ask about why it's better to only account for recent month, is it because it's generally closer to the next month to come,
+            // which is what we're predicting
             var latestMonth = allRevenueRecords.OrderByDescending(r => r.AsOfDate).Take(30).ToList();
             var activeClients = Math.Round(latestMonth.Average(r => r.ActiveClients), 0);
 
@@ -80,6 +82,7 @@ namespace ClientDashboard_API.ML.Services
 
             double churnRate = 0;
             double acquisitionRate = 0;
+            // TODO ask about
 
 
             for(int i = 0; i < allRevenueRecords.Count - 1; i++)
