@@ -50,7 +50,8 @@ namespace ClientDashboard_API.ML.Services
 
         private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
-            var activeClients = Math.Round(allRevenueRecords.Average(r => r.ActiveClients), 0);
+            var latestMonth = allRevenueRecords.OrderByDescending(r => r.AsOfDate).Take(30).ToList();
+            var activeClients = Math.Round(latestMonth.Average(r => r.ActiveClients), 0);
 
             var sessionPricing = Math.Round(allRevenueRecords.Average(r => r.AverageSessionPrice), 0);
 
