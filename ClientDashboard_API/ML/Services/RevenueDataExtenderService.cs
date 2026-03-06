@@ -196,7 +196,7 @@ namespace ClientDashboard_API.ML.Services
 
                 // acculumate monthly sessions
 
-                if (currentRecord == firstMonthlyRevenueRecord) 
+                if (currentRecord.AsOfDate == firstMonthlyRevenueRecord.AsOfDate) 
                 {
                     totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
                 }
