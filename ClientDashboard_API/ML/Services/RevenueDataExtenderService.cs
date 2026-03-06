@@ -50,8 +50,8 @@ namespace ClientDashboard_API.ML.Services
 
         private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
-            // TODO ask about why it's better to only account for recent month, is it because it's generally closer to the next month to come,
-            // which is what we're predicting
+            // better to only account for recent month, is it because it's closer to the next month to come
+            // which is predicted for
             var latestMonth = allRevenueRecords.OrderByDescending(r => r.AsOfDate).Take(30).ToList();
             var activeClients = Math.Round(latestMonth.Average(r => r.ActiveClients), 0);
 
@@ -82,8 +82,11 @@ namespace ClientDashboard_API.ML.Services
 
             double churnRate = 0;
             double acquisitionRate = 0;
-            // TODO ask about
 
+            int totalMonthsOfData = allRevenueRecords
+                .Select(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                .Distinct()
+                .Count();
 
             for(int i = 0; i < allRevenueRecords.Count - 1; i++)
             {
@@ -114,6 +117,18 @@ namespace ClientDashboard_API.ML.Services
 
             acquisitionRate = acquisitionRate / monthlyPairsAccountedFor;
             churnRate = churnRate / monthlyPairsAccountedFor;
+
+            // dampening at less than 6 months of data
+            if(totalMonthsOfData < 6)
+            {
+                // reduce rates by 50% to prevent startup phase explosion
+                acquisitionRate *= 0.5;
+                churnRate *= 0.5;
+
+                // further cap at 15% acquisition & 12% churn 
+                acquisitionRate = Math.Min(acquisitionRate, 15.0);
+                churnRate = Math.Min(churnRate, 12.0);
+            }
 
             return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
         }
