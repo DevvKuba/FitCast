@@ -39,15 +39,15 @@ namespace ClientDashboard_API.ML.Services
             var predictionEngine = _predictionEngines[trainerId];
 
             // 2 fetch latest data for trainer
-            var latestRecord = await _unitOfWork.TrainerDailyRevenueRepository.GetLatestRevenueRecordForTrainerAsync(trainerId);
+            var lastFullMonthsRecord = await _unitOfWork.TrainerDailyRevenueRepository.GetPreviousFullMonthLastRecordAsync(trainerId);
 
-            if(latestRecord is null)
+            if(lastFullMonthsRecord is null)
             {
                 throw new FileNotFoundException($"no daily revenue records found for Trainer: {trainerId}");
             }
 
             // 3 prepare prediction input
-            var inputData = FeatureEngineeringHelper.PreparePredictionData(latestRecord);
+            var inputData = FeatureEngineeringHelper.PreparePredictionData(lastFullMonthsRecord);
 
             // 4 make prediction
             var prediction = predictionEngine.Predict(inputData);

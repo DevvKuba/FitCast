@@ -119,5 +119,12 @@ namespace ClientDashboard_API.Data
                 context.TrainerDailyRevenue.Remove(record);
             }
         }
+
+        public async Task<TrainerDailyRevenue?> GetPreviousFullMonthLastRecordAsync(int trainerId)
+        {
+            var lastDayOfMonthlyRecords = await GetLastMonthsDayRecordsForTrainerAsync(trainerId);
+
+            return lastDayOfMonthlyRecords.OrderByDescending(r => r.AsOfDate).First();
+        }
     }
 }
