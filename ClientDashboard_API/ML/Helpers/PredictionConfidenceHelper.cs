@@ -32,5 +32,25 @@
             return (Math.Max(1, prediction - margin), prediction + margin);
             
         }
+
+        public static string GetConfidenceMessage(PredictionConfidence confidence, double rSquared)
+        {
+            return confidence switch
+            {
+                PredictionConfidence.Low =>
+                    $"Prediction based on limited data (R²={rSquared:F2}). Confidence will improve as you use the system more.",
+
+                PredictionConfidence.Medium =>
+                    $"Moderate confidence prediction (R²={rSquared:F2}). Add more data for better accuracy.",
+
+                PredictionConfidence.High =>
+                    $"High confidence prediction (R²={rSquared:F2}).",
+
+                PredictionConfidence.VeryHigh =>
+                    $"Very high confidence prediction based on extensive history (R²={rSquared:F2}).",
+
+                _ => "Unable to determine confidence level."
+            };
+        }
     }
 }
