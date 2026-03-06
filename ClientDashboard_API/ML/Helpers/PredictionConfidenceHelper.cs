@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.ML.Helpers
+﻿using ClientDashboard_API.ML.Enums;
+
+namespace ClientDashboard_API.ML.Helpers
 {
     public static class PredictionConfidenceHelper
     {

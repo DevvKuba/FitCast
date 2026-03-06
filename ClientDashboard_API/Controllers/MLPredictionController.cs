@@ -29,7 +29,15 @@ namespace ClientDashboard_API.Controllers
             {
                 var allRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
                 
-                int monthsOfData = 
+                int monthsOfData = unitOfWork.TrainerDailyRevenueRepository.GetAllMonthCountsFromData(allRecords);
+
+                var confidence = PredictionConfidenceHelper.DetermineConfidenceLevel(monthsOfData);
+
+                // prediction doesn't go through if there is insufficient data
+                if(confidence == ML.Enums.PredictionConfidence.Insufficient)
+                {
+                    return BadRequest(new ApiResponseDto<PredictionResultDto> {Data = null, Message = $"Need at least 2 months of data to make predictions. You have {monthsOfData} month(s).", Success = false});
+                }
                 
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 

@@ -1,4 +1,4 @@
-﻿namespace ClientDashboard_API.ML
+﻿namespace ClientDashboard_API.ML.Enums
 {
     public enum PredictionConfidence
     {
