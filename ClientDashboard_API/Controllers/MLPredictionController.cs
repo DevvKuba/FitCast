@@ -22,11 +22,15 @@ namespace ClientDashboard_API.Controllers
         IRevenueDataExtenderService revenueDataService
         ) : BaseAPIController
     {
-        [HttpGet("predictMyRevenue")]
-        public async Task<ActionResult<ApiResponseDto<PredictionResultDto>>> PredictMyRevenueAsync([FromQuery] int trainerId)
+        [HttpGet("trainAndPredictRevenue")]
+        public async Task<ActionResult<ApiResponseDto<PredictionResultDto>>> TrainModelAndPredictRevenueAsync([FromQuery] int trainerId)
         {
             try
             {
+                var allRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
+                
+                int monthsOfData = 
+                
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
                 var predictionResultData = new PredictionResultDto

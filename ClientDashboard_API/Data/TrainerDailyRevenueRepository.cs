@@ -30,6 +30,15 @@ namespace ClientDashboard_API.Data
             return trainerRecords;
         }
 
+        public int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var allMonthCount = revenueRecords
+                .Select(r => new { r.AsOfDate.Year, r.AsOfDate.Month})
+                .Distinct()
+                .Count();
+            return allMonthCount;
+        }
+
         public async Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId)
         {
             var latestRecord = await context.TrainerDailyRevenue.Where(t => t.TrainerId == trainerId).OrderByDescending(r => r.AsOfDate).FirstOrDefaultAsync();
@@ -52,7 +61,6 @@ namespace ClientDashboard_API.Data
             return lastMonthsDayRecords;
         }
 
-        // TODO test
         public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsBasedOnFirstRecordAsync(TrainerDailyRevenue firstRecord)
         {
             var monthlyRecords = await context.TrainerDailyRevenue

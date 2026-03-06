@@ -21,6 +21,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<TrainerDailyRevenue?> GetFirstRevenueRecordForTrainerAsync(int trainerId);
 
+        int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
+
         Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
