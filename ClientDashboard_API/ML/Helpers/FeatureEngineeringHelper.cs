@@ -6,62 +6,90 @@ namespace ClientDashboard_API.ML.Helpers
     public static class FeatureEngineeringHelper
     {
         // Converts TrainerDailyRevenue records into ML training data
-        // calculates the "NextMonthRevenue" label by looking ahead 30 days.
+        // Creates multiple training examples per month (every 3 days)
 
         public static List<TrainerRevenueData> PrepareTrainingData(List<TrainerDailyRevenue> dailyRecords)
         {
             var trainingData = new List<TrainerRevenueData>();
 
-            // group by month to calculate next months revenue 
+            // Group by month to calculate next month's revenue 
             var monthlyGroups = dailyRecords
                 .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
                 .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
                 .ToList();
 
-            // preparing all but the latest month - since each current needs a corresponding next 
+            // Preparing all but the latest month - since each current needs a corresponding next 
             for(int i = 0; i < monthlyGroups.Count - 1; i++)
             {
-                var currentMonth = monthlyGroups[i];
+                var currentMonthRecords = monthlyGroups[i].OrderBy(r => r.AsOfDate).ToList();
                 var nextMonth = monthlyGroups[i + 1];
 
-                // last day of the month used as a snapshot
-                var lastDayOfMonth = currentMonth.OrderByDescending(r => r.AsOfDate).First();
-
-                // Calculating next month's total revenue
-                // in order to track next month revenue patterns
+                // Calculate next month's total revenue once (same for all snapshots)
                 var nextMonthRevenue = nextMonth.Sum(r => r.RevenueToday);
 
-                var trainingExample = new TrainerRevenueData
+                int daysInMonth = currentMonthRecords.Count;
+
+                // Create snapshots every 3 days 
+                // Example: For 30-day month, creates snapshots on days 2, 5, 8, 11, 14, 17, 20, 23, 26, 29
+                for (int dayIndex = 2; dayIndex < daysInMonth; dayIndex += 3)
                 {
-                    // raw features
-                    ActiveClients = lastDayOfMonth.ActiveClients,
-                    TotalSessionsThisMonth = lastDayOfMonth.TotalSessionsThisMonth,
-                    AverageSessionPrice = (float)lastDayOfMonth.AverageSessionPrice,
-                    NewClientsThisMonth = lastDayOfMonth.NewClientsThisMonth,
-                    MonthlyRevenueThusFar = (float)lastDayOfMonth.MonthlyRevenueThusFar,
+                    var snapshot = currentMonthRecords[dayIndex];
 
-                    SessionsPerClient = lastDayOfMonth.ActiveClients > 0
-                    ? (float)lastDayOfMonth.TotalSessionsThisMonth / lastDayOfMonth.ActiveClients
-                    : 0,
+                    // Calculate days remaining in month (more meaningful than day number)
+                    int daysRemainingInMonth = daysInMonth - dayIndex;
 
-                    DayOfMonth = lastDayOfMonth.AsOfDate.Day,
-                    GrowthRate = lastDayOfMonth.ActiveClients > 0
-                    ? (float)lastDayOfMonth.NewClientsThisMonth / lastDayOfMonth.ActiveClients
-                    : 0,
+                    // Calculate revenue velocity (revenue per day so far)
+                    // Example: $2,000 revenue on day 10 = $200/day velocity
+                    // allows for the model to project predictions on incompelte months
+                    float revenueVelocity = dayIndex > 0 && snapshot.MonthlyRevenueThusFar > 0
+                        ? (float)snapshot.MonthlyRevenueThusFar / dayIndex
+                        : 0;
 
-                    // Label (target)
-                    NextMonthRevenue = (float)nextMonthRevenue
-                };
+                    var trainingExample = new TrainerRevenueData
+                    {
+                        ActiveClients = snapshot.ActiveClients,
+                        TotalSessionsThisMonth = snapshot.TotalSessionsThisMonth,
+                        AverageSessionPrice = (float)snapshot.AverageSessionPrice,
+                        NewClientsThisMonth = snapshot.NewClientsThisMonth,
+                        MonthlyRevenueThusFar = (float)snapshot.MonthlyRevenueThusFar,
 
-                trainingData.Add(trainingExample);
+                        // Engineered features
+                        SessionsPerClient = snapshot.ActiveClients > 0
+                            ? (float)snapshot.TotalSessionsThisMonth / snapshot.ActiveClients
+                            : 0,
+
+                        DaysRemainingInMonth = daysRemainingInMonth,
+
+                        GrowthRate = snapshot.ActiveClients > 0
+                            ? (float)snapshot.NewClientsThisMonth / snapshot.ActiveClients
+                            : 0,
+
+                        RevenueVelocity = revenueVelocity,
+
+                        // Label (target) - same for all snapshots in this month
+                        NextMonthRevenue = (float)nextMonthRevenue
+                    };
+
+                    trainingData.Add(trainingExample);
+                }
             }
 
             return trainingData;
         }
 
-        // converts the current month's latest data into a predicition input
+        // Converts the current month's latest data into a prediction input
         public static TrainerRevenueData PreparePredictionData(TrainerDailyRevenue currentMonthSnapshot)
         {
+            // Calculate days remaining in the current month
+            int daysInMonth = DateTime.DaysInMonth(currentMonthSnapshot.AsOfDate.Year, currentMonthSnapshot.AsOfDate.Month);
+            int currentDay = currentMonthSnapshot.AsOfDate.Day;
+            int daysRemainingInMonth = daysInMonth - currentDay;
+
+            // Calculate revenue velocity (revenue earned per day so far)
+            float revenueVelocity = currentDay > 0 && currentMonthSnapshot.MonthlyRevenueThusFar > 0
+                ? (float)currentMonthSnapshot.MonthlyRevenueThusFar / currentDay
+                : 0;
+
             return new TrainerRevenueData
             {
                 ActiveClients = currentMonthSnapshot.ActiveClients,
@@ -70,13 +98,18 @@ namespace ClientDashboard_API.ML.Helpers
                 NewClientsThisMonth = currentMonthSnapshot.NewClientsThisMonth,
                 MonthlyRevenueThusFar = (float)currentMonthSnapshot.MonthlyRevenueThusFar,
 
+                // Engineered features
                 SessionsPerClient = currentMonthSnapshot.ActiveClients > 0
                     ? (float)currentMonthSnapshot.TotalSessionsThisMonth / currentMonthSnapshot.ActiveClients
                     : 0,
-                DayOfMonth = currentMonthSnapshot.AsOfDate.Day,
+
+                DaysRemainingInMonth = daysRemainingInMonth,
+
                 GrowthRate = currentMonthSnapshot.ActiveClients > 0
                     ? (float)currentMonthSnapshot.NewClientsThisMonth / currentMonthSnapshot.ActiveClients
                     : 0,
+
+                RevenueVelocity = revenueVelocity
             };
         }
     }

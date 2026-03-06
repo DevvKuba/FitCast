@@ -27,14 +27,17 @@ namespace ClientDashboard_API.ML.Models
         public float SessionsPerClient { get; set; }
 
         [LoadColumn(6)]
-        public float DayOfMonth { get; set; }
+        public float DaysRemainingInMonth { get; set; }
 
         [LoadColumn(7)]
         public float GrowthRate { get; set; }
 
+        [LoadColumn(8)]
+        public float RevenueVelocity { get; set; }
+
         // what we're predicting
 
-        [LoadColumn(8)]
+        [LoadColumn(9)]
         [ColumnName("Label")]
         public float NextMonthRevenue { get; set; }
     }
