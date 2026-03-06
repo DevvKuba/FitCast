@@ -88,78 +88,78 @@ namespace ClientDashboard_API.Controllers
         /// existing trainer.</param>
         /// <returns>An ActionResult containing an ApiResponseDto with the model training metrics if successful; otherwise, an
         /// error response with details about the failure.</returns>
-        [HttpPost("extendAndTrainRevenueModel")]
-        public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> ExtendTrainerRevenueRecordsAndTrainRevenueModelAsync([FromQuery] int trainerId)
-        {
+        //[HttpPost("extendAndTrainRevenueModel")]
+        //public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> ExtendTrainerRevenueRecordsAndTrainRevenueModelAsync([FromQuery] int trainerId)
+        //{
 
-            // need to check if there is at least 60 records under that trainer to allow the extension
-            var trainerElegible = await unitOfWork.TrainerDailyRevenueRepository.CanTrainerExtendRevenueRecordsAsync(trainerId);
+        //    // need to check if there is at least 60 records under that trainer to allow the extension
+        //    var trainerElegible = await unitOfWork.TrainerDailyRevenueRepository.CanTrainerExtendRevenueRecordsAsync(trainerId);
 
-            if (!trainerElegible) 
-            {
-                return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = "trainer must have at least 60 active records for extension", Success = false });
-            }
+        //    if (!trainerElegible) 
+        //    {
+        //        return BadRequest(new ApiResponseDto<ModelMetrics> { Data = null, Message = "trainer must have at least 60 active records for extension", Success = false });
+        //    }
 
-            TrainerDailyRevenue? firstRealRecord = null;
+        //    TrainerDailyRevenue? firstRealRecord = null;
 
-            try
-            {
-                var extendedRevenueRecords = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
+        //    try
+        //    {
+        //        var extendedRevenueRecords = await revenueDataService.ProvideExtensionRecordsForRevenueDataAsync(trainerId);
 
-                firstRealRecord = extendedRevenueRecords.Last();
+        //        firstRealRecord = extendedRevenueRecords.Last();
 
-                // can maybe abstract
-                foreach(var record in extendedRevenueRecords)
-                {
-                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
-                }
-                await unitOfWork.Complete();
+        //        // can maybe abstract
+        //        foreach(var record in extendedRevenueRecords)
+        //        {
+        //            await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
+        //        }
+        //        await unitOfWork.Complete();
 
-                // train new temporary model
-                var metrics = await trainingService.TrainModelAsync(trainerId);
+        //        // train new temporary model
+        //        var metrics = await trainingService.TrainModelAsync(trainerId);
 
-                var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
+        //        var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
-                var predictionResultData = new PredictionResultDto
-                {
-                    TrainerId = trainerId,
-                    PredictedRevenue = prediction,
-                    PredictedDate = DateTime.Now,
-                };
+        //        var predictionResultData = new PredictionResultDto
+        //        {
+        //            TrainerId = trainerId,
+        //            PredictedRevenue = prediction,
+        //            PredictedDate = DateTime.Now,
+        //        };
 
-                // may not need complete here instead return adequate response depending on r squard value returned through metrics
-                if(metrics.RSquared < 0.8)
-                {
-                    return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with insufficient R squard coefficient", Success = false });
-                }
-                else
-                {
-                    return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with sufficient R squard coefficient", Success = true });
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = null, Message = ex.Message, Success = false });
-            }
-            finally
-            {
-                // delete all dummy extended data - leaving only the original records
-                if (firstRealRecord != null)
-                {
-                    // TODO check if correct
-                    await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);
-                    await unitOfWork.Complete();
-                }
+        //        // may not need complete here instead return adequate response depending on r squard value returned through metrics
+        //        if(metrics.RSquared < 0.8)
+        //        {
+        //            return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with insufficient R squard coefficient", Success = false });
+        //        }
+        //        else
+        //        {
+        //            return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}, with sufficient R squard coefficient", Success = true });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new ApiResponseDto<PredictionResultDto> { Data = null, Message = ex.Message, Success = false });
+        //    }
+        //    finally
+        //    {
+        //        // delete all dummy extended data - leaving only the original records
+        //        if (firstRealRecord != null)
+        //        {
+        //            // TODO check if correct
+        //            await unitOfWork.TrainerDailyRevenueRepository.DeleteExtensionRecordsUpToDateAsync(firstRealRecord);
+        //            await unitOfWork.Complete();
+        //        }
 
-                // delete temporary model 
-                var tempModelPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels", $"trainer_{trainerId}_revenue_model_TEMP.zip");
-                if (System.IO.File.Exists( tempModelPath))
-                {
-                    System.IO.File.Delete(tempModelPath);
-                    logger.LogInformation("Deleted temporary model for Trainer {TrainerId}", trainerId);
-                }
-            }
-        }
+        //        // delete temporary model 
+        //        var tempModelPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels", $"trainer_{trainerId}_revenue_model_TEMP.zip");
+        //        if (System.IO.File.Exists( tempModelPath))
+        //        {
+        //            System.IO.File.Delete(tempModelPath);
+        //            logger.LogInformation("Deleted temporary model for Trainer {TrainerId}", trainerId);
+        //        }
+        //    }
+        //}
 
         [HttpPost("generateDummyData")]
         [AllowAnonymous] // Remove this if you want to keep auth
