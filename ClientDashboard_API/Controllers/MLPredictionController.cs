@@ -49,8 +49,8 @@ namespace ClientDashboard_API.Controllers
                 {
                     TrainerId = trainerId,
                     PredictedRevenue = prediction,
-                    LowerBound = lowerBound,
-                    UpperBound = upperBound,
+                    LowerBound = (float?)Math.Round(lowerBound, 0),
+                    UpperBound = (float?)Math.Round(upperBound, 0),
                     PredictedDate = DateTime.Now,
                     Confidence = confidence.ToString(),
                     RSquared = metrics.RSquared,

@@ -81,8 +81,10 @@ namespace ClientDashboard_API.ML.Services
                 "NewClientsThisMonth",
                 "MonthlyRevenueThusFar",
                 "SessionsPerClient",
-                "DayOfMonth",
-                "GrowthRate"))
+                "DaysRemainingInMonth",
+                "GrowthRate",
+                "RevenueVelocity"
+                ))
 
                 // Train using FastTree algorithm
                 .Append(_mlContext.Regression.Trainers.FastTree(
