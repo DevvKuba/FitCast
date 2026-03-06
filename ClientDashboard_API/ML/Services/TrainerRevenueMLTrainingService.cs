@@ -30,7 +30,7 @@ namespace ClientDashboard_API.ML.Services
             Directory.CreateDirectory(_modelsPath);
         }
 
-        public async Task<ModelMetrics> TrainModelAsync(int trainerId, bool isTempModel)
+        public async Task<ModelMetrics> TrainModelAsync(int trainerId)
         {
             _logger.LogInformation("Starting model training for Trainer ID: {TrainerId}", trainerId);
 
@@ -110,16 +110,8 @@ namespace ClientDashboard_API.ML.Services
             }
 
             // 8 save model to disk
-            string modelPath;
+            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
 
-            if(isTempModel)
-            {
-                modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model_TEMP.zip");
-            }
-            else
-            {
-                modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
-            }
             _mlContext.Model.Save(model, dataView.Schema, modelPath);
             _logger.LogInformation("Model saved to {Path}", modelPath);
 
@@ -147,7 +139,7 @@ namespace ClientDashboard_API.ML.Services
             {
                 try
                 {
-                    var metrics = await TrainModelAsync(trainer.Id, false);
+                    var metrics = await TrainModelAsync(trainer.Id);
                     results[trainer.Id] = metrics;
 
                     _logger.LogInformation(
