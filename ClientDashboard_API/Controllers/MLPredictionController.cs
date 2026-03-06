@@ -43,14 +43,22 @@ namespace ClientDashboard_API.Controllers
                 
                 var prediction = await predictionService.PredictNextMonthRevenueAsync(trainerId);
 
+                var (lowerBound, upperBound) = PredictionConfidenceHelper.CalculatePredictionRange(prediction, metrics.MeanAbsoluteError, confidence);
+
                 var predictionResultData = new PredictionResultDto
                 {
                     TrainerId = trainerId,
                     PredictedRevenue = prediction,
+                    LowerBound = lowerBound,
+                    UpperBound = upperBound,
                     PredictedDate = DateTime.Now,
+                    Confidence = confidence.ToString(),
+                    RSquared = metrics.RSquared,
+                    MonthsOfData = monthsOfData,
+                    Message = PredictionConfidenceHelper.GetConfidenceMessage(confidence, metrics.RSquared)
                 };
 
-                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2}", Success = true });
+                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2} ({confidence} confidence)", Success = true });
             }
             catch (FileNotFoundException)
             {
