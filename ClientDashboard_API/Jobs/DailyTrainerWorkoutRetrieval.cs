@@ -13,12 +13,14 @@ namespace ClientDashboard_API.Jobs
         {
             List<Trainer> trainers;
 
+            // Get the list, then CLOSE the scope
             using (var scope = scopeFactory.CreateScope())
             {
                 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                 trainers = await unitOfWork.TrainerRepository.GetTrainersWithAutoRetrievalAsync();
             }
-            
+            // Now 'trainers' is just a plain List<Trainer> in memory
+            // No DbContext is tracking it anymore
 
             int totalRetrievedSessions = 0;
 
@@ -33,6 +35,7 @@ namespace ClientDashboard_API.Jobs
 
             foreach (Trainer trainer in trainers)
             {
+                // Each trainer gets a COMPLETELY isolated scope
                 using var trainerScope = scopeFactory.CreateScope();
 
                 try 
