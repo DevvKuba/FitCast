@@ -286,7 +286,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Assert
             Assert.Contains("No new workouts retrieved from Hevy", message);
-            Assert.Contains("Thursday", message); // March 14, 2025 (date - 1 day)
+            Assert.Contains("Friday", message); // March 14, 2025 (date - 1 day)
             Assert.Contains("15th", message);
             Assert.Contains("2:30 PM", message);
         }
