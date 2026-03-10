@@ -8,6 +8,7 @@ using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace ClientDashboard_API_Tests.ServiceTests
 {
@@ -30,6 +31,11 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
         public NotificationMessageHelperTests()
         {
+            // Set culture to en-GB to match production environment
+            var cultureInfo = new CultureInfo("en-GB");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Workout, WorkoutDto>();
@@ -286,7 +292,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Assert
             Assert.Contains("No new workouts retrieved from Hevy", message);
-            Assert.Contains("Friday", message); // March 14, 2025 (date - 1 day)
+            Assert.Contains("Friday", message); // March 14, 2025 (date - 1 day) is FRIDAY
             Assert.Contains("15th", message);
             Assert.Contains("2:30 PM", message);
         }
