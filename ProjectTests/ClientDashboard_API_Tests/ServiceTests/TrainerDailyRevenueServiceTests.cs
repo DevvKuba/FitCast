@@ -95,23 +95,43 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
 
-            // Ensure we have at least 2 earlier workouts IN the current month
-            // Use dates relative to first day of month to guarantee they're in range
-            var earlierDate1 = firstDayOfMonth.AddDays(Math.Min(5, today.Day - 1)); // Max 5 days after month start, or day before today
-            var earlierDate2 = firstDayOfMonth.AddDays(Math.Min(10, today.Day - 1)); // Max 10 days after month start, or day before today
+            // Calculate earlier dates ensuring they don't conflict with today or each other
+            // For dates, we want distinct days: one around 1/3 into month, one around 2/3 into month
+            DateOnly earlierDate1, earlierDate2;
 
-            // If today is the 1st, use first day for both earlier dates (will duplicate, but that's OK for testing)
             if (today.Day == 1)
             {
+                // Edge case: If today is the 1st, both earlier dates must be the 1st
                 earlierDate1 = firstDayOfMonth;
                 earlierDate2 = firstDayOfMonth;
+            }
+            else if (today.Day == 2)
+            {
+                // Edge case: If today is the 2nd, both earlier dates must be the 1st
+                earlierDate1 = firstDayOfMonth;
+                earlierDate2 = firstDayOfMonth;
+            }
+            else
+            {
+                // Normal case: Pick two distinct dates before today
+                // earlierDate1: roughly 1/3 through available days
+                // earlierDate2: roughly 2/3 through available days
+                int daysAvailable = today.Day - 1; // Days before today
+                earlierDate1 = firstDayOfMonth.AddDays(Math.Max(0, daysAvailable / 3));
+                earlierDate2 = firstDayOfMonth.AddDays(Math.Max(0, (daysAvailable * 2) / 3));
+
+                // Safety check: ensure earlierDate2 is not same as today
+                if (earlierDate2 == today)
+                {
+                    earlierDate2 = today.AddDays(-1);
+                }
             }
 
             // Add workouts for today
             await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Workout", today, 5, 45);
             await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Workout", today, 6, 50);
 
-            // Add workouts earlier this month (guaranteed to be in same month)
+            // Add workouts earlier this month (guaranteed to be different from today and each other)
             await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Earlier", earlierDate1, 4, 40);
             await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Earlier", earlierDate2, 5, 45);
             await _unitOfWork.Complete();
