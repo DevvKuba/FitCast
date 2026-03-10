@@ -117,7 +117,8 @@ namespace ClientDashboard_API
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
                 .WithCronSchedule("0 0 0 * * ?")
-                .WithDescription("Runs daily at midnight - 11:45AM to sync Hevy workouts"));
+                .WithDescription("Runs daily at midnight - 12:00AM to sync Hevy workouts")
+                );
 
                 var clientDataJobKey = new JobKey("DailyClientDataGathering");
 

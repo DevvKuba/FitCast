@@ -6,23 +6,24 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
+    [DisallowConcurrentExecution]
     public class DailyTrainerWorkoutRetrieval(IServiceScopeFactory scopeFactory, ILogger<DailyTrainerWorkoutRetrieval> logger) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
-    {
-            using var scope = scopeFactory.CreateScope();
+        {
+            List<Trainer> trainers;
 
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var syncService = scope.ServiceProvider.GetRequiredService<ISessionSyncService>();
-            var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+            using (var scope = scopeFactory.CreateScope())
+            {
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                trainers = await unitOfWork.TrainerRepository.GetTrainersWithAutoRetrievalAsync();
+            }
+            
 
             int totalRetrievedSessions = 0;
 
             logger.LogInformation("DailyTrainerWorkoutRetrieval process STARTING at: {Date}", DateTime.UtcNow);
 
-            // variables for number of trainers processed and their clients 
-
-            var trainers = await unitOfWork.TrainerRepository.GetTrainersWithAutoRetrievalAsync();
 
             if (trainers.Count == 0)
             {
@@ -33,10 +34,11 @@ namespace ClientDashboard_API.Jobs
             foreach (Trainer trainer in trainers)
             {
                 using var trainerScope = scopeFactory.CreateScope();
-                var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<ISessionSyncService>();
 
                 try 
                 {
+                    var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<ISessionSyncService>();
+                    var notificationService = trainerScope.ServiceProvider.GetRequiredService<INotificationService>();
                     var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
                     await notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, workoutCount, DateTime.UtcNow);
 
