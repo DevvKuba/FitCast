@@ -94,7 +94,7 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
                 .HasForeignKey(e => e.ClientId)
-                .OnDelete(DeleteBehavior.Restrict)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             builder.Entity<Client>()
