@@ -330,7 +330,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var revenue = _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueAtDate(trainerWithClients!, targetDate);
+            var revenue = await _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueAtDateAsync(trainerWithClients!, targetDate);
 
             // Assert
             Assert.Equal(165.00m, revenue); // 3 workouts * $55 = $165
@@ -363,7 +363,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var revenue = _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueAtDate(trainerWithClients!, targetDate);
+            var revenue = await _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueAtDateAsync(trainerWithClients!, targetDate);
 
             // Assert
             Assert.Equal(0.00m, revenue);
@@ -408,7 +408,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var revenue = _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueBetweenDates(
+            var revenue = await _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueBetweenDatesAsync(
                 trainerWithClients!, startDate, endDate);
 
             // Assert
@@ -448,7 +448,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var revenue = _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueBetweenDates(
+            var revenue = await _trainerDailyRevenueService.CalculateTotalClientGeneratedRevenueBetweenDatesAsync(
                 trainerWithClients!, targetDate, targetDate);
 
             // Assert
@@ -585,7 +585,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var sessionCount = _trainerDailyRevenueService.ReturnMonthlyClientSessionsThusFar(
+            var sessionCount = await _trainerDailyRevenueService.ReturnMonthlyClientSessionsThusFarAsync(
                 trainerWithClients!, startOfMonth, today);
 
             // Assert
@@ -620,7 +620,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
-            var sessionCount = _trainerDailyRevenueService.ReturnMonthlyClientSessionsThusFar(
+            var sessionCount = await _trainerDailyRevenueService.ReturnMonthlyClientSessionsThusFarAsync(
                 trainerWithClients!, startOfMonth, today);
 
             // Assert

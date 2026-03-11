@@ -12,11 +12,11 @@ namespace ClientDashboard_API.Services
             var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
             var firstDayOfTodaysMonth = GatherFirstDayOfCurrentMonth(todaysDate);
 
-            var totalRevenueToday = await CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
+            var totalRevenueToday = await CalculateTotalClientGeneratedRevenueAtDateAsync(trainer, todaysDate);
 
-            var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
+            var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDatesAsync(trainer, firstDayOfTodaysMonth, todaysDate);
 
-            var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
+            var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFarAsync(trainer, firstDayOfTodaysMonth, todaysDate);
 
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
 
@@ -39,22 +39,22 @@ namespace ClientDashboard_API.Services
 
         }
 
-        public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDate(Trainer trainer, DateOnly dateForSessions)
+        public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDateAsync(Trainer trainer, DateOnly dateForSessions)
         {
             var relatedWorkouts = await unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
 
             var workoutsToday = relatedWorkouts.Where(w => w.SessionDate == dateForSessions).ToList();
 
-            return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
+            return workoutsToday.Count * (trainer.AverageSessionPrice ?? 0m);
         }
 
-        public async Task<decimal> CalculateTotalClientGeneratedRevenueBetweenDates(Trainer trainer, DateOnly startDate, DateOnly endDate)
+        public async Task<decimal> CalculateTotalClientGeneratedRevenueBetweenDatesAsync(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
             var relatedWorkouts = await unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
 
             var workoutsThisMonth = relatedWorkouts.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate).ToList();
 
-            return workoutsThisMonth.Count * trainer.AverageSessionPrice ?? 0m;
+            return workoutsThisMonth.Count * (trainer.AverageSessionPrice ?? 0m);
         }
 
         public int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate)
@@ -70,7 +70,7 @@ namespace ClientDashboard_API.Services
     
         }
 
-        public async Task<int> ReturnMonthlyClientSessionsThusFar(Trainer trainer, DateOnly startDate, DateOnly endDate)
+        public async Task<int> ReturnMonthlyClientSessionsThusFarAsync(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
 
             var relatedWorkouts = await unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
