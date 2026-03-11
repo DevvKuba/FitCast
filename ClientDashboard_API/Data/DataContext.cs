@@ -36,7 +36,7 @@ namespace ClientDashboard_API.Data
 
             // set filter to only query clients that are not soft deleted
             // unless explicitly using IgnoreQueryFilters()
-            builder.Entity<Client>(entity =>
+            builder.Entity<UserBase>(entity =>
             {
                 entity.HasQueryFilter(c => !c.IsDeleted);
             });

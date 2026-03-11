@@ -15,10 +15,6 @@ namespace ClientDashboard_API.Entities
 
         public double? Weight { get; set; }
 
-        public bool IsDeleted { get; set; } = false;
-
-        public DateTime? DeletedAt { get; set; }
-
         public List<Workout> Workouts { get; set; } = [];
 
         // navigration properties

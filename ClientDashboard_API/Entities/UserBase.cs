@@ -22,6 +22,10 @@ namespace ClientDashboard_API.Entities
 
         public bool NotificationsEnabled { get; set; } = false;
 
+        public bool IsDeleted { get; set; } = false;
+
+        public DateTime? DeletedAt { get; set; }
+
         public DateTime CreatedAt { get; private set; }
     }
 }
