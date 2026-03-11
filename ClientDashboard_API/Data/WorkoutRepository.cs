@@ -54,7 +54,11 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Workout>> GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(Trainer trainer)
         {
-            var allAssociatedClients = await context.Client.IgnoreQueryFilters().Where(c => c.TrainerId == trainer.Id).ToListAsync();
+            var allAssociatedClients = await context.Client
+                .IgnoreQueryFilters()
+                .Include(c => c.Workouts)
+                .Where(c => c.TrainerId == trainer.Id)
+                .ToListAsync();
 
             return allAssociatedClients.SelectMany(c => c.Workouts).ToList();
         }
