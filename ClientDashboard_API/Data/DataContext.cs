@@ -34,11 +34,11 @@ namespace ClientDashboard_API.Data
         {
             base.OnModelCreating(builder);
 
-            // set filter to only query clients that are not soft deleted
+            // set filter to only query user types that are not soft deleted
             // unless explicitly using IgnoreQueryFilters()
             builder.Entity<UserBase>(entity =>
             {
-                entity.HasQueryFilter(c => !c.IsDeleted);
+                entity.HasQueryFilter(u => !u.IsDeleted);
             });
 
             builder.Entity<UserBase>().ToTable("Users");

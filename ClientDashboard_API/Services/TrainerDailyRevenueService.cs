@@ -49,12 +49,11 @@ namespace ClientDashboard_API.Services
 
         public decimal CalculateTotalClientGeneratedRevenueBetweenDates(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
-            // just looking at workouts not payments ? think about 
-            var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
+            var relatedWorkouts = unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
 
-            var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate)).ToList();
+            var workoutsThisMonth = relatedWorkouts.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate).ToList();
 
-            return workoutsToday.Count * trainer.AverageSessionPrice ?? 0m;
+            return workoutsThisMonth.Count * trainer.AverageSessionPrice ?? 0m;
         }
 
         public int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate)
@@ -72,11 +71,12 @@ namespace ClientDashboard_API.Services
 
         public int ReturnMonthlyClientSessionsThusFar(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
-            var clientsWorkouts = trainer.Clients.Select(c => c.Workouts).ToList();
 
-            var workoutsToday = clientsWorkouts.SelectMany(w => w.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate)).ToList();
+            var relatedWorkouts = unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
 
-            return workoutsToday.Count;
+            var workoutsThisMonth = relatedWorkouts.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate).ToList();
+
+            return workoutsThisMonth.Count;
         }
 
         public DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate)

@@ -52,6 +52,13 @@ namespace ClientDashboard_API.Data
             return clientData;
         }
 
+        public async Task<List<Workout>> GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(Trainer trainer)
+        {
+            var allAssociatedClients = await context.Client.IgnoreQueryFilters().Where(c => c.TrainerId == trainer.Id).ToListAsync();
+
+            return allAssociatedClients.SelectMany(c => c.Workouts).ToList();
+        }
+
         public async Task<Workout?> GetClientWorkoutAtDateByNameAsync(string clientName, DateOnly workoutDate)
         {
             Workout? clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate && x.ClientName == clientName.ToLower()).FirstOrDefaultAsync();
@@ -147,7 +154,5 @@ namespace ClientDashboard_API.Data
         {
             context.Workouts.Remove(workout);
         }
-
-        
     }
 }
