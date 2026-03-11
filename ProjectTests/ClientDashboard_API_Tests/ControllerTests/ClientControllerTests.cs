@@ -660,7 +660,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(client.Id.ToString(), response.Data);
 
             var deletedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Null(deletedClient);
+            Assert.True(deletedClient!.IsDeleted);
         }
 
         [Fact]
