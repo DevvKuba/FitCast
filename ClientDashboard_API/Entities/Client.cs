@@ -1,7 +1,10 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using ClientDashboard_API.Data.Migrations;
+
+namespace ClientDashboard_API.Entities
 {
     public class Client : UserBase
     {
+        public int? TrainerId { get; set; }
         public bool IsActive { get; set; } = true;
 
         public int CurrentBlockSession { get; set; }
@@ -12,9 +15,11 @@
 
         public double? Weight { get; set; }
 
-        public List<Workout> Workouts { get; set; } = [];
+        public bool IsDeleted { get; set; } = false;
 
-        public int? TrainerId { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+        public List<Workout> Workouts { get; set; } = [];
 
         // navigration properties
         public Trainer? Trainer { get; set; } = null;

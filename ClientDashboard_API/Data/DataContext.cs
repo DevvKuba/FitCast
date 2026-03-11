@@ -34,6 +34,13 @@ namespace ClientDashboard_API.Data
         {
             base.OnModelCreating(builder);
 
+            // set filter to only query clients that are not soft deleted
+            // unless explicitly using IgnoreQueryFilters()
+            builder.Entity<Client>(entity =>
+            {
+                entity.HasQueryFilter(c => !c.IsDeleted);
+            });
+
             builder.Entity<UserBase>().ToTable("Users");
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Workout>().ToTable("Workouts");
@@ -87,7 +94,7 @@ namespace ClientDashboard_API.Data
                 .HasMany(e => e.Workouts)
                 .WithOne(e => e.Client) // reference in ClientWorkouts
                 .HasForeignKey(e => e.ClientId)
-                .OnDelete(DeleteBehavior.SetNull)
+                .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
             builder.Entity<Client>()
