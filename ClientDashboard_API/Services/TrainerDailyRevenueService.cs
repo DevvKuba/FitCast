@@ -15,6 +15,7 @@ namespace ClientDashboard_API.Services
             var totalRevenueToday = await CalculateTotalClientGeneratedRevenueAtDate(trainer, todaysDate);
 
             var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDates(trainer, firstDayOfTodaysMonth, todaysDate);
+
             var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFar(trainer, firstDayOfTodaysMonth, todaysDate);
 
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);

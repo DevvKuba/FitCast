@@ -231,6 +231,12 @@ namespace ClientDashboard_API.Data
             return newClient;
         }
 
+        public void SoftDeleteClientAsync(Client client)
+        {
+            client.IsDeleted = true;
+            client.DeletedAt = DateTime.UtcNow;
+        }
+
         public void RemoveClient(Client client)
         {
             context.Client.Remove(client);

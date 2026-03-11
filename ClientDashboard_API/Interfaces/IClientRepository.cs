@@ -51,6 +51,8 @@ namespace ClientDashboard_API.Interfaces
 
         void RemoveClient(Client client);
 
+        void SoftDeleteClientAsync(Client client);
+
         Task<bool> CheckIfClientExistsAsync(string clientName);
 
 

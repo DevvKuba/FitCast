@@ -303,7 +303,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} not found in the database", Success = false });
             }
 
-            unitOfWork.ClientRepository.RemoveClient(client);
+            unitOfWork.ClientRepository.SoftDeleteClientAsync(client);
 
             if (!await unitOfWork.Complete())
             {
@@ -326,7 +326,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not found in the database", Success = false });
             }
 
-            unitOfWork.ClientRepository.RemoveClient(client);
+            unitOfWork.ClientRepository.SoftDeleteClientAsync(client);
 
             if (!await unitOfWork.Complete())
             {
