@@ -11,6 +11,7 @@ namespace ClientDashboard_API.Data
         public async Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer)
         {
             var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id)
+                .Where(p => p.IsVisible)
                 .OrderBy(p => p.Confirmed)
                 .ThenByDescending(p => p.PaymentDate)
                 .ToListAsync();
