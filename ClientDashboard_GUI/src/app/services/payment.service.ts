@@ -33,6 +33,6 @@ export class PaymentService {
   }
 
   deleteTrainerPayment(paymentId: number) : Observable<any> {
-    return this.http.delete(this.baseUrl + `payment/deletePayment?paymentId=${paymentId}`)
+    return this.http.put(this.baseUrl + `payment/deletePayment?paymentId=${paymentId}`, null);
   }
 }

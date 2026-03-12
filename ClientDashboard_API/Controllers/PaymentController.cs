@@ -111,7 +111,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         [Authorize(Roles = "Trainer")]
-        [HttpDelete("filterClientPayments")]
+        [HttpPut("filterClientPayments")]
         public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);

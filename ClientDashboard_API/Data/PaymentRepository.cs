@@ -95,9 +95,9 @@ namespace ClientDashboard_API.Data
         {
             var oldPayments = await context.Payments.Where(p => p.ClientId == null && p.TrainerId == trainer.Id).ToListAsync();
 
-            foreach(Payment oldPayment in oldPayments)
+            foreach(Payment p in oldPayments)
             {
-                context.Remove(oldPayment);
+                p.IsVisible = false;
             }
             return oldPayments.Count;
 
