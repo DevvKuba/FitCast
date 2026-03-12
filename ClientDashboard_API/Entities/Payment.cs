@@ -16,6 +16,8 @@
 
         public required DateOnly PaymentDate { get; set; }
 
+        public bool IsVisible { get; set; } = true;
+
         public bool Confirmed { get; set; } = false;
 
         public Trainer Trainer { get; set; } = null!;
