@@ -123,7 +123,7 @@ namespace ClientDashboard_API.Controllers
 
             var trainerDeletedClients = await unitOfWork.TrainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainerId);
 
-            var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
+            var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainerDeletedClients);
 
             if(filteredPaymentCount == 0)
             {

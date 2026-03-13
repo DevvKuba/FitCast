@@ -91,10 +91,13 @@ namespace ClientDashboard_API.Data
             await context.Payments.AddAsync(payment);
         }
 
-        public async Task<int> FilterOldClientPaymentsAsync(Trainer trainer)
+        public async Task<int> FilterOldClientPaymentsAsync(List<Client> deletedClients)
         {
-            // gather payment for deleted client
-            var oldPayments = await context.Payments.Where(p => p.ClientId == null && p.TrainerId == trainer.Id).ToListAsync();
+            // any payment associated with deleted clients clientId -> are to be collected
+
+            var deletedClientIds = deletedClients.Select(c => c.Id).ToList();
+
+            var oldPayments = await context.Payments.Where(p => deletedClientIds.Contains(p.ClientId ?? 0)).ToListAsync();
 
             foreach(Payment p in oldPayments)
             {

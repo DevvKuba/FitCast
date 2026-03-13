@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed);
 
-        Task<int> FilterOldClientPaymentsAsync(Trainer trainer);
+        Task<int> FilterOldClientPaymentsAsync(List<Client> deletedClients);
 
         void DisablePaymentVisibility(Payment payment);
 

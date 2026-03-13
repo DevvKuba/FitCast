@@ -57,7 +57,7 @@ namespace ClientDashboard_API.Data
         {
             var clients = await context.Client
                 .IgnoreQueryFilters()
-                .Where(c => c.TrainerId == trainerId)
+                .Where(c => c.TrainerId == trainerId && c.IsDeleted)
                 .ToListAsync();
             return clients;
         }
