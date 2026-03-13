@@ -347,7 +347,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(payment.Id.ToString(), response.Data);
 
             var deletedPayment = await _context.Payments.FindAsync(payment.Id);
-            Assert.Null(deletedPayment);
+            Assert.False(deletedPayment!.IsVisible);
         }
 
         [Fact]
@@ -376,6 +376,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
+                IsVisible = true,
                 Confirmed = true
             });
             await _context.Payments.AddAsync(new Payment
@@ -386,6 +387,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
+                IsVisible = true,
                 Confirmed = false
             });
             await _unitOfWork.Complete();
@@ -398,7 +400,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.True(response.Success);
             Assert.Equal(2, response.Data);
 
-            var remainingPayments = await _context.Payments.CountAsync(p => p.ClientId == null);
+            var remainingPayments = await _context.Payments.CountAsync(p => p.IsVisible);
             Assert.Equal(0, remainingPayments);
         }
 
