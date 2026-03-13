@@ -66,6 +66,13 @@ namespace ClientDashboard_API.Data
             mapper.Map(paymentUpdateInfo, payment);
         }
 
+        public async Task UpdateAllTrainerPaymentsToVisibleStatusAsync(Trainer trainer)
+        {
+            var trainerPayments = await context.Payments.Where(p => p.TrainerId == trainer.Id).ToListAsync();
+
+            trainerPayments.ForEach(p => p.IsVisible = true);
+        }
+
         public async Task<decimal> CalculateClientTotalLifetimeValueAsync(Client client, DateOnly tillDate)
         {
             var confirmedClientPayments = await context.Payments

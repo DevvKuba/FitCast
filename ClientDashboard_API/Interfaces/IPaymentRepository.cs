@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo);
 
+        Task UpdateAllTrainerPaymentsToVisibleStatusAsync(Trainer trainer);
+
         Task<decimal> CalculateClientTotalLifetimeValueAsync(Client client, DateOnly tillDate);
 
         Task AddNewPaymentAsync(Trainer trainer, Client client, int numberOfSessions, decimal blockPrice, DateOnly paymentDate, bool? confirmed);
