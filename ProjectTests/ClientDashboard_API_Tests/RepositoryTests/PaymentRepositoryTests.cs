@@ -75,7 +75,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
-                Confirmed = true
+                Confirmed = true,
+                IsVisible = true
             });
             await _context.Payments.AddAsync(new Payment
             {
@@ -84,7 +85,18 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
-                Confirmed = false
+                Confirmed = false,
+                IsVisible = true
+            });
+            await _context.Payments.AddAsync(new Payment
+            {
+                TrainerId = trainer.Id,
+                Amount = 200.00m,
+                Currency = "£",
+                NumberOfSessions = 5,
+                PaymentDate = DateOnly.Parse("25/06/2024"),
+                Confirmed = true,
+                IsVisible = false
             });
             await _unitOfWork.Complete();
 
@@ -402,7 +414,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
-                Confirmed = true
+                Confirmed = true,
+                IsVisible = true
             });
             await _context.Payments.AddAsync(new Payment
             {
@@ -412,7 +425,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
-                Confirmed = false
+                Confirmed = false,
+                IsVisible = true
             });
             await _unitOfWork.Complete();
 
@@ -420,7 +434,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             Assert.Equal(2, removedCount);
-            Assert.False(_context.Payments.Any(p => p.ClientId == null && p.TrainerId == trainer.Id));
+            Assert.True(_context.Payments.Where(p => p.ClientId == null && p.TrainerId == trainer.Id).All(p => !p.IsVisible));
         }
 
         [Fact]
@@ -440,7 +454,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
-                Confirmed = true
+                Confirmed = true,
+                IsVisible = true
             });
             await _context.Payments.AddAsync(new Payment
             {
@@ -450,7 +465,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
-                Confirmed = false
+                Confirmed = false,
+                IsVisible = true
             });
             await _unitOfWork.Complete();
 
@@ -458,8 +474,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             Assert.Equal(1, removedCount);
-            Assert.True(_context.Payments.Any(p => p.ClientId == client.Id));
-            Assert.False(_context.Payments.Any(p => p.ClientId == null));
+            Assert.True(_context.Payments.Any(p => p.ClientId == client.Id && p.IsVisible));
+            Assert.True(_context.Payments.Where(p => p.ClientId == null).All(p => !p.IsVisible));
         }
 
         [Fact]
