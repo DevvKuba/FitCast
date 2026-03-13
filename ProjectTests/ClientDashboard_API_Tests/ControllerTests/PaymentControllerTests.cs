@@ -116,15 +116,17 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestGetTrainerPaymentsReturnsPaymentsAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var activeClient = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], IsDeleted = false };
+            var deletedClient = new Client { FirstName = "jane", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], IsDeleted = true };
             await _context.Trainer.AddAsync(trainer);
-            await _context.Client.AddAsync(client);
+            await _context.Client.AddAsync(activeClient);
+            await _context.Client.AddAsync(deletedClient);
             await _unitOfWork.Complete();
 
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = client.Id,
+                ClientId = activeClient.Id,
                 Amount = 100.00m,
                 Currency = "£",
                 NumberOfSessions = 8,
@@ -134,7 +136,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = client.Id,
+                ClientId = deletedClient.Id,
                 Amount = 150.00m,
                 Currency = "£",
                 NumberOfSessions = 12,
@@ -150,6 +152,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response);
             Assert.True(response.Success);
             Assert.Equal(2, response.Data!.Count);
+            Assert.Contains(response.Data, p => p.ClientId == activeClient.Id);
+            Assert.Contains(response.Data, p => p.ClientId == deletedClient.Id);
         }
 
         [Fact]
@@ -368,10 +372,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var activeClient = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], TrainerId = trainer.Id, IsDeleted = false };
+            var deletedClient = new Client { FirstName = "jane", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], TrainerId = trainer.Id, IsDeleted = true };
+            await _context.Client.AddAsync(activeClient);
+            await _context.Client.AddAsync(deletedClient);
+            await _unitOfWork.Complete();
+
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = null,
+                ClientId = activeClient.Id,
                 Amount = 100.00m,
                 Currency = "£",
                 NumberOfSessions = 8,
@@ -382,7 +392,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = null,
+                ClientId = deletedClient.Id,
                 Amount = 150.00m,
                 Currency = "£",
                 NumberOfSessions = 12,
@@ -398,17 +408,19 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal(2, response.Data);
+            Assert.Equal(1, response.Data);
 
-            var remainingPayments = await _context.Payments.CountAsync(p => p.IsVisible);
-            Assert.Equal(0, remainingPayments);
+            var remainingVisiblePayments = await _context.Payments.CountAsync(p => p.IsVisible);
+            Assert.Equal(1, remainingVisiblePayments);
+            Assert.True(await _context.Payments.AnyAsync(p => p.ClientId == activeClient.Id && p.IsVisible));
+            Assert.True(await _context.Payments.AnyAsync(p => p.ClientId == deletedClient.Id && !p.IsVisible));
         }
 
         [Fact]
         public async Task TestFilterClientPaymentsReturnsZeroWhenNoOldPaymentsAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], TrainerId = trainer.Id, IsDeleted = false };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
@@ -421,7 +433,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
-                Confirmed = true
+                Confirmed = true,
+                IsVisible = true
             });
             await _unitOfWork.Complete();
 

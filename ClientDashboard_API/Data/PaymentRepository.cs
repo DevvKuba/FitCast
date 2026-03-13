@@ -109,8 +109,6 @@ namespace ClientDashboard_API.Data
             foreach(Payment p in oldPayments)
             {
                 p.IsVisible = false;
-                p.ClientId = null;
-                p.Client = null;
             }
             return oldPayments.Count;
 

@@ -65,12 +65,17 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         public async Task TestGetAllPaymentsForTrainerAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var activeClient = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], IsDeleted = false };
+            var deletedClient = new Client { FirstName = "jane", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], IsDeleted = true };
             await _context.AddAsync(trainer);
+            await _context.AddAsync(activeClient);
+            await _context.AddAsync(deletedClient);
             await _unitOfWork.Complete();
 
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
+                ClientId = activeClient.Id,
                 Amount = 100.00m,
                 Currency = "£",
                 NumberOfSessions = 8,
@@ -81,6 +86,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
+                ClientId = deletedClient.Id,
                 Amount = 150.00m,
                 Currency = "£",
                 NumberOfSessions = 12,
@@ -91,6 +97,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
+                ClientId = activeClient.Id,
                 Amount = 200.00m,
                 Currency = "£",
                 NumberOfSessions = 5,
@@ -103,8 +110,10 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var payments = await _paymentRepository.GetAllPaymentsForTrainerAsync(trainer);
 
             Assert.Equal(2, payments.Count);
-            Assert.False(payments[0].Confirmed);
-            Assert.True(payments[1].Confirmed);
+            Assert.Contains(payments, p => p.ClientId == activeClient.Id);
+            Assert.Contains(payments, p => p.ClientId == deletedClient.Id);
+            Assert.False(payments.First(p => p.ClientId == deletedClient.Id).Confirmed);
+            Assert.True(payments.First(p => p.ClientId == activeClient.Id).Confirmed);
         }
 
         [Fact]
@@ -406,10 +415,14 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var deletedClient = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [], TrainerId = trainer.Id, IsDeleted = true };
+            await _context.AddAsync(deletedClient);
+            await _unitOfWork.Complete();
+
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = null,
+                ClientId = deletedClient.Id,
                 Amount = 100.00m,
                 Currency = "£",
                 NumberOfSessions = 8,
@@ -420,7 +433,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = null,
+                ClientId = deletedClient.Id,
                 Amount = 150.00m,
                 Currency = "£",
                 NumberOfSessions = 12,
@@ -430,26 +443,32 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             });
             await _unitOfWork.Complete();
 
-            var removedCount = await _paymentRepository.FilterOldClientPaymentsAsync(trainer);
+            var trainerDeletedClients = await _trainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainer.Id);
+
+            var removedCount = await _paymentRepository.FilterOldClientPaymentsAsync(trainerDeletedClients);
             await _unitOfWork.Complete();
 
             Assert.Equal(2, removedCount);
-            Assert.True(_context.Payments.Where(p => p.ClientId == null && p.TrainerId == trainer.Id).All(p => !p.IsVisible));
+            Assert.True(_context.Payments.Where(p => p.ClientId == deletedClient.Id && p.TrainerId == trainer.Id).All(p => !p.IsVisible));
         }
 
         [Fact]
         public async Task TestFilterOldClientPaymentsDoesNotRemovePaymentsWithClientsAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.AddAsync(trainer);
-            await _context.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var activeClient = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [], IsDeleted = false };
+            var deletedClient = new Client { Role = UserRole.Client, FirstName = "jane", CurrentBlockSession = 1, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [], IsDeleted = true };
+            await _context.AddAsync(activeClient);
+            await _context.AddAsync(deletedClient);
             await _unitOfWork.Complete();
 
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = client.Id,
+                ClientId = activeClient.Id,
                 Amount = 100.00m,
                 Currency = "£",
                 NumberOfSessions = 8,
@@ -460,7 +479,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Payments.AddAsync(new Payment
             {
                 TrainerId = trainer.Id,
-                ClientId = null,
+                ClientId = deletedClient.Id,
                 Amount = 150.00m,
                 Currency = "£",
                 NumberOfSessions = 12,
@@ -470,12 +489,14 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             });
             await _unitOfWork.Complete();
 
-            var removedCount = await _paymentRepository.FilterOldClientPaymentsAsync(trainer);
+            var trainerDeletedClients = await _trainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainer.Id);
+
+            var removedCount = await _paymentRepository.FilterOldClientPaymentsAsync(trainerDeletedClients);
             await _unitOfWork.Complete();
 
             Assert.Equal(1, removedCount);
-            Assert.True(_context.Payments.Any(p => p.ClientId == client.Id && p.IsVisible));
-            Assert.True(_context.Payments.Where(p => p.ClientId == null).All(p => !p.IsVisible));
+            Assert.True(_context.Payments.Any(p => p.ClientId == activeClient.Id && p.IsVisible));
+            Assert.True(_context.Payments.Where(p => p.ClientId == deletedClient.Id).All(p => !p.IsVisible));
         }
 
         [Fact]
