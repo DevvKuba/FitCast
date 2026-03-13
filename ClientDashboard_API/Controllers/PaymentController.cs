@@ -91,7 +91,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         [Authorize(Roles = "Trainer")]
-        [HttpDelete("deletePayment")]
+        [HttpPut("deletePayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteTrainerPaymentAsync([FromQuery] int paymentId)
         {
             var payment = await unitOfWork.PaymentRepository.GetPaymentWithRelatedEntitiesById(paymentId);
@@ -101,7 +101,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
             }
 
-            unitOfWork.PaymentRepository.DeletePayment(payment);
+            unitOfWork.PaymentRepository.DisablePaymentVisibility(payment);
 
             if (!await unitOfWork.Complete())
             {

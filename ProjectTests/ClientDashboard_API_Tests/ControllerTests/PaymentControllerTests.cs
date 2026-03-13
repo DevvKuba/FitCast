@@ -332,6 +332,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
+                IsVisible = true,
                 Confirmed = true
             };
             await _context.Payments.AddAsync(payment);

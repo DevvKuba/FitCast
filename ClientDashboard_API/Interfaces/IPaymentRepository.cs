@@ -23,6 +23,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<int> FilterOldClientPaymentsAsync(Trainer trainer);
 
+        void DisablePaymentVisibility(Payment payment);
+
         void DeletePayment(Payment payment);
 
     }

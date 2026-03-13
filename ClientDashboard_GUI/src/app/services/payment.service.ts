@@ -29,7 +29,7 @@ export class PaymentService {
   }
 
   filterOldClientPayments(trainerId: number) : Observable<any> {
-    return this.http.delete(this.baseUrl + `payment/filterClientPayments?trainerId=${trainerId}`);
+    return this.http.put(this.baseUrl + `payment/filterClientPayments?trainerId=${trainerId}`, null);
   }
 
   deleteTrainerPayment(paymentId: number) : Observable<any> {

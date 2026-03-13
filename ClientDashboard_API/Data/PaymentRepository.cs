@@ -103,6 +103,11 @@ namespace ClientDashboard_API.Data
 
         }
 
+        public void DisablePaymentVisibility(Payment payment)
+        {
+            payment.IsVisible = false;
+        }
+
         public void DeletePayment(Payment payment)
         {
             context.Remove(payment);
