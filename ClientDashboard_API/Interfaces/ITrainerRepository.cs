@@ -12,6 +12,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Trainer?> GetTrainerWithClientsByIdAsync(int id);
 
+        Task<List<Client>> GatherDeletedTrainerClientsByTrainerIdAsync(int trainerId);
+
         Task<List<Trainer>> GetAllTrainersAsync();
 
         Task<List<Trainer>> GetAllTrainersEligibleForRevenueTrackingAsync();

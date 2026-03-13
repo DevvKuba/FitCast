@@ -53,6 +53,15 @@ namespace ClientDashboard_API.Data
             return trainer;
         }
 
+        public async Task<List<Client>> GatherDeletedTrainerClientsByTrainerIdAsync(int trainerId)
+        {
+            var clients = await context.Client
+                .IgnoreQueryFilters()
+                .Where(c => c.TrainerId == trainerId)
+                .ToListAsync();
+            return clients;
+        }
+
         public async Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync()
         {
             var trainers = await context.Trainer.Where(x => x.AutoWorkoutRetrieval == true).ToListAsync();
@@ -140,6 +149,5 @@ namespace ClientDashboard_API.Data
 
             return await context.Trainer.AnyAsync(t => t.PhoneNumber == flatPhoneNumber);
         }
-
     }
 }

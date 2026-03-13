@@ -114,12 +114,14 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("filterClientPayments")]
         public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
 
             if(trainer is null)
             {
                 return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"Trainer was not found", Success = false });
             }
+
+            var trainerDeletedClients = await unitOfWork.TrainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainerId);
 
             var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainer);
 
