@@ -4,7 +4,7 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, ISessionDataParser hevyParser, IClientBlockTerminationHelper clientBlockTerminator) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, INotificationService notificationService, ISessionDataParser hevyParser, IClientBlockTerminationHelper clientBlockTerminator) : ISessionSyncService
     {
         public async Task<int> SyncSessionsAsync(Trainer trainer)
         {
@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Services
                     else
                     {
                         var newClient = await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, null, null, trainer.Id);
-                        // add notification that new client has been added
+                        await notificationService.SendTrainerNewClientConfigurationReminderAsync(trainer, );
                         await unitOfWork.Complete();
 
 
