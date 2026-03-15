@@ -41,6 +41,11 @@ namespace ClientDashboard_API.Data
                 entity.HasQueryFilter(u => !u.IsDeleted);
             });
 
+            builder.Entity<Payment>(entity =>
+            {
+                entity.HasQueryFilter(p => p.IsVisible);
+            });
+
             builder.Entity<UserBase>().ToTable("Users");
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Workout>().ToTable("Workouts");
