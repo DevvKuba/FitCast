@@ -47,7 +47,9 @@ namespace ClientDashboard_API.Services
                     else
                     {
                         var newClient = await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, null, null, trainer.Id);
+                        // add notification that new client has been added
                         await unitOfWork.Complete();
+
 
                         unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(newClient!);
                         await unitOfWork.WorkoutRepository.AddWorkoutAsync(newClient!, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);

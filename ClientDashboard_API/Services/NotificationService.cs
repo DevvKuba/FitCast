@@ -118,7 +118,7 @@ namespace ClientDashboard_API.Services
 
             var notificationMessage = NotificationMessageHelper.GetMessage(reminderType, trainer, client);
 
-            if(trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
+            if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
             {
                 communicationType = Enums.CommunicationType.Sms;
                 messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
@@ -141,6 +141,34 @@ namespace ClientDashboard_API.Services
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
             var reminderType = Enums.NotificationType.AutoRetrievalWorkoutsCountNotification;
+
+            Enums.CommunicationType communicationType;
+
+            var notificationMessage = NotificationMessageHelper.GetWorkoutCollectionMessage(workoutCount, date);
+
+            if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
+            {
+                communicationType = Enums.CommunicationType.Sms;
+                messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+            }
+            else
+            {
+                communicationType = Enums.CommunicationType.InApp;
+            }
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainer.Id, null, notificationMessage, reminderType, communicationType);
+
+            if (!await unitOfWork.Complete())
+            {
+                return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was unsuccessful", Success = false };
+            }
+            return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
+        }
+
+        public async Task<ApiResponseDto<string>> SendTrainerNewClientConfigurationReminderAsync(Trainer trainer, int workoutCount, DateTime date)
+        {
+            var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
+
+            var reminderType = Enums.NotificationType.NewClientConfigurationReminder;
 
             Enums.CommunicationType communicationType;
 
