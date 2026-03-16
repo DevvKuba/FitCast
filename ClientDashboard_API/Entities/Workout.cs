@@ -16,7 +16,7 @@
         public int ExerciseCount { get; set; }
 
         public int Duration { get; set; }
-
+        
         // navigration properties
         public Client? Client { get; set; } = null!;
 

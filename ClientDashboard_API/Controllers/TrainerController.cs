@@ -180,6 +180,11 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
+            if(trainer.DefaultCurrency == null || trainer.AverageSessionPrice == null)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Must have set both default currency and average session price in Profile, before proceeding", Success = false });
+            }
+
             unitOfWork.TrainerRepository.UpdateTrainerPaymentSettingAsync(trainer, enabled);
 
             if (!await unitOfWork.Complete())
