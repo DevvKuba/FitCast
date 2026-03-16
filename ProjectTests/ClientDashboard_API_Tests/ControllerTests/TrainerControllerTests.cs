@@ -417,7 +417,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerPaymentSettingSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false, AverageSessionPrice = 40, DefaultCurrency = "£" };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 

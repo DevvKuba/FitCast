@@ -413,7 +413,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var remainingVisiblePayments = await _context.Payments.CountAsync(p => p.IsVisible);
             Assert.Equal(1, remainingVisiblePayments);
             Assert.True(await _context.Payments.AnyAsync(p => p.ClientId == activeClient.Id && p.IsVisible));
-            Assert.True(await _context.Payments.AnyAsync(p => p.ClientId == deletedClient.Id && !p.IsVisible));
+            Assert.True(await _context.Payments.IgnoreQueryFilters().AnyAsync(p => p.ClientId == deletedClient.Id && !p.IsVisible));
         }
 
         [Fact]

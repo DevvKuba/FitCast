@@ -152,7 +152,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -196,7 +197,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -259,7 +261,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -308,7 +311,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -361,7 +365,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -428,7 +433,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -490,7 +496,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -524,7 +531,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -577,7 +585,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -617,7 +626,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
@@ -684,7 +694,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var fakeParser = new FakeSessionDataParser(workoutsFromApi);
             var fakeTerminator = new FakeClientBlockTerminationHelper();
-            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeParser, fakeTerminator);
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(_unitOfWork, fakeNotificationService, fakeParser, fakeTerminator);
 
             // Act
             var syncedCount = await sessionSyncService.SyncSessionsAsync(trainer);
