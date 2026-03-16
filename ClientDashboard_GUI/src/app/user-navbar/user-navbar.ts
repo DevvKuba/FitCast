@@ -63,11 +63,6 @@ export class UserNavbar{
             //     routerLink: '/client-analytics',
             //     icon: 'pi pi-chart-line'
             // },
-            // {
-            //     label: 'Trainer Analytics',
-            //     routerLink: '/trainer-analytics',
-            //     icon: 'pi pi-chart-bar'
-            // },
             {
                 label: 'Client Info',
                 routerLink: '/client-info',
@@ -82,7 +77,12 @@ export class UserNavbar{
                 label: 'Client Payments',
                 routerLink: '/client-payments',
                 icon: 'pi pi-credit-card'
-            }
+            },
+            {
+                label: 'Trainer Analytics',
+                routerLink: '/trainer-analytics',
+                icon: 'pi pi-chart-bar'
+            },
             
         ];
         this.generalItems = [

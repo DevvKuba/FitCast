@@ -10,6 +10,7 @@ import { ClientPaymentsComponent } from './client-payments/client-payments.compo
 import { ClientPersonalWorkoutsComponent } from './client-personal-workouts/client-personal-workouts.component';
 import { ClientPersonalPaymentsComponent } from './client-personal-payments/client-personal-payments.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
+import { TrainerAnalyticsComponent } from './trainer-analytics/trainer-analytics.component';
 
 export const routes: Routes = [
   {path: '', component: Home},
@@ -21,7 +22,7 @@ export const routes: Routes = [
 
   // TODO change to analytics component when developing
   {path: 'client-analytics', component: ClientInfoComponent, canActivate: [authGuard]},
-  {path: 'trainer-analytics', component: ClientInfoComponent, canActivate: [authGuard]},
+  {path: 'trainer-analytics', component: TrainerAnalyticsComponent, canActivate: [authGuard]},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'password-reset', component: PasswordResetComponent},
