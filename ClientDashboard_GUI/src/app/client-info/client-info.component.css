@@ -52,3 +52,10 @@
 ::ng-deep .clear-button {
   margin-top: 10px;
 }
+
+.popover-text {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #374151;
+}

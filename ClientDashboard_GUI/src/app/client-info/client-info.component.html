@@ -45,6 +45,23 @@
 
   <!-- Phone Number Dialog -->
   <p-dialog header="Phone Number" [modal]="true" [(visible)]="phoneDialogVisible" [style]="{ width: '25rem' }">
+    <div class="info-button-container">
+        <p-button 
+            type="button" 
+            icon="pi pi-exclamation-circle" 
+            severity="secondary" 
+            size="small" 
+            (onClick)="toggleForInfo($event)" 
+            styleClass="info-button" />
+        <p-popover 
+            #phoneNumberInfoPopover
+            [appendTo]="'body'"
+            [style]="{ 'max-width': '300px' }">
+            <div class="popover-content">
+                <p class="popover-text">{{phoneNumberInputInfo}}</p>
+            </div>
+        </p-popover>
+    </div>
     <span class="p-text-secondary block mb-4">Set {{editingClientName}}'s phone number below:</span>
     <div class="flex items-center gap-4 mb-8">
         <label for="phoneNumber" class="font-semibold w-32">Phone Number</label>

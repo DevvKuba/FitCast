@@ -25,6 +25,7 @@ import { InputMask } from 'primeng/inputmask';
 import { NotificationService } from '../services/notification.service';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
+import { TWO_THIRDS_PI } from 'chart.js/helpers';
 
 @Component({
   selector: 'app-client-info',
@@ -36,6 +37,7 @@ import { TooltipModule } from 'primeng/tooltip';
 })
 export class ClientInfoComponent implements OnInit {
   @ViewChild('currentSessionPopover') currentSessionPopover!: Popover;
+  @ViewChild('phoneNumberInfoPopover') phoneNumberInfoPopover!: Popover;
 
   showPopover(event: MouseEvent, popover: Popover){
     popover.show(event, event.currentTarget);
@@ -68,10 +70,12 @@ export class ClientInfoComponent implements OnInit {
   newTotalBlockSessions : number = 0;
   deleteClientId: number = 0;
   deleteClientName: string = "";
+  phoneNumberInputInfo: string = "test";
 
   ngOnInit() {
       this.currentUserId = this.accountService.currentUser()?.id ?? 0;
       this.getClients();
+      this.setPhoneNumberInfoText();
       this.activityStatuses = [
       {label: 'Active', value: true},
       {label: 'Inactive', value: false}
@@ -127,6 +131,14 @@ export class ClientInfoComponent implements OnInit {
     })
     }
     
+  }
+
+  toggleForInfo(event: any) {
+    this.phoneNumberInfoPopover.toggle(event);
+  }
+
+  setPhoneNumberInfoText(){
+    this.phoneNumberInputInfo = "Ensure you type the client's phone number in, rather than copy pasting it directly into the input field"
   }
 
   onRowEditCancel(client: Client, index: number) {
