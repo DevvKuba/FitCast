@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Services
                     else
                     {
                         var newClient = await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, null, null, trainer.Id);
-                        await notificationService.SendTrainerNewClientConfigurationReminderAsync(trainer, );
+                        await notificationService.SendTrainerNewClientConfigurationReminderAsync(trainer, newClient, DateTime.UtcNow);
                         await unitOfWork.Complete();
 
 
