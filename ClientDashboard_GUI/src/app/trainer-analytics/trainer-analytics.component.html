@@ -1,3 +1,12 @@
+<p-dialog header="Next Months Revenue Prediction" [modal]="true" [(visible)]="predictionDialogVisible" [style]="{ width: '25rem' }">
+        <div>
+          
+        </div>
+          <div class="flex justify-end gap-2">
+              <p-button label="Cancel" severity="secondary" (click)="predictionDialogVisible = false" />
+          </div>
+</p-dialog>
+
 <p>trainer-analytics works!</p>
 
 <p-button label="Predict Next Months revenue" (click)="predictNextMonthsRevenue()"/>
