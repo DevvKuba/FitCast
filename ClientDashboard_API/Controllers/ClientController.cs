@@ -279,7 +279,6 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("ByBody")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
         {
-
             await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.PhoneNumber, newClient.TrainerId);
 
             if (!await unitOfWork.Complete())

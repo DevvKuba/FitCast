@@ -118,8 +118,7 @@
               <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
-                        <input
-                            pInputText type="text"
+                        <p-inputnumber
                             [(ngModel)]= "client.currentBlockSession" />
                     </ng-template>
                     <ng-template #output>
@@ -130,8 +129,7 @@
               <td class="client-td">
                 <p-cellEditor>
                     <ng-template #input>
-                        <input
-                            pInputText type="text"
+                        <p-inputnumber
                             [(ngModel)]= "client.totalBlockSessions" />
                     </ng-template>
                     <ng-template #output>

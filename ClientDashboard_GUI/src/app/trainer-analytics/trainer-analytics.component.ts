@@ -20,6 +20,13 @@ export class TrainerAnalyticsComponent implements OnInit {
   toastService = inject(ToastService);
 
   currentTrainerId: number = 0;
+  predictionDate: Date | null = null;
+  predictedRevenue: number = 0;
+  predictedLowerBound: number = 0;
+  predictedUpperBound: number = 0;
+  confidence: string = "";
+  predictionMessage: string = "";
+
   predictionDialogVisible = false;
 
   ngOnInit(): void {
@@ -29,8 +36,11 @@ export class TrainerAnalyticsComponent implements OnInit {
   predictNextMonthsRevenue(){
     this.mlPredictionService.trainModelAndPredictTrainerRevenue(this.accountService.currentUser()?.id ?? 0).subscribe({
       next: (response : PredictionResult) => {
-        // pops open a display dialog of sorts detailing the metrics
+        // use response data object to set all specific dialog display properties
+
+        // pops open a display dialog with prediction information..
         this.predictionDialogVisible = true;
+
       },
       error: (response) => {
         this.toastService.showError('Error Prediction Revenue', response.error.message);
