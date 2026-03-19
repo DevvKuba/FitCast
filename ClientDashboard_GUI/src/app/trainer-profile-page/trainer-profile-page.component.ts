@@ -74,7 +74,7 @@ export class TrainerProfilePageComponent implements OnInit {
   loadTrainerProfile(): void {
     this.isLoading = true;
     const currentUser = this.accountService.currentUser();
-    // get trainer through currentUser.id and then store everything
+    // get trainer through currentUser.id and then store properties
     if(currentUser){
       this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
         next: (response) => {

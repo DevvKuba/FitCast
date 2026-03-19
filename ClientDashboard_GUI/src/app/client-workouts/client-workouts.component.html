@@ -168,7 +168,8 @@
                         <p-inputicon>
                             <i class="pi pi-search"></i>
                         </p-inputicon>
-                        <input class="workout-search-input" pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')" placeholder="Search client name" />
+                        <input class="workout-search-input" pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')"
+                          placeholder="Search client name" />
                     </p-iconfield>
                     <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt2)" />
                 </div>

@@ -13,7 +13,7 @@ namespace ClientDashboard_API.Services
             InitialiseBaseTwillioClient();
         }
 
-        // would need to change to id for more accurate retrieval rather than clientName
+        // May not need anymore
         public void PipelineClientBlockCompletionReminder(string clientName)
         {
             var ACCOUNT_SID = Environment.GetEnvironmentVariable("ACCOUNT_SID");

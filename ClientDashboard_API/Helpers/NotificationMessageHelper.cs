@@ -16,7 +16,8 @@ namespace ClientDashboard_API.Helpers
             [Enums.NotificationType.PendingPaymentCreatedAlert] = 
             (trainer, client) => $"Pending payment for a block of {client.TotalBlockSessions} sessions, created for {client.FirstName}",
             [Enums.NotificationType.NewClientConfigurationReminder] =
-            (trainer, client) => $"New record created for client {client.FirstName} as part of automatic workout collection, please ensure you set their block sessions value."
+            (trainer, client) => $"New record created for client {client.FirstName} as part of automatic workout collection," +
+            $" please ensure you set their block sessions value."
 
         };
 
