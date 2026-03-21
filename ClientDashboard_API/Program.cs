@@ -51,6 +51,9 @@ namespace ClientDashboard_API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenAuth();
 
+            builder.Services.AddApplicationInsightsTelemetry();
+            builder.Logging.AddApplicationInsights();
+
             builder.Services.AddAuthorization();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
