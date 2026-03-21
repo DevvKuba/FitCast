@@ -100,10 +100,12 @@ export class ClientInfoComponent implements OnInit {
       if (newClient.currentBlockSession >= 0 && newClient.totalBlockSessions > 0) {
           delete this.clonedClients[newClient.id as number];
 
+          newClient.phoneNumber = this.editingPhoneNumber;
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               this.toastService.showSuccess('Success Updating', response.message);
               this.notificationService.refreshUnreadCount(this.currentUserId);
+              this.getClients();
             },
             error: (response) => {
               this.toastService.showError('Error Updating', response.error.message);
@@ -112,25 +114,6 @@ export class ClientInfoComponent implements OnInit {
       } else {
         this.toastService.showError('Incorrect Values', `Make sure correct update values are provided`)
       }
-  }
-
-  savePhoneNumber(){
-    if(this.editingPhoneNumber !== ""){
-      const clientInfo = {
-      id: this.editingClientId,
-      phoneNumber: this.editingPhoneNumber
-    }
-    this.clientService.updateClientPhoneNumber(clientInfo).subscribe({
-      next: (response) => {
-        this.toastService.showSuccess('Success Updating Phone Number', response.message);
-        this.phoneDialogVisible = false;
-      },
-      error: (response) => {
-        this.toastService.showError('Error Updating Phone Number', response.error.message);
-      }
-    })
-    }
-    
   }
 
   toggleForInfo(event: any) {
