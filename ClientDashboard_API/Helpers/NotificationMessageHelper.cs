@@ -33,7 +33,8 @@ namespace ClientDashboard_API.Helpers
 
         public static string GetWorkoutCollectionMessage(int workoutCount, DateTime date)
         {
-            var formattedDate = $"{date.AddDays(-1).ToString("dddd", System.Globalization.CultureInfo.InvariantCulture)} the {GetOrdinalDay(date.Day)} at {date.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture)}";
+            var formattedDate = $"{date.AddDays(-1).ToString("dddd", System.Globalization.CultureInfo.InvariantCulture)}" +
+                $" the {GetOrdinalDay(date.Day)} at {date.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture)}";
 
             return workoutCount switch
             {
