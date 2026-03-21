@@ -18,8 +18,7 @@ namespace ClientDashboard_API.Controllers
         IMLModelTrainingService trainingService,
         ILogger<MLPredictionController> logger,
         IUnitOfWork unitOfWork,
-        IWebHostEnvironment environment,
-        IRevenueDataExtenderService revenueDataService
+        IWebHostEnvironment environment
         ) : BaseAPIController
     {
         [HttpGet("trainAndPredictRevenue")]

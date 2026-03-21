@@ -1,12 +1,16 @@
 <p-dialog header="Next Months Revenue Prediction" [modal]="true" [(visible)]="predictionDialogVisible" [style]="{ width: '25rem' }">
-        <div>
-          <label for="predicted-date" class="font-semibold w-24">Predicted Date:</label>
-          <!-- <p>{{}}</p> -->
-          <!-- if statement here to show l / u bound only if the confidence level is low -->
-        </div>
-          <div class="flex justify-end gap-2">
-              <p-button label="Cancel" severity="secondary" (click)="predictionDialogVisible = false" />
-          </div>
+  <div class="prediction-details">
+    <p><strong>Predicted Date:</strong> {{ predictionDate ? (predictionDate | date:'longDate') : 'N/A' }}</p>
+    <p><strong>Trained on Months of data:</strong> {{ monthsOfData }}</p>
+    <p><strong>Predicted revenue:</strong> {{ predictedRevenue | number:'1.2-2' }}</p>
+    <p><strong>Lower-Upper bound representation:</strong> {{ predictedLowerBound | number:'1.2-2' }} - {{ predictedUpperBound | number:'1.2-2' }}</p>
+    <p><strong>Confidence of the prediction:</strong> {{ confidence || 'N/A' }}</p>
+    <p><strong>Message:</strong> {{ predictionMessage || 'N/A' }}</p>
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <p-button label="Close" severity="secondary" (click)="predictionDialogVisible = false" />
+  </div>
 </p-dialog>
 
 <p>trainer-analytics works!</p>

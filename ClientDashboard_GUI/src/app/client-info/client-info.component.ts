@@ -121,7 +121,7 @@ export class ClientInfoComponent implements OnInit {
   }
 
   setPhoneNumberInfoText(){
-    this.phoneNumberInputInfo = "Ensure you type the client's phone number in, rather than copy pasting it directly into the input field"
+    this.phoneNumberInputInfo = "To ensure the client phone number is saved make sure to save the record itself"
   }
 
   onRowEditCancel(client: Client, index: number) {
