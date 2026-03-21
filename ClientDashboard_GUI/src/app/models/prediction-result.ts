@@ -3,6 +3,7 @@ export interface PredictionResult {
   predictedRevenue: number;
   lowerBound: number | null;
   upperBound: number | null;
+  currency: string | null;
   predictedDate: Date;
   confidence: string;
   rSquared: number;

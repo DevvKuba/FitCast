@@ -12,6 +12,8 @@ namespace ClientDashboard_API.DTOs
 
         public float? UpperBound { get; set; }
 
+        public string? Currency { get; set; }
+
         public DateTime PredictedDate { get; set; }
 
         public required string Confidence { get; set; }

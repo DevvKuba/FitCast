@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Button } from "primeng/button";
 import { AccountService } from '../services/account.service';
 import { MlPredictionService } from '../services/ml-prediction.service';
@@ -9,7 +9,7 @@ import { PredictionResult } from '../models/prediction-result';
 
 @Component({
   selector: 'app-trainer-analytics',
-  imports: [Button, Dialog, DatePipe, DecimalPipe],
+  imports: [CommonModule, Button, Dialog],
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })
@@ -24,6 +24,7 @@ export class TrainerAnalyticsComponent implements OnInit {
   predictedRevenue: number = 0;
   predictedLowerBound: number = 0;
   predictedUpperBound: number = 0;
+  currency: string = "";
   confidence: string = "";
   predictionMessage: string = "";
 
@@ -41,6 +42,7 @@ export class TrainerAnalyticsComponent implements OnInit {
         this.predictedRevenue = response.data?.predictedRevenue ?? 0;
         this.predictedLowerBound = response.data?.lowerBound ?? 0;
         this.predictedUpperBound = response.data?.upperBound ?? 0;
+        this.currency = response.data?.currency ?? "";
         this.confidence = response.data?.confidence ?? 'uncertain';
         this.predictionMessage = response.message;
         

@@ -2,8 +2,9 @@
   <div class="prediction-details">
     <p><strong>Predicted Date:</strong> {{ predictionDate ? (predictionDate | date:'longDate') : 'N/A' }}</p>
     <p><strong>Trained on Months of data:</strong> {{ monthsOfData }}</p>
-    <p><strong>Predicted revenue:</strong> {{ predictedRevenue | number:'1.2-2' }}</p>
-    <p><strong>Lower-Upper bound representation:</strong> {{ predictedLowerBound | number:'1.2-2' }} - {{ predictedUpperBound | number:'1.2-2' }}</p>
+     <p><strong>Predicted revenue:</strong> {{ predictedRevenue | currency:(currency || 'GBP'):'symbol':'1.2-2' }}</p>
+     <p><strong>Lower-Upper bound representation:</strong> {{ predictedLowerBound | currency:(currency || 'GBP'):'symbol':'1.2-2' }}
+       - {{ predictedUpperBound | currency:(currency || 'GBP'):'symbol':'1.2-2' }}</p>
     <p><strong>Conclusion:</strong> {{ confidence || 'N/A' }}</p>
     <p><strong>Message:</strong> {{ predictionMessage || 'N/A' }}</p>
   </div>

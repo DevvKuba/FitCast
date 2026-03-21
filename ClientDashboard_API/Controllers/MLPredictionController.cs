@@ -26,6 +26,8 @@ namespace ClientDashboard_API.Controllers
         {
             try
             {
+                var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
                 var allRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
                 
                 int monthsOfData = unitOfWork.TrainerDailyRevenueRepository.GetAllMonthCountsFromData(allRecords);
@@ -52,6 +54,7 @@ namespace ClientDashboard_API.Controllers
                     PredictedRevenue = prediction,
                     LowerBound = (float?)Math.Round(lowerBound, 0),
                     UpperBound = (float?)Math.Round(upperBound, 0),
+                    Currency = trainer?.DefaultCurrency ?? null,
                     PredictedDate = DateTime.Now,
                     Confidence = confidence.ToString(),
                     RSquared = metrics.RSquared,
@@ -59,7 +62,7 @@ namespace ClientDashboard_API.Controllers
                     Message = PredictionConfidenceHelper.GetConfidenceMessage(confidence, metrics.RSquared)
                 };
 
-                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Prediction of: {prediction:F2} made for the month of {monthPredictedFor} with {confidence} confidence", Success = true });
+                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Prediction of {prediction:F2} {trainer?.DefaultCurrency} made for the month of {monthPredictedFor} with {confidence} confidence", Success = true });
             }
             catch (FileNotFoundException)
             {
