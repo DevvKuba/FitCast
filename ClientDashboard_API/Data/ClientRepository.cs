@@ -4,6 +4,7 @@ using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection.Metadata.Ecma335;
 
 namespace ClientDashboard_API.Data
@@ -67,14 +68,15 @@ namespace ClientDashboard_API.Data
             mapper.Map(updatedData, client);
         }
 
-        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions)
+        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions, string? phoneNumber)
         {
             var updatedData = new ClientUpdateDto
             {
                 FirstName = newClientName.ToLower(),
                 IsActive = newActivity,
                 CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = newTotalSessions
+                TotalBlockSessions = newTotalSessions,
+                PhoneNumber = phoneNumber != null ? phoneNumber.Replace(" ", "") : phoneNumber,
             };
             mapper.Map(updatedData, client);
         }

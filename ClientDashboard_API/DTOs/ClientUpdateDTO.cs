@@ -15,5 +15,7 @@ namespace ClientDashboard_API.Dto_s
 
         [Required(ErrorMessage = "Must fill in Block Session field")]
         public int? TotalBlockSessions { get; set; }
+
+        public string? PhoneNumber { get; set; }
     }
 }

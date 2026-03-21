@@ -115,7 +115,8 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
             }
 
-            unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive, updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions);
+            unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive,
+                updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions, updatedClient.PhoneNumber);
 
             if (!await unitOfWork.Complete())
             {

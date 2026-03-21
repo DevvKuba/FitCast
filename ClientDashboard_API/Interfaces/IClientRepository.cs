@@ -27,7 +27,7 @@ namespace ClientDashboard_API.Interfaces
 
         void UpdateClientPhoneNumber(Client client, string phoneNumber);
 
-        void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions);
+        void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions, string? phoneNumber);
 
         void UpdateClientDetailsUponRegisterationAsync(Trainer trainer, Client client, RegisterDto clientDetails);
 
