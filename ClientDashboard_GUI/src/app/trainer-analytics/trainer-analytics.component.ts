@@ -35,13 +35,13 @@ export class TrainerAnalyticsComponent implements OnInit {
 
   predictNextMonthsRevenue(){
     this.mlPredictionService.trainModelAndPredictTrainerRevenue(this.accountService.currentUser()?.id ?? 0).subscribe({
-      next: (response : PredictionResult) => {
-        this.predictionDate = response.predictedDate ? new Date(response.predictedDate) : null;
-        this.monthsOfData = response.monthsOfData;
-        this.predictedRevenue = response.predictedRevenue;
-        this.predictedLowerBound = response.lowerBound ?? 0;
-        this.predictedUpperBound = response.upperBound ?? 0;
-        this.confidence = response.confidence;
+      next: (response) => {
+        this.predictionDate = response.data?.predictedDate ? new Date(response.data?.predictedDate) : null;
+        this.monthsOfData = response.data?.monthsOfData ?? 0;
+        this.predictedRevenue = response.data?.predictedRevenue ?? 0;
+        this.predictedLowerBound = response.data?.lowerBound ?? 0;
+        this.predictedUpperBound = response.data?.upperBound ?? 0;
+        this.confidence = response.data?.confidence ?? 'uncertain';
         this.predictionMessage = response.message;
         
         this.predictionDialogVisible = true;
@@ -49,7 +49,7 @@ export class TrainerAnalyticsComponent implements OnInit {
       },
       error: (response) => {
         this.toastService.showError('Error Prediction Revenue', response.error.message);
-      }
+      },
     })
   }
 }

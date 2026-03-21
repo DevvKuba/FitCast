@@ -44,6 +44,8 @@ namespace ClientDashboard_API.Controllers
 
                 var (lowerBound, upperBound) = PredictionConfidenceHelper.CalculatePredictionRange(prediction, metrics.MeanAbsoluteError, confidence);
 
+                var monthPredictedFor = DateTime.UtcNow.AddMonths(1).ToString("MMMM");
+
                 var predictionResultData = new PredictionResultDto
                 {
                     TrainerId = trainerId,
@@ -57,7 +59,7 @@ namespace ClientDashboard_API.Controllers
                     Message = PredictionConfidenceHelper.GetConfidenceMessage(confidence, metrics.RSquared)
                 };
 
-                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Predicted next month revenue: {prediction:F2} ({confidence} confidence)", Success = true });
+                return Ok(new ApiResponseDto<PredictionResultDto> { Data = predictionResultData, Message = $"Prediction of: {prediction:F2} made for the month of {monthPredictedFor} with {confidence} confidence", Success = true });
             }
             catch (FileNotFoundException)
             {

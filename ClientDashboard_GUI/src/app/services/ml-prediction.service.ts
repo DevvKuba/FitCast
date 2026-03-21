@@ -4,6 +4,7 @@ import { environment } from '../environments/environment';
 import { AccountService } from './account.service';
 import { Observable } from 'rxjs';
 import { PredictionResult } from '../models/prediction-result';
+import { ApiResponse } from '../models/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class MlPredictionService {
   baseUrl = environment.apiUrl;
   accountService = inject(AccountService);
 
-  trainModelAndPredictTrainerRevenue(trainerId: number) : Observable<PredictionResult> {
-    return this.http.get<PredictionResult>(this.baseUrl + `mlprediction/trainAndPredictRevenue?trainerId=${trainerId}`);
+  trainModelAndPredictTrainerRevenue(trainerId: number) : Observable<ApiResponse<PredictionResult>> {
+    return this.http.get<ApiResponse<PredictionResult>>(this.baseUrl + `mlprediction/trainAndPredictRevenue?trainerId=${trainerId}`);
   }
 }

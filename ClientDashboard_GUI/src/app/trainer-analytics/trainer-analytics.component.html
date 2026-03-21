@@ -4,7 +4,7 @@
     <p><strong>Trained on Months of data:</strong> {{ monthsOfData }}</p>
     <p><strong>Predicted revenue:</strong> {{ predictedRevenue | number:'1.2-2' }}</p>
     <p><strong>Lower-Upper bound representation:</strong> {{ predictedLowerBound | number:'1.2-2' }} - {{ predictedUpperBound | number:'1.2-2' }}</p>
-    <p><strong>Confidence of the prediction:</strong> {{ confidence || 'N/A' }}</p>
+    <p><strong>Conclusion:</strong> {{ confidence || 'N/A' }}</p>
     <p><strong>Message:</strong> {{ predictionMessage || 'N/A' }}</p>
   </div>
 
