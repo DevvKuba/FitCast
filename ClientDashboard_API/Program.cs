@@ -105,6 +105,7 @@ namespace ClientDashboard_API
 
             builder.Services.AddQuartz(q =>
             {
+                var timezone = TimeZoneInfo.Utc;
 
                 // key for background job
                 var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
@@ -116,7 +117,9 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
-                .WithCronSchedule("0 0 0 * * ?")
+                .WithCronSchedule("0 0 0 * * ?", x => x 
+                .InTimeZone(timezone)
+                .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily at midnight - 12:00AM to sync Hevy workouts")
                 );
 
@@ -127,7 +130,9 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(clientDataJobKey)
                 .WithIdentity("DailyClientDataGathering-trigger")
-                .WithCronSchedule("0 5 0 * * ?")
+                .WithCronSchedule("0 5 0 * * ?", x => x
+                .InTimeZone(timezone)
+                .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 5 minutes past midnight - 12:05AM to gather Client Feature Data"));
 
                 var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
@@ -137,7 +142,9 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(trainerRevenueJobKey)
                 .WithIdentity("DailyTrainerRevenueGathering-trigger")
-                .WithCronSchedule("0 10 0 * * ?")
+                .WithCronSchedule("0 10 0 * * ?", x => x
+                .InTimeZone(timezone)
+                .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
 
             });
