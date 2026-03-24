@@ -32,7 +32,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 cfg.CreateMap<Client, WorkoutDto>();
                 cfg.CreateMap<ClientUpdateDto, Client>();
-            });
+            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
             _mapper = config.CreateMapper();
             _passwordHasher = new PasswordHasher();
 

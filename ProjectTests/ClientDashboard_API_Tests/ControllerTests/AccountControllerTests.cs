@@ -1,3 +1,4 @@
+
 using AutoMapper;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
@@ -187,12 +188,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Workout, WorkoutDto>();
-                cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDto, Client>();
-                cfg.CreateMap<PaymentUpdateDto, Payment>();
-                cfg.CreateMap<TrainerUpdateDto, Trainer>();
-            });
+                cfg.AddProfile(new AutoMapperProfiles());
+            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
             _mapper = config.CreateMapper();
             _passwordHasher = new PasswordHasher();
 

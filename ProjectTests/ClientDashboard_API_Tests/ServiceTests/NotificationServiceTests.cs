@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
@@ -64,7 +64,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 cfg.CreateMap<ClientUpdateDto, Client>();
                 cfg.CreateMap<PaymentUpdateDto, Payment>();
                 cfg.CreateMap<TrainerUpdateDto, Trainer>();
-            });
+            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
             _mapper = config.CreateMapper();
             _passwordHasher = new PasswordHasher();
 

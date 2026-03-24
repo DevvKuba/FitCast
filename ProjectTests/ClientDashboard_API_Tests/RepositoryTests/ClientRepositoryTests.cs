@@ -33,7 +33,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             {
                 cfg.CreateMap<Client, WorkoutDto>();
                 cfg.CreateMap<ClientUpdateDto, Client>();
-            });
+            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
             _mapper = config.CreateMapper();
             _passwordHasher = new PasswordHasher();
 
@@ -284,7 +284,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            _clientRepository.UpdateClientDetailsAsync(client!, "Robert", false, 3, 6);
+            _clientRepository.UpdateClientDetailsAsync(client!, "Robert", false, 3, 6, null);
             await _unitOfWork.Complete();
 
             Assert.Equal("robert", client!.FirstName);
