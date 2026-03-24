@@ -1,9 +1,9 @@
 ﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.ML.Models;
 
-namespace ClientDashboard_API.ML.Interfaces
+namespace ClientDashboard_API.Interfaces
 {
-    public interface IRevenueDataExtenderService
+    public interface ITrainerAnalyticsService
     {
         Task<List<TrainerDailyRevenue>> ProvideExtensionRecordsForRevenueDataAsync(int trainerId);
     }

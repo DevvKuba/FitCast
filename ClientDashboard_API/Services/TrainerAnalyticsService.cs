@@ -1,13 +1,12 @@
 ﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
-using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
 using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
-namespace ClientDashboard_API.ML.Services
+namespace ClientDashboard_API.Services
 {
-    public class RevenueDataExtenderService(IUnitOfWork unitOfWork) : IRevenueDataExtenderService
+    public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
         public async Task<List<TrainerDailyRevenue>> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
         {
