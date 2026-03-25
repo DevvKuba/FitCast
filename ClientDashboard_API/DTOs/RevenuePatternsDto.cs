@@ -1,13 +1,15 @@
-﻿namespace ClientDashboard_API.DTOs
+﻿using ClientDashboard_API.Records;
+
+namespace ClientDashboard_API.DTOs
 {
     public class RevenuePatternsDto
     {
-        //public decimal AverageSessionsPrice { get; set; }
+        public decimal AverageSessionsPrice { get; set; }
 
-        //public int MyProperty { get; set; }
+        public required List<WeeklyMultiplier> BusiestDays { get; set; }
 
-        //public int MyProperty1 { get; set; }
+        public required  List<WeeklyMultiplier> LightDays { get; set; }
 
-        //public double EndOfMonthSurge { get; set; }
+        public double EndOfMonthSurge { get; set; }
     }
 }
