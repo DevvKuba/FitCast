@@ -8,46 +8,8 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
-        public async Task<List<TrainerDailyRevenue>> ProvideExtensionRecordsForRevenueDataAsync(int trainerId)
-        {
-            MonthlyRevenuePatterns monthlyRevenuePatterns;
-
-            var firstRevenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
-            var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
-
-            var firstNewMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetFirstFullMonthOfRevenueRecordsAsync(allRevenueRecords);
-
-            // a month from the first recorded trainer daily revenue record
-            var monthlyRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsBasedOnFirstRecordAsync(firstRevenueRecord!);
-
-            // approach with same strategy of checking first record
-            var monthlyWorkingDays = CalculateMonthlyWorkingDays(allRevenueRecords);
-
-            var averageMonthlySessionsPerClient = CalculateAverageClientMonthlySessions(allRevenueRecords); 
-
-            // gather average for baseActiveClients, baseSessionPrice, baseSessionsPerMonth, sessionMonthlyGrowth
-            var trainerStatistics = GenerateTrainerRevenueStatistics(allRevenueRecords, monthlyWorkingDays, averageMonthlySessionsPerClient);
-
-
-            var weeklyMultipliers = CalculateWeekdayMultiplier(allRevenueRecords);
-
-            if(allRevenueRecords.Count > 90)
-            {
-                monthlyRevenuePatterns = CalculateMonthlyClientChangeRates(allRevenueRecords);
-            }
-            else
-            {
-                monthlyRevenuePatterns = new MonthlyRevenuePatterns { acquisitionRate = 9.0, churnRate = 7.0 };
-            }
-
-            // in order to ensure exact 48 months / 4 years output
-            var revenueRecords = DummyDataGenerator.GenerateExtendedRevenueData(trainerStatistics, monthlyRevenuePatterns, weeklyMultipliers, trainerId, 48 - monthlyRecords.Count);
-
-            return revenueRecords;
-
-        }
-
-        private TrainerStatistics GenerateTrainerRevenueStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
+       
+        public TrainerStatistics GetTrainerStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
             // better to only account for recent month, is it because it's closer to the next month to come
             // which is predicted for
@@ -68,7 +30,7 @@ namespace ClientDashboard_API.Services
             return statistics;
         }
 
-        private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
+        public MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var recordStartDay = allRevenueRecords.First().AsOfDate.Day;
             var recordStartMonth = allRevenueRecords.First().AsOfDate.Month;
@@ -132,7 +94,7 @@ namespace ClientDashboard_API.Services
             return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
         }
 
-        private int CalculateMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
+        public int GetWorkingDayMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
             // get working days from first record day to next month with that same record day
             var monthlyWorkingDays = 0;
@@ -163,8 +125,10 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private Dictionary<DayOfWeek, double> CalculateWeekdayMultiplier(List<TrainerDailyRevenue> allrevenueRecords)
+        public Dictionary<DayOfWeek, double> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords)
         {
+            // can also provide a metrics for on average how many weekly sessions are complete 
+
             double averageSessions = CalculateAverageDailySessions(allrevenueRecords);
 
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
@@ -188,7 +152,7 @@ namespace ClientDashboard_API.Services
             return multipliers;
         }
 
-        private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
+        public double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
             if (allSessions == 0) return 0;
@@ -196,7 +160,7 @@ namespace ClientDashboard_API.Services
             return (double)allSessions / revenueRecords.Count;
         }
 
-        private int CalculateAverageClientMonthlySessions(List<TrainerDailyRevenue> allRevenueRecords)
+        public int GetEngagementMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
             double averageMonthlySessions = 0;
             var monthlyPairsAccountedFor = 0;
