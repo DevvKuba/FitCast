@@ -1,6 +1,6 @@
 ﻿namespace ClientDashboard_API.DTOs
 {
-    public class MonthlyClientMetricsDto
+    public class ClientMetricsDto
     {
         public int BaseClients { get; set; }
 
