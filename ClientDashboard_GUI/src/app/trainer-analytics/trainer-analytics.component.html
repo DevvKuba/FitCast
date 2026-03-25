@@ -1,1 +1,46 @@
 <app-revenue-prediction></app-revenue-prediction>
+
+<section class="trainer-analytics-shell">
+	<div class="analytics-panel">
+		<h2 class="analytics-title">Trainer Analytics Dashboard</h2>
+
+		<div class="analytics-section">
+			<h3>CLIENT METRICS</h3>
+			<p>Current: {{ dashboardData.clientMetrics.currentClients }} clients</p>
+			<p>
+				Acquired last month: {{ dashboardData.clientMetrics.acquiredLastMonth }}
+				({{ dashboardData.clientMetrics.acquiredChange }})
+			</p>
+			<p>
+				Churned last month: {{ dashboardData.clientMetrics.churnedLastMonth }}
+				({{ dashboardData.clientMetrics.churnedChange }})
+			</p>
+			<p>Net growth: {{ dashboardData.clientMetrics.netGrowth }}</p>
+			<p>Sessions per client: {{ dashboardData.clientMetrics.sessionsPerClient }}</p>
+		</div>
+
+		<div class="analytics-section">
+			<h3>REVENUE PATTERNS</h3>
+			<p>Average session price: {{ dashboardData.revenuePatterns.averageSessionPrice }}</p>
+			<p>Price trend: {{ dashboardData.revenuePatterns.priceTrend }}</p>
+			<p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
+			<p>Revenue per working day: {{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
+		</div>
+
+		<div class="analytics-section">
+			<h3>ACTIVITY PATTERNS</h3>
+			<p>Busiest days: {{ dashboardData.activityPatterns.busiestDays }}</p>
+			<p>Light days: {{ dashboardData.activityPatterns.lightDays }}</p>
+			<p>End-of-month surge: {{ dashboardData.activityPatterns.endOfMonthSurge }}</p>
+		</div>
+
+		<div class="analytics-section analytics-section-last">
+			<h3>TRENDS (3-MONTH VIEW)</h3>
+			<ul class="chart-placeholder-list">
+				<li>[Chart showing client growth]</li>
+				<li>[Chart showing revenue trend]</li>
+				<li>[Heatmap of weekly activity]</li>
+			</ul>
+		</div>
+	</div>
+</section>

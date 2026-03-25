@@ -1,12 +1,29 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button } from "primeng/button";
-import { AccountService } from '../services/account.service';
-import { MlPredictionService } from '../services/ml-prediction.service';
-import { ToastService } from '../services/toast.service';
-import { Dialog } from 'primeng/dialog';
-import { PredictionResult } from '../models/prediction-result';
 import { RevenuePredictionComponent } from '../revenue-prediction/revenue-prediction.component';
+
+interface TrainerDashboardData {
+  clientMetrics: {
+    currentClients: number;
+    acquiredLastMonth: number;
+    acquiredChange: string;
+    churnedLastMonth: number;
+    churnedChange: string;
+    netGrowth: string;
+    sessionsPerClient: number;
+  };
+  revenuePatterns: {
+    averageSessionPrice: string;
+    priceTrend: string;
+    monthlyWorkingDays: number;
+    revenuePerWorkingDay: string;
+  };
+  activityPatterns: {
+    busiestDays: string;
+    lightDays: string;
+    endOfMonthSurge: string;
+  };
+}
 
 @Component({
   selector: 'app-trainer-analytics',
@@ -14,15 +31,28 @@ import { RevenuePredictionComponent } from '../revenue-prediction/revenue-predic
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })
-export class TrainerAnalyticsComponent implements OnInit {
-  accountService = inject(AccountService);
-  mlPredictionService = inject(MlPredictionService);
-  toastService = inject(ToastService);
-
-  currentTrainerId: number = 0;
-
-  ngOnInit(): void {
-    this.currentTrainerId = this.accountService.currentUser()?.id ?? 0;
-  }
+export class TrainerAnalyticsComponent {
+  dashboardData: TrainerDashboardData = {
+    clientMetrics: {
+      currentClients: 12,
+      acquiredLastMonth: 3,
+      acquiredChange: '+25%',
+      churnedLastMonth: 1,
+      churnedChange: '-8%',
+      netGrowth: '+2 (+17%)',
+      sessionsPerClient: 6.2
+    },
+    revenuePatterns: {
+      averageSessionPrice: '$65',
+      priceTrend: 'Stable (0)',
+      monthlyWorkingDays: 22,
+      revenuePerWorkingDay: '$191'
+    },
+    activityPatterns: {
+      busiestDays: 'Mon (1.5x), Thu (1.4x)',
+      lightDays: 'Sun (0.4x), Sat (0.4x)',
+      endOfMonthSurge: '+30% last week'
+    }
+  };
 
 }
