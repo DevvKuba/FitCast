@@ -2,6 +2,7 @@
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
+using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
@@ -68,9 +69,8 @@ namespace ClientDashboard_API.Data
 
         public async Task UpdateAllTrainerPaymentsToVisibleStatusAsync(Trainer trainer)
         {
-            var trainerPayments = await context.Payments.Where(p => p.TrainerId == trainer.Id).ToListAsync();
+            await context.Payments.Where(p => p.TrainerId == trainer.Id).ForEachAsync(p => p.IsVisible = true);
 
-            trainerPayments.ForEach(p => p.IsVisible = true);
         }
 
         public async Task<decimal> CalculateClientTotalLifetimeValueAsync(Client client, DateOnly tillDate)

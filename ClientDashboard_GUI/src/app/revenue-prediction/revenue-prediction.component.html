@@ -1,6 +1,6 @@
 <p-dialog header="Next Months Revenue Prediction" [modal]="true" [(visible)]="predictionDialogVisible" [style]="{ width: '25rem' }">
   <div class="prediction-details">
-    <p><strong>Predicted Date:</strong> {{ predictionDate ? (predictionDate | date:'longDate') : 'N/A' }}</p>
+    <p><strong>Prediction Date:</strong> {{ predictionDate ? (predictionDate | date:'longDate') : 'N/A' }}</p>
     <p><strong>Trained on Months of data:</strong> {{ monthsOfData }}</p>
      <p><strong>Predicted revenue:</strong> {{ predictedRevenue | currency:(currency || 'GBP'):'symbol':'1.2-2' }}</p>
      <p><strong>Lower-Upper bound representation:</strong> {{ predictedLowerBound | currency:(currency || 'GBP'):'symbol':'1.2-2' }}
