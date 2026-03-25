@@ -10,7 +10,20 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
+        public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
+        {
 
+        }
+
+        public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
+        {
+
+        }
+
+        public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
+        {
+
+        }
         private TrainerStatistics GetTrainerStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
             // better to only account for recent month, is it because it's closer to the next month to come
