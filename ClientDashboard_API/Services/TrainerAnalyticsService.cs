@@ -1,9 +1,12 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Models;
+using ClientDashboard_API.Records;
+using Quartz.Impl.Calendar;
 using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Services
@@ -37,8 +40,18 @@ namespace ClientDashboard_API.Services
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            // can also provide a metrics for on average how many weekly sessions are complete 
+            // TODO can also provide a metrics for on average how many weekly sessions are complete 
+            var averageDailySessions = CalculateAverageDailySessions(revenueRecords);
+
+            var weekdayMultiplierList = GetWeeklyActivityPatterns(revenueRecords, (int)averageDailySessions);
+
+            var busiestWeekdays = weekdayMultiplierList.OrderByDescending(p => p.multiplier).Take(2).ToList();
+
+            var lightestWeekdays = weekdayMultiplierList.OrderBy(p => p.multiplier).Take(2).ToList();
+
+            return new ActivityPatternsDto { BusiestDays = busiestWeekdays, LightDays = lightestWeekdays };
         }
+
         private ClientMetricsDto GetTrainerBaseClientsAndAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var averageActiveClients = Math.Round(allRevenueRecords.Average(r => r.ActiveClients));
@@ -159,7 +172,7 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private Dictionary<DayOfWeek, double> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords)
+        private List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
         {
 
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
@@ -173,23 +186,16 @@ namespace ClientDashboard_API.Services
                 );
 
             // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
-            var multipliers = new Dictionary<DayOfWeek, double>();
-            
-            foreach(var day in weekdayAverages)
+            var multipliers = new List<WeeklyMultiplier>();
+
+            foreach (var day in weekdayAverages)
             {
-                multipliers[day.Key] = day.Value / averageSessions;
+                multipliers.Add(new WeeklyMultiplier(ReturnWeekdayEnumFromString(day.Key), day.Value / averageClientSessions));
             }
 
             return multipliers;
         }
 
-        private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
-        {
-            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
-            if (allSessions == 0) return 0;
-
-            return (double)allSessions / revenueRecords.Count;
-        }
 
         private int GetEngagementMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
@@ -234,6 +240,38 @@ namespace ClientDashboard_API.Services
             }
 
             return (int)Math.Round(averageMonthlySessions / monthlyPairsAccountedFor, 0);
+        }
+
+        private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
+            if (allSessions == 0) return 0;
+
+            return (double)allSessions / revenueRecords.Count;
+        }
+
+        private Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
+        {
+            switch (weekday)
+            {
+                case DayOfWeek.Monday:
+                    return Weekdays.Mon;
+                case DayOfWeek.Tuesday:
+                    return Weekdays.Tue;
+                case DayOfWeek.Wednesday:
+                    return Weekdays.Wed;
+                case DayOfWeek.Thursday:
+                    return Weekdays.Thu;
+                case DayOfWeek.Friday:
+                    return Weekdays.Fri;
+                case DayOfWeek.Saturday:
+                    return Weekdays.Sat;
+                case DayOfWeek.Sunday:
+                    return Weekdays.Sun;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(weekday), weekday, "Unsupported weekday");
+            }
+            ;
         }
     }
 }
