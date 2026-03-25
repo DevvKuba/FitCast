@@ -12,6 +12,21 @@ namespace ClientDashboard_API.Services
     {
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
+            var clientSessionData = GetTrainerBaseClientsAndAverageSessions(revenueRecords);
+
+            var clientAcquisitionAndChurnData = CalculateMonthlyClientChangeRates(revenueRecords);
+
+            return new ClientMetricsDto
+            {
+                BaseClients = clientSessionData.BaseClients,
+                AverageSessionsPerClient = clientSessionData.AverageSessionsPerClient,
+                AcquiredClients = clientAcquisitionAndChurnData.AcquiredClients,
+                AcquisitionPercentage = clientAcquisitionAndChurnData.AcquisitionPercentage,
+                ChurnedClients = clientAcquisitionAndChurnData.ChurnedClients,
+                ChurnPercentage = clientAcquisitionAndChurnData.ChurnPercentage,
+                NetGrowth = clientAcquisitionAndChurnData.NetGrowth,
+                NetGrowthPercentage = clientAcquisitionAndChurnData.NetGrowthPercentage,
+            };
 
         }
 
@@ -22,30 +37,24 @@ namespace ClientDashboard_API.Services
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-
+            // can also provide a metrics for on average how many weekly sessions are complete 
         }
-        private TrainerStatistics GetTrainerStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
+        private ClientMetricsDto GetTrainerBaseClientsAndAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            // better to only account for recent month, is it because it's closer to the next month to come
-            // which is predicted for
-            var latestMonth = allRevenueRecords.OrderByDescending(r => r.AsOfDate).Take(30).ToList();
-            var activeClients = Math.Round(latestMonth.Average(r => r.ActiveClients), 0);
+            var averageActiveClients = Math.Round(allRevenueRecords.Average(r => r.ActiveClients));
 
-            var sessionPricing = Math.Round(allRevenueRecords.Average(r => r.AverageSessionPrice), 0);
+            double averageSessionsPerClient = Math.Round(CalculateAverageDailySessions(allRevenueRecords));
 
-            var monthlyWorkingDays = workingDays;
-
-            var statistics = new TrainerStatistics
+            var statistics = new ClientMetricsDto
             {
-                BaseActiveClients = (int)activeClients,
-                BaseSessionsPrice = sessionPricing,
-                AverageClientMonthlySessions = averageMonthlySessionsPerClient,
-                MonthlyWorkingDays = monthlyWorkingDays
+                BaseClients = (int)averageActiveClients,
+                AverageSessionsPerClient = (int)averageSessionsPerClient
             };
             return statistics;
         }
 
-        private MonthlyRevenuePatterns CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
+        // input of data can be last month / all records same outputs
+        private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var recordStartDay = allRevenueRecords.First().AsOfDate.Day;
             var recordStartMonth = allRevenueRecords.First().AsOfDate.Month;
@@ -55,6 +64,9 @@ namespace ClientDashboard_API.Services
             
             double churnCount = 0;
             double acquisitionCount = 0;
+
+            double totalChurnedClients = 0;
+            double totalAcquiredClients = 0;
 
             double churnRate = 0;
             double acquisitionRate = 0;
@@ -74,6 +86,9 @@ namespace ClientDashboard_API.Services
                     churnRate += (churnCount / startingMonthActiveClients) * 100;
                     monthlyPairsAccountedFor++;
 
+                    totalAcquiredClients += acquisitionCount;
+                    totalChurnedClients += churnCount;
+
                     acquisitionCount = 0;
                     churnCount = 0;
                 }
@@ -91,22 +106,26 @@ namespace ClientDashboard_API.Services
                 }
             }
 
-            acquisitionRate = acquisitionRate / monthlyPairsAccountedFor;
-            churnRate = churnRate / monthlyPairsAccountedFor;
 
-            // dampening at less than 6 months of data
-            if(totalMonthsOfData < 6)
+
+            acquisitionRate = Math.Round(acquisitionRate / monthlyPairsAccountedFor);
+            churnRate = Math.Round(churnRate / monthlyPairsAccountedFor);
+
+            var averageAcquiredClients = Math.Round(totalAcquiredClients / monthlyPairsAccountedFor);
+            var averageChurnedClients = Math.Round(totalChurnedClients / monthlyPairsAccountedFor);
+
+            var netGrowth = (int)Math.Round(acquisitionCount - churnCount);
+            var netGrowthPercentage = Math.Round(acquisitionRate - churnRate);
+
+            return new ClientMetricsDto
             {
-                // reduce rates by 50% to prevent startup phase explosion
-                acquisitionRate *= 0.5;
-                churnRate *= 0.5;
-
-                // further cap at 15% acquisition & 12% churn 
-                acquisitionRate = Math.Min(acquisitionRate, 15.0);
-                churnRate = Math.Min(churnRate, 12.0);
-            }
-
-            return new MonthlyRevenuePatterns { acquisitionRate = acquisitionRate , churnRate = churnRate };
+                AcquiredClients = (int)averageAcquiredClients,
+                AcquisitionPercentage = acquisitionRate,
+                ChurnedClients = (int)averageChurnedClients,
+                ChurnPercentage = churnRate,
+                NetGrowth = netGrowth,
+                NetGrowthPercentage = netGrowthPercentage,
+            };
         }
 
         private int GetWorkingDayMetrics(List<TrainerDailyRevenue> allRevenueRecords)
@@ -142,9 +161,6 @@ namespace ClientDashboard_API.Services
 
         private Dictionary<DayOfWeek, double> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords)
         {
-            // can also provide a metrics for on average how many weekly sessions are complete 
-
-            double averageSessions = CalculateAverageDailySessions(allrevenueRecords);
 
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
 
