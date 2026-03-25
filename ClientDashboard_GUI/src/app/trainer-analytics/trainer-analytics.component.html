@@ -27,9 +27,10 @@
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
 					<p>Average session price: {{ dashboardData.revenuePatterns.averageSessionPrice }}</p>
-					<p>Price trend: {{ dashboardData.revenuePatterns.priceTrend }}</p>
 					<p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
 					<p>Revenue per working day: {{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
+          <p>Revenue per working week: {{ dashboardData.revenuePatterns.revenuePerWorkingWeek }}</p>
+          <p>Revenue per working month: {{ dashboardData.revenuePatterns.revenuePerWorkingMonth }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">
@@ -60,6 +61,8 @@
 
 		<div class="analytics-section analytics-section-last">
 			<h3>NOTES</h3>
+      <p>All metrics by default loaded in for last month, including graphs, can toggle for all months</p>
+      <p>Upon changing to all data, can change labelling structure e.g. 'Acquired last month' => 'Average monthly acquisitions'</p>
 			<p>Replace trend placeholders with your PrimeNG charts when backend data is ready.</p>
       <p>provide one default chart and dropdown to change between different displayed metrics</p>
 		</div>

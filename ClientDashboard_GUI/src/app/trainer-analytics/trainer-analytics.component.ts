@@ -17,6 +17,8 @@ interface TrainerDashboardData {
     priceTrend: string;
     monthlyWorkingDays: number;
     revenuePerWorkingDay: string;
+    revenuePerWorkingWeek: string;
+    revenuePerWorkingMonth: string;
   };
   activityPatterns: {
     busiestDays: string;
@@ -46,7 +48,9 @@ export class TrainerAnalyticsComponent {
       averageSessionPrice: '$65',
       priceTrend: 'Stable (0)',
       monthlyWorkingDays: 22,
-      revenuePerWorkingDay: '$191'
+      revenuePerWorkingDay: '$191',
+      revenuePerWorkingWeek: '$852',
+      revenuePerWorkingMonth: '$3349'
     },
     activityPatterns: {
       busiestDays: 'Mon (1.5x), Thu (1.4x)',

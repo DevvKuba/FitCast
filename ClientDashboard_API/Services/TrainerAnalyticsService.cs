@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Models;
@@ -8,7 +9,22 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
-       
+
+        //public void GetClientMetrics(List<TrainerDailyRevenue> allRevenueRecords, int workingDays, int averageMonthlySessionsPerClient)
+        //{
+
+        //}
+
+        //public void GetRevenuePatterns()
+        //{
+
+        //}
+
+        //public void GetActivityPatterns()
+        //{
+
+        //}
+
         public TrainerStatistics GetTrainerStatistics(List<TrainerDailyRevenue> allRevenueRecords ,int workingDays, int averageMonthlySessionsPerClient)
         {
             // better to only account for recent month, is it because it's closer to the next month to come
