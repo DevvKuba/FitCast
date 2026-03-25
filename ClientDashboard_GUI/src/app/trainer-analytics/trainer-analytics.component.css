@@ -1,11 +1,11 @@
 .trainer-analytics-shell {
 	display: flex;
 	justify-content: center;
-	padding: 1.5rem;
+	padding: 1.75rem;
 }
 
 .analytics-panel {
-	width: min(100%, 900px);
+	width: min(100%, 1180px);
 	background: #ffffff;
 	border: 1px solid var(--surface-border, #e5e7eb);
 	border-radius: 12px;
@@ -13,18 +13,80 @@
 	overflow: hidden;
 }
 
+.analytics-header {
+	display: grid;
+	grid-template-columns: 0.9fr 1.1fr;
+	align-items: center;
+	border-bottom: 1px solid var(--surface-border, #e5e7eb);
+}
+
 .analytics-title {
 	margin: 0;
 	padding: 1.2rem 1.35rem;
-	border-bottom: 1px solid var(--surface-border, #e5e7eb);
 	font-size: 1.45rem;
 	font-weight: 700;
 	color: var(--text-color, #1f2937);
 }
 
+.analytics-trends-title {
+	margin: 0;
+	padding: 1.2rem 1.35rem;
+	font-size: 1.02rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	color: var(--text-color-secondary, #4b5563);
+	border-left: 1px solid var(--surface-border, #e5e7eb);
+}
+
 .analytics-section {
-	padding: 1.05rem 1.35rem;
+	padding: 1.2rem 1.45rem;
 	border-bottom: 1px solid var(--surface-border, #e5e7eb);
+}
+
+.analytics-content {
+	display: grid;
+	grid-template-columns: 0.9fr 1.1fr;
+	border-bottom: 1px solid var(--surface-border, #e5e7eb);
+}
+
+.analytics-left-column,
+.analytics-right-column {
+	min-height: 100%;
+}
+
+.analytics-right-column {
+	border-left: 1px solid var(--surface-border, #e5e7eb);
+}
+
+.left-section {
+	padding: 1.25rem 1.45rem;
+}
+
+.trends-section {
+	border-bottom: none;
+	padding-top: 0.7rem;
+	display: grid;
+	gap: 1rem;
+}
+
+.trend-block {
+	margin-top: 0;
+	padding: 0.95rem;
+	min-height: 102px;
+	border: 1px dashed var(--surface-border, #d1d5db);
+	border-radius: 8px;
+}
+
+.trend-block h4 {
+	margin: 0 0 0.35rem;
+	font-size: 0.94rem;
+	font-weight: 600;
+	color: var(--text-color, #1f2937);
+}
+
+.trend-block p {
+	margin: 0;
+	font-size: 0.95rem;
 }
 
 .analytics-section-last {
@@ -40,10 +102,14 @@
 }
 
 .analytics-section p {
-	margin: 0.18rem 0;
+	margin: 0;
 	font-size: 1rem;
-	line-height: 1.45;
+	line-height: 1.5;
 	color: var(--text-color, #1f2937);
+}
+
+.analytics-section p + p {
+	margin-top: 0.55rem;
 }
 
 .chart-placeholder-list {
@@ -59,6 +125,25 @@
 		padding: 1rem;
 	}
 
+	.analytics-content {
+		grid-template-columns: 1fr;
+	}
+
+	.analytics-header {
+		grid-template-columns: 1fr;
+	}
+
+	.analytics-trends-title {
+		border-left: none;
+		border-top: 1px solid var(--surface-border, #e5e7eb);
+		padding: 0.8rem 1rem;
+	}
+
+	.analytics-right-column {
+		border-left: none;
+		border-bottom: 1px solid var(--surface-border, #e5e7eb);
+	}
+
 	.analytics-title {
 		font-size: 1.2rem;
 		padding: 1rem 1rem;
@@ -66,6 +151,15 @@
 
 	.analytics-section {
 		padding: 0.9rem 1rem;
+	}
+
+	.left-section {
+		padding: 0.95rem 1rem;
+	}
+
+	.trend-block {
+		min-height: 84px;
+		padding: 0.8rem;
 	}
 
 	.analytics-section h3 {
