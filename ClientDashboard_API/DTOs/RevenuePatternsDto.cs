@@ -9,10 +9,10 @@ namespace ClientDashboard_API.DTOs
 
         public int MonthlyWorkingDays { get; set; }
 
-        public double revenuePerWorkingDay { get; set; }
+        public double RevenuePerWorkingDay { get; set; }
 
-        public double revenuePerWorkingWeek { get; set; }
+        public double RevenuePerWorkingWeek { get; set; }
 
-        public double revenuePerWorkingMonth { get; set; }
+        public double RevenuePerWorkingMonth { get; set; }
     }
 }

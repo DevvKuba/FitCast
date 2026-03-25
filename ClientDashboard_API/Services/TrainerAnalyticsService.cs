@@ -35,7 +35,9 @@ namespace ClientDashboard_API.Services
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
         {
+            var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
+            var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
         }
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
@@ -141,7 +143,7 @@ namespace ClientDashboard_API.Services
             };
         }
 
-        private int GetWorkingDayMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        private int GetMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
         {
             // get working days from first record day to next month with that same record day
             var monthlyWorkingDays = 0;
@@ -172,34 +174,10 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
-        {
-
-            decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
-
-            // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
-            var weekdayAverages = allrevenueRecords
-                .GroupBy(r => r.AsOfDate.DayOfWeek)
-                .ToDictionary(
-                g => g.Key,
-                g => g.Average(r => (double)(r.RevenueToday / averageSessionPrice))
-                );
-
-            // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
-            var multipliers = new List<WeeklyMultiplier>();
-
-            foreach (var day in weekdayAverages)
-            {
-                multipliers.Add(new WeeklyMultiplier(ReturnWeekdayEnumFromString(day.Key), day.Value / averageClientSessions));
-            }
-
-            return multipliers;
-        }
-
-
-        private int GetEngagementMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        private RevenuePatternsDto GetEngagementMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
             double averageMonthlySessions = 0;
+
             var monthlyPairsAccountedFor = 0;
             var totalMonthlyClientSessions = 0;
 
@@ -242,12 +220,41 @@ namespace ClientDashboard_API.Services
             return (int)Math.Round(averageMonthlySessions / monthlyPairsAccountedFor, 0);
         }
 
+        private List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
+        {
+
+            decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
+
+            // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
+            var weekdayAverages = allrevenueRecords
+                .GroupBy(r => r.AsOfDate.DayOfWeek)
+                .ToDictionary(
+                g => g.Key,
+                g => g.Average(r => (double)(r.RevenueToday / averageSessionPrice))
+                );
+
+            // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
+            var multipliers = new List<WeeklyMultiplier>();
+
+            foreach (var day in weekdayAverages)
+            {
+                multipliers.Add(new WeeklyMultiplier(ReturnWeekdayEnumFromString(day.Key), day.Value / averageClientSessions));
+            }
+
+            return multipliers;
+        }
+
         private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
             if (allSessions == 0) return 0;
 
             return (double)allSessions / revenueRecords.Count;
+        }
+
+        private decimal CalculateAverageSessionPrice(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return revenueRecords.Average(r => r.AverageSessionPrice);
         }
 
         private Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)

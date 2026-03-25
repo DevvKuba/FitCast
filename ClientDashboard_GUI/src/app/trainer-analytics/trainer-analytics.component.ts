@@ -34,6 +34,8 @@ interface TrainerDashboardData {
   styleUrl: './trainer-analytics.component.css'
 })
 export class TrainerAnalyticsComponent {
+  selectedScope: 'lastMonth' | 'allData' = 'lastMonth';
+
   dashboardData: TrainerDashboardData = {
     clientMetrics: {
       currentClients: 12,
@@ -58,5 +60,9 @@ export class TrainerAnalyticsComponent {
       endOfMonthSurge: '+30% last week'
     }
   };
+
+  setMetricScope(scope: 'lastMonth' | 'allData'): void {
+    this.selectedScope = scope;
+  }
 
 }

@@ -4,7 +4,27 @@
 	<div class="analytics-panel">
 		<div class="analytics-header">
 			<h2 class="analytics-title">Trainer Analytics Dashboard</h2>
-			<h3 class="analytics-trends-title">TRENDS (3-MONTH VIEW)</h3>
+			<div class="analytics-header-controls">
+				<h3 class="analytics-trends-title">TRENDS</h3>
+				<div class="analytics-scope-toggle" role="group" aria-label="Analytics data range">
+					<button
+						type="button"
+						class="scope-toggle-button"
+						[class.active]="selectedScope === 'lastMonth'"
+						(click)="setMetricScope('lastMonth')"
+					>
+						Last month
+					</button>
+					<button
+						type="button"
+						class="scope-toggle-button"
+						[class.active]="selectedScope === 'allData'"
+						(click)="setMetricScope('allData')"
+					>
+						All data
+					</button>
+				</div>
+			</div>
 		</div>
 
 		<div class="analytics-content">
@@ -26,8 +46,8 @@
 
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
+          <p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
 					<p>Average session price: {{ dashboardData.revenuePatterns.averageSessionPrice }}</p>
-					<p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
 					<p>Revenue per working day: {{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
           <p>Revenue per working week: {{ dashboardData.revenuePatterns.revenuePerWorkingWeek }}</p>
           <p>Revenue per working month: {{ dashboardData.revenuePatterns.revenuePerWorkingMonth }}</p>
@@ -37,7 +57,6 @@
 					<h3>ACTIVITY PATTERNS</h3>
 					<p>Busiest days: {{ dashboardData.activityPatterns.busiestDays }}</p>
 					<p>Light days: {{ dashboardData.activityPatterns.lightDays }}</p>
-					<p>End-of-month surge: {{ dashboardData.activityPatterns.endOfMonthSurge }}</p>
 				</div>
 			</div>
 
