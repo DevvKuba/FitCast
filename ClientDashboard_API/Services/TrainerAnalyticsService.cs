@@ -177,16 +177,43 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private RevenuePatternsDto GetRevenuePatterns (List<TrainerDailyRevenue> allRevenueRecords)
+        private RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> allRevenueRecords)
         {
+            var totalRevenue = 0m;
+
             var daysAccountedFor = 0;
             var weeksAccountedFor = 0;
             var monthsAccountedFor = 0;
 
-            for(int i = 0; i < allRevenueRecords.Count; i++)
+            foreach(var record in allRevenueRecords)
             {
+                var endOfWeek = DayOfWeek.Sunday;
+                var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
+                
+                if (record.AsOfDate.Day == lastDayOfMonth)
+                {
+                    // end of month 
+                    // increment monthsAccountedFor
+                    monthsAccountedFor++;
+                }
 
+                if(record.AsOfDate.DayOfWeek == endOfWeek)
+                {
+                    // end of week 
+                    // increment weeksAccountedFor
+                    weeksAccountedFor++;
+                }
+
+                daysAccountedFor++;
+                totalRevenue += record.RevenueToday;
             }
+
+            return new RevenuePatternsDto
+            {
+                RevenuePerWorkingDay = 0,
+                RevenuePerWorkingWeek = 0,
+                RevenuePerWorkingMonth = 0
+            };
 
             
         }
