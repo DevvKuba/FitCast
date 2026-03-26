@@ -31,6 +31,8 @@ namespace ClientDashboard_API.Services
                 NetGrowthPercentage = clientAcquisitionAndChurnData.NetGrowthPercentage,
             };
 
+            // TODO can also provide a metrics for on average how many client sessions are complete in a month
+
         }
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
@@ -38,11 +40,12 @@ namespace ClientDashboard_API.Services
             var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
             var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
+
+            // continue
         }
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            // TODO can also provide a metrics for on average how many weekly sessions are complete 
             var averageDailySessions = CalculateAverageDailySessions(revenueRecords);
 
             var weekdayMultiplierList = GetWeeklyActivityPatterns(revenueRecords, (int)averageDailySessions);
@@ -153,13 +156,13 @@ namespace ClientDashboard_API.Services
 
             var firstRecord = allRevenueRecords.First();
 
-            foreach(var record in allRevenueRecords)
+            foreach (var record in allRevenueRecords)
             {
                 if (record.RevenueToday == 0)
                 {
                     nonWorkingDays++;
                 }
-                if(record.AsOfDate.Day == firstRecord.AsOfDate.Day && record.AsOfDate.Month != firstRecord.AsOfDate.Month)
+                if (record.AsOfDate.Day == firstRecord.AsOfDate.Day && record.AsOfDate.Month != firstRecord.AsOfDate.Month)
                 {
                     var previousMonth = record.AsOfDate.AddMonths(-1);
                     var daysInbetween = (int)(DateTime.Parse(record.AsOfDate.ToString()) - DateTime.Parse(previousMonth.ToString())).TotalDays;
@@ -174,51 +177,68 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private RevenuePatternsDto GetEngagementMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        private RevenuePatternsDto GetRevenuePatterns (List<TrainerDailyRevenue> allRevenueRecords)
         {
-            double averageMonthlySessions = 0;
+            var daysAccountedFor = 0;
+            var weeksAccountedFor = 0;
+            var monthsAccountedFor = 0;
 
-            var monthlyPairsAccountedFor = 0;
-            var totalMonthlyClientSessions = 0;
-
-            var firstMonthlyRevenueRecord = allRevenueRecords.First();
-
-            for(int i = 0; i < allRevenueRecords.Count; ++i)
+            for(int i = 0; i < allRevenueRecords.Count; i++)
             {
-                var currentRecord = allRevenueRecords[i];
 
-                // acculumate monthly sessions
-
-                if (currentRecord.AsOfDate == firstMonthlyRevenueRecord.AsOfDate) 
-                {
-                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
-                }
-                // accumulation stopped - likely new month start
-                else if(currentRecord.TotalSessionsThisMonth < allRevenueRecords[i - 1].TotalSessionsThisMonth)
-                {
-                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
-                }
-                // gather difference between current and previous record, in terms of totalSessionsThisMonth
-                else
-                {
-                    totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth - allRevenueRecords[i - 1].TotalSessionsThisMonth;
-                }
-
-                // check if a months has passed from firstMonthlyRevenueRecord
-                if (currentRecord.AsOfDate.Day == firstMonthlyRevenueRecord.AsOfDate.Day && currentRecord.AsOfDate.Month != firstMonthlyRevenueRecord.AsOfDate.Month)
-                {
-                    var totalActiveClients = currentRecord.ActiveClients;
-
-                    averageMonthlySessions += totalMonthlyClientSessions / totalActiveClients;
-
-                    monthlyPairsAccountedFor++;
-                    totalMonthlyClientSessions = 0;
-                    firstMonthlyRevenueRecord = currentRecord;
-                }
             }
 
-            return (int)Math.Round(averageMonthlySessions / monthlyPairsAccountedFor, 0);
+            
         }
+
+
+        // this can be used for the calculation of the average number of sessions a trainer does
+
+        //private RevenuePatternsDto GetAverageMonthlyClientSessions(List<TrainerDailyRevenue> allRevenueRecords)
+        //{
+        //    double averageMonthlySessions = 0;
+
+        //    var monthlyPairsAccountedFor = 0;
+        //    var totalMonthlyClientSessions = 0;
+
+        //    var firstMonthlyRevenueRecord = allRevenueRecords.First();
+
+        //    for (int i = 0; i < allRevenueRecords.Count; ++i)
+        //    {
+        //        var currentRecord = allRevenueRecords[i];
+
+        //        // acculumate monthly sessions
+
+        //        if (currentRecord.AsOfDate == firstMonthlyRevenueRecord.AsOfDate)
+        //        {
+        //            totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
+        //        }
+        //        // accumulation stopped - likely new month start
+        //        else if (currentRecord.TotalSessionsThisMonth < allRevenueRecords[i - 1].TotalSessionsThisMonth)
+        //        {
+        //            totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth;
+        //        }
+        //        // gather difference between current and previous record, in terms of totalSessionsThisMonth
+        //        else
+        //        {
+        //            totalMonthlyClientSessions += currentRecord.TotalSessionsThisMonth - allRevenueRecords[i - 1].TotalSessionsThisMonth;
+        //        }
+
+        //        // check if a months has passed from firstMonthlyRevenueRecord
+        //        if (currentRecord.AsOfDate.Day == firstMonthlyRevenueRecord.AsOfDate.Day && currentRecord.AsOfDate.Month != firstMonthlyRevenueRecord.AsOfDate.Month)
+        //        {
+        //            var totalActiveClients = currentRecord.ActiveClients;
+
+        //            averageMonthlySessions += totalMonthlyClientSessions / totalActiveClients;
+
+        //            monthlyPairsAccountedFor++;
+        //            totalMonthlyClientSessions = 0;
+        //            firstMonthlyRevenueRecord = currentRecord;
+        //        }
+        //    }
+
+        //    return (int)Math.Round(averageMonthlySessions / monthlyPairsAccountedFor, 0);
+        //}
 
         private List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
         {
