@@ -10,11 +10,11 @@
 
 .workout-caption {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
 }
 
 .workout-search {
-    margin-right: 80px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -29,7 +29,7 @@
 }
 
 .clear-button {
-    margin-right: 20px;
+    margin-left: 0.75rem;
 }
 
 .left-segment {
@@ -39,6 +39,8 @@
 
 .right-segment {
     display: flex;
+    align-items: center;
+    margin-left: auto;
 }
 
 .exercise-count-input {

@@ -18,6 +18,7 @@
 
 .right-segment {
   display: flex;
+  margin-left: auto;
 }
 
 .delete-message {
