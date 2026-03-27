@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Services
         {
             var clientSessionData = GetTrainerBaseClientsAndAverageSessions(revenueRecords);
 
+            var monthlySessions = GetBaseClientMonthlyAverageSessions(revenueRecords);
+
             var clientAcquisitionAndChurnData = CalculateMonthlyClientChangeRates(revenueRecords);
 
             return new ClientMetricsDto
@@ -29,10 +31,8 @@ namespace ClientDashboard_API.Services
                 ChurnPercentage = clientAcquisitionAndChurnData.ChurnPercentage,
                 NetGrowth = clientAcquisitionAndChurnData.NetGrowth,
                 NetGrowthPercentage = clientAcquisitionAndChurnData.NetGrowthPercentage,
+                MonthlyClientSessions = monthlySessions.MonthlyClientSessions
             };
-
-            // TODO can also provide a metrics for on average how many client sessions are complete in a month
-
         }
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
@@ -81,6 +81,31 @@ namespace ClientDashboard_API.Services
             return statistics;
         }
 
+        private ClientMetricsDto GetBaseClientMonthlyAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            var monthsAccounterFor = 0;
+            var totalSessions = 0;
+
+            foreach(var record in allRevenueRecords)
+            {
+                var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
+
+                if(record.AsOfDate.Day == lastDayOfMonth)
+                {
+                    monthsAccounterFor++;
+                    totalSessions += record.TotalSessionsThisMonth;
+                }
+            }
+
+            var averageMonthlySessions = Math.Round((double)totalSessions / monthsAccounterFor);
+
+            return new ClientMetricsDto
+            {
+                MonthlyClientSessions = (int)averageMonthlySessions
+            };
+
+        }
+
         // input of data can be last month / all records same outputs
         private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
@@ -88,7 +113,7 @@ namespace ClientDashboard_API.Services
             var recordStartMonth = allRevenueRecords.First().AsOfDate.Month;
 
             var startingMonthActiveClients = allRevenueRecords.First().ActiveClients;
-            var monthlyPairsAccountedFor = 0;
+            var monthsAccountedFor = 0;
             
             double churnCount = 0;
             double acquisitionCount = 0;
@@ -112,7 +137,7 @@ namespace ClientDashboard_API.Services
                 {
                     acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
                     churnRate += (churnCount / startingMonthActiveClients) * 100;
-                    monthlyPairsAccountedFor++;
+                    monthsAccountedFor++;
 
                     totalAcquiredClients += acquisitionCount;
                     totalChurnedClients += churnCount;
@@ -136,11 +161,11 @@ namespace ClientDashboard_API.Services
 
 
 
-            acquisitionRate = Math.Round(acquisitionRate / monthlyPairsAccountedFor);
-            churnRate = Math.Round(churnRate / monthlyPairsAccountedFor);
+            acquisitionRate = Math.Round(acquisitionRate / monthsAccountedFor);
+            churnRate = Math.Round(churnRate / monthsAccountedFor);
 
-            var averageAcquiredClients = Math.Round(totalAcquiredClients / monthlyPairsAccountedFor);
-            var averageChurnedClients = Math.Round(totalChurnedClients / monthlyPairsAccountedFor);
+            var averageAcquiredClients = Math.Round(totalAcquiredClients / monthsAccountedFor);
+            var averageChurnedClients = Math.Round(totalChurnedClients / monthsAccountedFor);
 
             var netGrowth = (int)Math.Round(acquisitionCount - churnCount);
             var netGrowthPercentage = Math.Round(acquisitionRate - churnRate);
@@ -161,7 +186,7 @@ namespace ClientDashboard_API.Services
             // get working days from first record day to next month with that same record day
             var monthlyWorkingDays = 0;
 
-            var monthlyPairsAccountedFor = 0;
+            var monthsAccounterFor = 0;
             var nonWorkingDays = 0;
 
             var firstRecord = allRevenueRecords.First();
@@ -179,12 +204,12 @@ namespace ClientDashboard_API.Services
 
                     monthlyWorkingDays += daysInbetween - nonWorkingDays;
 
-                    monthlyPairsAccountedFor++;
+                    monthsAccounterFor++;
                     nonWorkingDays = 0;
                 }
             }
 
-            return monthlyWorkingDays / monthlyPairsAccountedFor;
+            return monthlyWorkingDays / monthsAccounterFor;
         }
 
         private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
