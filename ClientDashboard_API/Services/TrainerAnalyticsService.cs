@@ -180,43 +180,43 @@ namespace ClientDashboard_API.Services
 
         private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            //var totalRevenue = 0m;
+            var totalRevenue = 0m;
 
-            //var daysAccountedFor = 0;
-            //var weeksAccountedFor = 0;
-            //var monthsAccountedFor = 0;
+            var daysAccountedFor = 0;
+            var weeksAccountedFor = 0;
+            var monthsAccountedFor = 0;
 
-            //foreach(var record in allRevenueRecords)
-            //{
-            //    var endOfWeek = DayOfWeek.Sunday;
-            //    var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
+            foreach (var record in allRevenueRecords)
+            {
+                var endOfWeek = DayOfWeek.Sunday;
+                var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
 
-            //    if (record.AsOfDate.Day == lastDayOfMonth)
-            //    {
-            //        // end of month 
-            //        monthsAccountedFor++;
-            //    }
+                if (record.AsOfDate.Day == lastDayOfMonth)
+                {
+                    // end of month 
+                    monthsAccountedFor++;
+                }
 
-            //    if(record.AsOfDate.DayOfWeek == endOfWeek)
-            //    {
-            //        // end of week 
-            //        weeksAccountedFor++;
-            //    }
+                if (record.AsOfDate.DayOfWeek == endOfWeek)
+                {
+                    // end of week 
+                    weeksAccountedFor++;
+                }
 
-            //    daysAccountedFor++;
-            //    totalRevenue += record.RevenueToday;
-            //}
+                daysAccountedFor++;
+                totalRevenue += record.RevenueToday;
+            }
 
-            //return new RevenuePatternsDto
-            //{
-            //    RevenuePerWorkingDay = 0,
-            //    RevenuePerWorkingWeek = 0,
-            //    RevenuePerWorkingMonth = 0
-            //};
+            var averageRevenuePerDay = Math.Round(totalRevenue / daysAccountedFor);
+            var averageRevenuePerWeek = Math.Round(totalRevenue / weeksAccountedFor);
+            var averageRevenuePerMonth = Math.Round(totalRevenue / monthsAccountedFor);
 
-            throw new NotImplementedException();
-
-
+            return new RevenuePatternsDto
+            {
+                RevenuePerWorkingDay = (double)averageRevenuePerDay,
+                RevenuePerWorkingWeek = (double)averageRevenuePerWeek,
+                RevenuePerWorkingMonth = (double)averageRevenuePerMonth
+            };
         }
 
 
