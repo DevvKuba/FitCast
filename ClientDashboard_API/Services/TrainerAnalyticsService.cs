@@ -22,7 +22,7 @@ namespace ClientDashboard_API.Services
             return new ClientMetricsDto
             {
                 BaseClients = clientSessionData.BaseClients,
-                AverageSessionsPerClient = clientSessionData.AverageSessionsPerClient,
+                SessionsPerClient = clientSessionData.SessionsPerClient,
                 AcquiredClients = clientAcquisitionAndChurnData.AcquiredClients,
                 AcquisitionPercentage = clientAcquisitionAndChurnData.AcquisitionPercentage,
                 ChurnedClients = clientAcquisitionAndChurnData.ChurnedClients,
@@ -37,11 +37,20 @@ namespace ClientDashboard_API.Services
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            //var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
+            var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
-            //var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
+            var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
 
-            throw new NotImplementedException();
+            var averageRevenues = GetAverageDayWeekAndMonthRevenues(revenueRecords);
+
+            return new RevenuePatternsDto
+            {
+                MonthlyWorkingDays = monthlyWorkingDays,
+                SessionsPrice = sessionPrice,
+                RevenuePerWorkingDay = averageRevenues.RevenuePerWorkingDay,
+                RevenuePerWorkingWeek = averageRevenues.RevenuePerWorkingWeek,
+                RevenuePerWorkingMonth = averageRevenues.RevenuePerWorkingMonth,
+            };
 
         }
 
@@ -67,7 +76,7 @@ namespace ClientDashboard_API.Services
             var statistics = new ClientMetricsDto
             {
                 BaseClients = (int)averageActiveClients,
-                AverageSessionsPerClient = (int)averageSessionsPerClient
+                SessionsPerClient = (int)averageSessionsPerClient
             };
             return statistics;
         }
