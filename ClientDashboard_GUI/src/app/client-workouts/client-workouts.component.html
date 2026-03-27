@@ -173,7 +173,6 @@
                     </p-iconfield>
                 </div>
                 <p-button icon="pi pi-times-circle" (click)="showDialogForNameExclusions()" severity="secondary" label="Exclude" />
-                <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt2)" />
             </div>
             
         </div>
@@ -207,6 +206,9 @@
                 </th>
                  <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
                     Exercises <p-sortIcon field="exerciseCount" />
+                </th>
+                <th class="action-column action-header-cell">
+                    <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt2)" />
                 </th>
             </tr>
         </ng-template>

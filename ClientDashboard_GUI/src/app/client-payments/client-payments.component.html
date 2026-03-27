@@ -152,10 +152,6 @@
             </p-iconfield>
             </div>
 
-            <div class="caption-clear-action">
-                <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-            </div>
-
         </div>
          </ng-template>
         <ng-template #header>
@@ -182,6 +178,9 @@
                 </th>
                 <th pSortableColumn="paymentDate" style="width:20%; text-align: center;" >
                     Status <p-sortIcon field="paymentDate" />
+                </th>
+                <th class="action-column action-header-cell">
+                    <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
                 </th>
             </tr>
         </ng-template>
