@@ -31,32 +31,33 @@
 			<div class="analytics-left-column">
 				<div class="analytics-section left-section">
 					<h3>CLIENT METRICS</h3>
-					<p>Current: {{ dashboardData.clientMetrics.currentClients }} clients</p>
+					<p>Current: {{ dashboardData.clientMetrics.baseClients }} clients</p>
 					<p>
-						Acquired last month: {{ dashboardData.clientMetrics.acquiredLastMonth }}
-						({{ dashboardData.clientMetrics.acquiredChange }})
+						Acquired last month: {{ dashboardData.clientMetrics.acquiredClients }}
+						(+{{ dashboardData.clientMetrics.acquisitionPercentage }}%)
 					</p>
 					<p>
-						Churned last month: {{ dashboardData.clientMetrics.churnedLastMonth }}
-						({{ dashboardData.clientMetrics.churnedChange }})
+						Churned last month: {{ dashboardData.clientMetrics.churnedClients }}
+						({{ dashboardData.clientMetrics.churnPercentage }}%)
 					</p>
-					<p>Net growth: {{ dashboardData.clientMetrics.netGrowth }}</p>
+					<p>Net growth: +{{ dashboardData.clientMetrics.netGrowth }} (+{{ dashboardData.clientMetrics.netGrowthPercentage }}%)</p>
 					<p>Sessions per client: {{ dashboardData.clientMetrics.sessionsPerClient }}</p>
+          <p>Monthly sessions: {{ dashboardData.clientMetrics.monthlyClientSessions }}</p>
 				</div>
 
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
           <p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
-					<p>Average session price: {{ dashboardData.revenuePatterns.averageSessionPrice }}</p>
-					<p>Revenue per working day: {{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
-          <p>Revenue per working week: {{ dashboardData.revenuePatterns.revenuePerWorkingWeek }}</p>
-          <p>Revenue per working month: {{ dashboardData.revenuePatterns.revenuePerWorkingMonth }}</p>
+					<p>Average session price: ${{ dashboardData.revenuePatterns.sessionsPrice }}</p>
+					<p>Revenue per working day: ${{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
+          <p>Revenue per working week: ${{ dashboardData.revenuePatterns.revenuePerWorkingWeek }}</p>
+          <p>Revenue per working month: ${{ dashboardData.revenuePatterns.revenuePerWorkingMonth }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">
 					<h3>ACTIVITY PATTERNS</h3>
-					<p>Busiest days: {{ dashboardData.activityPatterns.busiestDays }}</p>
-					<p>Light days: {{ dashboardData.activityPatterns.lightDays }}</p>
+					<p>Busiest days: {{ formatWeeklyMultipliers(dashboardData.activityPatterns.busiestDays) }}</p>
+					<p>Light days: {{ formatWeeklyMultipliers(dashboardData.activityPatterns.lightDays) }}</p>
 				</div>
 			</div>
 
@@ -83,7 +84,6 @@
       <p>All metrics by default loaded in for last month, including graphs, can toggle for all months</p>
       <p>Upon changing to all data, can change labelling structure e.g. 'Acquired last month' => 'Average monthly acquisitions'</p>
 			<p>Replace trend placeholders with your PrimeNG charts when backend data is ready.</p>
-      <p>provide one default chart and dropdown to change between different displayed metrics</p>
 		</div>
 	</div>
 </section>
