@@ -37,11 +37,12 @@ namespace ClientDashboard_API.Services
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
+            //var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
-            var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
+            //var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
 
-            // continue
+            throw new NotImplementedException();
+
         }
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
@@ -177,7 +178,7 @@ namespace ClientDashboard_API.Services
             return monthlyWorkingDays / monthlyPairsAccountedFor;
         }
 
-        private RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> allRevenueRecords)
+        private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
         {
             //var totalRevenue = 0m;
 

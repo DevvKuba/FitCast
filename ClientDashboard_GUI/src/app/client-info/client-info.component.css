@@ -6,7 +6,6 @@
 
 .header-buttons {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   width: 100%;
 }
@@ -14,11 +13,20 @@
 .left-segment {
   display: flex;
   justify-content: flex-start;
+  flex: 1;
 }
 
 .right-segment {
   display: flex;
-  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 200px;
+  min-width: 200px;
+}
+
+.action-header-cell {
+  text-align: center;
+  vertical-align: middle;
 }
 
 .delete-message {
@@ -51,7 +59,7 @@
 }
 
 ::ng-deep .clear-button {
-  margin-top: 10px;
+  margin-top: 0;
 }
 
 .popover-text {

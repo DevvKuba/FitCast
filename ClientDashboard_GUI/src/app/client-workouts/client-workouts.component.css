@@ -18,6 +18,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-right: 0.5rem;
 }
 
 .workout-search-input {
@@ -29,7 +30,7 @@
 }
 
 .clear-button {
-    margin-left: 0.75rem;
+    margin-left: 0;
 }
 
 .left-segment {
@@ -41,6 +42,7 @@
     display: flex;
     align-items: center;
     margin-left: auto;
+    gap: 0.75rem;
 }
 
 .exercise-count-input {
@@ -53,6 +55,17 @@
 
 .workout-td {
     text-align: center;
+}
+
+.action-column {
+    width: 120px;
+    min-width: 120px;
+    white-space: nowrap;
+}
+
+.action-header-cell {
+    text-align: center;
+    vertical-align: middle;
 }
 
 .header-buttons {

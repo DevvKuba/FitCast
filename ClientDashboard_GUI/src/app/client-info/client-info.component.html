@@ -71,15 +71,15 @@
 
   <div class="table-container">
   <p-table #dt1 [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
-      <ng-template #header>
+      <ng-template #caption>
         <div class="header-buttons">
           <div class="left-segment">
             <p-button icon="pi pi-plus" styleClass="add-button" label="New" severity="secondary" (onClick)="showDialogForAdd()"></p-button>
           </div>
-          <div class="right-segment">
-            <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
-          </div>
         </div>
+      </ng-template>
+
+      <ng-template #header>
           <tr>
               <th pSortableColumn="firstName" style="width:25%; text-align: center;">
                     Client Name <p-sortIcon field="firstName" />
@@ -95,6 +95,9 @@
               <th pSortableColumn="isActive" style="width:25%; text-align: center;">
                     Activity Status <p-sortIcon field="isActive" />
               </th>
+                <th class="action-column action-header-cell">
+                    <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                </th>
           </tr>
       </ng-template>
       <ng-template #body let-client let-editing="editing" let-ri="rowIndex">

@@ -144,127 +144,129 @@ namespace ClientDashboard_API.ML.Helpers
             return records;
         }
 
-        public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(
-            TrainerStatistics trainerStatistics,
-            MonthlyRevenuePatterns monthlyRevenuePatterns,
-            Dictionary<DayOfWeek, double> multipliers,
-            int trainerId,
-            int numberOfMonths)
-        {
-            var records = new List<TrainerDailyRevenue>();
-            var random = new Random(trainerId); 
 
-            // Start from X months ago if not specified
-            var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
-            var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        // Critical evaluation
+        //public static List<TrainerDailyRevenue> GenerateExtendedRevenueData(
+        //    TrainerStatistics trainerStatistics,
+        //    MonthlyRevenuePatterns monthlyRevenuePatterns,
+        //    Dictionary<DayOfWeek, double> multipliers,
+        //    int trainerId,
+        //    int numberOfMonths)
+        //{
+        //    var records = new List<TrainerDailyRevenue>();
+        //    var random = new Random(trainerId); 
 
-            // === BASE PARAMETERS (realistic starting values) ===
-            int baseActiveClients = trainerStatistics.BaseActiveClients;
-            double acquiredClients = 0;
-            double churnedClients = 0;
+        //    // Start from X months ago if not specified
+        //    var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
+        //    var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-            decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice;
-            int averageMonthlySessionsPerClient = trainerStatistics.AverageClientMonthlySessions;
+        //    // === BASE PARAMETERS (realistic starting values) ===
+        //    int baseActiveClients = trainerStatistics.BaseActiveClients;
+        //    double acquiredClients = 0;
+        //    double churnedClients = 0;
 
-            int baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
+        //    decimal baseSessionPrice = trainerStatistics.BaseSessionsPrice;
+        //    int averageMonthlySessionsPerClient = trainerStatistics.AverageClientMonthlySessions;
 
-            int currentMonth = currentDate.Month;
-            int monthCounter = 0;
-            int newClientsThisMonth = 0;
+        //    int baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
 
-            while (currentDate <= endDate)
-            {
-                // === DETECT MONTH CHANGE (apply growth) ===
-                if (currentDate.Month != currentMonth)
-                {
-                    currentMonth = currentDate.Month;
-                    monthCounter++;
+        //    int currentMonth = currentDate.Month;
+        //    int monthCounter = 0;
+        //    int newClientsThisMonth = 0;
 
-                    var previousBaseClients = baseActiveClients;
-                    double randomMultiplier = random.Next(7, 13) / 10.0;
+        //    while (currentDate <= endDate)
+        //    {
+        //        // === DETECT MONTH CHANGE (apply growth) ===
+        //        if (currentDate.Month != currentMonth)
+        //        {
+        //            currentMonth = currentDate.Month;
+        //            monthCounter++;
 
-                    // Apply monthly growth with some randomness
-                    acquiredClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.acquisitionRate / 100) * randomMultiplier, 0);
-                    churnedClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.churnRate / 100) * randomMultiplier, 0);
+        //            var previousBaseClients = baseActiveClients;
+        //            double randomMultiplier = random.Next(7, 13) / 10.0;
 
-                    baseActiveClients = previousBaseClients - (int)churnedClients + (int)acquiredClients;
-                    baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
+        //            // Apply monthly growth with some randomness
+        //            acquiredClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.acquisitionRate / 100) * randomMultiplier, 0);
+        //            churnedClients = Math.Round(previousBaseClients * (monthlyRevenuePatterns.churnRate / 100) * randomMultiplier, 0);
 
-                    newClientsThisMonth = baseActiveClients - previousBaseClients;
-                }
-                // === DAILY CALCULATIONS ===
+        //            baseActiveClients = previousBaseClients - (int)churnedClients + (int)acquiredClients;
+        //            baseSessionsPerMonth = baseActiveClients * averageMonthlySessionsPerClient;
 
-                // 1. Weekly pattern (trainers have busy/rest days)
+        //            newClientsThisMonth = baseActiveClients - previousBaseClients;
+        //        }
+        //        // === DAILY CALCULATIONS ===
 
-                var dayOfWeek = currentDate.DayOfWeek;
-                double weeklyMultiplier = dayOfWeek switch
-                {
-                    DayOfWeek.Sunday => multipliers[DayOfWeek.Sunday],       
-                    DayOfWeek.Monday => multipliers[DayOfWeek.Monday],       
-                    DayOfWeek.Tuesday => multipliers[DayOfWeek.Tuesday],      
-                    DayOfWeek.Wednesday => multipliers[DayOfWeek.Wednesday],    
-                    DayOfWeek.Thursday => multipliers[DayOfWeek.Thursday],     
-                    DayOfWeek.Friday => multipliers[DayOfWeek.Friday],      
-                    DayOfWeek.Saturday => multipliers[DayOfWeek.Saturday],    
-                    _ => 1.0
-                };
+        //        // 1. Weekly pattern (trainers have busy/rest days)
 
-                double workingDaysPerMonth = trainerStatistics.MonthlyWorkingDays;
-                double targetSessionsPerWorkingDay = baseSessionsPerMonth / workingDaysPerMonth;
+        //        var dayOfWeek = currentDate.DayOfWeek;
+        //        double weeklyMultiplier = dayOfWeek switch
+        //        {
+        //            DayOfWeek.Sunday => multipliers[DayOfWeek.Sunday],       
+        //            DayOfWeek.Monday => multipliers[DayOfWeek.Monday],       
+        //            DayOfWeek.Tuesday => multipliers[DayOfWeek.Tuesday],      
+        //            DayOfWeek.Wednesday => multipliers[DayOfWeek.Wednesday],    
+        //            DayOfWeek.Thursday => multipliers[DayOfWeek.Thursday],     
+        //            DayOfWeek.Friday => multipliers[DayOfWeek.Friday],      
+        //            DayOfWeek.Saturday => multipliers[DayOfWeek.Saturday],    
+        //            _ => 1.0
+        //        };
 
-                // Sessions per day (varies throughout month)
-                int dayOfMonth = currentDate.Day;
-                int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
-                double monthProgressFactor = (double)dayOfMonth / daysInMonth;
+        //        double workingDaysPerMonth = trainerStatistics.MonthlyWorkingDays;
+        //        double targetSessionsPerWorkingDay = baseSessionsPerMonth / workingDaysPerMonth;
 
-                // More sessions toward month-end (common pattern in fitness)
-                double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
+        //        // Sessions per day (varies throughout month)
+        //        int dayOfMonth = currentDate.Day;
+        //        int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+        //        double monthProgressFactor = (double)dayOfMonth / daysInMonth;
 
-                double dailyVariance = 0.7 + (random.NextDouble() * 0.6); // 0.7 - 1.3 
+        //        // More sessions toward month-end (common pattern in fitness)
+        //        double endOfMonthBoost = monthProgressFactor > 0.8 ? 1.3 : 1.0;
 
-                // accounts many daily/weekly/monthly factors in determination
-                double dailySessions = targetSessionsPerWorkingDay
-                    * endOfMonthBoost
-                    * weeklyMultiplier
-                    * dailyVariance;
+        //        double dailyVariance = 0.7 + (random.NextDouble() * 0.6); // 0.7 - 1.3 
 
-                dailySessions = Math.Max(0, Math.Round(dailySessions, 0));
+        //        // accounts many daily/weekly/monthly factors in determination
+        //        double dailySessions = targetSessionsPerWorkingDay
+        //            * endOfMonthBoost
+        //            * weeklyMultiplier
+        //            * dailyVariance;
 
-                // Revenue today (sessions * price with some variance)
-                decimal revenueToday = (int)dailySessions * baseSessionPrice;
+        //        dailySessions = Math.Max(0, Math.Round(dailySessions, 0));
 
-                // Monthly revenue so far (sum of all days in current month)
-                var monthStartDate = new DateOnly(currentDate.Year, currentDate.Month, 1);
-                decimal monthlyRevenueThusFar = records
-                    .Where(r => r.TrainerId == trainerId && r.AsOfDate >= monthStartDate && r.AsOfDate < currentDate)
-                    .Sum(r => r.RevenueToday) + revenueToday;
+        //        // Revenue today (sessions * price with some variance)
+        //        decimal revenueToday = (int)dailySessions * baseSessionPrice;
 
-                // Total sessions this month (cumulative)
-                int totalSessionsThisMonth = records
-                    .Where(r => r.TrainerId == trainerId && r.AsOfDate >= monthStartDate && r.AsOfDate < currentDate)
-                    .Sum(r => r.RevenueToday > 0 ? (int)(r.RevenueToday / r.AverageSessionPrice) : 0) + (int)dailySessions;
+        //        // Monthly revenue so far (sum of all days in current month)
+        //        var monthStartDate = new DateOnly(currentDate.Year, currentDate.Month, 1);
+        //        decimal monthlyRevenueThusFar = records
+        //            .Where(r => r.TrainerId == trainerId && r.AsOfDate >= monthStartDate && r.AsOfDate < currentDate)
+        //            .Sum(r => r.RevenueToday) + revenueToday;
 
-                // Create the daily record
-                var record = new TrainerDailyRevenue
-                {
-                    TrainerId = trainerId,
-                    AsOfDate = currentDate,
-                    RevenueToday = Math.Round(revenueToday, 2),
-                    MonthlyRevenueThusFar = Math.Round(monthlyRevenueThusFar, 2),
-                    TotalSessionsThisMonth = totalSessionsThisMonth,
-                    NewClientsThisMonth = newClientsThisMonth,
-                    ActiveClients = baseActiveClients,
-                    AverageSessionPrice = Math.Round(baseSessionPrice, 2)
-                };
+        //        // Total sessions this month (cumulative)
+        //        int totalSessionsThisMonth = records
+        //            .Where(r => r.TrainerId == trainerId && r.AsOfDate >= monthStartDate && r.AsOfDate < currentDate)
+        //            .Sum(r => r.RevenueToday > 0 ? (int)(r.RevenueToday / r.AverageSessionPrice) : 0) + (int)dailySessions;
 
-                records.Add(record);
+        //        // Create the daily record
+        //        var record = new TrainerDailyRevenue
+        //        {
+        //            TrainerId = trainerId,
+        //            AsOfDate = currentDate,
+        //            RevenueToday = Math.Round(revenueToday, 2),
+        //            MonthlyRevenueThusFar = Math.Round(monthlyRevenueThusFar, 2),
+        //            TotalSessionsThisMonth = totalSessionsThisMonth,
+        //            NewClientsThisMonth = newClientsThisMonth,
+        //            ActiveClients = baseActiveClients,
+        //            AverageSessionPrice = Math.Round(baseSessionPrice, 2)
+        //        };
 
-                // Move to next day
-                currentDate = currentDate.AddDays(1);
+        //        records.Add(record);
 
-            }
-            return records;
-        }
+        //        // Move to next day
+        //        currentDate = currentDate.AddDays(1);
+
+        //    }
+        //    return records;
+        //}
 
     }
 }
