@@ -291,8 +291,25 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
         }
 
-        //[HttpGet("getTrainerLastMonthAnalytics")]
-        //public async Task<ActionResult<ApiResponseDto<>>>
+        [HttpGet("getTrainerLastMonthsAnalytics")]
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
+        {
+            // gather the revenue recrods for the previous month 
+
+            // pass into all trainer analytics service methods
+
+            // return CompleteTrainerAnalyticsDto containing all outputs
+        }
+
+        [HttpGet("getTrainerAllMonthsAnalytics")]
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllMonthAnalytics([FromQuery] int trainerId)
+        {
+            // gather the revenue recrods for all trainer months
+            
+            // pass into all trainer analytics service methods
+
+            // return CompleteTrainerAnalyticsDto containing all outputs
+        }
 
         [HttpPost("addExcludedName")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
