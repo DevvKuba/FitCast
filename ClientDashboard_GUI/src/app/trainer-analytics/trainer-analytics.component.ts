@@ -45,7 +45,6 @@ export class TrainerAnalyticsComponent {
       { weekday: 'Sat', multiplier: 0.4 }
     ]
   };
-
   dashboardData = {
     clientMetrics: this.clientMetrics,
     revenuePatterns: this.revenuePatterns,
