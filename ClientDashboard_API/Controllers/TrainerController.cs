@@ -295,13 +295,16 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
-            // gather the revenue records for the previous month 
-            var lastMonthsRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsForTrainerAsync(trainerId);
+            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsForTrainerAsync(trainerId);
 
-            // check if one full previous month is present  - method that checks if the first & last day of the month are present within the returned list
+            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(lastMonthsRevenueRecords);
 
-            // pass into all trainer analytics service methods
-            var allAnalytics = analyticsService.GetAllAnalyticMetrics(lastMonthsRecords);
+            if (!isDataSufficient)
+            {
+                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "Not sufficient amount of data to display analytics", Success = true});
+            }
+
+            var allAnalytics = analyticsService.GetAllAnalyticMetrics(lastMonthsRevenueRecords);
 
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
         }
@@ -309,13 +312,18 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerAllMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
         {
-            // gather the revenue recrods for all trainer months
+            var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
-            // check if one full previous month is present  - method that checks if the first & last day of the month are present within the returned list
+            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(allRevenueRecords);
 
-            // pass into all trainer analytics service methods
+            if (!isDataSufficient)
+            {
+                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "Not sufficient amount of data to display analytics", Success = true });
+            }
 
-            // return CompleteTrainerAnalyticsDto containing all outputs
+            var allAnalytics = analyticsService.GetAllAnalyticMetrics(allRevenueRecords);
+
+            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
         }
 
         [HttpPost("addExcludedName")]
