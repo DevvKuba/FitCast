@@ -295,28 +295,24 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
-            // mechanism around not displaying sufficient data.. 
-
             // gather the revenue records for the previous month 
             var lastMonthsRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsForTrainerAsync(trainerId);
 
+            // check if one full previous month is present  - method that checks if the first & last day of the month are present within the returned list
+
             // pass into all trainer analytics service methods
-            var clientMetrics = analyticsService.GetClientMetrics(lastMonthsRecords);
+            var allAnalytics = analyticsService.GetAllAnalyticMetrics(lastMonthsRecords);
 
-            var revenuePatterns = analyticsService.GetRevenuePatterns(lastMonthsRecords);
-
-            var activityPatterns = analyticsService.GetActivityPatterns(lastMonthsRecords);
-
-            
-
-            // return CompleteTrainerAnalyticsDto containing all outputs
+            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
         }
 
         [HttpGet("getTrainerAllMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
         {
             // gather the revenue recrods for all trainer months
-            
+
+            // check if one full previous month is present  - method that checks if the first & last day of the month are present within the returned list
+
             // pass into all trainer analytics service methods
 
             // return CompleteTrainerAnalyticsDto containing all outputs

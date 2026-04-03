@@ -104,6 +104,17 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
+        public bool DoRecordsIncludeFullMonth(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var startOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == 1);
+
+            var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
+
+            if(startOfMonth is null || endOfMonth is null) return false;
+
+            return true;
+        }
+
         public async Task ResetTrainerDailyRevenueRecordsAsync(int trainerId)
         {
             var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
@@ -128,5 +139,6 @@ namespace ClientDashboard_API.Data
 
             return lastDayOfMonthlyRecords.Last();
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -26,6 +27,8 @@ namespace ClientDashboard_API.Interfaces
         int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
 
         Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
+
+        bool DoRecordsIncludeFullMonth(List<TrainerDailyRevenue> revenueRecords);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
 
