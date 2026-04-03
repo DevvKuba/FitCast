@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
+        
+
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
             var clientSessionData = GetTrainerBaseClientsAndAverageSessions(revenueRecords);
@@ -105,6 +107,37 @@ namespace ClientDashboard_API.Services
             };
 
         }
+
+        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            var clientMetrics = GetClientMetrics(allRevenueRecords);
+
+            var revenuePatterns = GetRevenuePatterns(allRevenueRecords);
+
+            var activityPatterns = GetActivityPatterns(allRevenueRecords);
+
+            return new CompleteTrainerAnalyticsDto
+            {
+                BaseClients = clientMetrics.BaseClients,
+                AcquiredClients = clientMetrics.AcquiredClients,
+                AcquisitionPercentage = clientMetrics.AcquisitionPercentage,
+                ChurnedClients = clientMetrics.ChurnedClients,
+                ChurnPercentage = clientMetrics.ChurnPercentage,
+                NetGrowth = clientMetrics.NetGrowth,
+                NetGrowthPercentage = clientMetrics.NetGrowthPercentage,
+                SessionsPerClient = clientMetrics.SessionsPerClient,
+                MonthlyClientSessions = clientMetrics.MonthlyClientSessions,
+                SessionsPrice = revenuePatterns.SessionsPrice,
+                MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
+                RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
+                RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
+                RevenuePerWorkingMonth = revenuePatterns.RevenuePerWorkingMonth,
+                BusiestDays = activityPatterns.BusiestDays,
+                LightDays = activityPatterns.LightDays
+            };
+        }
+
+
 
         // input of data can be last month / all records same outputs
         private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)

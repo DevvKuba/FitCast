@@ -4,6 +4,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
 using Twilio.TwiML.Voice;
@@ -12,7 +13,7 @@ using Twilio.Types;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize(Roles = "Trainer")]
-    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ISessionSyncService syncService) : BaseAPIController
+    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ITrainerAnalyticsService analyticsService, ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing for the retrieval of a specific Trainer by id
@@ -294,15 +295,25 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
-            // gather the revenue recrods for the previous month 
+            // mechanism around not displaying sufficient data.. 
+
+            // gather the revenue records for the previous month 
+            var lastMonthsRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsForTrainerAsync(trainerId);
 
             // pass into all trainer analytics service methods
+            var clientMetrics = analyticsService.GetClientMetrics(lastMonthsRecords);
+
+            var revenuePatterns = analyticsService.GetRevenuePatterns(lastMonthsRecords);
+
+            var activityPatterns = analyticsService.GetActivityPatterns(lastMonthsRecords);
+
+            
 
             // return CompleteTrainerAnalyticsDto containing all outputs
         }
 
         [HttpGet("getTrainerAllMonthsAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllMonthAnalytics([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
         {
             // gather the revenue recrods for all trainer months
             

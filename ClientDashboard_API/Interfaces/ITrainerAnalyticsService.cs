@@ -12,5 +12,7 @@ namespace ClientDashboard_API.Interfaces
 
         ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords);
 
+        CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
+
     }
 }
