@@ -41,8 +41,7 @@ namespace ClientDashboard_API.Services
         {
             var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
-
-            var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
+            var sessionPrice = Math.Round(CalculateAverageSessionPrice(revenueRecords));
 
             var averageRevenues = GetAverageDayWeekAndMonthRevenues(revenueRecords);
 
