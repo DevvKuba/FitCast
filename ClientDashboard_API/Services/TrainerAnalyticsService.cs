@@ -144,8 +144,7 @@ namespace ClientDashboard_API.Services
         // input of data can be last month / all records same outputs
         private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var recordStartDay = allRevenueRecords.First().AsOfDate.Day;
-            var recordStartMonth = allRevenueRecords.First().AsOfDate.Month;
+            var firstRecord = allRevenueRecords.First();
 
             var startingMonthActiveClients = allRevenueRecords.First().ActiveClients;
             var monthsAccountedFor = 0;
@@ -159,41 +158,35 @@ namespace ClientDashboard_API.Services
             double churnRate = 0;
             double acquisitionRate = 0;
 
-            int totalMonthsOfData = allRevenueRecords
-                .Select(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
-                .Distinct()
-                .Count();
-
-            for(int i = 0; i < allRevenueRecords.Count - 1; i++)
+            for(int i = 0; i < allRevenueRecords.Count; i++)
             {
-                // indicates that we've iterating through a whole months records
-                // can calculate the churn & acquisition rates and reset counts
-                if (allRevenueRecords[i].AsOfDate.Day == recordStartDay && allRevenueRecords[i].AsOfDate.Month != recordStartMonth)
+                if(i != 0)
                 {
-                    acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
-                    churnRate += (churnCount / startingMonthActiveClients) * 100;
-                    monthsAccountedFor++;
-
-                    totalAcquiredClients += acquisitionCount;
-                    totalChurnedClients += churnCount;
-
-                    acquisitionCount = 0;
-                    churnCount = 0;
-                }
-                else
-                {
-                    // compares if the next record's active clients have increased / decreased comapred to the current records
-                    if (allRevenueRecords[i + 1].ActiveClients > allRevenueRecords[i].ActiveClients)
+                    // compares if the previous's active clients have increased / decreased comapred to the current records
+                    if (allRevenueRecords[i - 1].ActiveClients < allRevenueRecords[i].ActiveClients)
                     {
-                        acquisitionCount += allRevenueRecords[i + 1].ActiveClients - allRevenueRecords[i].ActiveClients;
+                        acquisitionCount += allRevenueRecords[i].ActiveClients - allRevenueRecords[i - 1].ActiveClients;
                     }
-                    else if (allRevenueRecords[i + 1].ActiveClients < allRevenueRecords[i].ActiveClients)
+                    else if (allRevenueRecords[i - 1].ActiveClients > allRevenueRecords[i].ActiveClients)
                     {
-                        churnCount += allRevenueRecords[i].ActiveClients - allRevenueRecords[i + 1].ActiveClients;
+                        churnCount += allRevenueRecords[i - 1].ActiveClients - allRevenueRecords[i].ActiveClients;
+                    }
+
+                    // calculate the churn & acquisition rates and reset counts
+                    if (allRevenueRecords[i].AsOfDate.Day == DateTime.DaysInMonth(firstRecord.AsOfDate.Year, firstRecord.AsOfDate.Month)) // checks for last day of the month
+                    {
+                        acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
+                        churnRate += (churnCount / startingMonthActiveClients) * 100;
+                        monthsAccountedFor++;
+
+                        totalAcquiredClients += acquisitionCount;
+                        totalChurnedClients += churnCount;
+
+                        acquisitionCount = 0;
+                        churnCount = 0;
                     }
                 }
             }
-
 
 
             acquisitionRate = Math.Round(acquisitionRate / monthsAccountedFor);
@@ -202,7 +195,7 @@ namespace ClientDashboard_API.Services
             var averageAcquiredClients = Math.Round(totalAcquiredClients / monthsAccountedFor);
             var averageChurnedClients = Math.Round(totalChurnedClients / monthsAccountedFor);
 
-            var netGrowth = (int)Math.Round(acquisitionCount - churnCount);
+            var netGrowth = (int)Math.Round(totalAcquiredClients - totalChurnedClients);
             var netGrowthPercentage = Math.Round(acquisitionRate - churnRate);
 
             return new ClientMetricsDto
