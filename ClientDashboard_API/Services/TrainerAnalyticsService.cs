@@ -75,7 +75,7 @@ namespace ClientDashboard_API.Services
 
             // average daily sessions ?
 
-            double averageSessionsPerClient = Math.Round(CalculateAverageClientSessions(allRevenueRecords, averageActiveClients));
+            double averageSessionsPerClient = CalculateAverageClientSessions(allRevenueRecords, averageActiveClients);
 
             var statistics = new ClientMetricsDto
             {
@@ -360,7 +360,7 @@ namespace ClientDashboard_API.Services
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
             if (allSessions == 0) return 0;
 
-            return (double)allSessions / revenueRecords.Count;
+            return Math.Round((double)allSessions / revenueRecords.Count);
         }
 
         private double CalculateAverageClientSessions(List<TrainerDailyRevenue> revenueRecords, double averageActiveClients)
@@ -368,7 +368,7 @@ namespace ClientDashboard_API.Services
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
             if (allSessions == 0) return 0;
 
-            return (double)allSessions / averageActiveClients;
+            return Math.Round((double)allSessions / averageActiveClients);
         }
 
         private decimal CalculateAverageSessionPrice(List<TrainerDailyRevenue> revenueRecords)
