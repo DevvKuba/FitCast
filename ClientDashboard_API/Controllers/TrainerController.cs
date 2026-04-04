@@ -303,7 +303,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
             }
 
-            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastDayForEachMonthOfTrainerDataAsync(trainerId);
+            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsRecordsAsync(trainerId);
 
             var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(lastMonthsRevenueRecords);
 
