@@ -41,6 +41,7 @@ namespace ClientDashboard_API.Services
         {
             var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
 
+
             var sessionPrice = CalculateAverageSessionPrice(revenueRecords);
 
             var averageRevenues = GetAverageDayWeekAndMonthRevenues(revenueRecords);
@@ -221,16 +222,17 @@ namespace ClientDashboard_API.Services
 
             foreach (var record in allRevenueRecords)
             {
+                var totalDaysInMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
+
                 if (record.RevenueToday == 0)
                 {
                     nonWorkingDays++;
                 }
-                if (record.AsOfDate.Day == firstRecord.AsOfDate.Day && record.AsOfDate.Month != firstRecord.AsOfDate.Month)
+                // when reaching the last day of the month
+                if (record.AsOfDate.Day == totalDaysInMonth)
                 {
-                    var previousMonth = record.AsOfDate.AddMonths(-1);
-                    var daysInbetween = (int)(DateTime.Parse(record.AsOfDate.ToString()) - DateTime.Parse(previousMonth.ToString())).TotalDays;
-
-                    monthlyWorkingDays += daysInbetween - nonWorkingDays;
+                  
+                    monthlyWorkingDays +=  totalDaysInMonth - nonWorkingDays;
 
                     monthsAccounterFor++;
                     nonWorkingDays = 0;
