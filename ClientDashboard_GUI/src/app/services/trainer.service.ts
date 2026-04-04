@@ -35,6 +35,14 @@ export class TrainerService {
     return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus?trainerId=${trainerId}`);
   }
 
+  getLastMonthsAnalytics(trainerId: number) : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getTrainerLastMonthsAnalytics?trainerId=${trainerId}`);
+  }
+
+  getFullMonthsAnalytics(trainerId: number) : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getTrainerAllMonthsAnalytics?trainerId=${trainerId}`);
+  }
+
   getAllExcludedNames(trainerId: number) : Observable<any> {
     return this.http.get(this.baseUrl + `trainer/getAllExcludedNames?trainerId=${trainerId}`);
   }
