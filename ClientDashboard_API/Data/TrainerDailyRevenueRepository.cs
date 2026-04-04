@@ -51,7 +51,7 @@ namespace ClientDashboard_API.Data
             return firstRecord;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsForTrainerAsync(int trainerId)
+        public async Task<List<TrainerDailyRevenue>> GetLastDayForEachMonthOfTrainerDataAsync(int trainerId)
         {
             var allRecords = await GetAllRevenueRecordsForTrainerAsync(trainerId);
 
@@ -63,12 +63,14 @@ namespace ClientDashboard_API.Data
             return lastMonthsDayRecords;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsBasedOnFirstRecordAsync(TrainerDailyRevenue firstRecord)
+        public async Task<List<TrainerDailyRevenue>> GetLastMonthsRecordsAsync(int trainerId)
         {
+            var latestRecord = await GetLatestRevenueRecordForTrainerAsync(trainerId);
+            var previousMonth = latestRecord!.AsOfDate.Month - 1;
+
             var monthlyRecords = await context.TrainerDailyRevenue
-                .Where(r => r.TrainerId == firstRecord.TrainerId &&
-                r.AsOfDate.Day == firstRecord!.AsOfDate.Day &&
-                r.AsOfDate.Month != firstRecord.AsOfDate.Month)
+                .Where(r => r.TrainerId == trainerId &&
+                r.AsOfDate.Month == previousMonth)
                 .OrderBy(r => r.AsOfDate)
                 .ToListAsync();
             return monthlyRecords;
@@ -135,7 +137,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<TrainerDailyRevenue?> GetPreviousFullMonthLastRecordAsync(int trainerId)
         {
-            var lastDayOfMonthlyRecords = await GetLastMonthsDayRecordsForTrainerAsync(trainerId);
+            var lastDayOfMonthlyRecords = await GetLastDayForEachMonthOfTrainerDataAsync(trainerId);
 
             return lastDayOfMonthlyRecords.Last();
         }

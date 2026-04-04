@@ -295,7 +295,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
-            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsDayRecordsForTrainerAsync(trainerId);
+            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastDayForEachMonthOfTrainerDataAsync(trainerId);
 
             var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(lastMonthsRevenueRecords);
 
