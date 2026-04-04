@@ -295,6 +295,14 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
+
+            if (trainer is null || revenueRecord is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
+            }
+
             var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastDayForEachMonthOfTrainerDataAsync(trainerId);
 
             var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(lastMonthsRevenueRecords);
@@ -312,6 +320,14 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("getTrainerAllMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
+
+            if (trainer is null || revenueRecord is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
+            }
+
             var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
             var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonth(allRevenueRecords);

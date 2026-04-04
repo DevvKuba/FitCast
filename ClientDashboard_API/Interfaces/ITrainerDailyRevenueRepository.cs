@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<TrainerDailyRevenue>> GetLastDayForEachMonthOfTrainerDataAsync(int trainerId);
 
-        Task<List<TrainerDailyRevenue>> GetLastMonthsDayRecordsBasedOnFirstRecordAsync(TrainerDailyRevenue firstRecord);
+        Task<List<TrainerDailyRevenue>> GetLastMonthsRecordsAsync(int trainerId);
 
         Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords);
 
