@@ -4,6 +4,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
@@ -101,6 +102,37 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 
+    public class FakeTrainerAnalyticsService : ITrainerAnalyticsService
+    {
+        public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return new ClientMetricsDto();
+        }
+
+        public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return new RevenuePatternsDto();
+        }
+
+        public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return new ActivityPatternsDto
+            {
+                BusiestDays = [],
+                LightDays = []
+            };
+        }
+
+        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            return new CompleteTrainerAnalyticsDto
+            {
+                BusiestDays = [],
+                LightDays = []
+            };
+        }
+    }
+
     public class TrainerControllerTests
     {
         private readonly IMapper _mapper;
@@ -119,6 +151,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly UnitOfWork _unitOfWork;
         private readonly FakeApiKeyEncrypter _fakeEncrypter;
         private readonly FakeSessionDataParser _fakeSessionDataParser;
+        private readonly FakeTrainerAnalyticsService _fakeTrainerAnalyticsService;
         private readonly FakeSessionSyncService _fakeSyncService;
         private readonly TrainerController _trainerController;
 
@@ -153,8 +186,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeEncrypter = new FakeApiKeyEncrypter();
             _fakeSessionDataParser = new FakeSessionDataParser();
+            _fakeTrainerAnalyticsService = new FakeTrainerAnalyticsService();
             _fakeSyncService = new FakeSessionSyncService();
-            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeSyncService);
+            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerAnalyticsService, _fakeSyncService);
         }
 
         [Fact]
