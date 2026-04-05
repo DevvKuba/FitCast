@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RevenuePredictionComponent } from '../revenue-prediction/revenue-prediction.component';
 import { ActivityPatternsDto } from '../models/dtos/activity-patterns-dto';
 import { ClientMetricsDto } from '../models/dtos/client-metrics-dto';
 import { RevenuePatternsDto } from '../models/dtos/revenue-patterns-dto';
 import { WeeklyMultiplier } from '../models/dtos/weekly-multiplier';
+import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
+import { TrainerService } from '../services/trainer.service';
+import { UserDto } from '../models/dtos/user-dto';
+import { AccountService } from '../services/account.service';
 
 @Component({
   selector: 'app-trainer-analytics',
@@ -12,7 +16,17 @@ import { WeeklyMultiplier } from '../models/dtos/weekly-multiplier';
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })
-export class TrainerAnalyticsComponent {
+export class TrainerAnalyticsComponent implements OnInit{
+  trainerService = inject(TrainerService);
+  accountService = inject(AccountService);
+
+  analyticsData : CompleteTrainerAnalyticsDto | null = null;
+  currentUserId: number = 0; 
+
+  ngOnInit(): void {
+   this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+  }
+
   selectedScope: 'lastMonth' | 'allData' = 'lastMonth';
 
   clientMetrics: ClientMetricsDto = {
@@ -53,6 +67,16 @@ export class TrainerAnalyticsComponent {
 
   setMetricScope(scope: 'lastMonth' | 'allData'): void {
     this.selectedScope = scope;
+    // call retrieve analytics data method
+  }
+
+  retrieveAnalytics(){
+    if(this.selectedScope == 'lastMonth'){
+      
+    }
+    else if(this.selectedScope == 'allData'){
+
+    }
   }
 
   formatWeeklyMultipliers(values: WeeklyMultiplier[]): string {
