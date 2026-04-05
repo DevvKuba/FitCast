@@ -9,6 +9,7 @@ import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-ana
 import { TrainerService } from '../services/trainer.service';
 import { UserDto } from '../models/dtos/user-dto';
 import { AccountService } from '../services/account.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-trainer-analytics',
@@ -19,12 +20,14 @@ import { AccountService } from '../services/account.service';
 export class TrainerAnalyticsComponent implements OnInit{
   trainerService = inject(TrainerService);
   accountService = inject(AccountService);
+  toastService = inject(ToastService);
 
   analyticsData : CompleteTrainerAnalyticsDto | null = null;
   currentUserId: number = 0; 
 
   ngOnInit(): void {
    this.currentUserId = this.accountService.currentUser()?.id ?? 0;
+   this.retrieveAnalytics();
   }
 
   selectedScope: 'lastMonth' | 'allData' = 'lastMonth';
@@ -67,15 +70,31 @@ export class TrainerAnalyticsComponent implements OnInit{
 
   setMetricScope(scope: 'lastMonth' | 'allData'): void {
     this.selectedScope = scope;
-    // call retrieve analytics data method
+    this.retrieveAnalytics();
   }
 
   retrieveAnalytics(){
     if(this.selectedScope == 'lastMonth'){
-      
+      this.trainerService.getLastMonthsAnalytics(this.currentUserId).subscribe({
+        next: (response) => {
+          this.analyticsData = response.data;
+          this.toastService.showSuccess('Success', 'Gathered analytics data for last month');
+        },
+        error: (response) => {
+          this.toastService.showError('Error', 'Did not gather analytics data for last month');
+        }
+      })
     }
     else if(this.selectedScope == 'allData'){
-
+      this.trainerService.getFullMonthsAnalytics(this.currentUserId).subscribe({
+        next: (response) => {
+          this.analyticsData = response.data;
+          this.toastService.showSuccess('Success', 'Gathered all analytics data');
+        },
+        error: (response) => {
+          this.toastService.showError('Error', 'Did not gather analytics data for all months');
+        }
+      })
     }
   }
 
