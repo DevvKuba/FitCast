@@ -72,10 +72,8 @@ namespace ClientDashboard_API.Services
         private ClientMetricsDto GetTrainerBaseClientsAndAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var averageActiveClients = Math.Round(allRevenueRecords.Average(r => r.ActiveClients));
-
-            // average daily sessions ?
-
-            double averageSessionsPerClient = CalculateAverageClientSessions(allRevenueRecords, averageActiveClients);
+            
+            double averageSessionsPerClient = CalculateAverageClientSessions(allRevenueRecords);
 
             var statistics = new ClientMetricsDto
             {
@@ -319,17 +317,36 @@ namespace ClientDashboard_API.Services
             return Math.Round((double)allSessions / revenueRecords.Count);
         }
 
-        private double CalculateAverageClientSessions(List<TrainerDailyRevenue> revenueRecords, double averageActiveClients)
+        private double CalculateAverageClientSessions(List<TrainerDailyRevenue> revenueRecords)
         {
             var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
+            var baseClientsOverMonths = CalculateBaseClientsOverMonths(revenueRecords);
+
             if (allSessions == 0) return 0;
 
-            return Math.Round((double)allSessions / averageActiveClients);
+            return Math.Round((double)allSessions / baseClientsOverMonths);
         }
 
         private decimal CalculateAverageSessionPrice(List<TrainerDailyRevenue> revenueRecords)
         {
             return revenueRecords.Average(r => r.AverageSessionPrice);
+        }
+
+        private double CalculateBaseClientsOverMonths(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var accumulatedClients = 0;
+
+            for(int i = 0; i < revenueRecords.Count; i++ )
+            {
+                var lastDayOfMonth = DateTime.DaysInMonth(revenueRecords[i].AsOfDate.Year, revenueRecords[i].AsOfDate.Month);
+                var lastRecord = revenueRecords[revenueRecords.Count - 1];
+
+                if (revenueRecords[i].AsOfDate.Day == lastDayOfMonth || revenueRecords[i] == lastRecord)
+                {
+                    accumulatedClients += revenueRecords[i].ActiveClients;
+                }
+            }
+            return accumulatedClients;
         }
 
         private Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
