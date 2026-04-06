@@ -58,6 +58,8 @@
 					<h3>ACTIVITY PATTERNS</h3>
 					<p>Busiest days: {{ formatWeeklyMultipliers(analyticsData?.busiestDays ?? [])}}</p>
 					<p>Light days: {{ formatWeeklyMultipliers(analyticsData?.lightDays ?? [])}}</p>
+					<p class="all-weekdays-title">All weekdays:</p>
+					<p class="weekday-item" *ngFor="let weekday of analyticsData?.allWeekdays ?? []">{{ formatWeeklyMultiplier(weekday) }}</p>
 				</div>
 			</div>
 

@@ -198,4 +198,8 @@ export class TrainerAnalyticsComponent implements OnInit{
       .join(', ');
   }
 
+  formatWeeklyMultiplier(value: WeeklyMultiplier): string {
+    return `${WeekDays[value.day]} (${value.multiplier}x)`;
+  }
+
 }
