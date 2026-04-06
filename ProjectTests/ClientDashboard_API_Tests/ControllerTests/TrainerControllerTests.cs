@@ -118,6 +118,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             return new ActivityPatternsDto
             {
+                AllWeekdays = [],
                 BusiestDays = [],
                 LightDays = []
             };
@@ -127,6 +128,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             return new CompleteTrainerAnalyticsDto
             {
+                AllWeekdays = [],
                 BusiestDays = [],
                 LightDays = []
             };
