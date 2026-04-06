@@ -1,4 +1,6 @@
+import { WeekDays } from "../../enums/weekdays";
+
 export interface WeeklyMultiplier {
-  weekday: string;
+  day: WeekDays;
   multiplier: number;
 }

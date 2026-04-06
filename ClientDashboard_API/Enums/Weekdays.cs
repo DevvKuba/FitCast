@@ -3,7 +3,7 @@
     public enum Weekdays
     {
         Mon = 1,
-        Tue = 2 ,
+        Tue = 2,
         Wed = 3,
         Thu = 4,
         Fri = 5,

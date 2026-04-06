@@ -4,11 +4,11 @@ import { RevenuePredictionComponent } from '../revenue-prediction/revenue-predic
 import { WeeklyMultiplier } from '../models/dtos/weekly-multiplier';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 import { TrainerService } from '../services/trainer.service';
-import { UserDto } from '../models/dtos/user-dto';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { ChartModule } from 'primeng/chart';
 import { ChartData, ChartOptions } from 'chart.js';
+import { WeekDays } from '../enums/weekdays';
 
 @Component({
   selector: 'app-trainer-analytics',
@@ -171,14 +171,14 @@ export class TrainerAnalyticsComponent implements OnInit{
       return { labels: [], datasets: [] };
     }
 
-    const days = this.analyticsData.allWeekdays.map((day) => day.weekday);
+    const days = this.analyticsData.allWeekdays.map((weekday) => weekday.day);
 
     return {
-      labels: days,
+      labels: days.map((weekday) => this.toWeekdayLabel(weekday)),
       datasets: [
         {
           label: 'All weekdays',
-          data: this.analyticsData.allWeekdays.map((day) => day.multiplier),
+          data: this.analyticsData.allWeekdays.map((weekday) => weekday.multiplier),
           borderColor: '#2563eb',
           backgroundColor: '#2563eb',
           pointBackgroundColor: '#2563eb',
@@ -193,7 +193,26 @@ export class TrainerAnalyticsComponent implements OnInit{
   }
 
   formatWeeklyMultipliers(values: WeeklyMultiplier[]): string {
-    return values.map((value) => `${value.weekday} (${value.multiplier}x)`).join(', ');
+    return values
+      .map((value) => `${this.toWeekdayLabel(value.day)} (${value.multiplier}x)`)
+      .join(', ');
+  }
+
+  private toWeekdayLabel(day: WeekDays | number | string): string {
+    if (typeof day === 'number') {
+      return WeekDays[day] ?? String(day);
+    }
+
+    const numericDay = Number(day);
+    if (!Number.isNaN(numericDay) && WeekDays[numericDay as WeekDays]) {
+      return WeekDays[numericDay as WeekDays];
+    }
+
+    if (typeof day === 'string' && day.length >= 3) {
+      return day.slice(0, 3);
+    }
+
+    return String(day);
   }
 
 }
