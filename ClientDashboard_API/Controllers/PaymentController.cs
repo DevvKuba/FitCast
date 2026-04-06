@@ -100,6 +100,11 @@ namespace ClientDashboard_API.Controllers
 
             await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, DateOnly.Parse(paymentInfo.PaymentDate), paymentInfo.Confirmed);
 
+            if(paymentInfo.NumberOfSessions != client.TotalBlockSessions)
+            {
+                unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, paymentInfo.NumberOfSessions);
+            }
+
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payments after deletion", Success = false });
