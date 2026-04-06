@@ -78,7 +78,6 @@ export class TrainerAnalyticsComponent implements OnInit{
       this.trainerService.getLastMonthsAnalytics(this.currentUserId).subscribe({
         next: (response) => {
           this.analyticsData = response.data;
-          this.toastService.showSuccess('Success', response.message);
         },
         error: (response) => {
           this.toastService.showError('Error', response.error.message);
@@ -89,7 +88,6 @@ export class TrainerAnalyticsComponent implements OnInit{
       this.trainerService.getFullMonthsAnalytics(this.currentUserId).subscribe({
         next: (response) => {
           this.analyticsData = response.data;
-          this.toastService.showSuccess('Success', response.message);
         },
         error: (response) => {
           this.toastService.showError('Error', response.error.message);

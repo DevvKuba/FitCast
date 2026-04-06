@@ -349,7 +349,7 @@ namespace ClientDashboard_API.Services
 
             foreach (var day in weekdayAverages)
             {
-                multipliers.Add(new WeeklyMultiplier(ReturnWeekdayEnumFromString(day.Key), day.Value / averageClientSessions));
+                multipliers.Add(new WeeklyMultiplier(ReturnWeekdayEnumFromString(day.Key), Math.Round(day.Value / averageClientSessions, 1)));
             }
 
             return multipliers;
