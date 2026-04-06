@@ -31,33 +31,33 @@
 			<div class="analytics-left-column">
 				<div class="analytics-section left-section">
 					<h3>CLIENT METRICS</h3>
-					<p>Current: {{ dashboardData.clientMetrics.baseClients }} clients</p>
+					<p>Current: {{ analyticsData?.baseClients }} clients</p>
 					<p>
-						Acquired last month: {{ dashboardData.clientMetrics.acquiredClients }}
-						(+{{ dashboardData.clientMetrics.acquisitionPercentage }}%)
+						Acquired last month: {{ analyticsData?.acquiredClients }}
+						(+{{ analyticsData?.acquisitionPercentage }}%)
 					</p>
 					<p>
-						Churned last month: {{ dashboardData.clientMetrics.churnedClients }}
-						({{ dashboardData.clientMetrics.churnPercentage }}%)
+						Churned last month: {{ analyticsData?.churnedClients }}
+						({{ analyticsData?.churnPercentage }}%)
 					</p>
-					<p>Net growth: +{{ dashboardData.clientMetrics.netGrowth }} (+{{ dashboardData.clientMetrics.netGrowthPercentage }}%)</p>
-					<p>Sessions per client: {{ dashboardData.clientMetrics.sessionsPerClient }}</p>
-          <p>Monthly sessions: {{ dashboardData.clientMetrics.monthlyClientSessions }}</p>
+					<p>Net growth: +{{ analyticsData?.netGrowth }} (+{{ analyticsData?.netGrowthPercentage }}%)</p>
+					<p>Sessions per client: {{ analyticsData?.sessionsPerClient }}</p>
+          <p>Monthly sessions: {{ analyticsData?.monthlyClientSessions }}</p>
 				</div>
 
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
-          <p>Monthly working days: {{ dashboardData.revenuePatterns.monthlyWorkingDays }}</p>
-					<p>Average session price: ${{ dashboardData.revenuePatterns.sessionsPrice }}</p>
-					<p>Revenue per working day: ${{ dashboardData.revenuePatterns.revenuePerWorkingDay }}</p>
-          <p>Revenue per working week: ${{ dashboardData.revenuePatterns.revenuePerWorkingWeek }}</p>
-          <p>Revenue per working month: ${{ dashboardData.revenuePatterns.revenuePerWorkingMonth }}</p>
+          <p>Monthly working days: {{ analyticsData?.monthlyWorkingDays }}</p>
+					<p>Average session price: ${{ analyticsData?.sessionsPrice }}</p>
+					<p>Revenue per working day: ${{ analyticsData?.revenuePerWorkingDay }}</p>
+          <p>Revenue per working week: ${{analyticsData?.revenuePerWorkingWeek }}</p>
+          <p>Revenue per working month: ${{ analyticsData?.revenuePerWorkingMonth }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">
 					<h3>ACTIVITY PATTERNS</h3>
-					<p>Busiest days: {{ formatWeeklyMultipliers(dashboardData.activityPatterns.busiestDays) }}</p>
-					<p>Light days: {{ formatWeeklyMultipliers(dashboardData.activityPatterns.lightDays) }}</p>
+					<p>Busiest days: {{ formatWeeklyMultipliers(analyticsData?.busiestDays ?? [])}}</p>
+					<p>Light days: {{ formatWeeklyMultipliers(analyticsData?.lightDays ?? [])}}</p>
 				</div>
 			</div>
 
