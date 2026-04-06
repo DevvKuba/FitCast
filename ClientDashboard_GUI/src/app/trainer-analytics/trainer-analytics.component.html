@@ -1,28 +1,31 @@
-<app-revenue-prediction></app-revenue-prediction>
-
 <section class="trainer-analytics-shell">
 	<div class="analytics-panel">
 		<div class="analytics-header">
 			<h2 class="analytics-title">Trainer Analytics Dashboard</h2>
 			<div class="analytics-header-controls">
 				<h3 class="analytics-trends-title">TRENDS</h3>
-				<div class="analytics-scope-toggle" role="group" aria-label="Analytics data range">
-					<button
-						type="button"
-						class="scope-toggle-button"
-						[class.active]="selectedScope === 'lastMonth'"
-						(click)="setMetricScope('lastMonth')"
-					>
-						Last month
-					</button>
-					<button
-						type="button"
-						class="scope-toggle-button"
-						[class.active]="selectedScope === 'allData'"
-						(click)="setMetricScope('allData')"
-					>
-						All data
-					</button>
+				<div class="analytics-header-actions">
+					<div class="analytics-scope-toggle" role="group" aria-label="Analytics data range">
+						<button
+							type="button"
+							class="scope-toggle-button"
+							[class.active]="selectedScope === 'lastMonth'"
+							(click)="setMetricScope('lastMonth')"
+						>
+							Last month
+						</button>
+						<button
+							type="button"
+							class="scope-toggle-button"
+							[class.active]="selectedScope === 'allData'"
+							(click)="setMetricScope('allData')"
+						>
+							All data
+						</button>
+					</div>
+					<div class="analytics-prediction-action">
+						<app-revenue-prediction></app-revenue-prediction>
+					</div>
 				</div>
 			</div>
 		</div>

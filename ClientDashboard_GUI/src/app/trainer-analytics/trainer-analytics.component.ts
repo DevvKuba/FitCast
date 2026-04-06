@@ -199,7 +199,7 @@ export class TrainerAnalyticsComponent implements OnInit{
   }
 
   formatWeeklyMultiplier(value: WeeklyMultiplier): string {
-    return `${WeekDays[value.day]} (${value.multiplier}x)`;
+    return `${WeekDays[value.day]} - (${value.multiplier}x)`;
   }
 
 }

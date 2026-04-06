@@ -5,6 +5,8 @@
 }
 
 .analytics-panel {
+	--analytics-left-col: 0.9fr;
+	--analytics-right-col: 1.1fr;
 	width: min(100%, 1180px);
 	background: #ffffff;
 	border: 1px solid var(--surface-border, #e5e7eb);
@@ -15,7 +17,7 @@
 
 .analytics-header {
 	display: grid;
-	grid-template-columns: 0.9fr 1.1fr;
+	grid-template-columns: var(--analytics-left-col) var(--analytics-right-col);
 	align-items: center;
 	border-bottom: 1px solid var(--surface-border, #e5e7eb);
 }
@@ -26,6 +28,8 @@
 	font-size: 1.45rem;
 	font-weight: 700;
 	color: var(--text-color, #1f2937);
+	border-right: 1px solid var(--surface-border, #e5e7eb);
+	min-width: 0;
 }
 
 .analytics-trends-title {
@@ -43,7 +47,25 @@
 	align-items: center;
 	gap: 1rem;
 	padding: 1.2rem 1.35rem;
-	border-left: 1px solid var(--surface-border, #e5e7eb);
+	min-width: 0;
+}
+
+.analytics-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.analytics-prediction-action {
+	display: inline-flex;
+	align-items: center;
+}
+
+.analytics-prediction-action app-revenue-prediction {
+	display: inline-flex;
+	align-items: center;
 }
 
 .analytics-scope-toggle {
@@ -85,17 +107,22 @@
 
 .analytics-content {
 	display: grid;
-	grid-template-columns: 0.9fr 1.1fr;
+	grid-template-columns: var(--analytics-left-col) var(--analytics-right-col);
 	border-bottom: 1px solid var(--surface-border, #e5e7eb);
 }
 
 .analytics-left-column,
 .analytics-right-column {
 	min-height: 100%;
+	min-width: 0;
+}
+
+.analytics-left-column {
+	border-right: 1px solid var(--surface-border, #e5e7eb);
 }
 
 .analytics-right-column {
-	border-left: 1px solid var(--surface-border, #e5e7eb);
+	border-left: none;
 }
 
 .left-section {
@@ -182,10 +209,22 @@
 	}
 
 	.analytics-header-controls {
-		border-left: none;
 		border-top: 1px solid var(--surface-border, #e5e7eb);
 		padding: 0.8rem 1rem;
 		flex-wrap: wrap;
+	}
+
+	.analytics-header-actions {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.analytics-title {
+		border-right: none;
+	}
+
+	.analytics-left-column {
+		border-right: none;
 	}
 
 	.analytics-trends-title {
