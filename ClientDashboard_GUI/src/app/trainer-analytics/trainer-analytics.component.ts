@@ -174,7 +174,7 @@ export class TrainerAnalyticsComponent implements OnInit{
     const days = this.analyticsData.allWeekdays.map((weekday) => weekday.day);
 
     return {
-      labels: days.map((weekday) => this.toWeekdayLabel(weekday)),
+      labels: days.map((weekday) => WeekDays[weekday]),
       datasets: [
         {
           label: 'All weekdays',
@@ -194,25 +194,8 @@ export class TrainerAnalyticsComponent implements OnInit{
 
   formatWeeklyMultipliers(values: WeeklyMultiplier[]): string {
     return values
-      .map((value) => `${this.toWeekdayLabel(value.day)} (${value.multiplier}x)`)
+      .map((value) => `${WeekDays[value.day]} (${value.multiplier}x)`)
       .join(', ');
-  }
-
-  private toWeekdayLabel(day: WeekDays | number | string): string {
-    if (typeof day === 'number') {
-      return WeekDays[day] ?? String(day);
-    }
-
-    const numericDay = Number(day);
-    if (!Number.isNaN(numericDay) && WeekDays[numericDay as WeekDays]) {
-      return WeekDays[numericDay as WeekDays];
-    }
-
-    if (typeof day === 'string' && day.length >= 3) {
-      return day.slice(0, 3);
-    }
-
-    return String(day);
   }
 
 }
