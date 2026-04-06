@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import { Observable, ObservableLike, ObservedValueOf } from 'rxjs';
 import { ExcludeNameDto } from '../models/dtos/exclude-name-dto';
+import { ApiResponse } from '../models/api-response';
+import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -35,12 +37,12 @@ export class TrainerService {
     return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus?trainerId=${trainerId}`);
   }
 
-  getLastMonthsAnalytics(trainerId: number) : Observable<any> {
-    return this.http.get(this.baseUrl + `trainer/getTrainerLastMonthsAnalytics?trainerId=${trainerId}`);
+  getLastMonthsAnalytics(trainerId: number) : Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
+    return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerLastMonthsAnalytics?trainerId=${trainerId}`);
   }
 
-  getFullMonthsAnalytics(trainerId: number) : Observable<any> {
-    return this.http.get(this.baseUrl + `trainer/getTrainerAllMonthsAnalytics?trainerId=${trainerId}`);
+  getFullMonthsAnalytics(trainerId: number) : Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
+    return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerAllMonthsAnalytics?trainerId=${trainerId}`);
   }
 
   getAllExcludedNames(trainerId: number) : Observable<any> {

@@ -22,7 +22,7 @@ export class TrainerAnalyticsComponent implements OnInit{
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
-  analyticsData : CompleteTrainerAnalyticsDto | null = null;
+  analyticsData : CompleteTrainerAnalyticsDto | undefined;
   currentUserId: number = 0; 
 
   ngOnInit(): void {
@@ -78,10 +78,10 @@ export class TrainerAnalyticsComponent implements OnInit{
       this.trainerService.getLastMonthsAnalytics(this.currentUserId).subscribe({
         next: (response) => {
           this.analyticsData = response.data;
-          this.toastService.showSuccess('Success', 'Gathered analytics data for last month');
+          this.toastService.showSuccess('Success', response.message);
         },
         error: (response) => {
-          this.toastService.showError('Error', 'Did not gather analytics data for last month');
+          this.toastService.showError('Error', response.error.message);
         }
       })
     }
@@ -89,10 +89,10 @@ export class TrainerAnalyticsComponent implements OnInit{
       this.trainerService.getFullMonthsAnalytics(this.currentUserId).subscribe({
         next: (response) => {
           this.analyticsData = response.data;
-          this.toastService.showSuccess('Success', 'Gathered all analytics data');
+          this.toastService.showSuccess('Success', response.message);
         },
         error: (response) => {
-          this.toastService.showError('Error', 'Did not gather analytics data for all months');
+          this.toastService.showError('Error', response.error.message);
         }
       })
     }
