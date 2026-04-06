@@ -31,7 +31,7 @@
 			<div class="analytics-left-column">
 				<div class="analytics-section left-section">
 					<h3>CLIENT METRICS</h3>
-					<p>{{selectedScope === 'lastMonth' ? 'Base Clients' : 'Average Base Clients'}} : {{ analyticsData?.baseClients }} clients</p>
+					<p>Current: {{ analyticsData?.baseClients }} clients</p>
 					<p>
 						{{ selectedScope === 'lastMonth' ? 'Acquired last month' : 'Average monthly acquisitions' }}: {{ analyticsData?.acquiredClients }}
 						(+{{ analyticsData?.acquisitionPercentage }}%)
@@ -42,16 +42,16 @@
 					</p>
 					<p>Net growth: +{{ analyticsData?.netGrowth }} (+{{ analyticsData?.netGrowthPercentage }}%)</p>
 					<p>Sessions per client: {{ analyticsData?.sessionsPerClient }}</p>
-                      <p>{{ selectedScope === 'lastMonth' ? 'Last Months sessions' : 'Average monthly sessions' }}: {{ analyticsData?.monthlyClientSessions }}</p>
+					<p>Monthly sessions: {{ analyticsData?.monthlyClientSessions }}</p>
 				</div>
 
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
-          <p>Monthly working days: {{ analyticsData?.monthlyWorkingDays }}</p>
+					<p>Monthly working days: {{ analyticsData?.monthlyWorkingDays }}</p>
 					<p>Average session price: ${{ analyticsData?.sessionsPrice }}</p>
 					<p>Revenue per working day: ${{ analyticsData?.revenuePerWorkingDay }}</p>
-          <p>Revenue per working week: ${{analyticsData?.revenuePerWorkingWeek }}</p>
-          <p>Revenue per working month: ${{ analyticsData?.revenuePerWorkingMonth }}</p>
+					<p>Revenue per working week: ${{ analyticsData?.revenuePerWorkingWeek }}</p>
+					<p>Revenue per working month: ${{ analyticsData?.revenuePerWorkingMonth }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">
@@ -65,25 +65,25 @@
 				<div class="analytics-section trends-section analytics-section-last">
 					<div class="trend-block">
 						<h4>Client Metrics</h4>
-						<p>[Chart showing client growth]</p>
+						<div class="trend-chart">
+							<p-chart type="bar" [data]="clientMetricsChartData" [options]="clientMetricsChartOptions"></p-chart>
+						</div>
 					</div>
 					<div class="trend-block">
 						<h4>Revenue Patterns</h4>
-						<p>[Chart showing revenue trend]</p>
+						<div class="trend-chart">
+							<p-chart type="bar" [data]="revenuePatternsChartData" [options]="revenuePatternsChartOptions"></p-chart>
+						</div>
 					</div>
 					<div class="trend-block">
 						<h4>Activity Patterns</h4>
-						<p>[Heatmap of weekly activity]</p>
+						<div class="trend-chart">
+							<p-chart type="line" [data]="activityPatternsChartData" [options]="activityPatternsChartOptions"></p-chart>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="analytics-section analytics-section-last">
-			<h3>NOTES</h3>
-      <p>All metrics by default loaded in for last month, including graphs, can toggle for all months</p>
-      <p>Upon changing to all data, can change labelling structure e.g. 'Acquired last month' => 'Average monthly acquisitions'</p>
-			<p>Replace trend placeholders with your PrimeNG charts when backend data is ready.</p>
-		</div>
 	</div>
 </section>

@@ -115,6 +115,9 @@
 	min-height: 102px;
 	border: 1px dashed var(--surface-border, #d1d5db);
 	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
 }
 
 .trend-block h4 {
@@ -127,6 +130,11 @@
 .trend-block p {
 	margin: 0;
 	font-size: 0.95rem;
+}
+
+.trend-chart {
+	height: 220px;
+	width: 100%;
 }
 
 .analytics-section-last {
@@ -205,6 +213,10 @@
 	.trend-block {
 		min-height: 84px;
 		padding: 0.8rem;
+	}
+
+	.trend-chart {
+		height: 180px;
 	}
 
 	.analytics-section h3 {

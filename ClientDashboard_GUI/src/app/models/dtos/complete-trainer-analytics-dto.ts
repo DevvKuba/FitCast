@@ -15,6 +15,7 @@ export interface CompleteTrainerAnalyticsDto {
   revenuePerWorkingDay: number;
   revenuePerWorkingWeek: number;
   revenuePerWorkingMonth: number;
+  allWeekdays: WeeklyMultiplier[];
   busiestDays: WeeklyMultiplier[];
   lightDays: WeeklyMultiplier[];
 }
