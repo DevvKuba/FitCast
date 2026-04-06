@@ -4,6 +4,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
+using Twilio.Rest.Trunking.V1;
 
 namespace ClientDashboard_API.Data
 {
@@ -112,6 +113,17 @@ namespace ClientDashboard_API.Data
             }
             return oldPayments.Count;
 
+        }
+
+        public async Task<bool> IsMostRecentClientPayment(Client client, int paymentId)
+        {
+            var mostRecentClientPayment = await context.Payments.Where(p => p.ClientId == client.Id).OrderByDescending(p => p.PaymentDate).FirstAsync();
+
+            if(mostRecentClientPayment.Id == paymentId)
+            {
+                return true;
+            }
+            return false;
         }
 
         public void DisablePaymentVisibility(Payment payment)

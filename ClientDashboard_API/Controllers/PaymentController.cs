@@ -52,7 +52,20 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
             }
 
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(payment.ClientId);
+
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
+            }
+
             unitOfWork.PaymentRepository.UpdatePaymentDetails(payment, paymentRequestInfo);
+            var isMostRecentPayment = await unitOfWork.PaymentRepository.IsMostRecentClientPayment(client, paymentRequestInfo.Id); 
+
+            if (paymentRequestInfo.NumberOfSessions != client.TotalBlockSessions && isMostRecentPayment)
+            {
+                unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, paymentRequestInfo.NumberOfSessions);
+            }
 
             if (!await unitOfWork.Complete())
             {

@@ -25,6 +25,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<int> FilterOldClientPaymentsAsync(List<Client> deletedClients);
 
+        Task<bool> IsMostRecentClientPayment(Client client, int paymentId);
+
         void DisablePaymentVisibility(Payment payment);
 
         void DeletePayment(Payment payment);
