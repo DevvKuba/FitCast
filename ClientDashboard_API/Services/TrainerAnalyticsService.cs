@@ -66,7 +66,7 @@ namespace ClientDashboard_API.Services
 
             var lightestWeekdays = weekdayMultiplierList.OrderBy(p => p.multiplier).Take(2).ToList();
 
-            return new ActivityPatternsDto { BusiestDays = busiestWeekdays, LightDays = lightestWeekdays };
+            return new ActivityPatternsDto { AllWeekdays = weekdayMultiplierList, BusiestDays = busiestWeekdays, LightDays = lightestWeekdays };
         }
 
         private ClientMetricsDto GetTrainerBaseClientsAndAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
@@ -134,6 +134,7 @@ namespace ClientDashboard_API.Services
                 RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
                 RevenuePerWorkingMonth = revenuePatterns.RevenuePerWorkingMonth,
+                AllWeekdays = activityPatterns.AllWeekdays,
                 BusiestDays = activityPatterns.BusiestDays,
                 LightDays = activityPatterns.LightDays
             };
