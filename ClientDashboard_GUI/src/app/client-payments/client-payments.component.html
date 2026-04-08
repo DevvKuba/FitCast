@@ -6,8 +6,8 @@
 
     <!-- Add Dialog-->
     <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
-        <span class="dialog-intro-text">Enter new payment details:</span>
         <div class="dialog-form-group">
+            <span class="dialog-intro-text">Enter new payment details:</span>
             <div class="form-field">
                 <label for="client-name">Client Name</label>
                 <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />

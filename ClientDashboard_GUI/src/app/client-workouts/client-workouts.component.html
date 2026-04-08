@@ -43,8 +43,8 @@
             </p-dialog>
 
             <p-dialog header="Add new Workout" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
-                    <span class="dialog-intro-text">Enter new workout details:</span>
                     <div class="dialog-form-group">
+                        <span class="dialog-intro-text">Enter new workout details:</span>
                         <div class="form-field">
                             <label for="workout-title">Workout Title</label>
                             <input pInputText id="workout-title" [(ngModel)]="workoutTitle" autocomplete="off" />
