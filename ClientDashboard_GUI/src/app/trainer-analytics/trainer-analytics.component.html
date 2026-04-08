@@ -1,4 +1,8 @@
-<section class="trainer-analytics-shell">
+@if(analyticsData == undefined){
+	<app-spinner></app-spinner>
+}
+@else {
+	<section class="trainer-analytics-shell">
 	<div class="analytics-panel">
 		<div class="analytics-header">
 			<h2 class="analytics-title">Trainer Analytics Dashboard</h2>
@@ -92,3 +96,5 @@
 
 	</div>
 </section>
+}
+

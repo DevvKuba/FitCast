@@ -9,10 +9,11 @@ import { ToastService } from '../services/toast.service';
 import { ChartModule } from 'primeng/chart';
 import { ChartData, ChartOptions } from 'chart.js';
 import { WeekDays } from '../enums/weekdays';
+import { SpinnerComponent } from "../spinner/spinner.component";
 
 @Component({
   selector: 'app-trainer-analytics',
-  imports: [CommonModule, RevenuePredictionComponent, ChartModule],
+  imports: [CommonModule, RevenuePredictionComponent, ChartModule, SpinnerComponent],
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })
