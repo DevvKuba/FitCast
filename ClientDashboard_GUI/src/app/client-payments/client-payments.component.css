@@ -49,6 +49,56 @@
   margin-bottom: 20px;
 }
 
+/* Dialog Form Styling */
+.dialog-form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+}
+
+.form-field label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-field input,
+.form-field ::ng-deep .p-inputnumber,
+.form-field ::ng-deep .p-inputmask,
+.form-field ::ng-deep .p-autocomplete,
+.form-field ::ng-deep .p-datepicker,
+.form-field ::ng-deep .p-select {
+  width: 100%;
+  max-width: 200px;
+}
+
+.dialog-intro-text {
+  margin-bottom: 1.5rem;
+  color: #666;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+}
+
 /* Amount column - currency input */
 ::ng-deep .payment-amount-input {
     width: 100px ;

@@ -42,29 +42,31 @@
                 </div>
             </p-dialog>
 
-            <p-dialog header="Add new Workout" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem', height: 'auto'}" >
-                    <span class="p-text-secondary block mb-8">Enter new workout details:</span>
-                    <div class="flex items-center gap-4 mb-4">
-                        <label for="workout-title" class="font-semibold w-24">Workout Title</label>
-                        <input pInputText id="workout-title" [(ngModel)]="workoutTitle" class="flex-auto" autocomplete="off" />
+            <p-dialog header="Add new Workout" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
+                    <span class="dialog-intro-text">Enter new workout details:</span>
+                    <div class="dialog-form-group">
+                        <div class="form-field">
+                            <label for="workout-title">Workout Title</label>
+                            <input pInputText id="workout-title" [(ngModel)]="workoutTitle" autocomplete="off" />
+                        </div>
+                        <div class="form-field">
+                            <label for="client-name">Client Name</label>
+                            <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+                        </div>
+                        <div class="form-field">
+                            <label for="workout-date">Session Date</label>
+                            <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
+                        </div>
+                        <div class="form-field">
+                            <label for="session-duration">Session Duration</label>
+                            <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="session-duration" autocomplete="off" />
+                        </div>
+                        <div class="form-field">
+                            <label for="exercise-count">Exercise Count</label>
+                            <p-inputnumber inputId="exercise-count" [(ngModel)]="exerciseCount" id="exercise-count" autocomplete="off" />
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="client-name" class="font-semibold w-24">Client Name</label>
-                        <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="workout-date" class="font-semibold w-24">Session Date</label>
-                        <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="exercise-count" class="font-semibold w-24">Session Duration</label>
-                        <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="duration" class="flex-auto" autocomplete="off" />
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <label for="exercise-count" class="font-semibold w-24">Exercise Count</label>
-                        <p-inputnumber inputId="exercise-count" [(ngModel)]="exerciseCount" id="exercise-count" class="flex-auto" autocomplete="off" />
-                    </div>
-                    <div class="flex justify-end gap-2">
+                    <div class="dialog-actions">
                         <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
                         <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, exerciseCount, workoutDuration)" />
                     </div>

@@ -5,35 +5,36 @@
     <p-toast />
 
     <!-- Add Dialog-->
-    <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem', height: 'auto'}" >
-        <span class="p-text-secondary block mb-8">Enter new payment details:</span>
-        <div class="flex items-center gap-4 mb-4">
-            <label for="client-name" class="font-semibold w-24">Client Name</label>
-            <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+    <p-dialog header="Add new Payment" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
+        <span class="dialog-intro-text">Enter new payment details:</span>
+        <div class="dialog-form-group">
+            <div class="form-field">
+                <label for="client-name">Client Name</label>
+                <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
+            </div>
+            <div class="form-field">
+                <label for="amount">Amount</label>
+                <p-inputnumber inputId="amount" [(ngModel)]="amount" mode="currency" [currency]="currency || 'GBP'" />
+            </div>
+            <div class="form-field">
+                <label for="session-count">Sessions</label>
+                <p-inputnumber inputId="session-count" [(ngModel)]="numberOfSessions" />
+            </div>
+            <div class="form-field">
+                <label for="payment-date">Payment Date</label>
+                <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
+            </div>
+            <div class="form-field">
+                <label for="payment-status">Payment Status</label>
+                <p-select 
+                    [appendTo]="'body'" 
+                    [(ngModel)]="selectedStatus" 
+                    [options]="paymentStatuses" 
+                    optionLabel="label" 
+                    placeholder="Select Status" />
+            </div>
         </div>
-        <div class="flex items-center gap-4 mb-8">
-            <label for="amount" class="font-semibold w-24">Amount</label>
-            <p-inputnumber inputId="amount" [(ngModel)]="amount" mode="currency" [currency]="currency || 'GBP'" class="flex-auto" />
-        </div>
-        <div class="flex items-center gap-4 mb-8">
-            <label for="session-count" class="font-semibold w-24">Sessions</label>
-            <p-inputnumber inputId="session-count" [(ngModel)]="numberOfSessions" class="flex-auto" />
-        </div>
-        <div class="flex items-center gap-4 mb-8">
-            <label for="payment-date" class="font-semibold w-24">Payment Date</label>
-            <p-datepicker [appendTo]="'body'" [(ngModel)]="paymentDate" dateFormat="dd/mm/yy" />
-        </div>
-         <div class="flex items-center gap-4 mb-4">
-            <label for="payment-status" class="font-semibold w-24">Payment Status</label>
-            <p-select 
-                [appendTo]="'body'" 
-                [(ngModel)]="selectedStatus" 
-                [options]="paymentStatuses" 
-                optionLabel="label" 
-                placeholder="Select Status"
-                [style]="{'width':'50%'}" />
-        </div>
-        <div class="flex justify-end gap-2">
+        <div class="dialog-actions">
             <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
             <p-button label="Save" (click)="addNewPayment(selectedClient.id, amount, numberOfSessions, paymentDate!, selectedStatus)" />
         </div>

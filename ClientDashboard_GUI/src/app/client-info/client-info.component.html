@@ -12,21 +12,23 @@
   </p-popover>
   
   <!-- Add Dialog - Moved outside table -->
-  <p-dialog header="Add new Client" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '25rem' }">
-      <span class="p-text-secondary block mb-8">Enter new client details:</span>
-      <div class="flex items-center gap-4 mb-4">
-          <label for="clientName" class="font-semibold w-24">Client Name</label>
-          <input pInputText [(ngModel)]="newClientName" id="clientName" class="flex-auto" autocomplete="off" />
+  <p-dialog header="Add new Client" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem' }">
+      <span class="dialog-intro-text">Enter new client details:</span>
+      <div class="dialog-form-group">
+          <div class="form-field">
+              <label for="clientName">Client Name</label>
+              <input pInputText [(ngModel)]="newClientName" id="clientName" autocomplete="off" />
+          </div>
+          <div class="form-field">
+              <label for="totalBlockSessions">Total Block Sessions</label>
+              <p-inputnumber inputId="totalBlockSessions" [(ngModel)]="newTotalBlockSessions" id="totalBlockSessions" autocomplete="off" />
+          </div>
+          <div class="form-field">
+              <label for="phoneNumber">Phone Number</label>
+              <p-inputmask [(ngModel)]="newPhoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
+          </div>
       </div>
-      <div class="flex items-center gap-4 mb-8">
-          <label for="totalBlockSessions" class="font-semibold w-24">Total Block Sessions</label>
-          <p-inputnumber inputId="totalBlockSessions" [(ngModel)]="newTotalBlockSessions" id="totalBlockSessions" class="flex-auto" autocomplete="off" />
-      </div>
-       <div class="flex items-center gap-4 mb-4">
-          <label for="phoneNumber" class="font-semibold w-24">Phone Number</label>
-          <p-inputmask [(ngModel)]="newPhoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
-      </div>
-      <div class="flex justify-end gap-2">
+      <div class="dialog-actions">
           <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
           <p-button label="Save" (click)="addNewClient(newClientName, newTotalBlockSessions, newPhoneNumber)"/>
       </div>
