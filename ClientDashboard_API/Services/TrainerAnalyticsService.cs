@@ -188,7 +188,10 @@ namespace ClientDashboard_API.Services
                     }
                 }
             }
-
+            if (monthsAccountedFor == 0)
+            {
+                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
+            }
 
             acquisitionRate = Math.Round(acquisitionRate / monthsAccountedFor);
             churnRate = Math.Round(churnRate / monthsAccountedFor);
@@ -269,6 +272,11 @@ namespace ClientDashboard_API.Services
 
                 daysAccountedFor++;
                 totalRevenue += record.RevenueToday;
+            }
+
+            if (monthsAccountedFor == 0)
+            {
+                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
             }
 
             var averageRevenuePerDay = Math.Round(totalRevenue / daysAccountedFor);
