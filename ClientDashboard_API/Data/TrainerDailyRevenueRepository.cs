@@ -106,14 +106,18 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
-        public bool DoRecordsIncludeFullMonth(List<TrainerDailyRevenue> revenueRecords)
+        public bool DoRecordsIncludeFullMonths(List<TrainerDailyRevenue> revenueRecords, int monthsAccountedFor)
         {
-            var startOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == 1);
+            for (int i = 0; i < monthsAccountedFor; i++)
+            {
+                var startOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == 1);
 
-            var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
+                var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
 
-            if(startOfMonth.First() is null || endOfMonth.First() is null || revenueRecords.Count != endOfMonth.First().AsOfDate.Day) return false;
+                if (startOfMonth.First() is null || endOfMonth.First() is null) return false;
 
+                if (revenueRecords.Count != endOfMonth.First().AsOfDate.Day) return false;
+            }
             return true;
         }
 
