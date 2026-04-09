@@ -53,7 +53,7 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<bool> { Data = user.NotificationsEnabled, Message = "Notification status successfully retrieved", Success = true });
         }
 
-        [Authorize(Roles = "Trainer,Client")]
+        [Authorize(Roles = "Trainer, Client")]
         [HttpPut("changeNotificationStatus")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationSmsStatusDto userInfo)
         {

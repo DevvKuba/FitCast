@@ -174,9 +174,7 @@ namespace ClientDashboard_API.Services
 
 
                     // calculate the churn & acquisition rates and reset counts
-                    var lastRecord = allRevenueRecords[allRevenueRecords.Count - 1];
-                    // if last day of the month or last record - in the case of calculating for all data
-                    if (allRevenueRecords[i].AsOfDate.Day == DateTime.DaysInMonth(firstRecord.AsOfDate.Year, firstRecord.AsOfDate.Month) || allRevenueRecords.Equals(lastRecord))
+                    if (allRevenueRecords[i].AsOfDate.Day == DateTime.DaysInMonth(firstRecord.AsOfDate.Year, firstRecord.AsOfDate.Month))
                     {
                         acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
                         churnRate += (churnCount / startingMonthActiveClients) * 100;
@@ -342,7 +340,7 @@ namespace ClientDashboard_API.Services
                 var lastDayOfMonth = DateTime.DaysInMonth(revenueRecords[i].AsOfDate.Year, revenueRecords[i].AsOfDate.Month);
                 var lastRecord = revenueRecords[revenueRecords.Count - 1];
 
-                if (revenueRecords[i].AsOfDate.Day == lastDayOfMonth || revenueRecords[i] == lastRecord)
+                if (revenueRecords[i].AsOfDate.Day == lastDayOfMonth)
                 {
                     accumulatedClients += revenueRecords[i].ActiveClients;
                 }
