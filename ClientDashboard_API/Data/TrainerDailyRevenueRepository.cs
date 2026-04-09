@@ -30,6 +30,15 @@ namespace ClientDashboard_API.Data
             return trainerRecords;
         }
 
+        public int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var allMonthCount = revenueRecords
+                .Select(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                .Distinct()
+                .Count();
+            return allMonthCount;
+        }
+
         public int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
         {
             if(revenueRecords == null || revenueRecords.Count == 0)
@@ -160,6 +169,5 @@ namespace ClientDashboard_API.Data
 
             return lastDayOfMonthlyRecords.Last();
         }
-
     }
 }
