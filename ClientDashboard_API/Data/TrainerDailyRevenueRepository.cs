@@ -41,10 +41,6 @@ namespace ClientDashboard_API.Data
 
         public int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
         {
-            if(revenueRecords == null || revenueRecords.Count == 0)
-            {
-                return 0;
-            }
             // only return counts of full months within passed in revenue records
             return revenueRecords
                  .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
@@ -127,22 +123,26 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
-        public bool DoRecordsIncludeFullMonths(List<TrainerDailyRevenue> revenueRecords, int monthsAccountedFor)
+        public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords)
         {
-            for (int i = 0; i < monthsAccountedFor; i++)
-            {
-                // extract months records each iteration - use instead of revenueRecords below
+            return revenueRecords
+                .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                .Where(monthGroup =>
+                {
 
-                var startOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == 1);
+                    var days = monthGroup
+                    .Select(r => r.AsOfDate.Day)
+                    .ToHashSet();
 
-                var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
+                    var lastDay = DateTime.DaysInMonth(monthGroup.Key.Year, monthGroup.Key.Month);
 
-                // instead of first use i ?
-                if (startOfMonth.Count() == 0 || endOfMonth.Count() == 0) return false;
-
-                if (revenueRecords.Count != endOfMonth.First().AsOfDate.Day) return false;
-            }
-            return true;
+                    return days.Count == lastDay &&
+                            Enumerable.Range(1, lastDay).All(day => days.Contains(day));
+                })
+                .OrderBy(g => g.Key.Year)
+                .ThenBy(g => g.Key.Month)
+                .SelectMany(g => g.OrderBy(r => r.AsOfDate))
+                .ToList();
         }
 
         public async Task ResetTrainerDailyRevenueRecordsAsync(int trainerId)

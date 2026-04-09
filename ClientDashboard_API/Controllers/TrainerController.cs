@@ -305,13 +305,11 @@ namespace ClientDashboard_API.Controllers
 
             var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsRecordsAsync(trainerId);
 
-            var monthsCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(lastMonthsRevenueRecords);
+            var fullMonthRecords = unitOfWork.TrainerDailyRevenueRepository.GetRecordsForFullMonths(lastMonthsRevenueRecords);
 
-            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(lastMonthsRevenueRecords, monthsCount);
-
-            if (!isDataSufficient)
+            if (fullMonthRecords == null || fullMonthRecords.Count == 0)
             {
-                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "Not sufficient amount of data to display analytics", Success = true});
+                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "No Full Months of data present to retrieve analytics. Try another time", Success = true});
             }
 
             var allAnalytics = analyticsService.GetAllAnalyticMetrics(lastMonthsRevenueRecords);
@@ -332,18 +330,18 @@ namespace ClientDashboard_API.Controllers
 
             var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
-            var monthsCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(allRevenueRecords);
+            //var monthsCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(allRevenueRecords);
 
-            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(allRevenueRecords, monthsCount);
+            var fullMonthlyRecords = unitOfWork.TrainerDailyRevenueRepository.GetRecordsForFullMonths(allRevenueRecords);
 
-            if (!isDataSufficient)
+            if (fullMonthlyRecords == null || fullMonthlyRecords.Count == 0)
             {
-                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "Not sufficient amount of data to display analytics", Success = true });
+                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "No Full Months of data present to retrieve analytics. Try another time", Success = true });
             }
 
             var allAnalytics = analyticsService.GetAllAnalyticMetrics(allRevenueRecords);
 
-            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
+            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved monthly analytics", Success = true });
         }
 
         [HttpPost("addExcludedName")]

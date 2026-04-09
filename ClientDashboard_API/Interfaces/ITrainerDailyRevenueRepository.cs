@@ -30,7 +30,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
 
-        bool DoRecordsIncludeFullMonths(List<TrainerDailyRevenue> revenueRecords, int monthsAccountedFor);
+        public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
 
