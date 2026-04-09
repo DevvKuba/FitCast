@@ -172,6 +172,7 @@ namespace ClientDashboard_API.Services
                         churnCount += allRevenueRecords[i - 1].ActiveClients - allRevenueRecords[i].ActiveClients;
                     }
 
+
                     // calculate the churn & acquisition rates and reset counts
                     var lastRecord = allRevenueRecords[allRevenueRecords.Count - 1];
                     // if last day of the month or last record - in the case of calculating for all data
@@ -239,7 +240,7 @@ namespace ClientDashboard_API.Services
                     nonWorkingDays = 0;
                 }
             }
-
+            
             return monthlyWorkingDays / monthsAccounterFor;
         }
 

@@ -305,7 +305,9 @@ namespace ClientDashboard_API.Controllers
 
             var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsRecordsAsync(trainerId);
 
-            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(lastMonthsRevenueRecords, 1);
+            var monthsCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(lastMonthsRevenueRecords);
+
+            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(lastMonthsRevenueRecords, monthsCount);
 
             if (!isDataSufficient)
             {
@@ -330,7 +332,9 @@ namespace ClientDashboard_API.Controllers
 
             var allRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
-            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(allRevenueRecords);
+            var monthsCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(allRevenueRecords);
+
+            var isDataSufficient = unitOfWork.TrainerDailyRevenueRepository.DoRecordsIncludeFullMonths(allRevenueRecords, monthsCount);
 
             if (!isDataSufficient)
             {

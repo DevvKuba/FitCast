@@ -30,13 +30,25 @@ namespace ClientDashboard_API.Data
             return trainerRecords;
         }
 
-        public int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
+        public int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
         {
-            var allMonthCount = revenueRecords
-                .Select(r => new { r.AsOfDate.Year, r.AsOfDate.Month})
-                .Distinct()
-                .Count();
-            return allMonthCount;
+            if(revenueRecords == null || revenueRecords.Count == 0)
+            {
+                return 0;
+            }
+            // only return counts of full months within passed in revenue records
+            return revenueRecords
+                 .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                 .Count(monthGroup =>
+                 {
+                     var daysInMonth = monthGroup
+                     .Select(r => r.AsOfDate.Day)
+                     .ToHashSet();
+
+                     var lastDay = DateTime.DaysInMonth(monthGroup.Key.Year, monthGroup.Key.Month);
+
+                     return daysInMonth.Contains(1) && daysInMonth.Contains(lastDay);
+                 });
         }
 
         public async Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId)
@@ -110,11 +122,14 @@ namespace ClientDashboard_API.Data
         {
             for (int i = 0; i < monthsAccountedFor; i++)
             {
+                // extract months records each iteration - use instead of revenueRecords below
+
                 var startOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == 1);
 
                 var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
 
-                if (startOfMonth.First() is null || endOfMonth.First() is null) return false;
+                // instead of first use i ?
+                if (startOfMonth.Count() == 0 || endOfMonth.Count() == 0) return false;
 
                 if (revenueRecords.Count != endOfMonth.First().AsOfDate.Day) return false;
             }

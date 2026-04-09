@@ -26,6 +26,8 @@ namespace ClientDashboard_API.Interfaces
 
         int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
 
+        int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
+
         Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
 
         bool DoRecordsIncludeFullMonths(List<TrainerDailyRevenue> revenueRecords, int monthsAccountedFor);
