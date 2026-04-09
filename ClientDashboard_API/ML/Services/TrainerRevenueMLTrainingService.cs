@@ -41,20 +41,25 @@ namespace ClientDashboard_API.ML.Services
                 throw new ArgumentException($"Trainer {trainerId} not found");
             }
 
-            var revenueRecords = await _unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
+            var allRevenueRecords = await _unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
 
-            if(revenueRecords.Count < 60) // Need at least 2 months of data
+            var fullMonthRecords = _unitOfWork.TrainerDailyRevenueRepository.GetRecordsForFullMonths(allRevenueRecords);
+
+            var fullMonthCount = _unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(fullMonthRecords);
+
+            if(fullMonthCount < 2) // Need at least 2 months of data
             {
                 throw new InvalidOperationException(
                     $"Insufficient data for Trainer {trainerId}. " +
-                    $"Have {revenueRecords.Count} records, need at least 60.");
+                    $"Have {fullMonthCount} full months, need at least 2.");
             }
 
             // 2 Feature engineering
-            var trainingData = FeatureEngineeringHelper.PrepareTrainingData(revenueRecords);
+            var trainingData = FeatureEngineeringHelper.PrepareTrainingData(fullMonthRecords);
+
             _logger.LogInformation(
-                "Prepared {Count} training examples for Trainer {TrainerId}",
-                trainingData.Count, trainerId);
+                "Prepared {Count} training examples from {MonthCount} full months for Trainer {TrainerId}",
+                    trainingData.Count, fullMonthCount, trainerId);
 
             // 3 Load into ML.NET
             var dataView = _mlContext.Data.LoadFromEnumerable(trainingData);

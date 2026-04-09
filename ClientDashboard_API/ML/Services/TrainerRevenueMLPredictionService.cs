@@ -30,12 +30,13 @@ namespace ClientDashboard_API.ML.Services
 
         public async Task<float> PredictNextMonthRevenueAsync(int trainerId)
         {
-            // 1 get or load prediction engine
-            if(!_predictionEngines.ContainsKey(trainerId))
+            // 1 Ensure latest model from disk is used after retraining
+            if(_predictionEngines.ContainsKey(trainerId))
             {
-                LoadModelForTrainer(trainerId);
+                _predictionEngines.Remove(trainerId);
             }
 
+            LoadModelForTrainer(trainerId);
             var predictionEngine = _predictionEngines[trainerId];
 
             // 2 fetch latest data for trainer

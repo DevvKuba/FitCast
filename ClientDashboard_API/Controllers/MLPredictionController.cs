@@ -29,8 +29,10 @@ namespace ClientDashboard_API.Controllers
                 var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
                 var allRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
-                
-                int monthsOfData = unitOfWork.TrainerDailyRevenueRepository.GetAllMonthCountsFromData(allRecords);
+
+                var fullMonthRecords = unitOfWork.TrainerDailyRevenueRepository.GetRecordsForFullMonths(allRecords);
+
+                int monthsOfData = unitOfWork.TrainerDailyRevenueRepository.GetAllMonthCountsFromData(fullMonthRecords);
 
                 var confidence = PredictionConfidenceHelper.DetermineConfidenceLevel(monthsOfData);
 

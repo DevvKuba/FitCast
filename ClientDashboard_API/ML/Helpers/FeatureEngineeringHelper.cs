@@ -35,14 +35,14 @@ namespace ClientDashboard_API.ML.Helpers
                 {
                     var snapshot = currentMonthRecords[dayIndex];
 
-                    // Calculate days remaining in month (more meaningful than day number)
-                    int daysRemainingInMonth = daysInMonth - dayIndex;
+                    int daysInCurrentMonth = DateTime.DaysInMonth(snapshot.AsOfDate.Year, snapshot.AsOfDate.Month);
+                    int currentDay = snapshot.AsOfDate.Day;
 
-                    // Calculate revenue velocity (revenue per day so far)
-                    // Example: $2,000 revenue on day 10 = $200/day velocity
-                    // allows for the model to project predictions on incompelte months
-                    float revenueVelocity = dayIndex > 0 && snapshot.MonthlyRevenueThusFar > 0
-                        ? (float)snapshot.MonthlyRevenueThusFar / dayIndex
+                    int daysRemainingInMonth = daysInCurrentMonth - currentDay;
+
+
+                    float revenueVelocity = currentDay > 0 && snapshot.MonthlyRevenueThusFar > 0
+                        ? (float)snapshot.MonthlyRevenueThusFar / currentDay
                         : 0;
 
                     var trainingExample = new TrainerRevenueData
