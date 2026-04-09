@@ -112,7 +112,7 @@ namespace ClientDashboard_API.Data
 
             var endOfMonth = revenueRecords.Where(r => r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month));
 
-            if(startOfMonth is null || endOfMonth is null) return false;
+            if(startOfMonth.First() is null || endOfMonth.First() is null || revenueRecords.Count != endOfMonth.First().AsOfDate.Day) return false;
 
             return true;
         }
