@@ -2,6 +2,7 @@
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Twilio.Rest.Trunking.V1;
 
 namespace ClientDashboard_API.Data
@@ -46,13 +47,14 @@ namespace ClientDashboard_API.Data
                  .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
                  .Count(monthGroup =>
                  {
-                     var daysInMonth = monthGroup
+                     var days = monthGroup
                      .Select(r => r.AsOfDate.Day)
                      .ToHashSet();
 
                      var lastDay = DateTime.DaysInMonth(monthGroup.Key.Year, monthGroup.Key.Month);
 
-                     return daysInMonth.Contains(1) && daysInMonth.Contains(lastDay);
+                     return days.Count == lastDay &&
+                     Enumerable.Range(1, days.Count).All(day => days.Contains(day));
                  });
         }
 
