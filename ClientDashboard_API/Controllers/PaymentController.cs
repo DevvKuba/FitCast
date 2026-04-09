@@ -122,7 +122,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payments after deletion", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Payment for trainer: {trainer.FirstName} and their client: {client.FirstName} has been added successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"Payment for {client.FirstName}  of {paymentInfo.Amount}{trainer.DefaultCurrency} has been added successfully", Success = true });
 
         }
 
@@ -143,7 +143,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payments after deletion", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for trainer: {payment.Trainer.FirstName} and their client: {payment.Client!.FirstName} has been deleted successfully", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = payment.Id.ToString(), Message = $"Payment for client: {payment.Client!.FirstName} on {payment.PaymentDate} has been deleted successfully", Success = true });
         }
 
         [Authorize(Roles = "Trainer")]

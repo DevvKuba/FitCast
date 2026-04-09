@@ -330,9 +330,9 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not removed", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client: {client.FirstName} not removed", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = clientId.ToString(), Message = $"Client with id: {clientId} removed", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = clientId.ToString(), Message = $"Client: {client.FirstName} was removed", Success = true });
 
         }
 

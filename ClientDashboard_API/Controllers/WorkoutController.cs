@@ -181,7 +181,7 @@ namespace ClientDashboard_API.Controllers
                 }
             }
 
-            return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for client: {newWorkout.ClientName}", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for {newWorkout.ClientName} on {DateOnly.Parse(newWorkout.SessionDate)}", Success = true });
 
         }
 
