@@ -52,6 +52,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
             builder.Entity<Notification>().ToTable("Notifications");
+            builder.Entity<NotificationRecipientStatus>().ToTable("NotificationRecipientStatusses");
             builder.Entity<EmailVerificationToken>().ToTable("EmailVerificationTokens");
             builder.Entity<PasswordResetToken>().ToTable("PasswordResetTokens");
             builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");
@@ -93,6 +94,15 @@ namespace ClientDashboard_API.Data
             builder.Entity<ClientDailyFeature>()
                 .Property(c => c.LifeTimeValue)
                 .HasPrecision(18, 2);
+
+            // UserBase relationships
+
+            builder.Entity<UserBase>()
+                 .HasMany<NotificationRecipientStatus>()
+                 .WithOne(n => n.User)
+                 .HasForeignKey(n => n.UserId)
+                 .OnDelete(DeleteBehavior.Cascade)
+                 .IsRequired(true);
 
             // Client relationship
             builder.Entity<Client>()
@@ -146,6 +156,13 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(false);
 
+            builder.Entity<Notification>()
+                .HasMany<NotificationRecipientStatus>()
+                .WithOne(n => n.Notification)
+                .HasForeignKey(n => n.NotificationId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
             // Payment relationships
             builder.Entity<Client>()
                 .HasMany<Payment>()
@@ -160,7 +177,17 @@ namespace ClientDashboard_API.Data
                 .HasForeignKey(p => p.TrainerId)
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
+
+            // Notification Recipient Status relationships
+
+            builder.Entity<NotificationRecipientStatus>()
+                .HasIndex(x => new { x.NotificationId, x.UserId })
+                .IsUnique();
         }
+
+
+
+
 
     }
 }
