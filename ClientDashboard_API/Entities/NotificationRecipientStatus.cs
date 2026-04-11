@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace ClientDashboard_API.Entities
 {
     public class NotificationRecipientStatus
     {
@@ -12,8 +14,10 @@
 
         public DateTime? ReadAt { get; set; }
 
+        [JsonIgnore]
         public UserBase User { get; set; } = null!;
 
+        [JsonIgnore]
         public Notification Notification { get; set; } = null!;
 
     }

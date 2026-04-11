@@ -10,6 +10,7 @@ import { UserRole } from '../enums/user-role';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { NotificationService } from '../services/notification.service';
 import { Notification } from '../models/notification';
+import { NotificationReadStatusDto } from '../models/dtos/notification-read-status-dto';
 
 @Component({
   selector: 'app-navbar',
@@ -173,14 +174,17 @@ export class UserNavbar{
         this.notificationService.gatherLatestUserNotifications(userId).subscribe({
             next: (response) => {
                 this.latestNotifications = response.data ?? [];
-                const list = {
-                    readNotificationsList: response.data ?? []
-                }
+                const notificationIds = this.latestNotifications.map((notification) => notification.id);
 
-                if(list.readNotificationsList.length > 0){
-                    this.notificationService.markUserNotificationsAsRead(list).subscribe({
+                if(notificationIds.length > 0){
+                    const readStatus: NotificationReadStatusDto = {
+                        userId,
+                        NotificationIds: notificationIds
+                    };
+
+                    this.notificationService.markUserNotificationsAsRead(readStatus).subscribe({
                         next: () => {
-                            this.notificationService.refreshUnreadCount(this.accountService.currentUser()?.id ?? 0);
+                            this.notificationService.refreshUnreadCount(userId);
                         }
                     });
                 }
