@@ -58,11 +58,6 @@ export class UserNavbar{
         if(role == UserRole.Trainer){
             console.log(this.accountService.currentUser()?.role)
             this.functionItems = [
-            // {
-            //     label: 'Client Analytics',
-            //     routerLink: '/client-analytics',
-            //     icon: 'pi pi-chart-line'
-            // },
             {
                 label: 'Client Info',
                 routerLink: '/client-info',
@@ -132,11 +127,20 @@ export class UserNavbar{
             
         ];
         this.generalItems = [
+             {
+              icon: 'pi pi-bell',
+              badge: this.getBellBadge(),
+              command: () => {
+                this.notificationVisibility = true;
+                this.onNotificationDrawerOpen();
+              }
+              
+            },
             {
                 label: 'Home',
                 routerLink: '/',
                 icon: 'pi pi-home'
-            },
+            },            
             // client profile
             {
                 label: 'Logout',
