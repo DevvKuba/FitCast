@@ -21,27 +21,16 @@ namespace ClientDashboard_API.Data
             return latestNotifications;
         }
 
-        public async Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer)
-        {
-            // and its associated 
-            var unreadNotifications = await context.Notification.Where(n => n.TrainerId == trainer.Id && n.IsRead == false).ToListAsync();
-            return unreadNotifications.Count;
-        }
-
-        public async Task<int> ReturnUnreadClientNotificationCount(UserBase client)
-        {
-            var unreadNotifications = await context.Notification.Where(n => n.ClientId == client.Id && n.IsRead == false).ToListAsync();
-            return unreadNotifications.Count;
-        }
-
         public async Task MarkNotificationsAsRead(List<Notification> notificationList)
         {
             // for each notificationList element get corresponding - then set IsRead to true
              var notificationListData = await context.Notification.Where(n => notificationList.Contains(n)).ToListAsync();
             foreach(var notification in notificationListData)
             {
-                notification.IsRead = true;
-                notification.ReadAt = DateTime.UtcNow;
+                var notificationRecipientStatus = await context.NotificationRecipientStatuses.Where(n => n.NotificationId == notification.Id).FirstAsync();
+
+                notificationRecipientStatus.IsRead = true;
+                notificationRecipientStatus.ReadAt = DateTime.UtcNow;
             }
             
         }
