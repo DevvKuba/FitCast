@@ -23,6 +23,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer)
         {
+            // and its associated 
             var unreadNotifications = await context.Notification.Where(n => n.TrainerId == trainer.Id && n.IsRead == false).ToListAsync();
             return unreadNotifications.Count;
         }

@@ -18,6 +18,8 @@ namespace ClientDashboard_API.Data
 
         public DbSet<Notification> Notification { get; set; }
 
+        public DbSet<NotificationRecipientStatus> NotificationRecipientStatuses { get; set; }
+
         public DbSet<EmailVerificationToken> EmailVerificationToken { get; set; }
 
         public DbSet<PasswordResetToken> PasswordResetToken { get; set; }

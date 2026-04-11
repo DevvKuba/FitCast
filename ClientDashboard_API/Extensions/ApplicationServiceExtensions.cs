@@ -30,6 +30,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ITrainerRepository, TrainerRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationRecipientStatusRepository, NotificationRecipientStatusRepository>();
             services.AddScoped<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>();
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IClientDailyFeatureRepository, ClientDailyFeatureRepository>();

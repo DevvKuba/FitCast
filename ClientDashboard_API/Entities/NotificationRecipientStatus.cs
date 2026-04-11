@@ -8,13 +8,13 @@
 
         public int NotificationId { get; set; }
 
-        public bool IsRead { get; set; }
+        public bool IsRead { get; set; } = false;
 
         public DateTime? ReadAt { get; set; }
 
-        public required UserBase User { get; set; }
+        public UserBase User { get; set; } = null!;
 
-        public required Notification Notification { get; set; } 
+        public Notification Notification { get; set; } = null!;
 
     }
 }
