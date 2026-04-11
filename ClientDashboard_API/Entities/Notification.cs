@@ -22,5 +22,8 @@ namespace ClientDashboard_API.Entities
 
         public Client? Client { get; set; } = null;
 
+        // Per-recipient read state
+        public ICollection<NotificationRecipientStatus> RecipientStatuses { get; set; } = new List<NotificationRecipientStatus>();
+
     }
 }

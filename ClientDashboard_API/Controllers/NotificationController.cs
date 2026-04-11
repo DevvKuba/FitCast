@@ -79,7 +79,14 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("markNotificationsAsRead")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeNotificationStatusesToReadAsync([FromBody] NotificationReadStatusDto notifications)
         {
-            await unitOfWork.NotificationRepository.MarkNotificationsAsRead(notifications.ReadNotificationsList);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(notifications.UserId);
+
+            if (user is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, notification statuses were not updated", Success = false });
+            }
+
+            await unitOfWork.NotificationRecipientStatusRepository.MarkNotificationsAsReadAsync(notifications.UserId, notifications.NotificationIds);
 
             if (!await unitOfWork.Complete())
             {
@@ -99,16 +106,11 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
             }
 
-            var latestNotifications = new List<Notification>();
+            var latestNotificationStatuses = await unitOfWork.NotificationRecipientStatusRepository.GetLatestUserNotificationStatusesAsync(userId);
 
-            if (user.Role == Enums.UserRole.Trainer)
-            {
-                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestTrainerNotifications(user);
-            }
-            else if(user.Role == Enums.UserRole.Client)
-            {
-                latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestClientNotifications(user);
-            }
+            var latestNotifications = latestNotificationStatuses
+                .Select(n => n.Notification)
+                .ToList();
 
             return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }

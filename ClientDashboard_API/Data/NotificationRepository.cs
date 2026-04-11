@@ -2,8 +2,6 @@
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
-using Twilio.Rest.Api.V2010.Account.Usage.Record;
 
 namespace ClientDashboard_API.Data
 {
@@ -23,16 +21,17 @@ namespace ClientDashboard_API.Data
 
         public async Task MarkNotificationsAsRead(List<Notification> notificationList)
         {
-            // for each notificationList element get corresponding - then set IsRead to true
-             var notificationListData = await context.Notification.Where(n => notificationList.Contains(n)).ToListAsync();
-            foreach(var notification in notificationListData)
-            {
-                var notificationRecipientStatus = await context.NotificationRecipientStatuses.Where(n => n.NotificationId == notification.Id).FirstAsync();
+            var notificationIds = notificationList.Select(n => n.Id).ToList();
 
-                notificationRecipientStatus.IsRead = true;
-                notificationRecipientStatus.ReadAt = DateTime.UtcNow;
+            var statuses = await context.NotificationRecipientStatuses
+                .Where(n => notificationIds.Contains(n.NotificationId) && !n.IsRead)
+                .ToListAsync();
+
+            foreach (var status in statuses)
+            {
+                status.IsRead = true;
+                status.ReadAt = DateTime.UtcNow;
             }
-            
         }
 
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
@@ -46,6 +45,14 @@ namespace ClientDashboard_API.Data
                 SentThrough = sentThrough,
                 SentAt = DateTime.UtcNow,
             };
+
+            newNotification.RecipientStatuses.Add(new NotificationRecipientStatus {UserId = trainerId, IsRead = false, ReadAt = null});
+
+            if (clientId.HasValue)
+            {
+                newNotification.RecipientStatuses.Add(new NotificationRecipientStatus{UserId = clientId.Value, IsRead = false, ReadAt = null});
+            }
+
             await context.Notification.AddAsync(newNotification);
         }
 
