@@ -52,7 +52,7 @@ namespace ClientDashboard_API.Data
             builder.Entity<Trainer>().ToTable("Trainers");
             builder.Entity<Payment>().ToTable("Payments");
             builder.Entity<Notification>().ToTable("Notifications");
-            builder.Entity<NotificationRecipientStatus>().ToTable("NotificationRecipientStatusses");
+            builder.Entity<NotificationRecipientStatus>().ToTable("NotificationRecipientStatuses");
             builder.Entity<EmailVerificationToken>().ToTable("EmailVerificationTokens");
             builder.Entity<PasswordResetToken>().ToTable("PasswordResetTokens");
             builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");

@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Entities
 
         public required CommunicationType SentThrough { get; set; }
 
-        public DateTime? ReadAt { get; set; }
+        public DateTime SentAt { get; set; }
 
         public Trainer? Trainer { get; set; } = null;
 
