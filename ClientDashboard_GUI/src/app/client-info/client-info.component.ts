@@ -84,6 +84,7 @@ export class ClientInfoComponent implements OnInit {
 
   clear(table: Table) {
     table.clear();
+    this.getClients();
   }
 
   onRowEditInit(client: Client) {

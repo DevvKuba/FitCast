@@ -82,6 +82,7 @@ export class ClientPaymentsComponent implements OnInit {
 
   clear(table: Table){
           table.clear();
+          this.gatherClientNames();
       }
 
   next() {

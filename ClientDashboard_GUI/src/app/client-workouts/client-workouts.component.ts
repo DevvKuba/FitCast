@@ -90,6 +90,7 @@ export class ClientWorkouts {
 
     clear(table: Table){
         table.clear();
+        this.displayWorkouts();
     }
 
     next() {
