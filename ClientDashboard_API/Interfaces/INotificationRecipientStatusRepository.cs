@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<NotificationRecipientStatus> GetNotificationRecipientStatusByIdAsync(int statusId);
         
-        Task<int> GetUnreadUserNotificationCountAsync(int userId);
+        Task<int> GetUnreadUserNotificationCountAsync(UserBase user);
 
         Task<List<NotificationRecipientStatus>> GetLatestUserNotificationStatusesAsync(int userId);
 

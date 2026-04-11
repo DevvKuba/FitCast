@@ -22,10 +22,10 @@ namespace ClientDashboard_API.Data
             return latestRecipientStatuses;
         }
 
-        public async Task<int> GetUnreadUserNotificationCountAsync(int userId)
+        public async Task<int> GetUnreadUserNotificationCountAsync(UserBase user)
         {
             var unreadNotificationCount = await context.NotificationRecipientStatuses
-                .CountAsync(n => n.UserId == userId && n.IsRead == false);
+                .CountAsync(n => n.UserId == user.Id && n.IsRead == false);
 
             return unreadNotificationCount;
         }

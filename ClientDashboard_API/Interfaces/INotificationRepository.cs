@@ -5,9 +5,9 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface INotificationRepository
     {
-        Task<int> ReturnUnreadTrainerNotificationCount(UserBase trainer);
+        Task<List<Notification>> ReturnLatestTrainerNotifications(UserBase trainer);
 
-        Task<int> ReturnUnreadClientNotificationCount(UserBase client);
+        Task<List<Notification>> ReturnLatestClientNotifications(UserBase client);
 
         Task MarkNotificationsAsRead(List<Notification> notificationList);
 

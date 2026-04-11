@@ -127,14 +127,8 @@ namespace ClientDashboard_API.Controllers
 
             var unreadNotificationCount = 0;
 
-            if (user.Role == Enums.UserRole.Trainer)
-            {
-                unreadNotificationCount = await unitOfWork.NotificationRepository.ReturnUnreadTrainerNotificationCount(user);
-            }
-            else if (user.Role == Enums.UserRole.Client)
-            {
-                unreadNotificationCount = await unitOfWork.NotificationRepository.ReturnUnreadClientNotificationCount(user);
-            }
+            unreadNotificationCount = await unitOfWork.NotificationRecipientStatusRepository.GetUnreadUserNotificationCountAsync(user);
+
             return Ok(new ApiResponseDto<int?> { Data = unreadNotificationCount, Message = "Successfully returned unread notification count", Success = true });
         }
 
