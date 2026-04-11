@@ -159,7 +159,7 @@ namespace ClientDashboard_API.Data
                 .IsRequired(false);
 
             builder.Entity<Notification>()
-                .HasMany<NotificationRecipientStatus>()
+                .HasMany(n => n.RecipientStatuses)
                 .WithOne(n => n.Notification)
                 .HasForeignKey(n => n.NotificationId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -181,15 +181,10 @@ namespace ClientDashboard_API.Data
                 .IsRequired(true);
 
             // Notification Recipient Status relationships
-
             builder.Entity<NotificationRecipientStatus>()
                 .HasIndex(x => new { x.NotificationId, x.UserId })
                 .IsUnique();
         }
-
-
-
-
 
     }
 }
