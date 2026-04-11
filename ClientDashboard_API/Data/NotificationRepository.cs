@@ -19,21 +19,6 @@ namespace ClientDashboard_API.Data
             return latestNotifications;
         }
 
-        public async Task MarkNotificationsAsRead(List<Notification> notificationList)
-        {
-            var notificationIds = notificationList.Select(n => n.Id).ToList();
-
-            var statuses = await context.NotificationRecipientStatuses
-                .Where(n => notificationIds.Contains(n.NotificationId) && !n.IsRead)
-                .ToListAsync();
-
-            foreach (var status in statuses)
-            {
-                status.IsRead = true;
-                status.ReadAt = DateTime.UtcNow;
-            }
-        }
-
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
         {
             var newNotification = new Notification
