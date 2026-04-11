@@ -87,7 +87,7 @@ namespace ClientDashboard_API.Data
             {
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
-                TotalBlockSessions = blockSessions,
+                TotalBlockSessions = blockSessions == null ? client.TotalBlockSessions : blockSessions,
                 CurrentBlockSession = client.CurrentBlockSession
 
             };

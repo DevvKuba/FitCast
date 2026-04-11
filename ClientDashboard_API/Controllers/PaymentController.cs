@@ -59,12 +59,12 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
 
-            unitOfWork.PaymentRepository.UpdatePaymentDetails(payment, paymentRequestInfo);
-            var isMostRecentPayment = await unitOfWork.PaymentRepository.IsMostRecentClientPayment(client, paymentRequestInfo.Id); 
+            //unitOfWork.PaymentRepository.UpdatePaymentDetails(payment, paymentRequestInfo);
+            //var isMostRecentPayment = await unitOfWork.PaymentRepository.IsMostRecentClientPayment(client, paymentRequestInfo.Id); 
 
-            if (paymentRequestInfo.NumberOfSessions != client.TotalBlockSessions && isMostRecentPayment)
+            if (paymentRequestInfo.NumberOfSessions != client.TotalBlockSessions)
             {
-                unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, paymentRequestInfo.NumberOfSessions);
+                unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, null);
             }
 
             if (!await unitOfWork.Complete())
