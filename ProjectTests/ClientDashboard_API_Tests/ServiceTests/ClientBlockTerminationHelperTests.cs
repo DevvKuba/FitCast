@@ -252,7 +252,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -295,7 +295,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -339,7 +339,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -382,7 +382,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _notificationService.FailureMessage = "Block reminder failed";
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.False(result.Success);
@@ -420,7 +420,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _autoPaymentService.FailureMessage = "Payment creation failed";
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.False(result.Success);
@@ -466,7 +466,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _notificationService.FailureMessage = "Payment alert failed";
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert - This test needs the notification service to succeed on first call, fail on second
             // For simplicity, we'll test the structure is correct
@@ -489,7 +489,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -529,7 +529,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -573,7 +573,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.True(result.Success);
@@ -625,8 +625,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result1 = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client1);
-            var result2 = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client2);
+            var result1 = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client1);
+            var result2 = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client2);
 
             // Assert
             Assert.True(result1.Success);
@@ -665,7 +665,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             // Act
-            var result = await _clientBlockTerminationHelper.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+            var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
             Assert.NotNull(result);

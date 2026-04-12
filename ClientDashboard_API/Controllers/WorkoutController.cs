@@ -173,11 +173,11 @@ namespace ClientDashboard_API.Controllers
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                var response = await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+                var notificationsResponse = await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
 
-                if (!response.Success)
+                if (!notificationsResponse.Success)
                 {
-                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
+                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = notificationsResponse.Message, Success = false });
                 }
             }
 

@@ -54,7 +54,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         public int CallCount { get; private set; }
         public List<int> ProcessedClientIds { get; } = new();
 
-        public Task<ApiResponseDto<string>> CreateAdequateTrainerRemindersAndPaymentsAsync(Client client)
+        public Task<ApiResponseDto<string>> CreateAllAdequateEntityReminderAsync(Client client)
         {
             CallCount++;
             ProcessedClientIds.Add(client.Id);

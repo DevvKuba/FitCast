@@ -5,6 +5,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IClientBlockTerminationHelper
     {
-        Task<ApiResponseDto<string>> CreateAdequateTrainerRemindersAndPaymentsAsync(Client client);
+        Task<ApiResponseDto<string>> CreateAllAdequateEntityReminderAsync(Client client);
     }
 }

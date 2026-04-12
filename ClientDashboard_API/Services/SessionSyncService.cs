@@ -35,7 +35,7 @@ namespace ClientDashboard_API.Services
 
                             if (client.CurrentBlockSession == client.TotalBlockSessions)
                             {
-                                await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+                                await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
                             }
                         }
                         else

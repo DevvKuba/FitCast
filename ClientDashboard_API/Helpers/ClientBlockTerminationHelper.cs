@@ -7,37 +7,27 @@ namespace ClientDashboard_API.Helpers
 {
     public class ClientBlockTerminationHelper(INotificationService notificationService, IAutoPaymentCreationService autoPaymentService) : IClientBlockTerminationHelper
     {
-        public async Task<ApiResponseDto<string>> CreateAdequateTrainerRemindersAndPaymentsAsync(Client client)
+        public async Task<ApiResponseDto<string>> CreateAllAdequateEntityReminderAsync(Client client)
         {
-            ApiResponseDto<string> response;
-
             if (client.Trainer is not null)
             {
-                response = await notificationService.SendTrainerBlockReminderAsync((int)client.TrainerId!, client.Id);
+                await notificationService.SendTrainerBlockReminderAsync((int)client.TrainerId!, client.Id);
 
-                if (!response.Success)
-                {
-                    return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however notification was not created" , Success = false};
-                }
+                await notificationService.SendClientBlockReminderAsync((int)client.TrainerId!, client.Id);
+
 
                 if (client.Trainer.AutoPaymentSetting)
                 {
-                    response = await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
+                   await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
 
-                    if (!response.Success)
-                    {
-                        return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however pending payment record was not created", Success = false };
-                    }
+                   await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
 
-                    response = await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
-
-                    if (!response.Success)
-                    {
-                        return new ApiResponseDto<string> { Data = null, Message = $"Client workout added however pending payment alert was not created", Success = false };
-                    }
+                  // notification to client around how much they are due 
                 }
             }
             return new ApiResponseDto<string> { Data = null, Message = "process finalised without any processing errors", Success = true};
         }
+
+
     }
 }

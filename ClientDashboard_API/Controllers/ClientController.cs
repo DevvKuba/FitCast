@@ -125,7 +125,7 @@ namespace ClientDashboard_API.Controllers
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                var response = await clientBlockTerminator.CreateAdequateTrainerRemindersAndPaymentsAsync(client);
+                var response = await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
 
                 if (!response.Success)
                 {
