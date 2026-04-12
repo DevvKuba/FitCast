@@ -7,7 +7,8 @@
         NewClientConfigurationReminder = 3, // for when a client is automatically added through Hevy workout retrieval
         ClientStepsTrackedNotification = 4,
         AutoRetrievalWorkoutsCountNotification = 5,
-        PendingPaymentCreatedAlert = 6
+        PendingPaymentCreatedAlert = 6,
+        QuickAddWorkoutReminder = 7,
 
         // notifications around a payment of x amount being due / confirmed
     }
