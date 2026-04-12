@@ -4,6 +4,11 @@
   align-items: center;
 }
 
+/* Keep stack helper labels hidden on desktop */
+::ng-deep .p-column-title {
+    display: none;
+}
+
 .p-inputtext {
     max-width: 135px;
 }
@@ -156,4 +161,93 @@
 ::ng-deep .p-popover .p-popover-content {
     padding: 0;
     border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        justify-content: center;
+        width: 100%;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .workout-caption {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .left-segment,
+    .right-segment {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+        flex-wrap: wrap;
+    }
+
+    .workout-add-button {
+        margin-right: 0;
+    }
+
+    .workout-search {
+        margin-right: 0;
+        justify-content: center;
+    }
+
+    .header-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .action-column {
+        width: auto;
+        min-width: 0;
+    }
+
+    .workout-td {
+        text-align: center;
+    }
+
+    /* Show stack labels only on mobile */
+    ::ng-deep .p-column-title {
+        display: inline-block;
+    }
+
+    /* Override desktop fixed table width so rows fit the viewport */
+    ::ng-deep .p-datatable .p-datatable-table {
+        width: 100% !important;
+        min-width: 100% !important;
+        table-layout: auto !important;
+    }
+
+    ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr,
+    ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 1rem);
+        margin: 0 auto;
+    }
+
+    ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr > td,
+    ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr > td {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        text-align: center;
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr > td .p-column-title,
+    ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
+        min-width: auto;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.15rem;
+    }
 }

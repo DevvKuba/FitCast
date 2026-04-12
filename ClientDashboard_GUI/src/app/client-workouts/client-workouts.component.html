@@ -122,6 +122,8 @@
     <p-table
         #dt2
         [value]="workouts"
+        responsiveLayout="stack"
+        [breakpoint]="'768px'"
         [globalFilterFields] = "['clientName']"
         [paginator]="true"
         [rows]="10"
@@ -217,6 +219,7 @@
         <ng-template #body let-workout let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="workout">
                 <td class="workout-td">
+                <span class="p-column-title">Workout Title</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -228,10 +231,17 @@
                     </ng-template>
                 </p-cellEditor>
               </td>
-                <td class="workout-td">{{ workout.clientName }}</td>
-                <td class="workout-td">{{ workout.currentBlockSession }}</td>
-                <td class="workout-td">{{ workout.totalBlockSessions }}</td>
+                                <td class="workout-td">
+                                <span class="p-column-title">Client Name</span>
+                                {{ workout.clientName }}</td>
+                                <td class="workout-td">
+                                <span class="p-column-title">Current Session</span>
+                                {{ workout.currentBlockSession }}</td>
+                                <td class="workout-td">
+                                <span class="p-column-title">Total Sessions</span>
+                                {{ workout.totalBlockSessions }}</td>
                 <td class="workout-td">
+                                <span class="p-column-title">Session Date</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -244,6 +254,7 @@
                 </p-cellEditor>
               </td>
               <td class="workout-td">
+                                <span class="p-column-title">Duration</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input class="duration-count-input"
@@ -256,6 +267,7 @@
                 </p-cellEditor>
               </td>
                 <td class="workout-td">
+                                <span class="p-column-title">Exercises</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input class="exercise-count-input"
@@ -268,6 +280,7 @@
                 </p-cellEditor>
               </td>
                 <td class="workout-td">
+                                <span class="p-column-title">Actions</span>
                 <div class="flex items-center justify-center gap-2">
                     <button
                         *ngIf="!editing"
