@@ -61,7 +61,6 @@ export class ClientInfoComponent implements OnInit {
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
   phoneDialogVisible: boolean = false;
-  quickAddDialogVisible: boolean = false;
   newClientName : string = "";
   newPhoneNumber: string = "";
   editingPhoneNumber: string = "";
@@ -72,8 +71,6 @@ export class ClientInfoComponent implements OnInit {
   deleteClientId: number = 0;
   deleteClientName: string = "";
   phoneNumberInputInfo: string = "test";
-  quickAddClientId: number | null = null;
-  quickAddClientOptions: SelectItem[] = [];
 
   ngOnInit() {
       this.currentUserId = this.accountService.currentUser()?.id ?? 0;
@@ -175,10 +172,6 @@ export class ClientInfoComponent implements OnInit {
     this.clientService.getAllTrainerClients(this.currentUserId).subscribe({
       next: (response) => {
         this.clients = response.data ?? [];
-        this.quickAddClientOptions = this.clients.map((client) => ({
-          label: client.firstName,
-          value: client.id
-        }));
       }
     })
   }
@@ -199,27 +192,10 @@ export class ClientInfoComponent implements OnInit {
     this.addDialogVisible = true;
   }
 
-  showDialogForQuickAdd() {
-    this.quickAddDialogVisible = true;
-    this.quickAddClientId = null;
-  }
-
-  onQuickAddConfirm() {
-    if (this.quickAddClientId === null) {
-      this.toastService.showError('Quick Add Error', 'Select a client to continue');
-      return;
-    }
-
-    const selectedClient = this.clients?.find((client) => client.id === this.quickAddClientId);
-    if (!selectedClient) {
-      this.toastService.showError('Quick Add Error', 'The selected client could not be found');
-      return;
-    }
-
-    // http post request
-
-    this.toastService.showSuccess('Quick Add Complete', `${selectedClient.firstName} session count updated locally`);
-    this.quickAddDialogVisible = false;
+  onQuickAddForClient(client: Client) {
+    // Frontend-only placeholder until backend endpoint is connected.
+    client.currentBlockSession += 1;
+    this.toastService.showSuccess('Quick Add Complete', `${client.firstName} session increased by 1`);
   }
 
   getActivities(isActive : boolean) : string {

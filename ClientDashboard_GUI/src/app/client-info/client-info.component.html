@@ -34,29 +34,6 @@
       </div>
   </p-dialog>
 
-      <!-- Quick Add Dialog -->
-      <p-dialog header="Quick Add Session" [modal]="true" [(visible)]="quickAddDialogVisible" [style]="{ width: '24rem' }">
-        <div class="dialog-form-group">
-        <span class="dialog-intro-text">Select the client you'd like to add a predefined session for.</span>
-          <div class="form-field">
-            <label for="quickAddClient">Client</label>
-            <p-select
-            [options]="quickAddClientOptions"
-            [(ngModel)]="quickAddClientId"
-            optionLabel="label"
-            optionValue="value"
-            [showClear]="true"
-            appendTo="body"
-            inputId="quickAddClient"
-            placeholder="Select a client" />
-          </div>
-        </div>
-        <div class="dialog-actions">
-          <p-button label="Cancel" severity="secondary" (click)="quickAddDialogVisible = false" />
-          <p-button label="Add Session" icon="pi pi-plus-circle" (click)="onQuickAddConfirm()" />
-        </div>
-      </p-dialog>
-
   <!-- Delete Dialog - Moved outside table -->
   <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">
@@ -100,7 +77,6 @@
         <div class="header-buttons">
           <div class="left-segment">
             <p-button icon="pi pi-plus" styleClass="add-button" label="New" severity="secondary" (onClick)="showDialogForAdd()"></p-button>
-            <p-button icon="pi pi-bolt" styleClass="quick-add-button" label="Quick Add" severity="secondary" (onClick)="showDialogForQuickAdd()"></p-button>
           </div>
         </div>
       </ng-template>
@@ -195,6 +171,19 @@
                       icon="pi pi-whatsapp"
                       rounded
                     ></button></a>
+                    <button
+                      *ngIf="!editing"
+                      pButton
+                      pRipple
+                      type="button"
+                      icon="pi pi-bolt"
+                      (click)="onQuickAddForClient(client)"
+                      pTooltip="Quick add session"
+                      tooltipPosition="top"
+                      text
+                      rounded
+                      severity="secondary"
+                    ></button>
                     <!-- <button
                       *ngIf="!editing"
                       pButton
