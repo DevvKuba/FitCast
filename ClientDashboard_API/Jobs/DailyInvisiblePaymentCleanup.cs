@@ -3,19 +3,54 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyInvisiblePaymentCleanup(IUnitOfWork unitOfWork, ILogger<DailyDeletedClientCleanup> logger) : IJob
+    public class DailyInvisiblePaymentCleanup(IUnitOfWork unitOfWork, ILogger<DailyInvisiblePaymentCleanup> logger) : IJob
     {
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            // runs on all trainer clients
+            logger.LogInformation("DailyInvisiblePaymentCleanup job STARTED at {StartTime} UTC", DateTime.UtcNow);
 
-            // gather every payment that is toggled to not visible 
+            var deletedPaymentCount = 0;
 
-            // comapare timeframe to filter ones that need to be deleted
+            try
+            {
+                var invisiblePayments = await unitOfWork.PaymentRepository.GetAllInvisiblePaymentsAsync();
 
-            // iterate over payment list and remove from database
+                if (invisiblePayments.Count == 0)
+                {
+                    logger.LogInformation("No invisible payments found to process at {Time} UTC", DateTime.UtcNow);
+                    return;
+                }
 
-            // save changes 
+                var cutoffDate = DateTime.UtcNow.AddMonths(-3);
+                logger.LogInformation("Found {InvisiblePaymentsCount} invisible payments. Deleting records on or before {CutoffDate}",
+                    invisiblePayments.Count, DateOnly.FromDateTime(cutoffDate));
+
+                foreach (var payment in invisiblePayments)
+                {
+                    if (payment.PaymentDate <= DateOnly.FromDateTime(cutoffDate))
+                    {
+                        unitOfWork.PaymentRepository.DeletePayment(payment);
+                        deletedPaymentCount++;
+                    }
+                }
+
+                if (deletedPaymentCount == 0)
+                {
+                    logger.LogInformation("No invisible payments were old enough for deletion at {Time} UTC", DateTime.UtcNow);
+                    return;
+                }
+
+                await unitOfWork.Complete();
+
+                logger.LogInformation("DailyInvisiblePaymentCleanup job FINISHED at {EndTime} UTC. Deleted {DeletedPayments} payments",
+                    DateTime.UtcNow, deletedPaymentCount);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "DailyInvisiblePaymentCleanup job FAILED at {Time} UTC after deleting {DeletedPayments} pending records",
+                    DateTime.UtcNow, deletedPaymentCount);
+                throw;
+            }
         }
     }
 }

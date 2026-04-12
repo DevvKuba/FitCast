@@ -3,6 +3,7 @@ using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
+using Microsoft.ApplicationInsights.WindowsServer;
 using Microsoft.EntityFrameworkCore;
 using Twilio.Rest.Trunking.V1;
 
@@ -53,6 +54,11 @@ namespace ClientDashboard_API.Data
                 .FirstOrDefaultAsync();
 
             return payment;
+        }
+
+        public async Task<List<Payment>> GetAllInvisiblePaymentsAsync()
+        {
+            return await context.Payments.Where(p => p.IsVisible == false).ToListAsync();
         }
 
         public void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo)
