@@ -132,7 +132,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Client method allowing update of clien's phone number
+        /// Client method allowing update of client's phone number
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpPut("setClientPhoneNumber")]

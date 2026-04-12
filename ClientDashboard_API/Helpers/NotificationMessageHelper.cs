@@ -10,9 +10,9 @@ namespace ClientDashboard_API.Helpers
             (trainer, client) => $"{client.FirstName}'s monthly sessions have come to an end,\n" +
                                     $"remember to message them in regards of a new monthly payment.",
             [Enums.NotificationType.ClientBlockCompletionReminder] =
-            (trainer, client) => $"Hey {client.FirstName}! just wanted to" +
-                                    "inform you that our monthly sessions have come to an end,\n" +
-                    $"If you could place a block payment before our next session block that would be great.",
+            (trainer, client) => $"Hey {client.FirstName}! just a reminder " +
+                                    "that our monthly sessions have come to an end,\n" +
+                    $"Please place a block payment before our next session.",
             [Enums.NotificationType.PendingPaymentCreatedAlert] = 
             (trainer, client) => $"Pending payment for a block of {client.TotalBlockSessions} sessions, created for {client.FirstName}",
             [Enums.NotificationType.NewClientConfigurationReminder] =
