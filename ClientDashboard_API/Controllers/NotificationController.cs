@@ -106,11 +106,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
             }
 
-            var latestNotificationStatuses = await unitOfWork.NotificationRecipientStatusRepository.GetLatestUserNotificationStatusesAsync(userId);
-
-            var latestNotifications = latestNotificationStatuses
-                .Select(n => n.Notification)
-                .ToList();
+            var latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestUserNotifications(user);
 
             return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
