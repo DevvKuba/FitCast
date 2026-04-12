@@ -99,6 +99,8 @@
     <p-table
         #dt1
         [value]="payments"
+        responsiveLayout="stack"
+        [breakpoint]="'768px'"
         [globalFilterFields] = "['clientName']"
         [paginator]="true"
         [rows]="10"
@@ -187,8 +189,11 @@
         </ng-template>
         <ng-template #body let-payment let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="payment">
-                <td class="payment-td">{{ payment.clientName}}</td>
                 <td class="payment-td">
+                <span class="p-column-title">Client Name</span>
+                {{ payment.clientName}}</td>
+                <td class="payment-td">
+                <span class="p-column-title">Amount</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-inputnumber
@@ -203,6 +208,7 @@
                 </p-cellEditor>
               </td>
                 <td class="payment-td">
+                                <span class="p-column-title">Currency</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -216,6 +222,7 @@
                 </p-cellEditor>
               </td>
                 <td class="payment-td">
+                                <span class="p-column-title">Sessions</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-inputnumber
@@ -228,6 +235,7 @@
                 </p-cellEditor>
               </td>
                 <td class="payment-td">
+                                <span class="p-column-title">Payment Date</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -241,6 +249,7 @@
               </td>
 
               <td class="payment-td">
+                                <span class="p-column-title">Status</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-select
@@ -261,6 +270,7 @@
               </td>
                 
                 <td class="payment-td">
+                <span class="p-column-title">Actions</span>
                 <div class="flex items-center justify-center gap-2">
                     <button
                         *ngIf="!editing"
