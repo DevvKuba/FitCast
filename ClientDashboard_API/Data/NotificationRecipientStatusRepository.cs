@@ -1,4 +1,5 @@
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,8 +25,12 @@ namespace ClientDashboard_API.Data
 
         public async Task<int> GetUnreadUserNotificationCountAsync(UserBase user)
         {
+            var expectedAudience = user.Role == UserRole.Trainer
+                ? NotificationAudience.Trainer
+                : NotificationAudience.Client;
+
             var unreadNotificationCount = await context.NotificationRecipientStatuses
-                .CountAsync(n => n.UserId == user.Id && n.IsRead == false);
+                .CountAsync(n => n.UserId == user.Id && n.IsRead == false && n.Notification.Audience == expectedAudience);
 
             return unreadNotificationCount;
         }
