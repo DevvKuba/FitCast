@@ -6,6 +6,7 @@ import { ApiResponse } from '../models/api-response';
 import { environment } from '../environments/environment';
 import { WorkoutAddDto } from '../models/dtos/workout-add-dto';
 import { WorkoutUpdateDto } from '../models/dtos/workout-update-dto';
+import { Client } from '../models/client';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class WorkoutService {
 
   addWorkout(newWorkout : WorkoutAddDto) : Observable<ApiResponse<string>>{
     return this.http.post<ApiResponse<string>>(this.baseUrl + 'workout/Manual/NewWorkout', newWorkout);
+  }
+
+  quickAddWorkout(client: Client) : Observable<ApiResponse<string>>{
+    return this.http.post<ApiResponse<string>>(this.baseUrl + "workout/quickAddWorkout", client);
   }
 
   updateWorkout(updatedWorkoutInfo: WorkoutUpdateDto) : Observable<ApiResponse<any>>{

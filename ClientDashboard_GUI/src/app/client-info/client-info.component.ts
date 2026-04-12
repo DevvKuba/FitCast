@@ -26,6 +26,7 @@ import { NotificationService } from '../services/notification.service';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
 import { TWO_THIRDS_PI } from 'chart.js/helpers';
+import { WorkoutService } from '../services/workout.service';
 
 @Component({
   selector: 'app-client-info',
@@ -48,6 +49,7 @@ export class ClientInfoComponent implements OnInit {
   }
   
   private clientService = inject(ClientService);
+  private workoutService = inject(WorkoutService);
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private notificationService = inject(NotificationService);
@@ -193,9 +195,16 @@ export class ClientInfoComponent implements OnInit {
   }
 
   onQuickAddForClient(client: Client) {
-    // Frontend-only placeholder until backend endpoint is connected.
-    client.currentBlockSession += 1;
-    this.toastService.showSuccess('Quick Add Complete', `${client.firstName} session increased by 1`);
+    
+    this.workoutService.quickAddWorkout(client).subscribe({
+      next: (response) => {
+        this.getClients();
+        this.toastService.showSuccess('Quick Add Complete', response.message);
+      },
+      error: (response) => {
+        this.toastService.showSuccess('Quick Add Unsuccessful', response.error);
+      }
+    })
   }
 
   getActivities(isActive : boolean) : string {
