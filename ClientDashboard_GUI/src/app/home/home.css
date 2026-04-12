@@ -2,6 +2,8 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Header Section */
@@ -268,6 +270,7 @@
 @media (max-width: 768px) {
   .home-container {
     padding: 1rem;
+    overflow-x: hidden;
   }
 
   .main-title {
@@ -279,12 +282,33 @@
   }
 
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
   }
 
+  .stat-card:nth-child(5),
+  .stat-card:nth-child(6) {
+    grid-column: auto;
+  }
+
   .stat-card {
-    height: 140px;
+    height: auto;
+    min-height: 120px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .stat-content {
+    gap: 1rem;
+    padding: 1rem;
+    max-height: none;
+  }
+
+  .stat-details,
+  .stat-feature,
+  .stat-description {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .stat-icon {
@@ -293,6 +317,37 @@
 
   .highlights-section {
     padding: 2rem 1rem;
+  }
+
+  .feature-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .view-full-link {
+    font-size: 0.95rem;
+  }
+
+  ::ng-deep .home-container .p-card {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  ::ng-deep .home-container .p-datatable-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  ::ng-deep .home-container .p-datatable-table {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  ::ng-deep .home-container .p-datatable .p-datatable-thead > tr > th,
+  ::ng-deep .home-container .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
   }
 }
 

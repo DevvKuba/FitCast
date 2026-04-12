@@ -27,6 +27,7 @@ export class UserNavbar{
 
     functionItems: MenuItem[] | undefined;
     generalItems: MenuItem[] | undefined;
+    mobileMenuItems: MenuItem[] = [];
     latestNotifications: Notification[] = [];
     notificationVisibility: boolean = false;
 
@@ -37,6 +38,7 @@ export class UserNavbar{
             if(!user){
                 this.functionItems = [];
                 this.generalItems = [];
+                this.mobileMenuItems = [];
                 return;
             }
             this.notificationService.refreshUnreadCount(user.id);
@@ -53,6 +55,13 @@ export class UserNavbar{
             }
         })
         
+    }
+
+    buildMobileMenuItems() {
+        const functionItems = this.functionItems ?? [];
+        const generalItems = this.generalItems ?? [];
+
+        this.mobileMenuItems = [...functionItems, ...generalItems];
     }
 
     buildMenuItems(role: UserRole){
@@ -107,14 +116,10 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
+            this.buildMobileMenuItems();
         }
         else if (role == UserRole.Client) {
             this.functionItems = [
-            // {
-            //     label: 'Personal Info',
-            //     routerLink: '/client-info',
-            //     icon: 'pi pi-users'
-            // },
             {
                 label: 'Workouts',
                 routerLink: '/client-personal-workouts',
@@ -149,6 +154,7 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
+            this.buildMobileMenuItems();
         }
         else {
             this.functionItems = [];
@@ -164,6 +170,7 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
             ];
+                this.buildMobileMenuItems();
         }
     }
 

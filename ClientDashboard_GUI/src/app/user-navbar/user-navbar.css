@@ -2,6 +2,14 @@
   margin-bottom: none;
 }
 
+.desktop-navbar {
+  display: block;
+}
+
+.mobile-navbar {
+  display: none;
+}
+
 ::ng-deep .p-menubar .p-menuitem {
   position: relative;
 }
@@ -22,4 +30,24 @@
   font-size: 0.8rem !important;
   padding: 0 !important;
   font-weight: 600 !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-navbar {
+    display: none;
+  }
+
+  .mobile-navbar {
+    display: block;
+  }
+
+  .mobile-navbar ::ng-deep .p-menubar {
+    width: 100%;
+  }
+
+  .mobile-navbar ::ng-deep .p-menubar-root-list {
+    right: 0 !important;
+    left: auto !important;
+    max-width: calc(100vw - 1rem);
+  }
 }
