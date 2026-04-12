@@ -126,7 +126,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.NotNull(message);
             Assert.Contains("Hey bob!", message);
             Assert.Contains("our monthly sessions have come to an end", message);
-            Assert.Contains("place a block payment before our next session block", message);
+            Assert.Contains("Please place a block payment before our next session.", message);
         }
 
         [Fact]

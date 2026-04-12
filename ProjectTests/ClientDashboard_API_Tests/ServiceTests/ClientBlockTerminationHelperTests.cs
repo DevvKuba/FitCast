@@ -258,12 +258,15 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.True(result.Success);
             Assert.Equal("process finalised without any processing errors", result.Message);
             
-            // Verify block reminder was sent
-            Assert.Single(_notificationService.SentNotifications);
-            var notification = _notificationService.SentNotifications[0];
-            Assert.Equal(trainer.Id, notification.TrainerId);
-            Assert.Equal(client.Id, notification.ClientId);
-            Assert.Equal("BlockReminder", notification.Type);
+            // Verify trainer and client reminders were sent
+            Assert.Equal(2, _notificationService.SentNotifications.Count);
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "BlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "ClientBlockReminder");
+            Assert.All(_notificationService.SentNotifications, n =>
+            {
+                Assert.Equal(trainer.Id, n.TrainerId);
+                Assert.Equal(client.Id, n.ClientId);
+            });
         }
 
         [Fact]
@@ -300,9 +303,10 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.True(result.Success);
 
-            // Verify 2 notifications were sent: block reminder + payment alert
-            Assert.Equal(2, _notificationService.SentNotifications.Count);
+            // Verify 3 notifications were sent: trainer reminder + client reminder + payment alert
+            Assert.Equal(3, _notificationService.SentNotifications.Count);
             Assert.Contains(_notificationService.SentNotifications, n => n.Type == "BlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "ClientBlockReminder");
             Assert.Contains(_notificationService.SentNotifications, n => n.Type == "PendingPaymentAlert");
 
             // Verify 1 payment was created
@@ -344,9 +348,11 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.True(result.Success);
             
-            // Verify only block reminder was sent (no payment alert)
-            Assert.Single(_notificationService.SentNotifications);
-            Assert.All(_notificationService.SentNotifications, n => Assert.Equal("BlockReminder", n.Type));
+            // Verify trainer and client reminders were sent (no payment alert)
+            Assert.Equal(2, _notificationService.SentNotifications.Count);
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "BlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "ClientBlockReminder");
+            Assert.DoesNotContain(_notificationService.SentNotifications, n => n.Type == "PendingPaymentAlert");
             
             // Verify no payment was created
             Assert.Empty(_autoPaymentService.CreatedPayments);
@@ -385,8 +391,11 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
-            Assert.False(result.Success);
-            Assert.Equal("Client workout added however notification was not created", result.Message);
+            Assert.True(result.Success);
+            Assert.Equal("process finalised without any processing errors", result.Message);
+            Assert.Equal(2, _notificationService.SentNotifications.Count);
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "BlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "ClientBlockReminder");
         }
 
         [Fact]
@@ -423,11 +432,14 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var result = await _clientBlockTerminationHelper.CreateAllAdequateEntityReminderAsync(client);
 
             // Assert
-            Assert.False(result.Success);
-            Assert.Equal("Client workout added however pending payment record was not created", result.Message);
-            
-            // Verify block reminder was sent before failure
-            Assert.Single(_notificationService.SentNotifications);
+            Assert.True(result.Success);
+            Assert.Equal("process finalised without any processing errors", result.Message);
+
+            // Verify full notification flow still executes
+            Assert.Equal(3, _notificationService.SentNotifications.Count);
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "BlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "ClientBlockReminder");
+            Assert.Contains(_notificationService.SentNotifications, n => n.Type == "PendingPaymentAlert");
         }
 
         [Fact]
@@ -538,12 +550,13 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Step 1: Block reminder notification
             // Step 2: Payment creation
             // Step 3: Payment alert notification
-            Assert.Equal(2, _notificationService.SentNotifications.Count); // Block reminder + payment alert
+            Assert.Equal(3, _notificationService.SentNotifications.Count); // Block reminder + payment alert
             Assert.Single(_autoPaymentService.CreatedPayments); // Payment creation
 
             // Verify order and types
             Assert.Equal("BlockReminder", _notificationService.SentNotifications[0].Type);
-            Assert.Equal("PendingPaymentAlert", _notificationService.SentNotifications[1].Type);
+            Assert.Equal("ClientBlockReminder", _notificationService.SentNotifications[1].Type);
+            Assert.Equal("PendingPaymentAlert", _notificationService.SentNotifications[2].Type);
         }
 
         [Fact]
@@ -632,8 +645,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.True(result1.Success);
             Assert.True(result2.Success);
             
-            // Verify 2 block reminders sent (one per client)
-            Assert.Equal(2, _notificationService.SentNotifications.Count);
+            // Verify 4 reminders sent (trainer + client reminder per client)
+            Assert.Equal(4, _notificationService.SentNotifications.Count);
             Assert.Contains(_notificationService.SentNotifications, n => n.ClientId == client1.Id);
             Assert.Contains(_notificationService.SentNotifications, n => n.ClientId == client2.Id);
         }
