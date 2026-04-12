@@ -93,6 +93,7 @@ export class UserNavbar{
         this.generalItems = [
             {
               icon: 'pi pi-bell',
+              styleClass: 'notification-menu-item',
               badge: this.getBellBadge(),
               command: () => {
                 this.notificationVisibility = true;
@@ -135,6 +136,7 @@ export class UserNavbar{
         this.generalItems = [
              {
               icon: 'pi pi-bell',
+                            styleClass: 'notification-menu-item',
               badge: this.getBellBadge(),
               command: () => {
                 this.notificationVisibility = true;

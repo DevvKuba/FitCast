@@ -50,4 +50,15 @@
     left: auto !important;
     max-width: calc(100vw - 1rem);
   }
+
+  .mobile-navbar ::ng-deep .notification-menu-item .p-menuitem-link {
+    position: relative;
+  }
+
+  .mobile-navbar ::ng-deep .notification-menu-item .p-badge {
+    left: 1.1rem !important;
+    right: auto !important;
+    top: 0.45rem !important;
+    transform: translate(40%, -35%) !important;
+  }
 }
