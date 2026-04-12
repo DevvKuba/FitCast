@@ -126,6 +126,7 @@ namespace ClientDashboard_API
                 .WithDescription("Runs daily at midnight - 12:00AM to sync Hevy workouts")
                 );
 
+
                 var clientDataJobKey = new JobKey("DailyClientDataGathering");
 
                 q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey));
@@ -137,6 +138,7 @@ namespace ClientDashboard_API
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 5 minutes past midnight - 12:05AM to gather Client Feature Data"));
+
 
                 var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
 
@@ -150,6 +152,7 @@ namespace ClientDashboard_API
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
 
+
                 var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
 
                 q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey));
@@ -161,6 +164,19 @@ namespace ClientDashboard_API
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 15 minutes past midnight - 12:15AM to permanently remove clients soft-deleted for at least 3 months"));
+
+
+                var invisiblePaymentCleanupJobKey = new JobKey("DailyInvisiblePaymentCleanup");
+
+                q.AddJob<DailyInvisiblePaymentCleanup>(opts => opts.WithIdentity(invisiblePaymentCleanupJobKey));
+
+                q.AddTrigger(opts => opts
+                .ForJob(invisiblePaymentCleanupJobKey)
+                .WithIdentity("DailyInvisiblePaymentCleanup-trigger")
+                .WithCronSchedule("0 20 0 * * ?", x => x
+                .InTimeZone(timezone)
+                .WithMisfireHandlingInstructionFireAndProceed())
+                .WithDescription("Runs daily 20 minutes past midnight - 12:20AM to permanently remove invisible payments for at least 3 months"));
 
             });
             
