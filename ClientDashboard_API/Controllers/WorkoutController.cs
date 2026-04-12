@@ -4,6 +4,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace ClientDashboard_API.Controllers
 {
@@ -180,12 +181,33 @@ namespace ClientDashboard_API.Controllers
 
         }
 
+        [Authorize(Roles = "Trainer")]
+        [HttpPost("quickAddWorkout")]
+        public async Task<ActionResult<ApiResponseDto<string?>>> QuickAddClientWorkoutAsync([FromBody] Client quickAddClient)
+        {
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(quickAddClient.Id);
+
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {quickAddClient.FirstName} not found", Success = false });
+            }
+
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Quick adding workout for client: {client.FirstName} was unsuccessful", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Quick add successful for {client.FirstName}", Success = true });
+        }
+
         /// <summary>
         /// Workout request for updating an existing workout for a specific client
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpPut("updateWorkout")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetails([FromBody] WorkoutUpdateDto newWorkoutInfo)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetailsAsync([FromBody] WorkoutUpdateDto newWorkoutInfo)
         {
             var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(newWorkoutInfo.Id);
 
