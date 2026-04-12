@@ -137,6 +137,30 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 });
             }
         }
+
+        public Task<ApiResponseDto<string>> SendQuickAddTrainerReminderAsync(Trainer trainer, Client client, DateTime date)
+        {
+            SentNotifications.Add((trainer.Id, client.Id, "QuickAddTrainerReminder"));
+
+            if (ShouldSucceed)
+            {
+                return Task.FromResult(new ApiResponseDto<string>
+                {
+                    Data = "Success",
+                    Message = "Quick add trainer reminder sent successfully",
+                    Success = true
+                });
+            }
+            else
+            {
+                return Task.FromResult(new ApiResponseDto<string>
+                {
+                    Data = null,
+                    Message = FailureMessage,
+                    Success = false
+                });
+            }
+        }
     }
 
     // Fake auto payment service for testing

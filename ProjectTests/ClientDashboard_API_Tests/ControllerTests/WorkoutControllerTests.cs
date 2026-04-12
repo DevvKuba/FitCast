@@ -61,6 +61,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Success = true 
             });
         }
+
+        public Task<ApiResponseDto<string>> SendQuickAddTrainerReminderAsync(Trainer trainer, Client client, DateTime date)
+        {
+            return Task.FromResult(new ApiResponseDto<string>
+            {
+                Data = "",
+                Message = $"Success sending quick add reminder to trainer with id: {trainer.Id}",
+                Success = true
+            });
+        }
     }
 
     public class FakeAutoPaymentCreationService : IAutoPaymentCreationService
@@ -129,7 +139,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _fakeNotificationService = new FakeNotificationService();
             _fakeAutoPaymentService = new FakeAutoPaymentCreationService();
             _fakeClientBlockTerminator = new ClientBlockTerminationHelper(_fakeNotificationService, _fakeAutoPaymentService);
-            _workoutController = new WorkoutController(_unitOfWork, _fakeClientBlockTerminator, _mapper);
+            _workoutController = new WorkoutController(_unitOfWork, _fakeNotificationService, _fakeClientBlockTerminator, _mapper);
         }
 
         [Fact]
@@ -470,7 +480,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Duration = 60
             };
 
-            var result = await _workoutController.UpdateWorkoutDetails(updateDto);
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(updateDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -496,7 +506,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Duration = 60
             };
 
-            var result = await _workoutController.UpdateWorkoutDetails(updateDto);
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(updateDto);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
