@@ -125,12 +125,7 @@ namespace ClientDashboard_API.Controllers
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                var response = await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
-
-                if (!response.Success)
-                {
-                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = response.Message, Success = false });
-                }
+                await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
 

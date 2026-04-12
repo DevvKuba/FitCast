@@ -173,12 +173,7 @@ namespace ClientDashboard_API.Controllers
 
             if (client.CurrentBlockSession == client.TotalBlockSessions)
             {
-                var notificationsResponse = await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
-
-                if (!notificationsResponse.Success)
-                {
-                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = notificationsResponse.Message, Success = false });
-                }
+                await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
             }
 
             return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for {newWorkout.ClientName} on {DateOnly.Parse(newWorkout.SessionDate)}", Success = true });
