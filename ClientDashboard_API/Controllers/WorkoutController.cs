@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper) : BaseAPIController
+    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper) : BaseAPIController
     {
         [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
@@ -193,6 +193,8 @@ namespace ClientDashboard_API.Controllers
             }
 
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
+
+            await notificationService.SendQuickAddTrainerReminderAsync(client.Trainer!, quickAddClient, DateTime.UtcNow);
 
             if (!await unitOfWork.Complete())
             {
