@@ -150,6 +150,18 @@ namespace ClientDashboard_API
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
 
+                var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
+
+                q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey));
+
+                q.AddTrigger(opts => opts
+                .ForJob(deletedClientCleanupJobKey)
+                .WithIdentity("DailyDeletedClientCleanup-trigger")
+                .WithCronSchedule("0 15 0 * * ?", x => x
+                .InTimeZone(timezone)
+                .WithMisfireHandlingInstructionFireAndProceed())
+                .WithDescription("Runs daily 15 minutes past midnight - 12:15AM to permanently remove clients soft-deleted for at least 3 months"));
+
             });
             
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

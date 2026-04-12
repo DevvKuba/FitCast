@@ -49,6 +49,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Client?> AddNewClientUserAsync(Client client, int trainerId);
 
+        Task<List<Client>> GetSoftDeletedClientsOlderThanAsync(DateTime cutoffDate);
+
         void RemoveClient(Client client);
 
         void SoftDeleteClientAsync(Client client);
