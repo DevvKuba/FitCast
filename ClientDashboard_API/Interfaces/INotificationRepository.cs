@@ -9,6 +9,6 @@ namespace ClientDashboard_API.Interfaces
 
         void DeleteNotification(Notification notification);
 
-        Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough);
+        Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough, NotificationAudience audience);
     }
 }

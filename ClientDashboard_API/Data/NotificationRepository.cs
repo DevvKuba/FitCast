@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Data
             return latestNotifications;
         }
 
-        public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough)
+        public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough, NotificationAudience audience)
         {
             var newNotification = new Notification
             {
@@ -33,6 +33,7 @@ namespace ClientDashboard_API.Data
                 ReminderType = reminderType,
                 SentThrough = sentThrough,
                 SentAt = DateTime.UtcNow,
+                Audience = audience
             };
 
             newNotification.RecipientStatuses.Add(new NotificationRecipientStatus {UserId = trainerId, IsRead = false, ReadAt = null});
