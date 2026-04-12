@@ -2,6 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+}
+
+/* Keep stack helper labels hidden on desktop */
+::ng-deep .p-column-title {
+  display: none;
 }
 
 .header-buttons {
@@ -115,4 +121,100 @@
     font-size: 0.9rem;
     line-height: 1.5;
     color: #374151;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    justify-content: center;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .header-buttons {
+    justify-content: center;
+  }
+
+  .left-segment {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .action-column {
+    width: auto;
+    min-width: 0;
+  }
+
+  .action-column .flex {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .client-td {
+    text-align: center;
+  }
+
+  /* Show stack labels only on mobile */
+  ::ng-deep .p-column-title {
+    display: inline-block;
+  }
+
+  /* Override desktop table min-width so rows fit within the viewport */
+  ::ng-deep .p-datatable .p-datatable-table {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .form-field input,
+  .form-field ::ng-deep .p-inputnumber,
+  .form-field ::ng-deep .p-inputmask {
+    max-width: 100%;
+  }
+
+  ::ng-deep .p-dialog {
+    width: 92vw !important;
+    max-width: 24rem;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.65rem 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr,
+  ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr > td,
+  ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr > td {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr > td .p-column-title,
+  ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr > td .p-column-title {
+    min-width: auto;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.15rem;
+  }
+
+  ::ng-deep .p-datatable.p-datatable-responsive-stack .p-datatable-tbody > tr > td .p-tag,
+  ::ng-deep .p-datatable.p-datatable-responsive .p-datatable-tbody > tr > td .p-tag {
+    margin-top: 0.25rem;
+  }
 }

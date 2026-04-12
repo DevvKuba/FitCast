@@ -72,7 +72,7 @@
 </p-dialog>
 
   <div class="table-container">
-  <p-table #dt1 [value]="clients" dataKey="id" editMode="row" [tableStyle]="{ 'min-width': '50rem' }">
+  <p-table #dt1 [value]="clients" dataKey="id" editMode="row" responsiveLayout="stack" [breakpoint]="'768px'" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template #caption>
         <div class="header-buttons">
           <div class="left-segment">
@@ -105,6 +105,7 @@
       <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
           <tr [pEditableRow]="client">
               <td class="client-td">
+                <span class="p-column-title">Client Name</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <input
@@ -117,6 +118,7 @@
                 </p-cellEditor>
               </td>
               <td class="client-td">
+                <span class="p-column-title">Current Session</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-inputnumber
@@ -128,6 +130,7 @@
                 </p-cellEditor>
               </td>
               <td class="client-td">
+                <span class="p-column-title">Block Sessions</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-inputnumber
@@ -139,6 +142,7 @@
                 </p-cellEditor>
               </td>
               <td class="client-td">
+                <span class="p-column-title">Activity Status</span>
                 <p-cellEditor>
                     <ng-template #input>
                         <p-select
@@ -156,6 +160,7 @@
                 </p-cellEditor>
               </td>
               <td class="client-td action-column">
+                <span class="p-column-title">Actions</span>
                 <div class="flex items-center justify-center gap-2 flex-wrap">
                   <a [href]="`https://wa.me/${client.phoneNumber}`" target="_blank" rel="noopener noreferrer">
                     <button
