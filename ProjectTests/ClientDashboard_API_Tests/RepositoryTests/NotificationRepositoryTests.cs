@@ -86,7 +86,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 client.Id,
                 "Test notification message",
                 NotificationType.TrainerBlockCompletionReminder,
-                CommunicationType.Email
+                CommunicationType.Email,
+                NotificationAudience.Trainer
             );
             await _unitOfWork.Complete();
 
@@ -98,6 +99,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal("Test notification message", savedNotification.Message);
             Assert.Equal(NotificationType.TrainerBlockCompletionReminder, savedNotification.ReminderType);
             Assert.Equal(CommunicationType.Email, savedNotification.SentThrough);
+            Assert.Equal(NotificationAudience.Trainer, savedNotification.Audience);
             Assert.True(savedNotification.SentAt <= DateTime.UtcNow);
             Assert.True(savedNotification.SentAt >= DateTime.UtcNow.AddSeconds(-5));
         }
@@ -119,7 +121,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 null,
                 "General notification",
                 NotificationType.NewClientConfigurationReminder,
-                CommunicationType.Sms
+                CommunicationType.Sms,
+                NotificationAudience.Trainer
             );
             await _unitOfWork.Complete();
 
@@ -131,6 +134,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal("General notification", savedNotification.Message);
             Assert.Equal(NotificationType.NewClientConfigurationReminder, savedNotification.ReminderType);
             Assert.Equal(CommunicationType.Sms, savedNotification.SentThrough);
+            Assert.Equal(NotificationAudience.Trainer, savedNotification.Audience);
         }
 
         [Fact]
@@ -152,6 +156,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Message = "Test message",
                 ReminderType = NotificationType.ClientBlockCompletionReminder,
                 SentThrough = CommunicationType.Email,
+                Audience = NotificationAudience.Trainer,
                 SentAt = DateTime.UtcNow
             };
             await _context.Notification.AddAsync(notification);

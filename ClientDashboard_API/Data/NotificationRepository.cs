@@ -13,11 +13,15 @@ namespace ClientDashboard_API.Data
 
             if(user.Role == UserRole.Trainer)
             {
-                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt).Where(n => n.TrainerId == user.Id).Take(10).ToListAsync();
+                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
+                    .Where(n => n.TrainerId == user.Id && n.Audience == NotificationAudience.Trainer)
+                    .Take(10).ToListAsync();
             }
             else if(user.Role == UserRole.Client)
             {
-                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt).Where(n => n.ClientId == user.Id).Take(10).ToListAsync();
+                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
+                    .Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client)
+                    .Take(10).ToListAsync();
             }
             
             return latestNotifications;
