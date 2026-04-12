@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Services
                 communicationType = Enums.CommunicationType.InApp;
             }
 
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType, Enums.NotificationAudience.Trainer);
 
             if (!await unitOfWork.Complete())
             {
@@ -82,7 +82,7 @@ namespace ClientDashboard_API.Services
                 communicationType = Enums.CommunicationType.InApp;
             }
 
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType, Enums.NotificationAudience.Client);
 
             if (!await unitOfWork.Complete())
             {
@@ -124,7 +124,7 @@ namespace ClientDashboard_API.Services
             {
                 communicationType = Enums.CommunicationType.InApp;
             }
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainerId, clientId, notificationMessage, reminderType, communicationType, Enums.NotificationAudience.Trainer);
 
             if (!await unitOfWork.Complete())
             {
@@ -152,7 +152,7 @@ namespace ClientDashboard_API.Services
             {
                 communicationType = Enums.CommunicationType.InApp;
             }
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainer.Id, null, notificationMessage, reminderType, communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainer.Id, null, notificationMessage, reminderType, communicationType, Enums.NotificationAudience.Trainer);
 
             if (!await unitOfWork.Complete())
             {
@@ -180,7 +180,7 @@ namespace ClientDashboard_API.Services
             {
                 communicationType = Enums.CommunicationType.InApp;
             }
-            await unitOfWork.NotificationRepository.AddNotificationAsync(trainer.Id, null, notificationMessage, reminderType, communicationType);
+            await unitOfWork.NotificationRepository.AddNotificationAsync(trainer.Id, null, notificationMessage, reminderType, communicationType, Enums.NotificationAudience.Trainer);
 
             if (!await unitOfWork.Complete())
             {
