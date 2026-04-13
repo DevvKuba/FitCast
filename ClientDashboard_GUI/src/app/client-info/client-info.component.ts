@@ -199,6 +199,7 @@ export class ClientInfoComponent implements OnInit {
     this.workoutService.quickAddWorkout(client).subscribe({
       next: (response) => {
         this.getClients();
+         this.notificationService.refreshUnreadCount(this.currentUserId);
         this.toastService.showSuccess('Quick Add Complete', response.message);
       },
       error: (response) => {

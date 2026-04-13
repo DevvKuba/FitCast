@@ -166,7 +166,6 @@ namespace ClientDashboard_API.Controllers
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount, newWorkout.Duration);
 
-
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Adding workout for client: {client.FirstName} was unsuccessful", Success = false });
@@ -185,21 +184,28 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("quickAddWorkout")]
         public async Task<ActionResult<ApiResponseDto<string?>>> QuickAddClientWorkoutAsync([FromBody] Client quickAddClient)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(quickAddClient.Id);
+            var client = await unitOfWork.ClientRepository.GetClientByIdWithTrainerAsync(quickAddClient.Id);
 
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {quickAddClient.FirstName} not found", Success = false });
             }
 
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
+            if(client.Trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"{quickAddClient.FirstName}'s  associated trainer not found", Success = false });
 
-            await notificationService.SendQuickAddTrainerReminderAsync(client.Trainer!, quickAddClient, DateTime.UtcNow);
+            }
+
+            unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
 
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Quick adding workout for client: {client.FirstName} was unsuccessful", Success = false });
             }
+
+            await notificationService.SendQuickAddTrainerReminderAsync(client.Trainer!, quickAddClient, DateTime.UtcNow);
 
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"Quick add successful for {client.FirstName}", Success = true });
         }
