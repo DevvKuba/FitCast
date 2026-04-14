@@ -195,7 +195,6 @@ export class ClientInfoComponent implements OnInit {
   }
 
   onQuickAddForClient(client: Client) {
-    
     this.workoutService.quickAddWorkout(client).subscribe({
       next: (response) => {
         this.getClients();
