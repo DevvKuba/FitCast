@@ -131,7 +131,6 @@ namespace ClientDashboard_API.Data
                 .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
                 .Where(monthGroup =>
                 {
-
                     var days = monthGroup
                     .Select(r => r.AsOfDate.Day)
                     .ToHashSet();

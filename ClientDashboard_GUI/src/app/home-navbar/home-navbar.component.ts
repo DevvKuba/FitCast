@@ -16,14 +16,10 @@ import { LoginComponent } from '../login/login.component';
 export class HomeNavbarComponent implements OnInit {
   accountService = inject(AccountService);
   loginComponent = inject(LoginComponent);
-  leftMenuItems: MenuItem[] | undefined;
-  rightMenuItems: MenuItem[] | undefined;
+    menuItems: MenuItem[] = [];
   
   ngOnInit() {
-      // clear for spacing
-      this.leftMenuItems = [];
-      
-      this.rightMenuItems = [
+            this.menuItems = [
           {
               label: 'Home',
               routerLink: '/',

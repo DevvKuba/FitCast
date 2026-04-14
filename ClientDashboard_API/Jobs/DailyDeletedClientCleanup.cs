@@ -26,7 +26,8 @@ namespace ClientDashboard_API.Jobs
 
             await unitOfWork.Complete();
 
-            logger.LogInformation("DailyDeletedClientCleanup job FINISHED at {EndTime} UTC. Removed {RemovedCount} clients soft-deleted before {CutoffDate} UTC",
+            logger.LogInformation("DailyDeletedClientCleanup job FINISHED at {EndTime} UTC." +
+                " Removed {RemovedCount} clients soft-deleted before {CutoffDate} UTC",
                 DateTime.UtcNow, clientsToDelete.Count, cutoffDate);
         }
     }

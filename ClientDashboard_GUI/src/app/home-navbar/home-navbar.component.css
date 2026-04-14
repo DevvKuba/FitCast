@@ -3,3 +3,31 @@
   justify-content: center;
   align-items: center;
 }
+
+.desktop-navbar {
+  display: block;
+}
+
+.mobile-navbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-navbar {
+    display: none;
+  }
+
+  .mobile-navbar {
+    display: block;
+  }
+
+  .mobile-navbar ::ng-deep .p-menubar {
+    width: 100%;
+  }
+
+  .mobile-navbar ::ng-deep .p-menubar-root-list {
+    right: 0 !important;
+    left: auto !important;
+    max-width: calc(100vw - 1rem);
+  }
+}

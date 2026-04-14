@@ -13,7 +13,6 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
     {
-        
 
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
@@ -159,7 +158,6 @@ namespace ClientDashboard_API.Services
 
             for(int i = 0; i < allRevenueRecords.Count; i++)
             {
-                // IMP currently not accounding for churn / acquisition into the new month 
                 if(i != 0)
                 {
                     // compares if the previous's active clients have increased / decreased comapred to the current records
