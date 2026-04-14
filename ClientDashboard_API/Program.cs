@@ -207,14 +207,21 @@ namespace ClientDashboard_API
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
 
-                var hasMigrations = context.Database.GetMigrations().Any();
-                if (hasMigrations)
+                if (app.Environment.IsEnvironment("Testing"))
                 {
-                    await context.Database.MigrateAsync(); // applies pending, creates DB if needed
+                    await context.Database.EnsureCreatedAsync();
                 }
                 else
                 {
-                    await context.Database.EnsureCreatedAsync(); // bootstrap database schema when no migrations exist
+                    var hasMigrations = context.Database.GetMigrations().Any();
+                    if (hasMigrations)
+                    {
+                        await context.Database.MigrateAsync(); // applies pending, creates DB if needed
+                    }
+                    else
+                    {
+                        await context.Database.EnsureCreatedAsync(); // bootstrap database schema when no migrations exist
+                    }
                 }
             }
 
