@@ -37,12 +37,6 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 
             builder.ConfigureServices(services =>
             {
-                services.RemoveAll(typeof(DbContextOptions<DataContext>));
-                services.AddDbContext<DataContext>(options =>
-                {
-                    options.UseInMemoryDatabase("ClientDashboardApiIntegrationTestsDb");
-                });
-
                 services.RemoveAll<IMessageService>();
                 services.AddScoped<IMessageService, NoOpMessageService>();
 
@@ -72,7 +66,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
             var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 
             await dbContext.Database.EnsureDeletedAsync();
-            await dbContext.Database.EnsureCreatedAsync();
+            await dbContext.Database.MigrateAsync();
         }
     }
 }
