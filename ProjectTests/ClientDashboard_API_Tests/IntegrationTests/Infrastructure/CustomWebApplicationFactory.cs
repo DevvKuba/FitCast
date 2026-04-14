@@ -1,9 +1,11 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Interfaces;
+using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,6 +15,14 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<ClientDashboard_API.Program>
     {
+        private readonly SqliteConnection _connection;
+
+        public CustomWebApplicationFactory()
+        {
+            _connection = new SqliteConnection("Data Source=:memory:");
+            _connection.Open();
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
@@ -28,7 +38,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
                     ["Email:Sender"] = "Integration Test Sender",
                     ["Email:Host"] = "localhost",
                     ["Email:Port"] = "25",
-                    ["ConnectionStrings:DefaultConnection"] = "Server=(localdb)\\mssqllocaldb;Database=UnusedForIntegrationTests;Trusted_Connection=True;",
+                    ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:",
                     ["EnableSwagger"] = "false"
                 };
 
@@ -37,6 +47,10 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 
             builder.ConfigureServices(services =>
             {
+                services.RemoveAll(typeof(DbContextOptions<DataContext>));
+                services.RemoveAll(typeof(IDbContextOptionsConfiguration<DataContext>));
+                services.AddDbContext<DataContext>(options => options.UseSqlite(_connection));
+
                 services.RemoveAll<IMessageService>();
                 services.AddScoped<IMessageService, NoOpMessageService>();
 
@@ -67,6 +81,16 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 
             await dbContext.Database.EnsureDeletedAsync();
             await dbContext.Database.MigrateAsync();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                _connection.Dispose();
+            }
         }
     }
 }
