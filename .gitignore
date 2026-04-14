@@ -399,7 +399,7 @@ lerna-debug.log*
 **/dist/
 **/tmp/
 
-# Angular cache - THIS IS KEY FOR YOUR ISSUE
+# Angular cache
 **/.angular/
 **/.angular/cache/
 
