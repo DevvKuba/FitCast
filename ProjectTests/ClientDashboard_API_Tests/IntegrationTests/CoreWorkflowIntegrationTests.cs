@@ -64,7 +64,8 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             var quickAddBody = new
             {
                 Id = clientId,
-                FirstName = "client-one"
+                FirstName = "client-one",
+                Role = UserRole.Client
             };
 
             var response = await client.PostAsJsonAsync("/api/Workout/quickAddWorkout", quickAddBody);

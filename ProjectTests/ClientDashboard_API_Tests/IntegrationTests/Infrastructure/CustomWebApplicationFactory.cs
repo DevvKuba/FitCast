@@ -1,10 +1,10 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Interfaces;
-using Microsoft.Data.Sqlite;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +15,6 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<ClientDashboard_API.Program>
     {
-        private readonly SqliteConnection _connection;
-
-        public CustomWebApplicationFactory()
-        {
-            _connection = new SqliteConnection("Data Source=:memory:");
-            _connection.Open();
-        }
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
@@ -38,7 +30,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
                     ["Email:Sender"] = "Integration Test Sender",
                     ["Email:Host"] = "localhost",
                     ["Email:Port"] = "25",
-                    ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:",
+                    ["ConnectionStrings:DefaultConnection"] = "Server=(localdb)\\mssqllocaldb;Database=UnusedForIntegrationTests;Trusted_Connection=True;",
                     ["EnableSwagger"] = "false"
                 };
 
@@ -49,7 +41,11 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
             {
                 services.RemoveAll(typeof(DbContextOptions<DataContext>));
                 services.RemoveAll(typeof(IDbContextOptionsConfiguration<DataContext>));
-                services.AddDbContext<DataContext>(options => options.UseSqlite(_connection));
+                services.AddDbContext<DataContext>(options =>
+                {
+                    options.UseInMemoryDatabase("ClientDashboardApiIntegrationTestsDb");
+                    options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+                });
 
                 services.RemoveAll<IMessageService>();
                 services.AddScoped<IMessageService, NoOpMessageService>();
@@ -80,17 +76,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
             var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 
             await dbContext.Database.EnsureDeletedAsync();
-            await dbContext.Database.MigrateAsync();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
-            {
-                _connection.Dispose();
-            }
+            await dbContext.Database.EnsureCreatedAsync();
         }
     }
 }
