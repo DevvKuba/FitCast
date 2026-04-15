@@ -15,6 +15,8 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<ClientDashboard_API.Program>
     {
+        private readonly string _databaseName = $"ClientDashboardApiIntegrationTestsDb_{Guid.NewGuid()}";
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
@@ -43,7 +45,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
                 services.RemoveAll(typeof(IDbContextOptionsConfiguration<DataContext>));
                 services.AddDbContext<DataContext>(options =>
                 {
-                    options.UseInMemoryDatabase("ClientDashboardApiIntegrationTestsDb");
+                    options.UseInMemoryDatabase(_databaseName);
                     options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
                 });
 
@@ -77,6 +79,9 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 
             await dbContext.Database.EnsureDeletedAsync();
             await dbContext.Database.EnsureCreatedAsync();
+
+            // Clear the DbContext to release any cached entities and ensure fresh state
+            dbContext.ChangeTracker.Clear();
         }
     }
 }
