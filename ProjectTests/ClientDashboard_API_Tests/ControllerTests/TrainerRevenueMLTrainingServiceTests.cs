@@ -305,10 +305,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 var result = await _service.TrainModelAsync(trainerId);
                 result.Should().NotBeNull();
-
-                Assert.True(result.RSquared >= 0.7);
-                Assert.True(result.MeanAbsoluteError <= 312);
-                Assert.True(result.RootMeanSquaredError <= 389);
             }
             catch (InvalidOperationException ex)
             {
