@@ -11,7 +11,7 @@ using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Services
 {
-    public class TrainerAnalyticsService(IUnitOfWork unitOfWork) : ITrainerAnalyticsService
+    public class TrainerAnalyticsService : ITrainerAnalyticsService
     {
 
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
