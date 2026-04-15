@@ -13,13 +13,18 @@ namespace ClientDashboard_API.ML.Helpers
         /// </summary>
         /// <param name="trainerId">Trainer to generate data for</param>
         /// <param name="numberOfMonths">How many months of data (default: 6 months = 180 days)</param>
-        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int trainerId, int numberOfMonths)
+        public static List<TrainerDailyRevenue> GenerateRealisticRevenueData(int? trainerId, int numberOfMonths)
         {
             var records = new List<TrainerDailyRevenue>();
-            var random = new Random(trainerId); // Seed with trainerId for reproducibility
+            var random = new Random();
+
+            if(trainerId is not null)
+            {
+               random = new Random((int)trainerId); // Seed with trainerId for reproducibility
+            }
             
             // Start from X months ago if not specified
-            var currentDate =DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
+            var currentDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-numberOfMonths));
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow);
             
             // === BASE PARAMETERS (realistic starting values) ===
