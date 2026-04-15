@@ -216,7 +216,7 @@ namespace ClientDashboard_API.Services
             // get working days from first record day to next month with that same record day
             var monthlyWorkingDays = 0;
 
-            var monthsAccounterFor = 0;
+            var monthsAccountedFor = 0;
             var nonWorkingDays = 0;
 
             var firstRecord = allRevenueRecords.First();
@@ -235,12 +235,17 @@ namespace ClientDashboard_API.Services
                   
                     monthlyWorkingDays +=  totalDaysInMonth - nonWorkingDays;
 
-                    monthsAccounterFor++;
+                    monthsAccountedFor++;
                     nonWorkingDays = 0;
                 }
             }
-            
-            return monthlyWorkingDays / monthsAccounterFor;
+
+            if (monthsAccountedFor == 0)
+            {
+                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
+            }
+
+            return monthlyWorkingDays / monthsAccountedFor;
         }
 
         private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
