@@ -3,7 +3,6 @@ using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
-using Microsoft.ApplicationInsights.WindowsServer;
 using Microsoft.EntityFrameworkCore;
 using Twilio.Rest.Trunking.V1;
 

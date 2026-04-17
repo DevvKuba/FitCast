@@ -52,7 +52,6 @@ namespace ClientDashboard_API
             builder.Services.AddSwaggerGenAuth();
 
             builder.Services.AddApplicationInsightsTelemetry();
-            builder.Logging.AddApplicationInsights();
 
             builder.Services.AddAuthorization();
 

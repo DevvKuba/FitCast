@@ -46,7 +46,6 @@ namespace ClientDashboard_API.ML.Helpers
                     var previousBaseClients = baseActiveClients;
 
                     // Apply monthly growth with some randomness
-
                     var acquiredClients = random.Next(0, 3);
                     var churnedClients = random.Next(0, 2);
 
