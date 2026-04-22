@@ -5,6 +5,8 @@ namespace ClientDashboard_API.Helpers
 {
     public class PasswordHasher : IPasswordHasher
     {
+        // used https://www.youtube.com/watch?v=J4ix8Mhi3rs&t=300s as a way to set up mechanism
+
         private const int SaltSize = 16;
         private const int HashSize = 32;
         private const int Iterations = 100000;

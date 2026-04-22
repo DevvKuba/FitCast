@@ -105,6 +105,9 @@ namespace ClientDashboard_API
                     };
                 });
 
+            // used https://www.youtube.com/watch?v=iD3jrj3RBuc as a means of support
+            // when establishing first workout gathering job
+
             builder.Services.AddQuartz(q =>
             {
                 var timezone = TimeZoneInfo.Utc;

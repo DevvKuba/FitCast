@@ -9,6 +9,7 @@ namespace ClientDashboard_API.Helpers
 {
     internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
     {
+        // referenced https://www.youtube.com/watch?v=6DWJIyipxzw for token creation
         public string Create(UserBase user)
         {
             string secretKey = configuration["Jwt_Secret"]!;

@@ -15,6 +15,8 @@ namespace ClientDashboard_API.Helpers
                 ?? throw new InvalidOperationException("API Key encryption key not configured");
             key = Convert.FromBase64String(keyString);
         }
+        // when setting up referenced https://www.youtube.com/watch?v=Npi7kAgFUjY&t=495s
+        // for broader understanding
 
         public string Encrypt(string plainText)
         {

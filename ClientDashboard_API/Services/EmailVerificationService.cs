@@ -28,6 +28,8 @@ namespace ClientDashboard_API.Services
                 .Subject("Email verification for FitCast")
                 .Body($"To verify your email address <a href='{verificationLink}'>click here</a>", isHtml: true)
                 .SendAsync();
+
+            // references https://www.youtube.com/watch?v=KtCjH-1iCIk as part of email verification flow
         }
     }
 }

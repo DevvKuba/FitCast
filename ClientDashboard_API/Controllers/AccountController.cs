@@ -46,6 +46,7 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<UserDto> { Data = user.Data, Message = "token created successfully, user now logged in", Success = true });
 
         }
+
         [AllowAnonymous]
         [HttpGet("verify-email/{tokenId}", Name = "VerifyEmail")]
         public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(int tokenId)
