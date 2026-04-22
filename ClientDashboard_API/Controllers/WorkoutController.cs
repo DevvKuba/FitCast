@@ -205,6 +205,11 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Quick adding workout for client: {client.FirstName} was unsuccessful", Success = false });
             }
 
+            if (client.CurrentBlockSession == client.TotalBlockSessions)
+            {
+                await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
+            }
+
             await notificationService.SendQuickAddTrainerReminderAsync(client.Trainer!, quickAddClient, DateTime.UtcNow);
 
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"Quick add successful for {client.FirstName}", Success = true });
