@@ -1,10 +1,12 @@
-﻿using ClientDashboard_API.Data;
+﻿using Azure.Identity;
+using ClientDashboard_API.Data;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Services;
 using ClientDashboard_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Quartz;
 
 namespace ClientDashboard_API.Extensions
@@ -20,6 +22,12 @@ namespace ClientDashboard_API.Extensions
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
+            services.AddAzureClients(clients =>
+            {
+                clients.AddBlobServiceClient(new Uri("https://fitcaststorage.blob.core.windows.net/"));
+                clients.UseCredential(new DefaultAzureCredential());
+            });
+
 
             // whenever you need the Interface pass the class instead / utilise dependency injection, 
             // e.g. passing in IUserRepositary userRepository => allows for UserRepository functionality
