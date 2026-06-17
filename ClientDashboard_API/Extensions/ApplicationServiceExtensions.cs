@@ -2,6 +2,7 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Services;
 using ClientDashboard_API.Services;
@@ -31,6 +32,14 @@ namespace ClientDashboard_API.Extensions
                 clients.AddBlobServiceClient(new Uri("https://fitcaststorage.blob.core.windows.net/"));
                 clients.UseCredential(new DefaultAzureCredential());
             });
+            if (environment.IsDevelopment())
+            {
+                services.AddScoped<IModelStore, LocalFileModelStore>(); 
+            }
+            else
+            {
+                services.AddScoped<IModelStore, BlobModelStore>();
+            }
 
 
             // whenever you need the Interface pass the class instead / utilise dependency injection, 
