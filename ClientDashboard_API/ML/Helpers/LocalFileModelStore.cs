@@ -6,11 +6,11 @@ using Quartz.Logging;
 
 namespace ClientDashboard_API.ML.Helpers
 {
-    public class LocalFileModelStore(IWebHostEnvironment environment, ILogger logger) : IModelStore
+    public class LocalFileModelStore(IWebHostEnvironment environment, ILogger<LocalFileModelStore> logger) : IModelStore
     {
         private string ModelsPath { get; } = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
 
-        private MLContext MlContext { get; } = new MLContext(seed: 42);
+        private MLContext MlContext { get; } = new MLContext(seed: 42); 
 
         public async Task<ITransformer> LoadModelAsync(int trainerId)
         {
@@ -34,7 +34,9 @@ namespace ClientDashboard_API.ML.Helpers
         {
             var modelPath = Path.Combine(ModelsPath, $"trainer_{trainerId}_revenue_model.zip");
 
-            MlContext.Model.Save(model, schema, ModelsPath);
+            Directory.CreateDirectory(ModelsPath);
+
+            MlContext.Model.Save(model, schema, modelPath);
 
             logger.LogInformation("Model saved to {Path}", modelPath);
         }

@@ -3,7 +3,7 @@ using Microsoft.ML;
 
 namespace ClientDashboard_API.ML.Helpers
 {
-    public class BlobModelStore(BlobModelStore blogModelStore) : IModelStore
+    public class BlobModelStore() : IModelStore
     {
         public Task<ITransformer> LoadModelAsync(int trainerId)
         {
