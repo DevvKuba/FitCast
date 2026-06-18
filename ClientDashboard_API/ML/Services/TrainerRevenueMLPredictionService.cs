@@ -10,14 +10,13 @@ namespace ClientDashboard_API.ML.Services
     public class TrainerRevenueMLPredictionService(
         IUnitOfWork unitOfWork,
         ILogger<TrainerRevenueMLPredictionService> logger,
-        IWebHostEnvironment environment) : IMLPredictionService
+        IModelStore modelStore
+        ) : IMLPredictionService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ILogger<TrainerRevenueMLPredictionService> _logger = logger;
         private readonly MLContext _mlContext = new MLContext();
-        private readonly BlobServiceClient _blobServiceClient;
-        private readonly IModelStore modelStore;
-        private readonly string _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
+        private readonly IModelStore _modelStore = modelStore;
 
         // Cache loaded models in memory (avoid loading from disk every time)
         private readonly Dictionary<int, PredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>> _predictionEngines = new Dictionary<int, PredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>>();
@@ -75,9 +74,8 @@ namespace ClientDashboard_API.ML.Services
 
         private async Task LoadLocalModelForTrainer(int trainerId)
         {
-
             // load the model from disk
-            var model = await modelStore.LoadModelAsync(trainerId);
+            var model = await _modelStore.LoadModelAsync(trainerId);
 
             // create a prediction engine - for single predictions
             var predictionEngine = _mlContext.Model
@@ -87,26 +85,26 @@ namespace ClientDashboard_API.ML.Services
         }
 
 
-        private async Task LoadBlobStorageModelForTrainer(int trainerId)
-        {
-            var container = _blobServiceClient.GetBlobContainerClient("ml-models");
+        //private async Task LoadBlobStorageModelForTrainer(int trainerId)
+        //{
+        //    var container = _blobServiceClient.GetBlobContainerClient("ml-models");
 
-            var blob = container.GetBlobClient($"trainer_{trainerId}_revenue_model.zip");
+        //    var blob = container.GetBlobClient($"trainer_{trainerId}_revenue_model.zip");
 
-            if(!await blob.ExistsAsync())
-            {
-                throw new FileNotFoundException($"No trainer model was retrieved for trainer with id: {trainerId}");
-            }
+        //    if(!await blob.ExistsAsync())
+        //    {
+        //        throw new FileNotFoundException($"No trainer model was retrieved for trainer with id: {trainerId}");
+        //    }
 
-            using var stream = new MemoryStream();
-            await blob.DownloadToAsync(stream);
-            stream.Position = 0;
+        //    using var stream = new MemoryStream();
+        //    await blob.DownloadToAsync(stream);
+        //    stream.Position = 0;
 
-            var model = _mlContext.Model.Load(stream, out var schema);
+        //    var model = _mlContext.Model.Load(stream, out var schema);
 
-            var predictionEngine = _mlContext.Model
-               .CreatePredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>(model);
-        }
+        //    var predictionEngine = _mlContext.Model
+        //       .CreatePredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>(model);
+        //}
 
     }
 }

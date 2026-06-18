@@ -1,9 +1,10 @@
-﻿using ClientDashboard_API.ML.Interfaces;
+﻿using Azure.Storage.Blobs;
+using ClientDashboard_API.ML.Interfaces;
 using Microsoft.ML;
 
 namespace ClientDashboard_API.ML.Helpers
 {
-    public class BlobModelStore() : IModelStore
+    public class BlobModelStore(BlobServiceClient blobServiceClient) : IModelStore
     {
         public Task<ITransformer> LoadModelAsync(int trainerId)
         {
