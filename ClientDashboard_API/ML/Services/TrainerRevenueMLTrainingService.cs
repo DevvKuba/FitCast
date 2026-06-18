@@ -1,4 +1,4 @@
-ï»¿using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;
@@ -10,31 +10,23 @@ using Twilio.Rest.Api.V2010.Account.Usage.Record;
 
 namespace ClientDashboard_API.ML.Services
 {
-    public class TrainerRevenueMLTrainingService : IMLModelTrainingService
+    public class TrainerRevenueMLTrainingService(
+        IUnitOfWork unitOfWork,
+        ILogger<TrainerRevenueMLTrainingService> logger,
+        IModelStore modelStore,
+        IWebHostEnvironment environment) : IMLModelTrainingService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<TrainerRevenueMLTrainingService> _logger;
-        private readonly IModelStore _modelStore;
-        private readonly MLContext _mlContext;
-        private readonly string _modelsPath;
-
-        public TrainerRevenueMLTrainingService(
-            IUnitOfWork unitOfWork,
-            ILogger<TrainerRevenueMLTrainingService> logger,
-            IModelStore modelStore,
-            IWebHostEnvironment environment)
-        {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-            _mlContext = new MLContext(seed: 42);
-            _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
-            _modelStore = modelStore;
-
-            Directory.CreateDirectory(_modelsPath);
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ILogger<TrainerRevenueMLTrainingService> _logger = logger;
+        private readonly IModelStore _modelStore = modelStore;
+        private readonly MLContext _mlContext = new MLContext(seed: 42);
+        private readonly string _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
 
         public async Task<ModelMetrics> TrainModelAsync(int trainerId)
         {
+            // Ensure models directory exists
+            Directory.CreateDirectory(_modelsPath);
+
             _logger.LogInformation("Starting model training for Trainer ID: {TrainerId}", trainerId);
 
             // 1 Fetch data from database
@@ -112,9 +104,9 @@ namespace ClientDashboard_API.ML.Services
 
             if(double.IsNaN(metrics.RSquared) || double.IsInfinity(metrics.RSquared))
             {
-                _logger.LogError("Invalid RÂ² value: {RSquared}. Training data likely has no variance.", metrics.RSquared);
+                _logger.LogError("Invalid R² value: {RSquared}. Training data likely has no variance.", metrics.RSquared);
                 throw new InvalidOperationException(
-                    $"Model training produced invalid metrics (RÂ²={metrics.RSquared}). " +
+                    $"Model training produced invalid metrics (R²={metrics.RSquared}). " +
                     "This usually means insufficient data or no variance in features/labels. " +
                     "Check your training data quality.");
             }
@@ -149,7 +141,7 @@ namespace ClientDashboard_API.ML.Services
                     results[trainer.Id] = metrics;
 
                     _logger.LogInformation(
-                        "Trainer {TrainerId}: RÂ²={RSquared:F3}, MAE=${MAE:F2}",
+                        "Trainer {TrainerId}: R²={RSquared:F3}, MAE=${MAE:F2}",
                         trainer.Id, metrics.RSquared, metrics.MeanAbsoluteError);
                 }
                 catch (Exception ex)
@@ -162,3 +154,4 @@ namespace ClientDashboard_API.ML.Services
         
     }
 }
+

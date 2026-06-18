@@ -10,8 +10,7 @@ namespace ClientDashboard_API.ML.Services
     public class TrainerRevenueMLPredictionService(
         IUnitOfWork unitOfWork,
         ILogger<TrainerRevenueMLPredictionService> logger,
-        IModelStore modelStore
-        ) : IMLPredictionService
+        IModelStore modelStore) : IMLPredictionService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ILogger<TrainerRevenueMLPredictionService> _logger = logger;
