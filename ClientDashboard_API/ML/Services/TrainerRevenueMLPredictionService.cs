@@ -83,27 +83,5 @@ namespace ClientDashboard_API.ML.Services
             _predictionEngines[trainerId] = predictionEngine;
         }
 
-
-        //private async Task LoadBlobStorageModelForTrainer(int trainerId)
-        //{
-        //    var container = _blobServiceClient.GetBlobContainerClient("ml-models");
-
-        //    var blob = container.GetBlobClient($"trainer_{trainerId}_revenue_model.zip");
-
-        //    if(!await blob.ExistsAsync())
-        //    {
-        //        throw new FileNotFoundException($"No trainer model was retrieved for trainer with id: {trainerId}");
-        //    }
-
-        //    using var stream = new MemoryStream();
-        //    await blob.DownloadToAsync(stream);
-        //    stream.Position = 0;
-
-        //    var model = _mlContext.Model.Load(stream, out var schema);
-
-        //    var predictionEngine = _mlContext.Model
-        //       .CreatePredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>(model);
-        //}
-
     }
 }

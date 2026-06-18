@@ -8,13 +8,13 @@ namespace ClientDashboard_API.ML.Helpers
 {
     public class LocalFileModelStore(IWebHostEnvironment environment, ILogger<LocalFileModelStore> logger) : IModelStore
     {
-        private string ModelsPath { get; } = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
+        private readonly string _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
 
-        private MLContext MlContext { get; } = new MLContext(seed: 42); 
+        private readonly MLContext _mlContext = new MLContext(seed: 42); 
 
         public async Task<ITransformer> LoadModelAsync(int trainerId)
         {
-            var modelPath = Path.Combine(ModelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
 
             if (!File.Exists(modelPath))
             {
@@ -23,7 +23,7 @@ namespace ClientDashboard_API.ML.Helpers
                     $"Train the model first using the training service.");
             }
 
-            var model = MlContext.Model.Load(modelPath, out var modelSchema);
+            var model = _mlContext.Model.Load(modelPath, out var modelSchema);
 
             logger.LogInformation("Loaded model for Trainer {TrainerId} from {Path}", trainerId, modelPath);
 
@@ -32,11 +32,11 @@ namespace ClientDashboard_API.ML.Helpers
 
         public async Task SaveModelAsync(int trainerId, ITransformer model, DataViewSchema schema)
         {
-            var modelPath = Path.Combine(ModelsPath, $"trainer_{trainerId}_revenue_model.zip");
+            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
 
-            Directory.CreateDirectory(ModelsPath);
+            Directory.CreateDirectory(_modelsPath);
 
-            MlContext.Model.Save(model, schema, modelPath);
+            _mlContext.Model.Save(model, schema, modelPath);
 
             logger.LogInformation("Model saved to {Path}", modelPath);
         }
