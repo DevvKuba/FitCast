@@ -14,18 +14,21 @@ namespace ClientDashboard_API.ML.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<TrainerRevenueMLTrainingService> _logger;
+        private readonly IModelStore _modelStore;
         private readonly MLContext _mlContext;
         private readonly string _modelsPath;
 
         public TrainerRevenueMLTrainingService(
             IUnitOfWork unitOfWork,
             ILogger<TrainerRevenueMLTrainingService> logger,
+            IModelStore modelStore,
             IWebHostEnvironment environment)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mlContext = new MLContext(seed: 42);
             _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
+            _modelStore = modelStore;
 
             Directory.CreateDirectory(_modelsPath);
         }
@@ -117,10 +120,7 @@ namespace ClientDashboard_API.ML.Services
             }
 
             // 8 save model to disk
-            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
-
-            _mlContext.Model.Save(model, dataView.Schema, modelPath);
-            _logger.LogInformation("Model saved to {Path}", modelPath);
+            await _modelStore.SaveModelAsync(trainerId, model, dataView.Schema);
 
             // 9 return metrics
             return new ModelMetrics
@@ -132,7 +132,6 @@ namespace ClientDashboard_API.ML.Services
                 RootMeanSquaredError = metrics.RootMeanSquaredError,
                 TrainingExamplesCount = trainingData.Count,
                 TrainedAt = DateTime.UtcNow,
-                ModelFilePath = modelPath
             };
 
         }

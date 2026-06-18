@@ -26,7 +26,7 @@ namespace ClientDashboard_API
 
             builder.WebHost.UseKestrel(options => options.AddServerHeader = false);
 
-            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddApplicationServices(builder.Configuration, builder.Environment);
 
             builder.Services.AddCors(options =>
             {

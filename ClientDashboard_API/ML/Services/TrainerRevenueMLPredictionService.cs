@@ -16,6 +16,7 @@ namespace ClientDashboard_API.ML.Services
         private readonly ILogger<TrainerRevenueMLPredictionService> _logger = logger;
         private readonly MLContext _mlContext = new MLContext();
         private readonly BlobServiceClient _blobServiceClient;
+        private readonly IModelStore modelStore;
         private readonly string _modelsPath = Path.Combine(environment.ContentRootPath, "ML", "TrainedModels");
 
         // Cache loaded models in memory (avoid loading from disk every time)
@@ -28,7 +29,8 @@ namespace ClientDashboard_API.ML.Services
                 _predictionEngines.Remove(trainerId);
             }
 
-            LoadLocalModelForTrainer(trainerId);
+            await LoadLocalModelForTrainer(trainerId);
+
             var predictionEngine = _predictionEngines[trainerId];
 
             var lastRecord = await _unitOfWork.TrainerDailyRevenueRepository.GetLatestRevenueRecordForTrainerAsync(trainerId);
@@ -71,27 +73,17 @@ namespace ClientDashboard_API.ML.Services
             return predictions;
         }
 
-        private void LoadLocalModelForTrainer(int trainerId)
+        private async Task LoadLocalModelForTrainer(int trainerId)
         {
-            var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
-            
-            if(!File.Exists(modelPath))
-            {
-                throw new FileNotFoundException(
-                    $"No trained model found for Trainer {trainerId}. " +
-                    $"Train the model first using the training service.");
-            }
 
             // load the model from disk
-            var model = _mlContext.Model.Load(modelPath, out var modelSchema);
+            var model = await modelStore.LoadModelAsync(trainerId);
 
             // create a prediction engine - for single predictions
             var predictionEngine = _mlContext.Model
                 .CreatePredictionEngine<TrainerRevenueData, TrainerRevenuePrediction>(model);
 
             _predictionEngines[trainerId] = predictionEngine;
-
-            _logger.LogInformation("Loaded model for Trainer {TrainerId} from {Path}", trainerId, modelPath);
         }
 
 
