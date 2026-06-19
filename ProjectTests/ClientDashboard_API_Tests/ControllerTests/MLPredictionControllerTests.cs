@@ -9,6 +9,7 @@ using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
+using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly TrainerRevenueMLTrainingService _trainingService;
         private readonly TrainerRevenueMLPredictionService _predictionService;
         private readonly MLPredictionController _mlPredictionController;
+        private readonly IModelStore _modelStore;
         private readonly List<string> _tempDirectories = [];
 
         public MLPredictionControllerTests()
@@ -95,15 +97,19 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 WebRootFileProvider = new NullFileProvider(),
             };
 
+            // Create LocalFileModelStore with IModelStore interface
+            _modelStore = new LocalFileModelStore(_webHostEnvironment, NullLogger<LocalFileModelStore>.Instance);
+
             _trainingService = new TrainerRevenueMLTrainingService(
                 _unitOfWork,
                 NullLogger<TrainerRevenueMLTrainingService>.Instance,
+                _modelStore,
                 _webHostEnvironment);
 
             _predictionService = new TrainerRevenueMLPredictionService(
                 _unitOfWork,
                 NullLogger<TrainerRevenueMLPredictionService>.Instance,
-                _webHostEnvironment);
+                _modelStore);
 
             _mlPredictionController = new MLPredictionController(
                 _predictionService,
@@ -127,7 +133,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response.Data);
             Assert.True(response.Data.TrainingExamplesCount > 0);
             Assert.True(double.IsFinite(response.Data.RSquared));
-            Assert.True(File.Exists(response.Data.ModelFilePath));
+            Assert.True(response.Data.IsGoodQuality);
         }
 
         [Fact]

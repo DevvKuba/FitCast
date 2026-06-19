@@ -4,7 +4,9 @@ using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Services;
+using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Models;
+using ClientDashboard_API.ML.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging.Abstractions;
 using AutoMapper;
 using ClientDashboard_API.Helpers;
+using Microsoft.Extensions.Hosting;
 
 namespace ClientDashboard_API_Tests.ControllerTests
 {
@@ -22,6 +25,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly TrainerRevenueMLPredictionService _service;
         private readonly TrainerRevenueMLTrainingService _trainingService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IModelStore _modelStore;
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
         private readonly List<string> _tempDirectories = [];
@@ -96,19 +100,24 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _webHostEnvironment = new TestWebHostEnvironment
             {
                 ContentRootPath = tempRoot,
-                WebRootPath = tempRoot
+                WebRootPath = tempRoot,
+                EnvironmentName = Environments.Development
             };
+
+            // Create LocalFileModelStore (the development-environment IModelStore implementation)
+            _modelStore = new LocalFileModelStore(_webHostEnvironment, NullLogger<LocalFileModelStore>.Instance);
 
             // Initialize both training and prediction services
             _trainingService = new TrainerRevenueMLTrainingService(
                 _unitOfWork,
                 NullLogger<TrainerRevenueMLTrainingService>.Instance,
+                _modelStore,
                 _webHostEnvironment);
 
             _service = new TrainerRevenueMLPredictionService(
                 _unitOfWork,
                 NullLogger<TrainerRevenueMLPredictionService>.Instance,
-                _webHostEnvironment);
+                _modelStore);
         }
 
         public void Dispose()
