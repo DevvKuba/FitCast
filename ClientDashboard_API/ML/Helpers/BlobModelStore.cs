@@ -15,6 +15,8 @@ namespace ClientDashboard_API.ML.Helpers
         {
             var container = _blobServiceClient.GetBlobContainerClient("ml-models");
 
+            await container.CreateIfNotExistsAsync();
+
             var blob = container.GetBlobClient($"trainer_{trainerId}_revenue_model.zip");
 
             if (!await blob.ExistsAsync())
@@ -35,6 +37,8 @@ namespace ClientDashboard_API.ML.Helpers
         public async Task SaveModelAsync(int trainerId, ITransformer model, DataViewSchema schema)
         {
             var container = _blobServiceClient.GetBlobContainerClient("ml-models");
+
+            await container.CreateIfNotExistsAsync();
 
             var blobName = $"trainer_{trainerId}_revenue_model.zip";
             var blob = container.GetBlobClient(blobName);
