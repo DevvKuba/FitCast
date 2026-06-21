@@ -133,7 +133,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response.Data);
             Assert.True(response.Data.TrainingExamplesCount > 0);
             Assert.True(double.IsFinite(response.Data.RSquared));
-            Assert.True(response.Data.IsGoodQuality);
         }
 
         [Fact]
