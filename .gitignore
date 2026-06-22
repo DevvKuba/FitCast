@@ -581,3 +581,10 @@ ML/TrainedModels/*.zip
 
 # Keep the directory structure in git
 !ML/TrainedModels/.gitkeep
+
+#############################################################################
+# Local container data (Azurite blob emulator, etc.)
+#############################################################################
+
+# Local persisted data for docker-compose containers (e.g. Azurite blob storage)
+**/.containers/
