@@ -11,6 +11,8 @@ namespace ClientDashboard_API.ML.Helpers
 
         private readonly MLContext _mlContext = new MLContext(seed: 42);
 
+        private readonly BlobServiceClient _test = new BlobServiceClient("UseDevelopmentStorage=true");
+
         public async Task<ITransformer> LoadModelAsync(int trainerId)
         {
             var container = _blobServiceClient.GetBlobContainerClient("ml-models");

@@ -27,12 +27,24 @@ namespace ClientDashboard_API.Extensions
             {
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
+
+            var provider = config["ModelStore:Provider"] ?? "Local";
+
             services.AddAzureClients(clients =>
             {
-                clients.AddBlobServiceClient(new Uri("https://fitcaststorage.blob.core.windows.net/"));
-                clients.UseCredential(new DefaultAzureCredential());
+                if(provider == "Blob")
+                {
+                    clients.AddBlobServiceClient(new Uri(config["ModelStore:BlobAccountUrl"]!));
+                    clients.UseCredential(new DefaultAzureCredential());
+                }
+                else if(provider == "Azurite")
+                {
+                    clients.AddBlobServiceClient("UseDevelopmentStorage=true");
+                }
+                
             });
-            if (environment.IsDevelopment())
+
+            if (provider == "Local")
             {
                 services.AddScoped<IModelStore, LocalFileModelStore>(); 
             }
