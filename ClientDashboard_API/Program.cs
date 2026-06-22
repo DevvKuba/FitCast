@@ -51,7 +51,10 @@ namespace ClientDashboard_API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGenAuth();
 
-            builder.Services.AddApplicationInsightsTelemetry();
+            if (!string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+            {
+                builder.Services.AddApplicationInsightsTelemetry();
+            }
 
             builder.Services.AddAuthorization();
 
