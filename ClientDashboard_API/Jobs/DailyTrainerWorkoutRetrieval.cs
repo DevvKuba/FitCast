@@ -55,7 +55,7 @@ namespace ClientDashboard_API.Jobs
 
             }
 
-            logger.LogInformation("DailyTrainerWOrkoutRetrieval process FINISHED, processed: {TrainerCount} trainers" +
+            logger.LogInformation("DailyTrainerWorkoutRetrieval process FINISHED, processed: {TrainerCount} trainers" +
                 " and {ClientSessions} of their client sessions at: {Date}", trainers.Count,totalRetrievedSessions, DateTime.UtcNow);
         }
     }
