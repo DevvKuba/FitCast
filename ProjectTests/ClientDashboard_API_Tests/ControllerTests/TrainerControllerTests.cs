@@ -102,7 +102,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 
-    public class FakeTrainerAnalyticsService : ITrainerFullMonthAnalyticsService
+    public class FakeTrainerFullMonthAnalyticsService : ITrainerFullMonthAnalyticsService
     {
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
@@ -135,6 +135,14 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 
+    public class FakeTrainerCurrentMonthAnalyticsService : ITrainerCurrentMonthAnalyticsService
+    {
+        public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
+        {
+            return new CurrentMonthTrainerAnalyticsDto();
+        }
+    }
+
     public class TrainerControllerTests
     {
         private readonly IMapper _mapper;
@@ -153,7 +161,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly UnitOfWork _unitOfWork;
         private readonly FakeApiKeyEncrypter _fakeEncrypter;
         private readonly FakeSessionDataParser _fakeSessionDataParser;
-        private readonly FakeTrainerAnalyticsService _fakeTrainerAnalyticsService;
+        private readonly FakeTrainerFullMonthAnalyticsService _fakeTrainerFullMonthAnalyticsService;
+        private readonly FakeTrainerCurrentMonthAnalyticsService _fakeTrainerCurrentMonthAnalyticsService;
         private readonly FakeSessionSyncService _fakeSyncService;
         private readonly TrainerController _trainerController;
 
@@ -188,9 +197,10 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeEncrypter = new FakeApiKeyEncrypter();
             _fakeSessionDataParser = new FakeSessionDataParser();
-            _fakeTrainerAnalyticsService = new FakeTrainerAnalyticsService();
+            _fakeTrainerFullMonthAnalyticsService = new FakeTrainerFullMonthAnalyticsService();
+            _fakeTrainerCurrentMonthAnalyticsService = new FakeTrainerCurrentMonthAnalyticsService();
             _fakeSyncService = new FakeSessionSyncService();
-            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerAnalyticsService, _fakeSyncService);
+            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService);
         }
 
         [Fact]
@@ -235,7 +245,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Email = "jonathan@example.com",
                 PhoneNumber = "1234567890",
                 BusinessName = "New Business",
-                DefaultCurrency = "£",
+                DefaultCurrency = "ï¿½",
                 AverageSessionPrice = 50.00m
             };
 
@@ -453,7 +463,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerPaymentSettingSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false, AverageSessionPrice = 40, DefaultCurrency = "£" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false, AverageSessionPrice = 40, DefaultCurrency = "ï¿½" };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 

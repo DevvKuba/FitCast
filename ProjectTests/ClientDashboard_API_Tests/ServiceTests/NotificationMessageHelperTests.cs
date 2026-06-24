@@ -293,7 +293,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.Contains("No new workouts retrieved from Hevy", message);
             Assert.Contains("Friday", message); // March 14, 2025 (date - 1 day) is FRIDAY
-            Assert.Contains("15th", message);
+            Assert.Contains("14th", message);
             Assert.Contains("2:30 PM", message);
         }
 
@@ -309,7 +309,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.Contains("1 new workout retrieved from Hevy", message);
             Assert.Contains("Sunday", message); // March 9, 2025 (date - 1 day)
-            Assert.Contains("10th", message);
+            Assert.Contains("9th", message);
             Assert.Contains("9:15 AM", message);
         }
 
@@ -325,22 +325,22 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.Contains("5 new workouts retrieved from Hevy", message);
             Assert.Contains("Friday", message); // March 21, 2025 (date - 1 day)
-            Assert.Contains("22nd", message);
+            Assert.Contains("21st", message);
             Assert.Contains("6:45 PM", message);
         }
 
         [Fact]
         public void TestGetWorkoutCollectionMessageFormatsOrdinalDaysCorrectly()
         {
-            // Test 1st, 2nd, 3rd, and th suffixes
-            var date1 = new DateTime(2025, 1, 1, 12, 0, 0);
-            var date2 = new DateTime(2025, 1, 2, 12, 0, 0);
-            var date3 = new DateTime(2025, 1, 3, 12, 0, 0);
-            var date4 = new DateTime(2025, 1, 4, 12, 0, 0);
-            var date21 = new DateTime(2025, 1, 21, 12, 0, 0);
-            var date22 = new DateTime(2025, 1, 22, 12, 0, 0);
-            var date23 = new DateTime(2025, 1, 23, 12, 0, 0);
-            var date31 = new DateTime(2025, 1, 31, 12, 0, 0);
+            // Ordinal reflects the PREVIOUS day (date - 1), so each date is the day after the suffix under test
+            var date1 = new DateTime(2025, 1, 2, 12, 0, 0);   // previous day: 1st
+            var date2 = new DateTime(2025, 1, 3, 12, 0, 0);   // previous day: 2nd
+            var date3 = new DateTime(2025, 1, 4, 12, 0, 0);   // previous day: 3rd
+            var date4 = new DateTime(2025, 1, 5, 12, 0, 0);   // previous day: 4th
+            var date21 = new DateTime(2025, 1, 22, 12, 0, 0); // previous day: 21st
+            var date22 = new DateTime(2025, 1, 23, 12, 0, 0); // previous day: 22nd
+            var date23 = new DateTime(2025, 1, 24, 12, 0, 0); // previous day: 23rd
+            var date31 = new DateTime(2025, 4, 1, 12, 0, 0);  // previous day: March 31st (boundary)
 
             var message1 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date1);
             var message2 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date2);
@@ -372,14 +372,14 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Assert
             Assert.Contains("100 new workouts retrieved from Hevy", message);
-            Assert.Contains("Wednesday", message); // December 24, 2025
-            Assert.Contains("25th", message);
+            Assert.Contains("Wednesday", message); // December 24, 2025 (date - 1 day)
+            Assert.Contains("24th", message);       // previous day's ordinal
         }
 
         [Fact]
         public void TestGetWorkoutCollectionMessageSubtractsOneDayCorrectly()
         {
-            // Arrange - Test that date.AddDays(-1) is used correctly
+            // Arrange - Test that date.AddDays(-1) is used correctly across a month boundary
             var date = new DateTime(2025, 4, 1, 10, 0, 0); // April 1st
 
             // Act
@@ -387,7 +387,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Assert
             Assert.Contains("Monday", message); // March 31, 2025 (date - 1 day)
-            Assert.Contains("1st", message); // Still shows the original date day for ordinal
+            Assert.Contains("31st", message);   // previous day's ordinal, not the original date
         }
 
         [Fact]
@@ -483,9 +483,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var message12 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date12);
             var message13 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date13);
 
-            Assert.Contains("11th", message11);
-            Assert.Contains("12th", message12);
-            Assert.Contains("13th", message13);
+            Assert.Contains("10th", message11);
+            Assert.Contains("11th", message12);
+            Assert.Contains("12th", message13);
         }
     }
 }

@@ -20,14 +20,14 @@ namespace ClientDashboard_API_Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task GetTrainerLastMonthsAnalytics_ShouldReturnAggregatedAnalytics()
+        public async Task GetTrainerSpecificMonthAnalytics_ShouldReturnSingleMonthAnalytics()
         {
             await _factory.ResetDatabaseAsync();
 
             var trainerId = await SeedTrainerWithRevenueHistoryAsync();
             var trainerHttp = CreateAuthorizedClient(trainerId);
 
-            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteTrainerAnalyticsDto>>($"/api/Trainer/getTrainerLastMonthsAnalytics?trainerId={trainerId}");
+            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteTrainerAnalyticsDto>>($"/api/Trainer/getTrainerSpecificMonthAnalytics?trainerId={trainerId}&month=2&year=2026");
 
             response.Should().NotBeNull();
             response!.Success.Should().BeTrue();
@@ -35,6 +35,25 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             response.Data!.RevenuePerWorkingMonth.Should().BeGreaterThan(0);
             response.Data.MonthlyWorkingDays.Should().BeGreaterThan(0);
             response.Data.AllWeekdays.Should().HaveCount(7);
+        }
+
+        [Fact]
+        public async Task GetTrainerCurrentMonthAnalytics_ShouldReturnUnfinishedMonthAnalytics()
+        {
+            await _factory.ResetDatabaseAsync();
+
+            var trainerId = await SeedTrainerWithCurrentMonthAsync();
+            var trainerHttp = CreateAuthorizedClient(trainerId);
+
+            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>($"/api/Trainer/getTrainerCurrentMonthsAnalytics?trainerId={trainerId}");
+
+            response.Should().NotBeNull();
+            response!.Success.Should().BeTrue();
+            response.Data.Should().NotBeNull();
+            response.Data!.BaseClients.Should().BeGreaterThan(0);
+            response.Data.MonthlyClientSessions.Should().BeGreaterThan(0);
+            response.Data.TotalRevenue.Should().BeGreaterThan(0);
+            response.Data.RevenuePerWorkingDay.Should().BeGreaterThan(0);
         }
 
         [Fact]
