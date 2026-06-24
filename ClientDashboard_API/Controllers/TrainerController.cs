@@ -301,8 +301,10 @@ namespace ClientDashboard_API.Controllers
 
             var revenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainer.Id);
 
-            //var fullMonthCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(revenueRecords);
-            
+            var fullMonthList = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthListFromData(revenueRecords);
+
+            return Ok(new ApiResponseDto<List<int>> { Data = fullMonthList, Message = $"Successfully retrieved {fullMonthList.Count} full revenue months", Success = true });
+
         }
 
         [HttpGet("getTrainerLastMonthsAnalytics")]

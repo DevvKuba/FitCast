@@ -41,6 +41,22 @@ namespace ClientDashboard_API.Data
             return allMonthCount;
         }
 
+        public int GetFullMonthCountFromData(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return revenueRecords
+                 .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                 .Count(monthGroup =>
+                 {
+                     var days = monthGroup
+                     .Select(r => r.AsOfDate.Day)
+                     .ToHashSet();
+
+                     var lastDay = DateTime.DaysInMonth(monthGroup.Key.Year, monthGroup.Key.Month);
+
+                     return days.Count == lastDay && Enumerable.Range(1, days.Count).All(day => days.Contains(day));
+                 });
+        }
+
         public List<int> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords)
         {
             List<int> fullMonths = [];
