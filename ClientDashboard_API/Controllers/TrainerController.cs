@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Controllers
         IApiKeyEncryter encrypter,
         ISessionDataParser hevyDataParser,
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
-
+        ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
         ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
@@ -328,7 +328,7 @@ namespace ClientDashboard_API.Controllers
 
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
-            var currentMonthAnalytics = fullMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
+            var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
 
             return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
         }

@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Services
                 BaseClients = baseClients,
                 MonthlyClientSessions = totalClientSessions,
                 TotalRevenue = totalRevenue,
-                RevenuePerWorkingDay = (decimal)totalRevenue.RevenuePerWorkingDay,
+                RevenuePerWorkingDay = averageDailyRevenue,
             };
         }
 
