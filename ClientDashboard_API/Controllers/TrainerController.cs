@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
+using Twilio.Rest.Trunking.V1;
 using Twilio.TwiML.Voice;
 using Twilio.Types;
 
@@ -297,7 +298,7 @@ namespace ClientDashboard_API.Controllers
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
-            if (trainer == null) return NotFound(new ApiResponseDto<List<int>> { Data = [], Message = "trainer not found", Success = false });
+            if (trainer == null) return NotFound(new ApiResponseDto<List<FullMonthDto>> { Data = [], Message = "trainer not found", Success = false });
 
             var revenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainer.Id);
 
@@ -332,11 +333,22 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
         }
 
-        //[HttpGet("getTrainerSpecificMonthAnalytics")]
-        //public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetSpecificMonthsAnalytics()
+        [HttpGet("getTrainerSpecificMonthAnalytics")]
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetSpecificMonthsAnalytics(int trainerId, int month, int year) // need to get the month / year & ofc trainerId
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null) return NotFound(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "trainer not found", Success = false });
+
+            var monthRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, month, year);
+
+            var monthAnalytics = analyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
+
+            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
+        }
 
         [HttpGet("getTrainerAllMonthsAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalyticsAsync([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);

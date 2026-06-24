@@ -133,6 +133,17 @@ namespace ClientDashboard_API.Data
             return firstNewMonthRecords;
         }
 
+        public async Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year)
+        {
+            var monthRecords = await context.TrainerDailyRevenue
+                .Where(r => r.TrainerId == trainerId &&
+                r.AsOfDate.Month == month &&
+                r.AsOfDate.Year == year)
+                .ToListAsync();
+
+            return monthRecords;
+        }
+
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
