@@ -1,18 +1,47 @@
 ﻿using ClientDashboard_API.DTOs;
-using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
-using ClientDashboard_API.ML.Helpers;
-using ClientDashboard_API.ML.Models;
 using ClientDashboard_API.Records;
-using Quartz.Impl.Calendar;
-using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Services
 {
     public class TrainerAnalyticsService : ITrainerAnalyticsService
     {
+        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            var clientMetrics = GetClientMetrics(allRevenueRecords);
+
+            var revenuePatterns = GetRevenuePatterns(allRevenueRecords);
+
+            var activityPatterns = GetActivityPatterns(allRevenueRecords);
+
+            return new CompleteTrainerAnalyticsDto
+            {
+                BaseClients = clientMetrics.BaseClients,
+                AcquiredClients = clientMetrics.AcquiredClients,
+                AcquisitionPercentage = clientMetrics.AcquisitionPercentage,
+                ChurnedClients = clientMetrics.ChurnedClients,
+                ChurnPercentage = clientMetrics.ChurnPercentage,
+                NetGrowth = clientMetrics.NetGrowth,
+                NetGrowthPercentage = clientMetrics.NetGrowthPercentage,
+                SessionsPerClient = clientMetrics.SessionsPerClient,
+                MonthlyClientSessions = clientMetrics.MonthlyClientSessions,
+                SessionsPrice = revenuePatterns.SessionsPrice,
+                MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
+                RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
+                RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
+                RevenuePerWorkingMonth = revenuePatterns.RevenuePerWorkingMonth,
+                AllWeekdays = activityPatterns.AllWeekdays,
+                BusiestDays = activityPatterns.BusiestDays,
+                LightDays = activityPatterns.LightDays
+            };
+        }
+
+        public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
+        {
+            throw new NotImplementedException();
+        }
 
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
@@ -106,37 +135,6 @@ namespace ClientDashboard_API.Services
             };
 
         }
-
-        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
-        {
-            var clientMetrics = GetClientMetrics(allRevenueRecords);
-
-            var revenuePatterns = GetRevenuePatterns(allRevenueRecords);
-
-            var activityPatterns = GetActivityPatterns(allRevenueRecords);
-
-            return new CompleteTrainerAnalyticsDto
-            {
-                BaseClients = clientMetrics.BaseClients,
-                AcquiredClients = clientMetrics.AcquiredClients,
-                AcquisitionPercentage = clientMetrics.AcquisitionPercentage,
-                ChurnedClients = clientMetrics.ChurnedClients,
-                ChurnPercentage = clientMetrics.ChurnPercentage,
-                NetGrowth = clientMetrics.NetGrowth,
-                NetGrowthPercentage = clientMetrics.NetGrowthPercentage,
-                SessionsPerClient = clientMetrics.SessionsPerClient,
-                MonthlyClientSessions = clientMetrics.MonthlyClientSessions,
-                SessionsPrice = revenuePatterns.SessionsPrice,
-                MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
-                RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
-                RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
-                RevenuePerWorkingMonth = revenuePatterns.RevenuePerWorkingMonth,
-                AllWeekdays = activityPatterns.AllWeekdays,
-                BusiestDays = activityPatterns.BusiestDays,
-                LightDays = activityPatterns.LightDays
-            };
-        }
-
 
 
         // input of data can be last month / all records same outputs

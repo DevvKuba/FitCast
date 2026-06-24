@@ -6,13 +6,15 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITrainerAnalyticsService
     {
+
+        CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
+
+        CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords);
+        
         ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords);
 
         RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords);
 
         ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords);
-
-        CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
-
     }
 }
