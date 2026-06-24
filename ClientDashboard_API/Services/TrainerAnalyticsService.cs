@@ -40,7 +40,19 @@ namespace ClientDashboard_API.Services
 
         public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
         {
-            throw new NotImplementedException();
+            var clientSessionData = GetTrainerBaseClientsAndAverageSessions(currentRevenueRecords);
+
+            var revenuePatterns = GetRevenuePatterns(currentRevenueRecords);
+
+            var totalClientSessions = GetTotalClientSessions(currentRevenueRecords);
+
+            return new CurrentMonthTrainerAnalyticsDto
+            {
+                BaseClients = clientSessionData.BaseClients,
+                MonthlyClientSessions = totalClientSessions,
+                TotalRevenue = revenuePatterns.TotalRevenue,
+                RevenuePerWorkingDay = (decimal)revenuePatterns.RevenuePerWorkingDay,
+            };
         }
 
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
@@ -209,6 +221,14 @@ namespace ClientDashboard_API.Services
             };
         }
 
+        // TODO may be faulty if the trainer changes their session pricing consistently.. fix later
+        private int GetTotalClientSessions(List<TrainerDailyRevenue> allRevenueRecords)
+        {
+            var totalClientSessions = allRevenueRecords.Sum(r => r.RevenueToday / r.AverageSessionPrice);
+
+            return (int)Math.Round(totalClientSessions);
+        }
+
         private int GetMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
         {
             // get working days from first record day to next month with that same record day
@@ -286,6 +306,7 @@ namespace ClientDashboard_API.Services
 
             return new RevenuePatternsDto
             {
+                TotalRevenue = totalRevenue,
                 RevenuePerWorkingDay = (double)averageRevenuePerDay,
                 RevenuePerWorkingWeek = (double)averageRevenuePerWeek,
                 RevenuePerWorkingMonth = (double)averageRevenuePerMonth

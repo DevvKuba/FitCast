@@ -309,20 +309,21 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpGet("getTrainerCurrentMonthsAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
 
             if (trainer is null || revenueRecord is null)
             {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
+                return NotFound(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
             }
 
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
+            var currentMonthAnalytics = analyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
 
-            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = , Message = "Successfully retrieved the current month's analytics", Success = true });
+            return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
         }
 
         [HttpGet("getTrainerSpecificMonthAnalytics")]

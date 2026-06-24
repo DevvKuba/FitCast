@@ -16,9 +16,9 @@
 
         public double NetGrowthPercentage { get; set; }
 
-        public int SessionsPerClient { get; set; }
-
         public int MonthlyClientSessions { get; set; }
+
+        public int SessionsPerClient { get; set; }
 
     }
 }

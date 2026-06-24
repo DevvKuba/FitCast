@@ -6,8 +6,8 @@
 
         public int MonthlyClientSessions { get; set; }
 
-        public int RevenuePerWorkingDay { get; set; }
+        public decimal TotalRevenue { get; set; }
 
-        public decimal RevenueGenerated { get; set; }
+        public decimal RevenuePerWorkingDay { get; set; }
     }
 }
