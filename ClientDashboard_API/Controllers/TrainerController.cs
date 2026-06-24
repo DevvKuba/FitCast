@@ -293,7 +293,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpGet("getAllFullRevenueMonths")]
-        public async Task<ActionResult<ApiResponseDto<List<int>>>> GetAllFullRevenueMonthsAsync(int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<FullMonthDto>>>> GetAllFullRevenueMonthsAsync(int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
@@ -303,7 +303,7 @@ namespace ClientDashboard_API.Controllers
 
             var fullMonthList = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthListFromData(revenueRecords);
 
-            return Ok(new ApiResponseDto<List<int>> { Data = fullMonthList, Message = $"Successfully retrieved {fullMonthList.Count} full revenue months", Success = true });
+            return Ok(new ApiResponseDto<List<FullMonthDto>> { Data = fullMonthList, Message = $"Successfully retrieved {fullMonthList.Count} full revenue months", Success = true });
 
         }
 

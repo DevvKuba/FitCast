@@ -41,7 +41,7 @@ namespace ClientDashboard_API.Data
             return allMonthCount;
         }
 
-        public int GetFullMonthCountFromData(List<TrainerDailyRevenue> revenueRecords)
+        public int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
         {
             return revenueRecords
                  .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
@@ -57,9 +57,9 @@ namespace ClientDashboard_API.Data
                  });
         }
 
-        public List<int> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords)
+        public List<FullMonthDto> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords)
         {
-            List<int> fullMonths = [];
+            List<FullMonthDto> fullMonths = [];
 
              revenueRecords
                  .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
@@ -73,7 +73,7 @@ namespace ClientDashboard_API.Data
 
                      if(days.Count == lastDay && Enumerable.Range(1, days.Count).All(day => days.Contains(day)))
                      {
-                         fullMonths.Add(monthGroup.Key.Month);
+                         fullMonths.Add( new FullMonthDto { Month = monthGroup.Key.Month, Year = monthGroup.Key.Year});
                      }
                  });
             return fullMonths;
