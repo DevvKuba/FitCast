@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
+using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Twilio.Rest.Trunking.V1;
@@ -40,12 +41,13 @@ namespace ClientDashboard_API.Data
             return allMonthCount;
         }
 
-        public int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords)
+        public List<int> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords)
         {
-            // only return counts of full months within passed in revenue records
-            return revenueRecords
+            List<int> fullMonths = [];
+
+             revenueRecords
                  .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
-                 .Count(monthGroup =>
+                 .ForEach(monthGroup =>
                  {
                      var days = monthGroup
                      .Select(r => r.AsOfDate.Day)
@@ -53,9 +55,12 @@ namespace ClientDashboard_API.Data
 
                      var lastDay = DateTime.DaysInMonth(monthGroup.Key.Year, monthGroup.Key.Month);
 
-                     return days.Count == lastDay &&
-                     Enumerable.Range(1, days.Count).All(day => days.Contains(day));
+                     if(days.Count == lastDay && Enumerable.Range(1, days.Count).All(day => days.Contains(day)))
+                     {
+                         fullMonths.Add(monthGroup.Key.Month);
+                     }
                  });
+            return fullMonths;
         }
 
         public async Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId)

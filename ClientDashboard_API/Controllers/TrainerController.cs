@@ -292,6 +292,19 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
         }
 
+        [HttpGet("getAllFullRevenueMonths")]
+        public async Task<ActionResult<ApiResponseDto<List<int>>>> GetAllFullRevenueMonthsAsync(int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer == null) return NotFound(new ApiResponseDto<List<int>> { Data = [], Message = "trainer not found", Success = false });
+
+            var revenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainer.Id);
+
+            //var fullMonthCount = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthCountsFromData(revenueRecords);
+            
+        }
+
         [HttpGet("getTrainerLastMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
         {
@@ -317,6 +330,9 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
         }
 
+        //[HttpGet("getTrainerSpecificMonthAnalytics")]
+        //public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetSpecificMonthsAnalytics()
+
         [HttpGet("getTrainerAllMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetAllAnalytics([FromQuery] int trainerId)
         {
@@ -339,7 +355,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "No Full Months of data present to retrieve analytics. Try another time", Success = true });
             }
 
-            var allAnalytics = analyticsService.GetAllAnalyticMetrics(allRevenueRecords);
+            var allAnalytics = analyticsService.GetAllAnalyticMetrics(fullMonthlyRecords);
 
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved monthly analytics", Success = true });
         }
