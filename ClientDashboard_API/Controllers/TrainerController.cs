@@ -308,8 +308,8 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        [HttpGet("getTrainerLastMonthsAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetLastMonthAnalytics([FromQuery] int trainerId)
+        [HttpGet("getTrainerCurrentMonthsAnalytics")]
+        public async Task<ActionResult<ApiResponseDto<CompleteTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
             var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
@@ -319,18 +319,10 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
             }
 
-            var lastMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetLastMonthsRecordsAsync(trainerId);
+            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
-            var fullMonthRecords = unitOfWork.TrainerDailyRevenueRepository.GetRecordsForFullMonths(lastMonthsRevenueRecords);
 
-            if (fullMonthRecords == null || fullMonthRecords.Count == 0)
-            {
-                return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "No Full Months of data present to retrieve analytics. Try another time", Success = true});
-            }
-
-            var allAnalytics = analyticsService.GetAllAnalyticMetrics(lastMonthsRevenueRecords);
-
-            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved last month's analytics", Success = true });
+            return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = , Message = "Successfully retrieved the current month's analytics", Success = true });
         }
 
         [HttpGet("getTrainerSpecificMonthAnalytics")]

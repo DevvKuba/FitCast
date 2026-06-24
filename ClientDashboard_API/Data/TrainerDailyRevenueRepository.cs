@@ -103,17 +103,15 @@ namespace ClientDashboard_API.Data
             return lastMonthsDayRecords;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetLastMonthsRecordsAsync(int trainerId)
+        public async Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId)
         {
-            var latestRecord = await GetLatestRevenueRecordForTrainerAsync(trainerId);
-            var previousMonth = latestRecord!.AsOfDate.Month - 1;
-
-            var monthlyRecords = await context.TrainerDailyRevenue
-                .Where(r => r.TrainerId == trainerId &&
-                r.AsOfDate.Month == previousMonth)
-                .OrderBy(r => r.AsOfDate)
+            var currentMonthsRecords = await context.TrainerDailyRevenue
+                .Where( r => r.TrainerId == trainerId &&
+                 r.AsOfDate.Month == DateTime.UtcNow.Month && 
+                 r.AsOfDate.Year == DateTime.UtcNow.Year)
                 .ToListAsync();
-            return monthlyRecords;
+
+            return currentMonthsRecords;
         }
 
         public async Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords)
