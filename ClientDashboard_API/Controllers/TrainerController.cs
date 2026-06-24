@@ -14,7 +14,14 @@ using Twilio.Types;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize(Roles = "Trainer")]
-    public class TrainerController(IUnitOfWork unitOfWork, IMapper mapper, IApiKeyEncryter encrypter, ISessionDataParser hevyDataParser, ITrainerAnalyticsService analyticsService, ISessionSyncService syncService) : BaseAPIController
+    public class TrainerController(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IApiKeyEncryter encrypter,
+        ISessionDataParser hevyDataParser,
+        ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
+
+        ISessionSyncService syncService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing for the retrieval of a specific Trainer by id
@@ -321,7 +328,7 @@ namespace ClientDashboard_API.Controllers
 
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
-            var currentMonthAnalytics = analyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
+            var currentMonthAnalytics = fullMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
 
             return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
         }
@@ -335,7 +342,7 @@ namespace ClientDashboard_API.Controllers
 
             var monthRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, month, year);
 
-            var monthAnalytics = analyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
+            var monthAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
 
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
         }
@@ -362,7 +369,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = null, Message = "No Full Months of data present to retrieve analytics. Try another time", Success = true });
             }
 
-            var allAnalytics = analyticsService.GetAllAnalyticMetrics(fullMonthlyRecords);
+            var allAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(fullMonthlyRecords);
 
             return Ok(new ApiResponseDto<CompleteTrainerAnalyticsDto> { Data = allAnalytics, Message = "Successfully retrieved monthly analytics", Success = true });
         }

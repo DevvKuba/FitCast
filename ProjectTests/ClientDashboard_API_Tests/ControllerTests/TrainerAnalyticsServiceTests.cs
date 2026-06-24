@@ -8,11 +8,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
 {
     public class TrainerAnalyticsServiceTests
     {
-        private readonly TrainerAnalyticsService _service;
+        private readonly TrainerFullMonthAnalyticsService _service;
 
         public TrainerAnalyticsServiceTests()
         {
-            _service = new TrainerAnalyticsService();
+            _service = new TrainerFullMonthAnalyticsService();
         }
 
         [Fact]

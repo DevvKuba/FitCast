@@ -6,7 +6,7 @@ using ClientDashboard_API.Records;
 
 namespace ClientDashboard_API.Services
 {
-    public class TrainerAnalyticsService : ITrainerAnalyticsService
+    public class TrainerFullMonthAnalyticsService : ITrainerFullMonthAnalyticsService
     {
         public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
@@ -40,7 +40,7 @@ namespace ClientDashboard_API.Services
 
         public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
         {
-            var clientSessionData = GetTrainerBaseClientsAndAverageSessions(currentRevenueRecords);
+            var baseClients = (int)Math.Round(currentRevenueRecords.Average(r => r.ActiveClients));
 
             var revenuePatterns = GetRevenuePatterns(currentRevenueRecords);
 
@@ -48,7 +48,7 @@ namespace ClientDashboard_API.Services
 
             return new CurrentMonthTrainerAnalyticsDto
             {
-                BaseClients = clientSessionData.BaseClients,
+                BaseClients = baseClients,
                 MonthlyClientSessions = totalClientSessions,
                 TotalRevenue = revenuePatterns.TotalRevenue,
                 RevenuePerWorkingDay = (decimal)revenuePatterns.RevenuePerWorkingDay,
@@ -361,7 +361,7 @@ namespace ClientDashboard_API.Services
             return revenueRecords.Average(r => r.AverageSessionPrice);
         }
 
-        private double CalculateBaseClientsOverMonths(List<TrainerDailyRevenue> revenueRecords)
+        private double CalculateBaseClientsOverMonths(List<TrainerDailyRevenue> revenueRecords) 
         {
             var accumulatedClients = 0;
 

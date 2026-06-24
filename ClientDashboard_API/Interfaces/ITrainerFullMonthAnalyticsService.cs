@@ -4,12 +4,10 @@ using ClientDashboard_API.ML.Models;
 
 namespace ClientDashboard_API.Interfaces
 {
-    public interface ITrainerAnalyticsService
+    public interface ITrainerFullMonthAnalyticsService
     {
 
         CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
-
-        CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords);
         
         ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords);
 

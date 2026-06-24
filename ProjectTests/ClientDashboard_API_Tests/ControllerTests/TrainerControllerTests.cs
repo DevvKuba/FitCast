@@ -102,7 +102,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 
-    public class FakeTrainerAnalyticsService : ITrainerAnalyticsService
+    public class FakeTrainerAnalyticsService : ITrainerFullMonthAnalyticsService
     {
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
