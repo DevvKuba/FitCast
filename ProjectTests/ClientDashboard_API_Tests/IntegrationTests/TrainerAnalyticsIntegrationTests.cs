@@ -100,6 +100,60 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             return trainer.Id;
         }
 
+        private async Task<int> SeedTrainerWithCurrentMonthAsync()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            var trainer = new Trainer
+            {
+                FirstName = "current-month-trainer",
+                Role = UserRole.Trainer,
+                AverageSessionPrice = 50m
+            };
+
+            dbContext.Trainer.Add(trainer);
+            await dbContext.SaveChangesAsync();
+
+            dbContext.TrainerDailyRevenue.AddRange(BuildPartialCurrentMonthRecords(trainer.Id, daysSoFar: 10, baseActiveClients: 12, dailySessions: 3, sessionPrice: 50m));
+            await dbContext.SaveChangesAsync();
+
+            return trainer.Id;
+        }
+
+        private static List<TrainerDailyRevenue> BuildPartialCurrentMonthRecords(int trainerId, int daysSoFar, int baseActiveClients, int dailySessions, decimal sessionPrice)
+        {
+            // The current month is unfinished, so seed only the first few days of the live UTC month
+            // to mirror what GetCurrentMonthsRevenueRecordsAsync filters on (DateTime.UtcNow month/year).
+            var now = DateTime.UtcNow;
+            var list = new List<TrainerDailyRevenue>();
+            var cumulativeRevenue = 0m;
+            var cumulativeSessions = 0;
+
+            for (var day = 1; day <= daysSoFar; day++)
+            {
+                var date = new DateOnly(now.Year, now.Month, day);
+                var revenueToday = dailySessions * sessionPrice;
+
+                cumulativeRevenue += revenueToday;
+                cumulativeSessions += dailySessions;
+
+                list.Add(new TrainerDailyRevenue
+                {
+                    TrainerId = trainerId,
+                    RevenueToday = revenueToday,
+                    MonthlyRevenueThusFar = cumulativeRevenue,
+                    TotalSessionsThisMonth = cumulativeSessions,
+                    NewClientsThisMonth = 1,
+                    ActiveClients = baseActiveClients,
+                    AverageSessionPrice = sessionPrice,
+                    AsOfDate = date
+                });
+            }
+
+            return list;
+        }
+
         private static List<TrainerDailyRevenue> BuildMonthRecords(int trainerId, int year, int month, int baseActiveClients, int dailySessionIncrement, decimal sessionPrice)
         {
             var list = new List<TrainerDailyRevenue>();
