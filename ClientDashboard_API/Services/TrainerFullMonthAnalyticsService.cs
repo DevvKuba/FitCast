@@ -38,23 +38,6 @@ namespace ClientDashboard_API.Services
             };
         }
 
-        public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
-        {
-            var baseClients = (int)Math.Round(currentRevenueRecords.Average(r => r.ActiveClients));
-
-            var revenuePatterns = GetRevenuePatterns(currentRevenueRecords);
-
-            var totalClientSessions = GetTotalClientSessions(currentRevenueRecords);
-
-            return new CurrentMonthTrainerAnalyticsDto
-            {
-                BaseClients = baseClients,
-                MonthlyClientSessions = totalClientSessions,
-                TotalRevenue = revenuePatterns.TotalRevenue,
-                RevenuePerWorkingDay = (decimal)revenuePatterns.RevenuePerWorkingDay,
-            };
-        }
-
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
             var clientSessionData = GetTrainerBaseClientsAndAverageSessions(revenueRecords);
