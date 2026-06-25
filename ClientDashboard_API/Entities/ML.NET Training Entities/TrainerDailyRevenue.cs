@@ -10,6 +10,8 @@
 
         public decimal MonthlyRevenueThusFar { get; set; }
 
+        public int SessionsToday { get; set; }
+
         public int TotalSessionsThisMonth { get; set; }
 
         public int NewClientsThisMonth { get; set; }
