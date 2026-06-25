@@ -279,7 +279,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             foreach (var record in records)
             {
-                await _unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
+                await _unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(record);
             }
 
             await _unitOfWork.Complete();

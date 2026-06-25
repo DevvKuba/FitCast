@@ -6,10 +6,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ITrainerDailyRevenueRepository
     {
-        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyDataAddDto trainerInfo);
-
-        Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo);
-
         Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId);
 
         Task<List<TrainerDailyRevenue>> GetLastDayForEachMonthOfTrainerDataAsync(int trainerId);
@@ -29,6 +25,8 @@ namespace ClientDashboard_API.Interfaces
         List<FullMonthDto> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords);
 
         public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
+
+        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
     }

@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
@@ -22,7 +23,7 @@ namespace ClientDashboard_API.Services
 
             var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
 
-            var trainerInfo = new TrainerDailyDataAddDto
+            var trainerInfo = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = totalRevenueToday,

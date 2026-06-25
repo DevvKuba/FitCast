@@ -225,7 +225,7 @@ namespace ClientDashboard_API.Controllers
                 // Inject into database
                 foreach (var record in dummyData)
                 {
-                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDummyReveneRecordAsync(record);
+                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(record);
                 }
 
                 if (!await unitOfWork.Complete())

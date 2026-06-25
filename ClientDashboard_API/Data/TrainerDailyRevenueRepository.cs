@@ -10,22 +10,6 @@ namespace ClientDashboard_API.Data
 {
     public class TrainerDailyRevenueRepository(DataContext context) : ITrainerDailyRevenueRepository
     {
-        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyDataAddDto trainerInfo)
-        {
-            var trainerRevenueRecord = new TrainerDailyRevenue
-            {
-                TrainerId = trainerInfo.TrainerId,
-                RevenueToday = trainerInfo.RevenueToday,
-                MonthlyRevenueThusFar = trainerInfo.MonthlyRevenueThusFar,
-                TotalSessionsThisMonth = trainerInfo.TotalSessionsThisMonth,
-                NewClientsThisMonth = trainerInfo.NewClientsThisMonth,
-                ActiveClients = trainerInfo.ActiveClients,
-                AverageSessionPrice = trainerInfo.AverageSessionPrice,
-                AsOfDate = trainerInfo.AsOfDate,
-            };
-            await context.TrainerDailyRevenue.AddAsync(trainerRevenueRecord);
-        }
-
         public async Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId)
         {
             var trainerRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
@@ -125,7 +109,7 @@ namespace ClientDashboard_API.Data
             return monthRecords;
         }
 
-        public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
+        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
         }
