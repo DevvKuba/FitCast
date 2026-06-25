@@ -16,15 +16,11 @@ namespace ClientDashboard_API.Interfaces
 
         Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId);
 
-        Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords);
-
         Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year);
 
         Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId);
 
         Task<TrainerDailyRevenue?> GetFirstRevenueRecordForTrainerAsync(int trainerId);
-
-        Task<TrainerDailyRevenue?> GetPreviousFullMonthLastRecordAsync(int trainerId);
 
         int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
 
@@ -32,12 +28,8 @@ namespace ClientDashboard_API.Interfaces
 
         List<FullMonthDto> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords);
 
-        Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId);
-
         public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
-
-        Task DeleteExtensionRecordsUpToDateAsync(TrainerDailyRevenue firstRealRecord);
     }
 }

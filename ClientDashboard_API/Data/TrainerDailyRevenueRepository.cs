@@ -114,23 +114,6 @@ namespace ClientDashboard_API.Data
             return currentMonthsRecords;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetFirstFullMonthOfRevenueRecordsAsync(List<TrainerDailyRevenue> revenueRecords)
-        {
-            // get next month of records
-            var firstRecord = await GetFirstRevenueRecordForTrainerAsync(revenueRecords.FirstOrDefault()!.TrainerId);
-
-            var firstDayOfNewMonth = new DateOnly(firstRecord!.AsOfDate.Year, firstRecord.AsOfDate.Month, 1).AddMonths(1);
-
-            var lastDayOfNewMonth = new DateOnly(firstDayOfNewMonth.Year, firstDayOfNewMonth.Month,
-                DateTime.DaysInMonth(firstDayOfNewMonth.Year, firstDayOfNewMonth.Month));
-
-            var firstNewMonthRecords = await context.TrainerDailyRevenue
-                .Where(r => r.AsOfDate >= firstDayOfNewMonth && r.AsOfDate <= lastDayOfNewMonth)
-                .ToListAsync();
-
-            return firstNewMonthRecords;
-        }
-
         public async Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year)
         {
             var monthRecords = await context.TrainerDailyRevenue
@@ -145,14 +128,6 @@ namespace ClientDashboard_API.Data
         public async Task AddTrainerDummyReveneRecordAsync(TrainerDailyRevenue trainerInfo)
         {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
-        }
-
-        public async Task<bool> CanTrainerExtendRevenueRecordsAsync(int trainerId)
-        {
-            var records = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
-
-            if (records.Count < 60) return false;
-            return true;
         }
 
         public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords)
@@ -180,25 +155,6 @@ namespace ClientDashboard_API.Data
         {
             var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
             context.RemoveRange(trainerRevenueRecords);
-        }
-
-        public async Task DeleteExtensionRecordsUpToDateAsync(TrainerDailyRevenue firstRealRecord)
-        {
-            var trainerRecords = await GetAllRevenueRecordsForTrainerAsync(firstRealRecord.TrainerId);
-
-            var extendedRecords = trainerRecords.Where(r => r.AsOfDate < firstRealRecord.AsOfDate).ToList();
-
-            foreach(TrainerDailyRevenue record in extendedRecords)
-            {
-                context.TrainerDailyRevenue.Remove(record);
-            }
-        }
-
-        public async Task<TrainerDailyRevenue?> GetPreviousFullMonthLastRecordAsync(int trainerId)
-        {
-            var lastDayOfMonthlyRecords = await GetLastDayForEachMonthOfTrainerDataAsync(trainerId);
-
-            return lastDayOfMonthlyRecords.Last();
         }
     }
 }
