@@ -43,6 +43,7 @@ namespace ClientDashboard_API.Jobs
                     var trainerSyncService = trainerScope.ServiceProvider.GetRequiredService<ISessionSyncService>();
                     var notificationService = trainerScope.ServiceProvider.GetRequiredService<INotificationService>();
                     var workoutCount = await trainerSyncService.SyncSessionsAsync(trainer);
+
                     await notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, workoutCount, DateTime.UtcNow);
 
                     logger.LogDebug("Retrieved {WorkoutCount} client workouts for trainer: {TrainerName} at {Date}", workoutCount, trainer.FirstName, DateTime.UtcNow);

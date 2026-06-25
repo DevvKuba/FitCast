@@ -67,6 +67,26 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
     }
 
+    // Spy block termination helper that captures the actual client (and therefore its Trainer
+    // navigation) handed over by the sync service, so a test can assert the graph was loaded.
+    public class SpyClientBlockTerminationHelper : IClientBlockTerminationHelper
+    {
+        public int CallCount { get; private set; }
+        public Client? CapturedClient { get; private set; }
+
+        public Task<ApiResponseDto<string>> CreateAllAdequateEntityReminderAsync(Client client)
+        {
+            CallCount++;
+            CapturedClient = client;
+            return Task.FromResult(new ApiResponseDto<string>
+            {
+                Data = "Success",
+                Message = "captured",
+                Success = true
+            });
+        }
+    }
+
     public class SessionSyncServiceTests
     {
         private readonly IMapper _mapper;
@@ -711,6 +731,117 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var updatedClient = await _unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
             Assert.Equal(5, updatedClient!.CurrentBlockSession); // Incremented by 3 (2→5)
+        }
+
+        // Regression test for the background-job bug: the trainer is loaded in one scope (then
+        // detached) and passed into SyncSessionsAsync, which runs in a SEPARATE scope. Because the
+        // client is fetched in that second context without the trainer being tracked, EF relationship
+        // fixup cannot populate client.Trainer. CreateAllAdequateEntityReminderAsync then silently
+        // skips its reminders + auto-payment because of its `if (client.Trainer is not null)` guard.
+        // This mirrors DailyTrainerWorkoutRetrieval's two-scope flow, which the single-context tests
+        // above never reproduce (they always benefit from same-context fixup).
+        [Fact]
+        public async Task TestSyncSessionsSuppliesClientWithTrainerWhenTrainerLoadedInSeparateScopeAsync()
+        {
+            // A shared database name so both contexts see the same persisted data while keeping
+            // independent change trackers - exactly like two DI scopes over the same database.
+            var databaseName = Guid.NewGuid().ToString();
+
+            int trainerId;
+
+            // Seed the data (represents what is already persisted in the database).
+            using (var seedContext = CreateContext(databaseName))
+            {
+                var trainer = new Trainer
+                {
+                    FirstName = "john",
+                    Surname = "doe",
+                    Role = UserRole.Trainer,
+                    AutoPaymentSetting = true,
+                    ExcludedNames = []
+                };
+                seedContext.Trainer.Add(trainer);
+                await seedContext.SaveChangesAsync();
+
+                seedContext.Client.Add(new Client
+                {
+                    FirstName = "nathan",
+                    Role = UserRole.Client,
+                    TrainerId = trainer.Id,
+                    CurrentBlockSession = 3, // one session away from completing the block
+                    TotalBlockSessions = 4
+                });
+                await seedContext.SaveChangesAsync();
+
+                trainerId = trainer.Id;
+            }
+
+            // SCOPE A: load the trainer, then dispose the context so the entity becomes DETACHED -
+            // matching the job loading trainers in a scope that is closed before processing them.
+            Trainer detachedTrainer;
+            using (var scopeAContext = CreateContext(databaseName))
+            {
+                var scopeATrainerRepository = new TrainerRepository(scopeAContext, _mapper);
+                detachedTrainer = (await scopeATrainerRepository.GetTrainerByIdAsync(trainerId))!;
+            }
+
+            // SCOPE B: a brand-new context (its own change tracker) runs the real sync, just like the
+            // per-trainer scope inside the job. The detached trainer is passed in as the parameter.
+            using var scopeBContext = CreateContext(databaseName);
+            var unitOfWork = CreateUnitOfWork(scopeBContext);
+
+            var workoutsFromApi = new List<WorkoutSummaryDto>
+            {
+                new WorkoutSummaryDto
+                {
+                    Title = "nathan - Final Session",
+                    SessionDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                    ExerciseCount = 10,
+                    Duration = 60
+                }
+            };
+
+            var fakeParser = new FakeSessionDataParser(workoutsFromApi);
+            var spyTerminator = new SpyClientBlockTerminationHelper();
+            var fakeNotificationService = new FakeNotificationService();
+            var sessionSyncService = new SessionSyncService(unitOfWork, fakeNotificationService, fakeParser, spyTerminator);
+
+            // Act
+            await sessionSyncService.SyncSessionsAsync(detachedTrainer);
+
+            // The block DID complete, so the terminator was reached - this proves the failure is the
+            // missing Trainer graph, not a missed CurrentBlockSession == TotalBlockSessions check.
+            Assert.Equal(1, spyTerminator.CallCount);
+            Assert.NotNull(spyTerminator.CapturedClient);
+            Assert.Equal(4, spyTerminator.CapturedClient!.CurrentBlockSession);
+
+            // The regression assertion: the client handed to the terminator must carry its Trainer,
+            // otherwise reminders and auto-payment are silently skipped. Fails until SyncSessionsAsync
+            // loads the client with its Trainer included.
+            Assert.NotNull(spyTerminator.CapturedClient.Trainer);
+        }
+
+        private static DataContext CreateContext(string databaseName)
+        {
+            return new DataContext(new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName)
+                .Options);
+        }
+
+        private UnitOfWork CreateUnitOfWork(DataContext context)
+        {
+            var userRepository = new UserRepository(context, _passwordHasher);
+            var clientRepository = new ClientRepository(context, _passwordHasher, _mapper);
+            var workoutRepository = new WorkoutRepository(context);
+            var trainerRepository = new TrainerRepository(context, _mapper);
+            var notificationRepository = new NotificationRepository(context);
+            var paymentRepository = new PaymentRepository(context, _mapper);
+            var emailVerificationTokenRepository = new EmailVerificationTokenRepository(context);
+            var passwordResetTokenRepository = new PasswordResetTokenRepository(context);
+            var clientDailyFeatureRepository = new ClientDailyFeatureRepository(context);
+            var trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context);
+
+            return new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, new NotificationRecipientStatusRepository(context), paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository);
         }
     }
 }
