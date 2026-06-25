@@ -3,6 +3,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
@@ -72,7 +73,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var trainerDailyData = new TrainerDailyDataAddDto
+            var trainerDailyData = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = 250.00m,
@@ -113,7 +114,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var trainerDailyData = new TrainerDailyDataAddDto
+            var trainerDailyData = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = 0m,
@@ -149,7 +150,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var record1 = new TrainerDailyDataAddDto
+            var record1 = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = 100.00m,
@@ -161,7 +162,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 AsOfDate = DateOnly.Parse("01/06/2025")
             };
 
-            var record2 = new TrainerDailyDataAddDto
+            var record2 = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = 150.00m,
@@ -198,7 +199,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var trainerDailyData = new TrainerDailyDataAddDto
+            var trainerDailyData = new TrainerDailyRevenue
             {
                 TrainerId = trainer.Id,
                 RevenueToday = 1500.00m,
