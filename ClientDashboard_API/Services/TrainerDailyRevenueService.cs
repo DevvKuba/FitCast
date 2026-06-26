@@ -37,7 +37,6 @@ namespace ClientDashboard_API.Services
 
             await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
             await unitOfWork.Complete();
-
         }
 
         public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDateAsync(Trainer trainer, DateOnly dateForSessions)
