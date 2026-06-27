@@ -204,14 +204,6 @@ namespace ClientDashboard_API.Services
             };
         }
 
-        // TODO may be faulty if the trainer changes their session pricing consistently.. fix later
-        private int GetTotalClientSessions(List<TrainerDailyRevenue> allRevenueRecords)
-        {
-            var totalClientSessions = allRevenueRecords.Sum(r => r.RevenueToday / r.AverageSessionPrice);
-
-            return (int)Math.Round(totalClientSessions);
-        }
-
         private int GetMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
         {
             // get working days from first record day to next month with that same record day
@@ -307,7 +299,7 @@ namespace ClientDashboard_API.Services
                 .GroupBy(r => r.AsOfDate.DayOfWeek)
                 .ToDictionary(
                 g => g.Key,
-                g => g.Average(r => (double)(r.RevenueToday / averageSessionPrice))
+                g => g.Average(r => (double)(r.SessionsToday))
                 );
 
             // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
@@ -323,7 +315,7 @@ namespace ClientDashboard_API.Services
 
         private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
         {
-            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
+            var allSessions = revenueRecords.Sum(r => r.SessionsToday);
             if (allSessions == 0) return 0;
 
             return Math.Round((double)allSessions / revenueRecords.Count);
@@ -331,7 +323,7 @@ namespace ClientDashboard_API.Services
 
         private double CalculateAverageClientSessions(List<TrainerDailyRevenue> revenueRecords)
         {
-            var allSessions = revenueRecords.Select(r => r.RevenueToday).Sum() / revenueRecords.First().AverageSessionPrice;
+            var allSessions = revenueRecords.Sum(r => r.SessionsToday);
             var baseClientsOverMonths = CalculateBaseClientsOverMonths(revenueRecords);
 
             if (allSessions == 0) return 0;
