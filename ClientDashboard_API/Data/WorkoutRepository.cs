@@ -46,6 +46,16 @@ namespace ClientDashboard_API.Data
             }
             return workouts;
         }
+        public async Task<List<Workout>> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate)
+        {
+            var totalWorkouts = await context.Workouts.
+                Where(x => x.SessionDate == workoutDate &&
+                x.Client!.TrainerId == trainer.Id)
+                .IgnoreQueryFilters()
+                .ToListAsync();
+            return totalWorkouts;
+        }
+
         public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
             var clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();

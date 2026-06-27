@@ -39,6 +39,7 @@ namespace ClientDashboard_API.Services
             await unitOfWork.Complete();
         }
 
+
         public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDateAsync(Trainer trainer, DateOnly dateForSessions)
         {
             var relatedWorkouts = await unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
@@ -85,6 +86,5 @@ namespace ClientDashboard_API.Services
             var firstDayOfGivenMonth = new DateOnly(currentDate.Year, currentDate.Month, 1);
             return firstDayOfGivenMonth;
         }
-
     }
 }

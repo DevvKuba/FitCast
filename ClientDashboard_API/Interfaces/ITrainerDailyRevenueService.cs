@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Entities;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -11,6 +12,8 @@ namespace ClientDashboard_API.Interfaces
         Task<decimal> CalculateTotalClientGeneratedRevenueBetweenDatesAsync(Trainer trainer, DateOnly startDate, DateOnly endDate);
 
         int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate);
+
+        Task<int> ReturnDailyClientSessions(Trainer trainer, DateOnly currentDate);
 
         Task<int> ReturnMonthlyClientSessionsThusFarAsync(Trainer trainer, DateOnly startDate, DateOnly endDate);
 
