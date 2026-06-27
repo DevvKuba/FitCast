@@ -13,8 +13,6 @@ namespace ClientDashboard_API.Interfaces
 
         int CalculateClientMonthlyDifference(Trainer trainer, DateOnly currentDate);
 
-        Task<int> ReturnDailyClientSessions(Trainer trainer, DateOnly currentDate);
-
         Task<int> ReturnMonthlyClientSessionsThusFarAsync(Trainer trainer, DateOnly startDate, DateOnly endDate);
 
         DateOnly GatherFirstDayOfCurrentMonth(DateOnly currentDate);

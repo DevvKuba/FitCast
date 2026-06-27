@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<Workout?> GetClientWorkoutAtDateByIdAsync(int id, DateOnly workoutDate);
 
-        Task<List<Workout>> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate);
+        Task<int> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate);
 
         Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate);
 

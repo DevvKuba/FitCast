@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Services
 
             var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDatesAsync(trainer, firstDayOfTodaysMonth, todaysDate);
 
+            var sessionsToday = await unitOfWork.WorkoutRepository.GetClientWorkoutCountForTrainerAtDateAsync(trainer, todaysDate);
+
             var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFarAsync(trainer, firstDayOfTodaysMonth, todaysDate);
 
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
@@ -28,6 +30,7 @@ namespace ClientDashboard_API.Services
                 TrainerId = trainer.Id,
                 RevenueToday = totalRevenueToday,
                 MonthlyRevenueThusFar = monthlyRevenueThusFar,
+                SessionsToday = sessionsToday,
                 TotalSessionsThisMonth = totalSessionsThisMonth,
                 NewClientsThisMonth = newClientsThisMonth,
                 ActiveClients = currentActiveClientsList.Count,
@@ -38,7 +41,6 @@ namespace ClientDashboard_API.Services
             await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
             await unitOfWork.Complete();
         }
-
 
         public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDateAsync(Trainer trainer, DateOnly dateForSessions)
         {
