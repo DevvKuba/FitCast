@@ -25,7 +25,6 @@ namespace ClientDashboard_API.Services
             };
         }
 
-        // TODO may be faulty if the trainer changes their session pricing consistently.. fix later
         private int GetTotalClientSessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var totalClientSessions = allRevenueRecords.Sum(r => r.SessionsToday);
