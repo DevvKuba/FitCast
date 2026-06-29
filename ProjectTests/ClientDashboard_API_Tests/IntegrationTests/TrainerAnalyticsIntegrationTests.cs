@@ -32,7 +32,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             response.Should().NotBeNull();
             response!.Success.Should().BeTrue();
             response.Data.Should().NotBeNull();
-            response.Data!.TotalMonthlyRevenue.Should().BeGreaterThan(0);
+            response.Data!.TotalRevenue.Should().BeGreaterThan(0);
             response.Data.MonthlyWorkingDays.Should().BeGreaterThan(0);
             response.Data.AllWeekdays.Should().HaveCount(7);
         }

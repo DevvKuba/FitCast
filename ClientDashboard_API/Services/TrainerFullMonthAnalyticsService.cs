@@ -29,9 +29,9 @@ namespace ClientDashboard_API.Services
                 MonthlyClientSessions = clientMetrics.MonthlyClientSessions,
                 SessionsPrice = revenuePatterns.SessionsPrice,
                 MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
+                TotalRevenue = revenuePatterns.TotalRevenue,
                 RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
-                TotalMonthlyRevenue = revenuePatterns.TotalMonthlyRevenue,
                 AllWeekdays = activityPatterns.AllWeekdays,
                 BusiestDays = activityPatterns.BusiestDays,
                 LightDays = activityPatterns.LightDays
@@ -85,7 +85,7 @@ namespace ClientDashboard_API.Services
 
         public ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            var averageDailySessions = CalculateAverageDailySessions(revenueRecords);
+            var averageDailySessions = revenueRecords.Average(r => r.SessionsToday);
 
             var weekdayMultiplierList = GetWeeklyActivityPatterns(revenueRecords, (int)averageDailySessions);
 
@@ -253,14 +253,6 @@ namespace ClientDashboard_API.Services
             }
 
             return multipliers;
-        }
-
-        private double CalculateAverageDailySessions(List<TrainerDailyRevenue> revenueRecords)
-        {
-            var allSessions = revenueRecords.Sum(r => r.SessionsToday);
-            if (allSessions == 0) return 0;
-
-            return Math.Round((double)allSessions / revenueRecords.Count);
         }
 
         private int CalculateAverageClientSessions(List<TrainerDailyRevenue> revenueRecords, int averageActiveClients)

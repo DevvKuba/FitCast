@@ -29,11 +29,12 @@ namespace ClientDashboard_API.DTOs
 
         public int MonthlyWorkingDays { get; set; }
 
+        public decimal TotalRevenue { get; set; }
+
         public double RevenuePerWorkingDay { get; set; }
 
         public double RevenuePerWorkingWeek { get; set; }
 
-        public double TotalMonthlyRevenue { get; set; }
 
         // ACTIVITY PATTERNS
 
