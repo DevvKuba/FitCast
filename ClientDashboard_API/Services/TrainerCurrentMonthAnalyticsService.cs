@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Services
     {
         public CurrentMonthTrainerAnalyticsDto GetCurrentMonthsAnalyticMetrics(List<TrainerDailyRevenue> currentRevenueRecords)
         {
-            var baseClients = (int)Math.Round(currentRevenueRecords.Average(r => r.ActiveClients));
+            var baseClients = (int)currentRevenueRecords.Average(r => r.ActiveClients);
 
             var totalRevenue = currentRevenueRecords.Sum(r => r.RevenueToday);
 
