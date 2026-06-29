@@ -109,11 +109,6 @@ namespace ClientDashboard_API.Data
             return monthRecords;
         }
 
-        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo)
-        {
-            await context.TrainerDailyRevenue.AddAsync(trainerInfo);
-        }
-
         public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords)
         {
             return revenueRecords
@@ -133,6 +128,21 @@ namespace ClientDashboard_API.Data
                 .ThenBy(g => g.Key.Month)
                 .SelectMany(g => g.OrderBy(r => r.AsOfDate))
                 .ToList();
+        }
+
+        public bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords)
+        {
+            var firstDayMonth = revenueRecords.First().AsOfDate.Month;
+
+            var anyRecordsWithDifferentMonth = revenueRecords.Any(r => r.AsOfDate.Month != firstDayMonth);
+
+            if (anyRecordsWithDifferentMonth) return false;
+            return true;
+        }
+
+        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo)
+        {
+            await context.TrainerDailyRevenue.AddAsync(trainerInfo);
         }
 
         public async Task ResetTrainerDailyRevenueRecordsAsync(int trainerId)

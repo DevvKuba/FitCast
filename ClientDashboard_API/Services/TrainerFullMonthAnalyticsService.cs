@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Services
     {
         public CompleteMonthTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
+            // check here
+
             var clientMetrics = GetClientMetrics(allRevenueRecords);
 
             var revenuePatterns = GetRevenuePatterns(allRevenueRecords);
@@ -233,7 +235,6 @@ namespace ClientDashboard_API.Services
 
         private List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
         {
-
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
 
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
@@ -241,7 +242,7 @@ namespace ClientDashboard_API.Services
                 .GroupBy(r => r.AsOfDate.DayOfWeek)
                 .ToDictionary(
                 g => g.Key,
-                g => g.Average(r => (double)(r.SessionsToday))
+                g => g.Average(r => (r.SessionsToday))
                 );
 
             // use a formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 

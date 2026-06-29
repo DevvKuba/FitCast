@@ -39,8 +39,5 @@ namespace ClientDashboard_API.Interfaces
 
         void RemoveWorkout(Workout workout);
 
-        // expand in future - more fields in Workout will allow for 
-        // further data retrieval 
-
     }
 }

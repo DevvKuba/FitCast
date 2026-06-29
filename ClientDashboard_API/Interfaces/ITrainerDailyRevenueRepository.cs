@@ -24,7 +24,9 @@ namespace ClientDashboard_API.Interfaces
 
         List<FullMonthDto> GetFullMonthListFromData(List<TrainerDailyRevenue> revenueRecords);
 
-        public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
+        List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
+
+        bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);
 
         Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo);
 
