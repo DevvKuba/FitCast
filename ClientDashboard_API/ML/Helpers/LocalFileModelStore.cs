@@ -29,7 +29,7 @@ namespace ClientDashboard_API.ML.Helpers
 
             return model;
         }
-
+        
         public async Task SaveModelAsync(int trainerId, ITransformer model, DataViewSchema schema)
         {
             var modelPath = Path.Combine(_modelsPath, $"trainer_{trainerId}_revenue_model.zip");
