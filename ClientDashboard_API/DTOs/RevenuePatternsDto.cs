@@ -14,7 +14,5 @@ namespace ClientDashboard_API.DTOs
         public double RevenuePerWorkingDay { get; set; }
 
         public double RevenuePerWorkingWeek { get; set; }
-
-        public double TotalMonthlyRevenue { get; set; }
     }
 }

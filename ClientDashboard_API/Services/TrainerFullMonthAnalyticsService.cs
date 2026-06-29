@@ -68,7 +68,7 @@ namespace ClientDashboard_API.Services
                 return false;
             });
 
-            var sessionPrice = Math.Round(CalculateAverageSessionPrice(revenueRecords));
+            var sessionPrice = Math.Round(revenueRecords.Average(r => r.AverageSessionPrice));
 
             var averageRevenues = GetAverageDayWeekAndMonthRevenues(revenueRecords);
 
@@ -76,9 +76,9 @@ namespace ClientDashboard_API.Services
             {
                 MonthlyWorkingDays = monthlyWorkingDays,
                 SessionsPrice = sessionPrice,
+                TotalRevenue = averageRevenues.TotalRevenue,
                 RevenuePerWorkingDay = averageRevenues.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = averageRevenues.RevenuePerWorkingWeek,
-                TotalMonthlyRevenue = averageRevenues.TotalMonthlyRevenue,
             };
 
         }
@@ -210,48 +210,23 @@ namespace ClientDashboard_API.Services
 
         private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var totalRevenue = 0m;
+            var totalRevenue = allRevenueRecords.Sum(r => r.RevenueToday);
 
-            var daysAccountedFor = 0;
-            var weeksAccountedFor = 0;
-            var monthsAccountedFor = 0;
+            var endOfWeek = DayOfWeek.Sunday;
 
-            foreach (var record in allRevenueRecords)
+            var averageRevenuePerDay = Math.Round(totalRevenue / allRevenueRecords.Count);
+
+            var averageRevenuePerWeek = Math.Round(totalRevenue / allRevenueRecords.Count(r =>
             {
-                var endOfWeek = DayOfWeek.Sunday;
-                var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
-
-                if (record.AsOfDate.Day == lastDayOfMonth)
-                {
-                    // end of month 
-                    monthsAccountedFor++;
-                }
-
-                if (record.AsOfDate.DayOfWeek == endOfWeek)
-                {
-                    // end of week 
-                    weeksAccountedFor++;
-                }
-
-                daysAccountedFor++;
-                totalRevenue += record.RevenueToday;
-            }
-
-            if (monthsAccountedFor == 0)
-            {
-                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
-            }
-
-            var averageRevenuePerDay = Math.Round(totalRevenue / daysAccountedFor);
-            var averageRevenuePerWeek = Math.Round(totalRevenue / weeksAccountedFor);
-            var averageRevenuePerMonth = Math.Round(totalRevenue / monthsAccountedFor);
+                if (r.AsOfDate.DayOfWeek == endOfWeek) return true;
+                return false;
+            }));
 
             return new RevenuePatternsDto
             {
                 TotalRevenue = totalRevenue,
                 RevenuePerWorkingDay = (double)averageRevenuePerDay,
                 RevenuePerWorkingWeek = (double)averageRevenuePerWeek,
-                TotalMonthlyRevenue = (double)averageRevenuePerMonth
             };
         }
 
@@ -295,11 +270,6 @@ namespace ClientDashboard_API.Services
             if (allSessions == 0) return 0;
 
             return allSessions / averageActiveClients;
-        }
-
-        private decimal CalculateAverageSessionPrice(List<TrainerDailyRevenue> revenueRecords)
-        {
-            return revenueRecords.Average(r => r.AverageSessionPrice);
         }
 
         private Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
