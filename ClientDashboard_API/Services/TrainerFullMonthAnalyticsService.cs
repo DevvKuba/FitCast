@@ -62,7 +62,11 @@ namespace ClientDashboard_API.Services
 
         public RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords)
         {
-            var monthlyWorkingDays = GetMonthlyWorkingDays(revenueRecords);
+            var monthlyWorkingDays = revenueRecords.Count(r =>
+            {
+                if (r.SessionsToday > 0) return true;
+                return false;
+            });
 
             var sessionPrice = Math.Round(CalculateAverageSessionPrice(revenueRecords));
 
@@ -202,43 +206,6 @@ namespace ClientDashboard_API.Services
                 NetGrowth = netGrowth,
                 NetGrowthPercentage = netGrowthPercentage,
             };
-        }
-
-        private int GetMonthlyWorkingDays(List<TrainerDailyRevenue> allRevenueRecords)
-        {
-            // get working days from first record day to next month with that same record day
-            var monthlyWorkingDays = 0;
-
-            var monthsAccountedFor = 0;
-            var nonWorkingDays = 0;
-
-            var firstRecord = allRevenueRecords.First();
-
-            foreach (var record in allRevenueRecords)
-            {
-                var totalDaysInMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
-
-                if (record.RevenueToday == 0)
-                {
-                    nonWorkingDays++;
-                }
-                // when reaching the last day of the month
-                if (record.AsOfDate.Day == totalDaysInMonth)
-                {
-                  
-                    monthlyWorkingDays +=  totalDaysInMonth - nonWorkingDays;
-
-                    monthsAccountedFor++;
-                    nonWorkingDays = 0;
-                }
-            }
-
-            if (monthsAccountedFor == 0)
-            {
-                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
-            }
-
-            return monthlyWorkingDays / monthsAccountedFor;
         }
 
         private RevenuePatternsDto GetAverageDayWeekAndMonthRevenues(List<TrainerDailyRevenue> allRevenueRecords)
