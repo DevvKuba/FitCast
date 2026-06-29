@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.DTOs
 {
-    public class CompleteTrainerAnalyticsDto
+    public class CompleteMonthTrainerAnalyticsDto
     {
         // CLIENT METRICS
         public int BaseClients { get; set; }
@@ -33,7 +33,7 @@ namespace ClientDashboard_API.DTOs
 
         public double RevenuePerWorkingWeek { get; set; }
 
-        public double RevenuePerWorkingMonth { get; set; }
+        public double TotalMonthlyRevenue { get; set; }
 
         // ACTIVITY PATTERNS
 

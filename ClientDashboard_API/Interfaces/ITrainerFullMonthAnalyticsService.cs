@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Interfaces
     public interface ITrainerFullMonthAnalyticsService
     {
 
-        CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
+        CompleteMonthTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords);
         
         ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords);
 

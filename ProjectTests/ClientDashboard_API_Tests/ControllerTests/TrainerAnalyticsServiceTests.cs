@@ -93,7 +93,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             result.SessionsPrice.Should().BeGreaterThan(0);
             result.RevenuePerWorkingDay.Should().BeGreaterThan(0);
             result.RevenuePerWorkingWeek.Should().BeGreaterThan(0);
-            result.RevenuePerWorkingMonth.Should().BeGreaterThan(0);
+            result.TotalMonthlyRevenue.Should().BeGreaterThan(0);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var result = _service.GetRevenuePatterns(revenueRecords);
 
             // Assert
-            result.RevenuePerWorkingMonth.Should().BeGreaterThan(result.RevenuePerWorkingWeek);
+            result.TotalMonthlyRevenue.Should().BeGreaterThan(result.RevenuePerWorkingWeek);
             result.RevenuePerWorkingWeek.Should().BeGreaterThan(result.RevenuePerWorkingDay);
         }
 

@@ -27,12 +27,12 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             var trainerId = await SeedTrainerWithRevenueHistoryAsync();
             var trainerHttp = CreateAuthorizedClient(trainerId);
 
-            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteTrainerAnalyticsDto>>($"/api/Trainer/getTrainerSpecificMonthAnalytics?trainerId={trainerId}&month=2&year=2026");
+            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteMonthTrainerAnalyticsDto>>($"/api/Trainer/getTrainerSpecificMonthAnalytics?trainerId={trainerId}&month=2&year=2026");
 
             response.Should().NotBeNull();
             response!.Success.Should().BeTrue();
             response.Data.Should().NotBeNull();
-            response.Data!.RevenuePerWorkingMonth.Should().BeGreaterThan(0);
+            response.Data!.TotalMonthlyRevenue.Should().BeGreaterThan(0);
             response.Data.MonthlyWorkingDays.Should().BeGreaterThan(0);
             response.Data.AllWeekdays.Should().HaveCount(7);
         }
@@ -64,7 +64,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             var trainerId = await SeedTrainerWithRevenueHistoryAsync();
             var trainerHttp = CreateAuthorizedClient(trainerId);
 
-            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteTrainerAnalyticsDto>>($"/api/Trainer/getTrainerAllMonthsAnalytics?trainerId={trainerId}");
+            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteMonthTrainerAnalyticsDto>>($"/api/Trainer/getTrainerAllMonthsAnalytics?trainerId={trainerId}");
 
             response.Should().NotBeNull();
             response!.Success.Should().BeTrue();

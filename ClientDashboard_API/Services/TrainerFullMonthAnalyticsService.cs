@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Services
 {
     public class TrainerFullMonthAnalyticsService : ITrainerFullMonthAnalyticsService
     {
-        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        public CompleteMonthTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var clientMetrics = GetClientMetrics(allRevenueRecords);
 
@@ -16,7 +16,7 @@ namespace ClientDashboard_API.Services
 
             var activityPatterns = GetActivityPatterns(allRevenueRecords);
 
-            return new CompleteTrainerAnalyticsDto
+            return new CompleteMonthTrainerAnalyticsDto
             {
                 BaseClients = clientMetrics.BaseClients,
                 AcquiredClients = clientMetrics.AcquiredClients,
@@ -31,7 +31,7 @@ namespace ClientDashboard_API.Services
                 MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
                 RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
-                RevenuePerWorkingMonth = revenuePatterns.RevenuePerWorkingMonth,
+                TotalMonthlyRevenue = revenuePatterns.TotalMonthlyRevenue,
                 AllWeekdays = activityPatterns.AllWeekdays,
                 BusiestDays = activityPatterns.BusiestDays,
                 LightDays = activityPatterns.LightDays
@@ -74,7 +74,7 @@ namespace ClientDashboard_API.Services
                 SessionsPrice = sessionPrice,
                 RevenuePerWorkingDay = averageRevenues.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = averageRevenues.RevenuePerWorkingWeek,
-                RevenuePerWorkingMonth = averageRevenues.RevenuePerWorkingMonth,
+                TotalMonthlyRevenue = averageRevenues.TotalMonthlyRevenue,
             };
 
         }
@@ -284,7 +284,7 @@ namespace ClientDashboard_API.Services
                 TotalRevenue = totalRevenue,
                 RevenuePerWorkingDay = (double)averageRevenuePerDay,
                 RevenuePerWorkingWeek = (double)averageRevenuePerWeek,
-                RevenuePerWorkingMonth = (double)averageRevenuePerMonth
+                TotalMonthlyRevenue = (double)averageRevenuePerMonth
             };
         }
 

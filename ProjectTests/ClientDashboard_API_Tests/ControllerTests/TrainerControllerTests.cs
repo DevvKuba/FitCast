@@ -124,9 +124,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             };
         }
 
-        public CompleteTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
+        public CompleteMonthTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            return new CompleteTrainerAnalyticsDto
+            return new CompleteMonthTrainerAnalyticsDto
             {
                 AllWeekdays = [],
                 BusiestDays = [],
