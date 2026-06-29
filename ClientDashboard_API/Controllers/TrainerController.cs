@@ -300,21 +300,6 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
         }
 
-        // TODO probably can get rid of
-        [HttpGet("getAllFullRevenueMonths")]
-        public async Task<ActionResult<ApiResponseDto<List<FullMonthDto>>>> GetAllFullRevenueMonthsAsync(int trainerId)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
-
-            if (trainer == null) return NotFound(new ApiResponseDto<List<FullMonthDto>> { Data = [], Message = "trainer not found", Success = false });
-
-            var revenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainer.Id);
-
-            var fullMonthList = unitOfWork.TrainerDailyRevenueRepository.GetFullMonthListFromData(revenueRecords);
-
-            return Ok(new ApiResponseDto<List<FullMonthDto>> { Data = fullMonthList, Message = $"Successfully retrieved {fullMonthList.Count} full revenue months", Success = true });
-
-        }
 
         [HttpGet("getTrainerCurrentMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
