@@ -267,6 +267,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                     AsOfDate = currentDate,
                     RevenueToday = revenueToday,
                     MonthlyRevenueThusFar = monthlyRevenueThisFar,
+                    SessionsToday = sessionsToday,
                     TotalSessionsThisMonth = totalSessionsThisMonth,
                     NewClientsThisMonth = newClientsThisMonth,
                     ActiveClients = activeClients,
