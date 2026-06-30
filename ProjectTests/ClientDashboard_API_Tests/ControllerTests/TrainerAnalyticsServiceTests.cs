@@ -93,18 +93,24 @@ namespace ClientDashboard_API_Tests.ControllerTests
             result.SessionsPrice.Should().BeGreaterThan(0);
             result.RevenuePerWorkingDay.Should().BeGreaterThan(0);
             result.RevenuePerWorkingWeek.Should().BeGreaterThan(0);
-            result.TotalMonthlyRevenue.Should().BeGreaterThan(0);
+            result.TotalRevenue.Should().BeGreaterThan(0);
         }
 
         [Fact]
-        public void GetRevenuePatterns_WithSingleMonth_ThrowsInvalidOperationException()
+        public void GetRevenuePatterns_WithSingleMonth_ReturnsRevenuePatterns()
         {
-            // Arrange - only 28 days of data
+            // Arrange - a single month of data. Revenue patterns no longer aggregate
+            // across multiple months, so one month is a valid input rather than an error.
             var revenueRecords = CreateSampleRevenueRecords(28, startDate: new DateOnly(2024, 1, 1));
 
-            // Act & Assert
-            var action = () => _service.GetRevenuePatterns(revenueRecords);
-            action.Should().Throw<InvalidOperationException>();
+            // Act
+            var result = _service.GetRevenuePatterns(revenueRecords);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.TotalRevenue.Should().BeGreaterThan(0);
+            result.RevenuePerWorkingDay.Should().BeGreaterThan(0);
+            result.MonthlyWorkingDays.Should().BeGreaterThan(0);
         }
 
         [Fact]
@@ -117,7 +123,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var result = _service.GetRevenuePatterns(revenueRecords);
 
             // Assert
-            result.TotalMonthlyRevenue.Should().BeGreaterThan(result.RevenuePerWorkingWeek);
+            result.TotalRevenue.Should().BeGreaterThan((decimal)result.RevenuePerWorkingWeek);
             result.RevenuePerWorkingWeek.Should().BeGreaterThan(result.RevenuePerWorkingDay);
         }
 
