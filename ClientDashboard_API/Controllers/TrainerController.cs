@@ -314,6 +314,11 @@ namespace ClientDashboard_API.Controllers
 
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
+            if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
+            {
+                return new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "No revenue records for this month", Success = true };
+            }
+
             var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
 
             return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
