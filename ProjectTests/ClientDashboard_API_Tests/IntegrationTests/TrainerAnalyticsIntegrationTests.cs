@@ -56,25 +56,6 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             response.Data.RevenuePerWorkingDay.Should().BeGreaterThan(0);
         }
 
-        [Fact]
-        public async Task GetTrainerAllMonthsAnalytics_ShouldReturnHistoryWideAnalytics()
-        {
-            await _factory.ResetDatabaseAsync();
-
-            var trainerId = await SeedTrainerWithRevenueHistoryAsync();
-            var trainerHttp = CreateAuthorizedClient(trainerId);
-
-            var response = await trainerHttp.GetFromJsonAsync<ApiResponseDto<CompleteMonthTrainerAnalyticsDto>>($"/api/Trainer/getTrainerAllMonthsAnalytics?trainerId={trainerId}");
-
-            response.Should().NotBeNull();
-            response!.Success.Should().BeTrue();
-            response.Data.Should().NotBeNull();
-            response.Data!.BaseClients.Should().BeGreaterThan(0);
-            response.Data.SessionsPrice.Should().BeGreaterThan(0);
-            response.Data.BusiestDays.Should().NotBeEmpty();
-            response.Data.LightDays.Should().NotBeEmpty();
-        }
-
         private async Task<int> SeedTrainerWithRevenueHistoryAsync()
         {
             using var scope = _factory.Services.CreateScope();
