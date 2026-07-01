@@ -95,46 +95,33 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
 
-            // Calculate earlier dates ensuring they don't conflict with today or each other
-            // For dates, we want distinct days: one around 1/3 into month, one around 2/3 into month
-            DateOnly earlierDate1, earlierDate2;
+            // Each client trains exactly once today. A client cannot have two workouts on the
+            // same date (system invariant), so today always contributes one session per client.
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Today", today, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Today", today, 6, 50);
 
-            if (today.Day == 1)
-            {
-                // Edge case: If today is the 1st, both earlier dates must be the 1st
-                earlierDate1 = firstDayOfMonth;
-                earlierDate2 = firstDayOfMonth;
-            }
-            else if (today.Day == 2)
-            {
-                // Edge case: If today is the 2nd, both earlier dates must be the 1st
-                earlierDate1 = firstDayOfMonth;
-                earlierDate2 = firstDayOfMonth;
-            }
-            else
-            {
-                // Normal case: Pick two distinct dates before today
-                // earlierDate1: roughly 1/3 through available days
-                // earlierDate2: roughly 2/3 through available days
-                int daysAvailable = today.Day - 1; // Days before today
-                earlierDate1 = firstDayOfMonth.AddDays(Math.Max(0, daysAvailable / 3));
-                earlierDate2 = firstDayOfMonth.AddDays(Math.Max(0, (daysAvailable * 2) / 3));
+            // Add earlier-this-month sessions on distinct days strictly before today, so we never
+            // place two workouts for the same client on the same day. When today is the 1st there
+            // are no earlier days, so month-to-date correctly equals today's figures.
 
-                // Safety check: ensure earlierDate2 is not same as today
-                if (earlierDate2 == today)
-                {
-                    earlierDate2 = today.AddDays(-1);
-                }
+            var earlierDays = new List<DateOnly>();
+
+            for (var day = today.AddDays(-1); day >= firstDayOfMonth && earlierDays.Count < 2; day = day.AddDays(-1))
+            {
+                earlierDays.Add(day);
             }
 
-            // Add workouts for today
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Workout", today, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Workout", today, 6, 50);
-
-            // Add workouts earlier this month (guaranteed to be different from today and each other)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Earlier", earlierDate1, 4, 40);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Earlier", earlierDate2, 5, 45);
+            foreach (var earlierDay in earlierDays)
+            {
+                await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Earlier", earlierDay, 4, 40);
+            }
             await _unitOfWork.Complete();
+
+            // Expected figures derived from what was actually seeded, so the test holds on any day.
+            const int sessionsToday = 2; // one per client
+            var monthlySessions = sessionsToday + earlierDays.Count;
+            var expectedRevenueToday = sessionsToday * 50.00m;
+            var expectedMonthlyRevenue = monthlySessions * 50.00m;
 
             // Reload trainer with clients and workouts
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -149,9 +136,10 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var record = revenueRecords[0];
             Assert.Equal(trainer.Id, record.TrainerId);
             Assert.Equal(today, record.AsOfDate);
-            Assert.Equal(100.00m, record.RevenueToday); // 2 workouts * $50 = $100
-            Assert.Equal(200.00m, record.MonthlyRevenueThusFar); // 4 workouts * $50 = $200
-            Assert.Equal(4, record.TotalSessionsThisMonth); // 4 total workouts this month
+            Assert.Equal(expectedRevenueToday, record.RevenueToday);
+            Assert.Equal(sessionsToday, record.SessionsToday);
+            Assert.Equal(expectedMonthlyRevenue, record.MonthlyRevenueThusFar);
+            Assert.Equal(monthlySessions, record.TotalSessionsThisMonth);
             Assert.Equal(2, record.ActiveClients); // 2 active clients
             Assert.Equal(50.00m, record.AverageSessionPrice);
         }
@@ -570,26 +558,28 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            var startOfMonth = new DateOnly(today.Year, today.Month, 1);
+            // Fixed dates keep this deterministic regardless of when the suite runs, and every
+            // session sits on a distinct day so the one-session-per-client-per-day invariant holds.
+            var startOfMonth = new DateOnly(2025, 6, 1);
+            var endDate = new DateOnly(2025, 6, 20);
 
-            // Workouts this month
+            // Three sessions within [startOfMonth, endDate] on distinct days
             await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 1", startOfMonth, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 2", startOfMonth.AddDays(5), 6, 50);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 3", today, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 2", new DateOnly(2025, 6, 6), 6, 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 3", endDate, 5, 45);
 
-            // Workout from last month (should not be counted)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Last Month", startOfMonth.AddDays(-1), 5, 45);
+            // Session from the previous month (outside the range, should not be counted)
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Last Month", new DateOnly(2025, 5, 31), 5, 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
 
             // Act
             var sessionCount = await _trainerDailyRevenueService.ReturnMonthlyClientSessionsThusFarAsync(
-                trainerWithClients!, startOfMonth, today);
+                trainerWithClients!, startOfMonth, endDate);
 
             // Assert
-            Assert.Equal(3, sessionCount); // 3 workouts this month
+            Assert.Equal(3, sessionCount); // 3 sessions within range
         }
 
         [Fact]

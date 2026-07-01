@@ -75,9 +75,8 @@ namespace ClientDashboard_API.Services
 
         public async Task<int> ReturnMonthlyClientSessionsThusFarAsync(Trainer trainer, DateOnly startDate, DateOnly endDate)
         {
-
             var relatedWorkouts = await unitOfWork.WorkoutRepository.GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(trainer);
-
+            
             var workoutsThisMonth = relatedWorkouts.Where(w => w.SessionDate >= startDate && w.SessionDate <= endDate).ToList();
 
             return workoutsThisMonth.Count;
