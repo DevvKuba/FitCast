@@ -28,9 +28,10 @@ namespace ClientDashboard_API.Services
                 NetGrowth = clientMetrics.NetGrowth,
                 NetGrowthPercentage = clientMetrics.NetGrowthPercentage,
                 SessionsPerClient = clientMetrics.SessionsPerClient,
-                MonthlyClientSessions = clientMetrics.MonthlyClientSessions,
+                AverageClientSessions = clientMetrics.AverageClientSessions,
                 SessionsPrice = revenuePatterns.SessionsPrice,
                 MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
+                TotalClientSessions = clientMetrics.TotalClientSessions,
                 TotalRevenue = revenuePatterns.TotalRevenue,
                 RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
@@ -43,6 +44,8 @@ namespace ClientDashboard_API.Services
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
             var clientSessionData = GetTrainerBaseClientsAndAverageSessions(revenueRecords);
+
+            var totalSessions = revenueRecords.Sum(r => r.SessionsToday);
 
             var monthlySessions = GetBaseClientMonthlyAverageSessions(revenueRecords);
 
@@ -58,7 +61,8 @@ namespace ClientDashboard_API.Services
                 ChurnPercentage = clientAcquisitionAndChurnData.ChurnPercentage,
                 NetGrowth = clientAcquisitionAndChurnData.NetGrowth,
                 NetGrowthPercentage = clientAcquisitionAndChurnData.NetGrowthPercentage,
-                MonthlyClientSessions = monthlySessions.MonthlyClientSessions
+                TotalClientSessions = totalSessions,
+                AverageClientSessions = monthlySessions.AverageClientSessions
             };
         }
 
@@ -132,7 +136,7 @@ namespace ClientDashboard_API.Services
 
             return new ClientMetricsDto
             {
-                MonthlyClientSessions = (int)averageMonthlySessions
+                AverageClientSessions = (int)averageMonthlySessions
             };
 
         }

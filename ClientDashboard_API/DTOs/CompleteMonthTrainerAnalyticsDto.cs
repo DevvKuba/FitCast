@@ -21,7 +21,9 @@ namespace ClientDashboard_API.DTOs
 
         public int SessionsPerClient { get; set; }
 
-        public int MonthlyClientSessions { get; set; }
+        public int AverageClientSessions { get; set; }
+
+        public int TotalClientSessions { get; set; }
 
         // REVENUE PATTERNS
 

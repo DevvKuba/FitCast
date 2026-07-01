@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.DTOs
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace ClientDashboard_API.DTOs
 {
     public class ClientMetricsDto
     {
@@ -16,7 +18,9 @@
 
         public double NetGrowthPercentage { get; set; }
 
-        public int MonthlyClientSessions { get; set; }
+        public int TotalClientSessions { get; set; }
+
+        public int AverageClientSessions { get; set; }
 
         public int SessionsPerClient { get; set; }
 
