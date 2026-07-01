@@ -10,8 +10,6 @@ namespace ClientDashboard_API.Services
     {
         public CompleteMonthTrainerAnalyticsDto GetAllAnalyticMetrics(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            // check here
-
             var clientMetrics = GetClientMetrics(allRevenueRecords);
 
             var revenuePatterns = GetRevenuePatterns(allRevenueRecords);
@@ -148,13 +146,12 @@ namespace ClientDashboard_API.Services
             var firstRecord = allRevenueRecords.First();
 
             var startingMonthActiveClients = allRevenueRecords.First().ActiveClients;
-            var monthsAccountedFor = 0;
             
-            double churnCount = 0;
-            double acquisitionCount = 0;
+            int churnCount = 0;
+            int acquisitionCount = 0;
 
-            double totalChurnedClients = 0;
-            double totalAcquiredClients = 0;
+            int totalChurnedClients = 0;
+            int totalAcquiredClients = 0;
 
             double churnRate = 0;
             double acquisitionRate = 0;
@@ -174,12 +171,12 @@ namespace ClientDashboard_API.Services
                     }
 
 
-                    // calculate the churn & acquisition rates and reset counts
-                    if (allRevenueRecords[i].AsOfDate.Day == DateTime.DaysInMonth(firstRecord.AsOfDate.Year, firstRecord.AsOfDate.Month))
+                    var lastDayOfMonth = DateTime.DaysInMonth(firstRecord.AsOfDate.Year, firstRecord.AsOfDate.Month);
+
+                    if (allRevenueRecords[i].AsOfDate.Day == lastDayOfMonth)
                     {
                         acquisitionRate += (acquisitionCount / startingMonthActiveClients) * 100;
                         churnRate += (churnCount / startingMonthActiveClients) * 100;
-                        monthsAccountedFor++;
 
                         totalAcquiredClients += acquisitionCount;
                         totalChurnedClients += churnCount;
@@ -189,25 +186,15 @@ namespace ClientDashboard_API.Services
                     }
                 }
             }
-            if (monthsAccountedFor == 0)
-            {
-                throw new InvalidOperationException("Analytics expected at least one full month, but none were found.");
-            }
 
-            acquisitionRate = Math.Round(acquisitionRate / monthsAccountedFor);
-            churnRate = Math.Round(churnRate / monthsAccountedFor);
-
-            var averageAcquiredClients = Math.Round(totalAcquiredClients / monthsAccountedFor);
-            var averageChurnedClients = Math.Round(totalChurnedClients / monthsAccountedFor);
-
-            var netGrowth = (int)Math.Round(totalAcquiredClients - totalChurnedClients);
+            var netGrowth = totalAcquiredClients - totalChurnedClients;
             var netGrowthPercentage = Math.Round(acquisitionRate - churnRate);
 
             return new ClientMetricsDto
             {
-                AcquiredClients = (int)averageAcquiredClients,
+                AcquiredClients = totalAcquiredClients,
                 AcquisitionPercentage = acquisitionRate,
-                ChurnedClients = (int)averageChurnedClients,
+                ChurnedClients = totalChurnedClients,
                 ChurnPercentage = churnRate,
                 NetGrowth = netGrowth,
                 NetGrowthPercentage = netGrowthPercentage,
