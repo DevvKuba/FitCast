@@ -316,7 +316,7 @@ namespace ClientDashboard_API.Controllers
 
             if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
             {
-                return new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "No revenue records for this month", Success = true };
+                return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "No current revenue data for this month", Success = true });
             }
 
             var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
