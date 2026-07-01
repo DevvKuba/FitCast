@@ -231,8 +231,8 @@ namespace ClientDashboard_API.Services
             return new RevenuePatternsDto
             {
                 TotalRevenue = totalRevenue,
-                RevenuePerWorkingDay = (double)averageRevenuePerDay,
-                RevenuePerWorkingWeek = (double)averageRevenuePerWeek,
+                RevenuePerWorkingDay = averageRevenuePerDay,
+                RevenuePerWorkingWeek = averageRevenuePerWeek,
             };
         }
 

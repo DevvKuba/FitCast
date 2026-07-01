@@ -33,9 +33,9 @@ namespace ClientDashboard_API.DTOs
 
         public decimal TotalRevenue { get; set; }
 
-        public double RevenuePerWorkingDay { get; set; }
+        public decimal RevenuePerWorkingDay { get; set; }
 
-        public double RevenuePerWorkingWeek { get; set; }
+        public decimal RevenuePerWorkingWeek { get; set; }
 
 
         // ACTIVITY PATTERNS
