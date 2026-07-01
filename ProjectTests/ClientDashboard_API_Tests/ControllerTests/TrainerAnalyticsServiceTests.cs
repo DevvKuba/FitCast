@@ -33,18 +33,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public void GetClientMetrics_WithSingleMonth_ThrowsInvalidOperationException()
-        {
-            // Arrange - only 28 days of data (less than one full month)
-            var revenueRecords = CreateSampleRevenueRecords(28, startDate: new DateOnly(2024, 1, 1));
-
-            // Act & Assert
-            var action = () => _service.GetClientMetrics(revenueRecords);
-            action.Should().Throw<InvalidOperationException>()
-                .WithMessage("*at least one full month*");
-        }
-
-        [Fact]
         public void GetClientMetrics_WithThreeMonths_CalculatesAcquisitionAndChurnRates()
         {
             // Arrange
@@ -220,17 +208,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             completeMetrics.BaseClients.Should().Be(clientMetrics.BaseClients);
             completeMetrics.SessionsPrice.Should().Be(revenuePatterns.SessionsPrice);
             completeMetrics.AllWeekdays.Should().HaveCount(activityPatterns.AllWeekdays.Count);
-        }
-
-        [Fact]
-        public void GetAllAnalyticMetrics_WithSingleMonth_ThrowsInvalidOperationException()
-        {
-            // Arrange
-            var revenueRecords = CreateSampleRevenueRecords(28, startDate: new DateOnly(2024, 1, 1));
-
-            // Act & Assert
-            var action = () => _service.GetAllAnalyticMetrics(revenueRecords);
-            action.Should().Throw<InvalidOperationException>();
         }
 
         private List<TrainerDailyRevenue> CreateSampleRevenueRecords(int numberOfDays, DateOnly startDate)

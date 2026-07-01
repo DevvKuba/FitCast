@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Services
             var sessionsToday = await unitOfWork.WorkoutRepository.GetClientWorkoutCountForTrainerAtDateAsync(trainer, todaysDate);
 
             var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFarAsync(trainer, firstDayOfTodaysMonth, todaysDate);
-
+            
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
 
             var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
