@@ -163,6 +163,10 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {newWorkout.ClientName} not found", Success = false });
             }
 
+            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, DateOnly.Parse(newWorkout.SessionDate));
+
+            if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
+
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount, newWorkout.Duration);
 
@@ -196,6 +200,10 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"{quickAddClient.FirstName}'s  associated trainer not found", Success = false });
 
             }
+
+            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, DateOnly.FromDateTime(DateTime.UtcNow));
+
+            if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
             await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
