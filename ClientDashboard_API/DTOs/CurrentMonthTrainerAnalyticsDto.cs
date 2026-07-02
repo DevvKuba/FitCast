@@ -8,6 +8,8 @@
 
         public decimal TotalRevenue { get; set; }
 
+        public int TotalSessionDuration { get; set; }
+
         public decimal RevenuePerWorkingDay { get; set; }
     }
 }

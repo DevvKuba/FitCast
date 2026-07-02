@@ -10,17 +10,20 @@ namespace ClientDashboard_API.Services
         {
             var baseClients = (int)currentRevenueRecords.Average(r => r.ActiveClients);
 
+            var totalClientSessions = GetTotalClientSessions(currentRevenueRecords);
+
             var totalRevenue = currentRevenueRecords.Sum(r => r.RevenueToday);
 
-            var averageDailyRevenue = Math.Round(totalRevenue / currentRevenueRecords.Count);
+            var totalSessionDuration = currentRevenueRecords.Sum(r => r.TotalSessionDuration);
 
-            var totalClientSessions = GetTotalClientSessions(currentRevenueRecords);
+            var averageDailyRevenue = Math.Round(totalRevenue / currentRevenueRecords.Count);
 
             return new CurrentMonthTrainerAnalyticsDto
             {
                 BaseClients = baseClients,
                 MonthlyClientSessions = totalClientSessions,
                 TotalRevenue = totalRevenue,
+                TotalSessionDuration = totalSessionDuration,
                 RevenuePerWorkingDay = averageDailyRevenue,
             };
         }
