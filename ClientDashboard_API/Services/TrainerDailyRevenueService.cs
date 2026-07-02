@@ -23,6 +23,8 @@ namespace ClientDashboard_API.Services
             
             var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
 
+            var totalSessionDuration = await unitOfWork.WorkoutRepository.GetTotalClientSessionDurationAtDateAsync(trainer, todaysDate);
+
             var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
 
             var trainerInfo = new TrainerDailyRevenue
@@ -33,6 +35,7 @@ namespace ClientDashboard_API.Services
                 SessionsToday = sessionsToday,
                 TotalSessionsThisMonth = totalSessionsThisMonth,
                 NewClientsThisMonth = newClientsThisMonth,
+                TotalSessionDuration = totalSessionDuration,
                 ActiveClients = currentActiveClientsList.Count,
                 AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
                 AsOfDate = todaysDate

@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Data
     {
         public List<Workout> GetSpecificClientsWorkoutsAsync(List<Client> clientList)
         {
-            // is there a better way to do this
+            // TODO is there a better way to do this
             List<Workout> workouts = [];
             foreach (Client client in clientList)
             {
@@ -46,16 +46,6 @@ namespace ClientDashboard_API.Data
             }
             return workouts;
         }
-        public async Task<int> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate)
-        {
-            var totalWorkouts = await context.Workouts.
-                Where(x => x.SessionDate == workoutDate &&
-                x.Client!.TrainerId == trainer.Id)
-                .IgnoreQueryFilters()
-                .ToListAsync();
-
-            return totalWorkouts.Count;
-        }
 
         public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
         {
@@ -72,6 +62,30 @@ namespace ClientDashboard_API.Data
                 .ToListAsync();
 
             return allAssociatedClients.SelectMany(c => c.Workouts).ToList();
+        }
+
+        public async Task<int> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate)
+        {
+            var totalWorkouts = await context.Workouts.
+                Where(x => x.SessionDate == workoutDate &&
+                x.Client!.TrainerId == trainer.Id)
+                .IgnoreQueryFilters()
+                .ToListAsync();
+
+            return totalWorkouts.Count;
+        }
+
+        public async Task<int> GetTotalClientSessionDurationAtDateAsync(Trainer trainer, DateOnly sessionsDate)
+        {
+            var trainerClients = trainer.Clients;
+
+            var workoutsAtDate = await context.Workouts
+                 .Where(w => w.SessionDate == sessionsDate &&
+                 w.Client!.TrainerId == trainer.Id)
+                 .IgnoreQueryFilters()
+                 .ToListAsync();
+
+            return workoutsAtDate.Sum(w => w.Duration);
         }
 
         public async Task<Workout?> GetClientWorkoutAtDateByNameAsync(string clientName, DateOnly workoutDate)

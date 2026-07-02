@@ -106,6 +106,8 @@ namespace ClientDashboard_API.ML.Helpers
                     * weeklyMultiplier;
 
                 dailySessions = Math.Max(0, Math.Round(dailySessions, 0));
+
+                var totalSessionDuration = dailySessions * random.Next(55, 65);
                 
                 // Revenue today (sessions * price with some variance)
                 decimal revenueToday = (int)dailySessions * baseSessionPrice;
@@ -131,6 +133,7 @@ namespace ClientDashboard_API.ML.Helpers
                     SessionsToday = (int)dailySessions,
                     TotalSessionsThisMonth = totalSessionsThisMonth,
                     NewClientsThisMonth = newClientsThisMonth,
+                    TotalSessionDuration = (int)totalSessionDuration,
                     ActiveClients = baseActiveClients,
                     AverageSessionPrice = Math.Round(baseSessionPrice, 2)
                 };
