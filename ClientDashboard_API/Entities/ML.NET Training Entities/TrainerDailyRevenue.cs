@@ -16,6 +16,8 @@
 
         public int NewClientsThisMonth { get; set; }
 
+        public int TotalSessionDuration { get; set; }
+
         public int ActiveClients { get; set; }
 
         public decimal AverageSessionPrice { get; set; }
