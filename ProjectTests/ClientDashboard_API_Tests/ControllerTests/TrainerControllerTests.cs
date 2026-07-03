@@ -133,6 +133,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 LightDays = []
             };
         }
+
+        public WorktimeMetricsDto GetWorktimeMetrics(List<TrainerDailyRevenue> revenueRecords)
+        {
+            return new WorktimeMetricsDto();
+        }
     }
 
     public class FakeTrainerCurrentMonthAnalyticsService : ITrainerCurrentMonthAnalyticsService

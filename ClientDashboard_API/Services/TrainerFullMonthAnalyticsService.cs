@@ -16,6 +16,8 @@ namespace ClientDashboard_API.Services
 
             var activityPatterns = GetActivityPatterns(allRevenueRecords);
 
+            var worktimeMetrics = GetWorktimeMetrics(allRevenueRecords);
+
             return new CompleteMonthTrainerAnalyticsDto
             {
                 BaseClients = clientMetrics.BaseClients,
@@ -33,6 +35,9 @@ namespace ClientDashboard_API.Services
                 TotalRevenue = revenuePatterns.TotalRevenue,
                 RevenuePerWorkingDay = revenuePatterns.RevenuePerWorkingDay,
                 RevenuePerWorkingWeek = revenuePatterns.RevenuePerWorkingWeek,
+                TotalWorktimeMinutes = worktimeMetrics.TotalWorktimeMinutes,
+                AverageDailyWorktime = worktimeMetrics.AverageDailyWorktime,
+                AverageWeeklyWorktime = worktimeMetrics.AverageWeeklyWorktime,
                 AllWeekdays = activityPatterns.AllWeekdays,
                 BusiestDays = activityPatterns.BusiestDays,
                 LightDays = activityPatterns.LightDays
@@ -225,7 +230,7 @@ namespace ClientDashboard_API.Services
 
             var averageRevenuePerDay = Math.Round(totalRevenue / allRevenueRecords.Count);
 
-            var fullWeeklyPeriods = totalRevenue / (allRevenueRecords.Count / 7);
+            var fullWeeklyPeriods = allRevenueRecords.Count / 7;
 
             var averageRevenuePerWeek = Math.Round(totalRevenue / fullWeeklyPeriods);
 
