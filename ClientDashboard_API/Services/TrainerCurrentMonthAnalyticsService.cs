@@ -14,7 +14,7 @@ namespace ClientDashboard_API.Services
 
             var totalRevenue = currentRevenueRecords.Sum(r => r.RevenueToday);
 
-            var totalSessionDuration = currentRevenueRecords.Sum(r => r.TotalSessionDuration);
+            var totalWorktimeMinutes = currentRevenueRecords.Sum(r => r.TotalSessionDuration);
 
             var averageDailyRevenue = Math.Round(totalRevenue / currentRevenueRecords.Count);
 
@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Services
                 BaseClients = baseClients,
                 MonthlyClientSessions = totalClientSessions,
                 TotalRevenue = totalRevenue,
-                TotalSessionDuration = totalSessionDuration,
+                TotalWorktimeMinutes = totalWorktimeMinutes,
                 RevenuePerWorkingDay = averageDailyRevenue,
             };
         }

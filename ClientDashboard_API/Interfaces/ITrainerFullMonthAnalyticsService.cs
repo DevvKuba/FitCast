@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Interfaces
 
         RevenuePatternsDto GetRevenuePatterns(List<TrainerDailyRevenue> revenueRecords);
 
+        WorktimeMetricsDto GetWorktimeMetrics(List<TrainerDailyRevenue> revenueRecords);
+
         ActivityPatternsDto GetActivityPatterns(List<TrainerDailyRevenue> revenueRecords);
     }
 }

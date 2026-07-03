@@ -37,6 +37,14 @@ namespace ClientDashboard_API.DTOs
 
         public decimal RevenuePerWorkingWeek { get; set; }
 
+        // SESSION DURATIONS
+
+        public int TotalWorktimeMinutes { get; set; }
+
+        public int AverageDailyWorktime { get; set; }
+
+        public int AverageWeeklyWorktime { get; set; }
+
 
         // ACTIVITY PATTERNS
 
