@@ -89,17 +89,13 @@ namespace ClientDashboard_API.Services
 
         public WorktimeMetricsDto GetWorktimeMetrics(List<TrainerDailyRevenue> revenueRecords)
         {
-            var endOfWeek = DayOfWeek.Sunday;
-
             var totalWorktimeMinutes = revenueRecords.Sum(r => r.TotalSessionDuration);
 
             var averageDailyWorktime = totalWorktimeMinutes / revenueRecords.Count();
 
-            var averageWeeklyWorktime = totalWorktimeMinutes / revenueRecords.Count(r =>
-            {
-                if (r.AsOfDate.DayOfWeek == endOfWeek) return true;
-                return false;
-            });
+            var fullWeeklyPeriods = (double)revenueRecords.Count / 7;
+
+            var averageWeeklyWorktime = (int)Math.Round(totalWorktimeMinutes / fullWeeklyPeriods);
 
             return new WorktimeMetricsDto
             {
@@ -227,15 +223,11 @@ namespace ClientDashboard_API.Services
         {
             var totalRevenue = allRevenueRecords.Sum(r => r.RevenueToday);
 
-            var endOfWeek = DayOfWeek.Sunday;
-
             var averageRevenuePerDay = Math.Round(totalRevenue / allRevenueRecords.Count);
 
-            var averageRevenuePerWeek = Math.Round(totalRevenue / allRevenueRecords.Count(r =>
-            {
-                if (r.AsOfDate.DayOfWeek == endOfWeek) return true;
-                return false;
-            }));
+            var fullWeeklyPeriods = totalRevenue / (allRevenueRecords.Count / 7);
+
+            var averageRevenuePerWeek = Math.Round(totalRevenue / fullWeeklyPeriods);
 
             return new RevenuePatternsDto
             {
