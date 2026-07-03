@@ -27,7 +27,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             // Assert
             result.Should().NotBeNull();
             result.BaseClients.Should().BeGreaterThan(0);
-            result.SessionsPerClient.Should().BeGreaterThanOrEqualTo(0);
+            result.AverageSessionsPerClient.Should().BeGreaterThanOrEqualTo(0);
             result.AcquiredClients.Should().BeGreaterThanOrEqualTo(0);
             result.ChurnedClients.Should().BeGreaterThanOrEqualTo(0);
         }

@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Services
         {
             var baseClients = (int)currentRevenueRecords.Average(r => r.ActiveClients);
 
-            var totalClientSessions = GetTotalClientSessions(currentRevenueRecords);
+            var totalClientSessions = currentRevenueRecords.Sum(r => r.SessionsToday);
 
             var totalRevenue = currentRevenueRecords.Sum(r => r.RevenueToday);
 
@@ -26,13 +26,6 @@ namespace ClientDashboard_API.Services
                 TotalWorktimeMinutes = totalWorktimeMinutes,
                 RevenuePerWorkingDay = averageDailyRevenue,
             };
-        }
-
-        private int GetTotalClientSessions(List<TrainerDailyRevenue> allRevenueRecords)
-        {
-            var totalClientSessions = allRevenueRecords.Sum(r => r.SessionsToday);
-
-            return totalClientSessions;
         }
     }
 }

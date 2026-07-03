@@ -27,8 +27,7 @@ namespace ClientDashboard_API.Services
                 ChurnPercentage = clientMetrics.ChurnPercentage,
                 NetGrowth = clientMetrics.NetGrowth,
                 NetGrowthPercentage = clientMetrics.NetGrowthPercentage,
-                SessionsPerClient = clientMetrics.SessionsPerClient,
-                AverageClientSessions = clientMetrics.AverageClientSessions,
+                AverageSessionsPerClient = clientMetrics.AverageSessionsPerClient,
                 SessionsPrice = revenuePatterns.SessionsPrice,
                 MonthlyWorkingDays = revenuePatterns.MonthlyWorkingDays,
                 TotalClientSessions = clientMetrics.TotalClientSessions,
@@ -50,14 +49,12 @@ namespace ClientDashboard_API.Services
 
             var totalSessions = revenueRecords.Sum(r => r.SessionsToday);
 
-            var monthlySessions = GetBaseClientMonthlyAverageSessions(revenueRecords);
-
             var clientAcquisitionAndChurnData = CalculateMonthlyClientChangeRates(revenueRecords);
 
             return new ClientMetricsDto
             {
                 BaseClients = clientSessionData.BaseClients,
-                SessionsPerClient = clientSessionData.SessionsPerClient,
+                AverageSessionsPerClient = clientSessionData.AverageSessionsPerClient,
                 AcquiredClients = clientAcquisitionAndChurnData.AcquiredClients,
                 AcquisitionPercentage = clientAcquisitionAndChurnData.AcquisitionPercentage,
                 ChurnedClients = clientAcquisitionAndChurnData.ChurnedClients,
@@ -65,7 +62,6 @@ namespace ClientDashboard_API.Services
                 NetGrowth = clientAcquisitionAndChurnData.NetGrowth,
                 NetGrowthPercentage = clientAcquisitionAndChurnData.NetGrowthPercentage,
                 TotalClientSessions = totalSessions,
-                AverageClientSessions = monthlySessions.AverageClientSessions
             };
         }
 
@@ -132,38 +128,11 @@ namespace ClientDashboard_API.Services
             var statistics = new ClientMetricsDto
             {
                 BaseClients = averageActiveClients,
-                SessionsPerClient = averageSessionsPerClient
+                AverageSessionsPerClient = averageSessionsPerClient
             };
             return statistics;
         }
 
-        private ClientMetricsDto GetBaseClientMonthlyAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
-        {
-            var monthsAccounterFor = 0;
-            var totalSessions = 0;
-
-            foreach(var record in allRevenueRecords)
-            {
-                var lastDayOfMonth = DateTime.DaysInMonth(record.AsOfDate.Year, record.AsOfDate.Month);
-
-                if(record.AsOfDate.Day == lastDayOfMonth)
-                {
-                    monthsAccounterFor++;
-                    totalSessions += record.TotalSessionsThisMonth;
-                }
-            }
-
-            var averageMonthlySessions = Math.Round((double)totalSessions / monthsAccounterFor);
-
-            return new ClientMetricsDto
-            {
-                AverageClientSessions = (int)averageMonthlySessions
-            };
-
-        }
-
-
-        // input of data can be last month / all records same outputs
         private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var firstRecord = allRevenueRecords.First();

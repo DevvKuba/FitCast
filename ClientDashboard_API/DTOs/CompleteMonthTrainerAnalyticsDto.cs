@@ -19,9 +19,7 @@ namespace ClientDashboard_API.DTOs
 
         public double NetGrowthPercentage { get; set; }
 
-        public int SessionsPerClient { get; set; }
-
-        public int AverageClientSessions { get; set; }
+        public int AverageSessionsPerClient { get; set; }
 
         public int TotalClientSessions { get; set; }
 
