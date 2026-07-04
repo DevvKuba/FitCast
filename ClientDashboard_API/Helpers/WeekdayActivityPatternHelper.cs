@@ -12,26 +12,29 @@ namespace ClientDashboard_API.Helpers
         {
             decimal averageSessionPrice = allRevenueRecords.First().AverageSessionPrice;
 
-            var activityPatterns = FillNumberOfSessionsForWeekdays(allRevenueRecords);
+            var activityPatterns = new List<WeeklyActivityPattern>();
 
             // gather all sessions for each specific weekday / by the number of that weekdays occurances for an average
-            var weekdayAverages = allRevenueRecords
+            var weeklyPatterns = allRevenueRecords
                 .GroupBy(r => r.AsOfDate.DayOfWeek)
                 .ToDictionary(
                 g => g.Key,
-                g => g.Average(r => (r.SessionsToday))
+                g => (g.Average(r => (r.SessionsToday)), g.Sum(r => r.SessionsToday))
                 );
 
-            foreach (var day in weekdayAverages)
+            foreach (var day in weeklyPatterns)
             {
-                // formula to get a weekday multiplier of sorts e.g.  weeklyMultiplier = (weekdayAvg / overallAvg) 
-                activityPatterns.Add(new WeeklyActivityPattern(ReturnWeekdayEnumFromString(day.Key), 0, Math.Round(day.Value / averageClientSessions, 1)));
+                // formula: weeklyMultiplier = (weekdayAvg / overallAvg) 
+                var multiplierValue = Math.Round(day.Value.Item1 / averageClientSessions, 1);
+                var totalSessionCount = day.Value.Item2;
+
+                activityPatterns.Add(new WeeklyActivityPattern(ReturnWeekdayEnumFromString(day.Key), totalSessionCount , multiplierValue));
             }
 
             return activityPatterns;
         }
 
-        public static List<WeeklyActivityPattern> FillNumberOfSessionsForWeekdays(List<TrainerDailyRevenue> allRevenueRecords)
+        public static List<WeeklySessionsCounts> GetNumberOfSessionsForWeekdays(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var weekdaySessionsCounts = allRevenueRecords
                 .GroupBy(r => r.AsOfDate.DayOfWeek)
@@ -39,14 +42,14 @@ namespace ClientDashboard_API.Helpers
                 g => g.Key,
                 g => g.Sum(r => (r.SessionsToday)));
 
-            var activityPatterns = new List<WeeklyActivityPattern>();
+            var sessionPatterns = new List<WeeklySessionsCounts>();
 
             foreach(var day in weekdaySessionsCounts)
             {
-                activityPatterns.Add(new WeeklyActivityPattern(ReturnWeekdayEnumFromString(day.Key), day.Value, 0));
+                sessionPatterns.Add(new WeeklySessionsCounts(ReturnWeekdayEnumFromString(day.Key), day.Value));
             }
 
-            return activityPatterns;
+            return sessionPatterns;
         }
 
         public static Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
@@ -74,4 +77,4 @@ namespace ClientDashboard_API.Helpers
         }
     }
 }
-}
+
