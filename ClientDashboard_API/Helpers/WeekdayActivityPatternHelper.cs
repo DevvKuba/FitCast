@@ -5,9 +5,9 @@ using ClientDashboard_API.Records;
 
 namespace ClientDashboard_API.Helpers
 {
-    public class WeekdayActivityPatternHelper : IWeekdayActivityPatternHelper
+    public static class WeekdayActivityPatternHelper
     {
-        public List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
+        public static List<WeeklyMultiplier> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allrevenueRecords, int averageClientSessions)
         {
             decimal averageSessionPrice = allrevenueRecords.First().AverageSessionPrice;
 
@@ -30,7 +30,7 @@ namespace ClientDashboard_API.Helpers
             return multipliers;
         }
 
-        public Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
+        public static Weekdays ReturnWeekdayEnumFromString(DayOfWeek weekday)
         {
             switch (weekday)
             {
