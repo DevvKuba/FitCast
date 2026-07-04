@@ -1,4 +1,6 @@
-﻿namespace ClientDashboard_API.DTOs
+﻿using ClientDashboard_API.Records;
+
+namespace ClientDashboard_API.DTOs
 {
     public class CurrentMonthTrainerAnalyticsDto
     {
@@ -12,7 +14,6 @@
 
         public decimal RevenuePerWorkingDay { get; set; }
 
-        // activity patterns that just - weekday sessions
-        // display the number of sessions on each day so far
+        public List<WeeklySessionsCount> WeeklySessionsCounts { get; set; } = [];
     }
 }

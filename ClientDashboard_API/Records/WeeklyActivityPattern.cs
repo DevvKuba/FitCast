@@ -4,5 +4,5 @@ namespace ClientDashboard_API.Records
 {
     public record WeeklyActivityPattern(Weekdays day, int totalSessions, double multiplier);
 
-    public record WeeklySessionsCounts(Weekdays day, int totalSessions);
+    public record WeeklySessionsCount(Weekdays day, int totalSessions);
 }

@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Records;
 
@@ -110,7 +111,7 @@ namespace ClientDashboard_API.Services
         {
             var averageDailySessions = revenueRecords.Average(r => r.SessionsToday);
 
-            var weekdayMultiplierList = GetWeeklyActivityPatterns(revenueRecords, (int)averageDailySessions);
+            var weekdayMultiplierList = WeekdayActivityPatternHelper.GetWeeklyActivityPatterns(revenueRecords, (int)averageDailySessions);
 
             var busiestWeekdays = weekdayMultiplierList.OrderByDescending(p => p.multiplier).Take(2).ToList();
 

@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 
 namespace ClientDashboard_API.Services
@@ -18,6 +19,8 @@ namespace ClientDashboard_API.Services
 
             var averageDailyRevenue = Math.Round(totalRevenue / currentRevenueRecords.Count);
 
+            var weeklySessionCounts = WeekdayActivityPatternHelper.GetNumberOfSessionsForWeekdays(currentRevenueRecords);
+
             return new CurrentMonthTrainerAnalyticsDto
             {
                 BaseClients = baseClients,
@@ -25,6 +28,7 @@ namespace ClientDashboard_API.Services
                 TotalRevenue = totalRevenue,
                 TotalWorktimeMinutes = totalWorktimeMinutes,
                 RevenuePerWorkingDay = averageDailyRevenue,
+                WeeklySessionsCounts = weeklySessionCounts
             };
         }
     }
