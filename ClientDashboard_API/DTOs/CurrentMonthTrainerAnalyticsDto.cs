@@ -11,5 +11,8 @@
         public int TotalWorktimeMinutes { get; set; }
 
         public decimal RevenuePerWorkingDay { get; set; }
+
+        // activity patterns that just - weekday sessions
+        // display the number of sessions on each day so far
     }
 }
