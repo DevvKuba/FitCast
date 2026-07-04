@@ -46,10 +46,10 @@ namespace ClientDashboard_API.DTOs
 
         // ACTIVITY PATTERNS
 
-        public required List<WeeklyMultiplier> AllWeekdays { get; set; } 
+        public required List<WeeklyActivityPattern> AllWeekdays { get; set; } 
 
-        public required List<WeeklyMultiplier> BusiestDays { get; set; }
+        public required List<WeeklyActivityPattern> BusiestDays { get; set; }
 
-        public required List<WeeklyMultiplier> LightDays { get; set; }
+        public required List<WeeklyActivityPattern> LightDays { get; set; }
     }
 }

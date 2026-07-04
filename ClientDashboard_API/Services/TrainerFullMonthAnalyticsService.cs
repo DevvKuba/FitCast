@@ -122,7 +122,7 @@ namespace ClientDashboard_API.Services
         private ClientMetricsDto GetTrainerBaseClientsAndAverageSessions(List<TrainerDailyRevenue> allRevenueRecords)
         {
             var averageActiveClients = (int)Math.Round(allRevenueRecords.Average(r => r.ActiveClients));
-            
+
             var averageSessionsPerClient = CalculateAverageClientSessions(allRevenueRecords, averageActiveClients);
 
             var statistics = new ClientMetricsDto
@@ -138,7 +138,7 @@ namespace ClientDashboard_API.Services
             var firstRecord = allRevenueRecords.First();
 
             var startingMonthActiveClients = allRevenueRecords.First().ActiveClients;
-            
+
             int churnCount = 0;
             int acquisitionCount = 0;
 
@@ -148,9 +148,9 @@ namespace ClientDashboard_API.Services
             double churnRate = 0;
             double acquisitionRate = 0;
 
-            for(int i = 0; i < allRevenueRecords.Count; i++)
+            for (int i = 0; i < allRevenueRecords.Count; i++)
             {
-                if(i != 0)
+                if (i != 0)
                 {
                     // compares if the previous's active clients have increased / decreased comapred to the current records
                     if (allRevenueRecords[i - 1].ActiveClients < allRevenueRecords[i].ActiveClients)
@@ -219,4 +219,5 @@ namespace ClientDashboard_API.Services
 
             return allSessions / averageActiveClients;
         }
+    }
 }
