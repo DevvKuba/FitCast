@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+﻿using ClientDashboard_API.Data.Migrations;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.Records;
@@ -10,7 +11,7 @@ namespace ClientDashboard_API.Helpers
     {
         public static List<WeeklyActivityPattern> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allRevenueRecords, int averageClientSessions)
         {
-            decimal averageSessionPrice = allRevenueRecords.First().AverageSessionPrice;
+            if (averageClientSessions == 0) return [];
 
             var activityPatterns = new List<WeeklyActivityPattern>();
 
