@@ -2,12 +2,12 @@
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
+using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services
 {
     public class TrainerDailyRevenueService(IUnitOfWork unitOfWork) : ITrainerDailyRevenueService
     {
-
         public async Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer)
         {
             var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -27,7 +27,7 @@ namespace ClientDashboard_API.Services
 
             var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
 
-            var trainerInfo = new TrainerDailyRevenue
+            var trainerInfo = new TrainerDailyRevenueDto
             {
                 TrainerId = trainer.Id,
                 RevenueToday = totalRevenueToday,
@@ -40,6 +40,9 @@ namespace ClientDashboard_API.Services
                 AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
                 AsOfDate = todaysDate
             };
+
+            //if () { } date record already exists update..
+            // else add new one - then save for both instances
 
             await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
             await unitOfWork.Complete();

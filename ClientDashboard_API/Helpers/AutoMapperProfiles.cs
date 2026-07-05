@@ -2,6 +2,7 @@
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 
 namespace ClientDashboard_API.Helpers
 {
@@ -15,6 +16,7 @@ namespace ClientDashboard_API.Helpers
             CreateMap<WorkoutUpdateDto, Workout>();
             CreateMap<TrainerUpdateDto, Trainer>();
             CreateMap<PaymentUpdateDto, Payment>();
+            CreateMap<TrainerDailyRevenueDto, TrainerDailyRevenue>();
         }
     }
 }

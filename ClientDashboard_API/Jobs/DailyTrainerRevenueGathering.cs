@@ -4,6 +4,7 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
+    [DisallowConcurrentExecution]
     public class DailyTrainerRevenueGathering(IUnitOfWork unitOfWork, ITrainerDailyRevenueService revenueService, ILogger<DailyTrainerRevenueGathering> logger) : IJob
     {
         public async Task Execute(IJobExecutionContext context)

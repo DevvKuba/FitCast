@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.DTOs;
+﻿using AutoMapper;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
@@ -8,7 +9,7 @@ using Twilio.Rest.Trunking.V1;
 
 namespace ClientDashboard_API.Data
 {
-    public class TrainerDailyRevenueRepository(DataContext context) : ITrainerDailyRevenueRepository
+    public class TrainerDailyRevenueRepository(DataContext context, IMapper mapper) : ITrainerDailyRevenueRepository
     {
         public async Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId)
         {
@@ -140,8 +141,10 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
-        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo)
+        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenueDto trainerInfoDto)
         {
+            var trainerInfo = mapper.Map<TrainerDailyRevenue>(trainerInfoDto);
+
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
         }
 

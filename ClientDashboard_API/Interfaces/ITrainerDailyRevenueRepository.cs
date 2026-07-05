@@ -1,6 +1,5 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
-using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Interfaces
 {
@@ -26,9 +25,11 @@ namespace ClientDashboard_API.Interfaces
 
         List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
 
+        //Task UpdateTrainerRevenueRecordAtDateAsync(int trainerId, DateOnly date);
+
         bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);
 
-        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo);
+        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenueDto trainerInfo);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
     }
