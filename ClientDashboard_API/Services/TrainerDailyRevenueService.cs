@@ -41,10 +41,14 @@ namespace ClientDashboard_API.Services
                 AsOfDate = todaysDate
             };
 
-            //if () { } date record already exists update..
-            // else add new one - then save for both instances
-
-            await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
+            if (await unitOfWork.TrainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainerInfo.TrainerId, trainerInfo.AsOfDate)) 
+            {
+                await unitOfWork.TrainerDailyRevenueRepository.UpdateTrainerRevenueRecordAtDateAsync(trainerInfo);
+            }
+            else
+            {
+                await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
+            }
             await unitOfWork.Complete();
         }
 

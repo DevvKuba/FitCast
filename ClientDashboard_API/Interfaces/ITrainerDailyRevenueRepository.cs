@@ -27,6 +27,8 @@ namespace ClientDashboard_API.Interfaces
 
         List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
 
+        Task<bool> DoesTrainerDailyRevenueRecordExistForDateAsync(int trainerId, DateOnly date);
+
         Task UpdateTrainerRevenueRecordAtDateAsync(TrainerDailyRevenueDto trainerInfoDto);
 
         bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);

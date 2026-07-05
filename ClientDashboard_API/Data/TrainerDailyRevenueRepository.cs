@@ -141,6 +141,14 @@ namespace ClientDashboard_API.Data
                 .ToList();
         }
 
+        public async Task<bool> DoesTrainerDailyRevenueRecordExistForDateAsync(int trainerId, DateOnly date)
+        {
+            var recordForDate = await GetRevenueRecordAtDateForTrainer(trainerId, date);
+
+            if (recordForDate == null) return false;
+            return true;
+        }
+
         public async Task UpdateTrainerRevenueRecordAtDateAsync(TrainerDailyRevenueDto trainerInfoDto)
         {
             var revenueRecordAtDate = await GetRevenueRecordAtDateForTrainer(trainerInfoDto.TrainerId, trainerInfoDto.AsOfDate);
