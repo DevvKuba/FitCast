@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Interfaces
 
         Task<TrainerDailyRevenue?> GetFirstRevenueRecordForTrainerAsync(int trainerId);
 
+        Task<TrainerDailyRevenue?> GetRevenueRecordAtDateForTrainer(int trainerId, DateOnly date);
+
         int GetAllMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
 
         int GetFullMonthCountsFromData(List<TrainerDailyRevenue> revenueRecords);
@@ -25,7 +27,7 @@ namespace ClientDashboard_API.Interfaces
 
         List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords);
 
-        //Task UpdateTrainerRevenueRecordAtDateAsync(int trainerId, DateOnly date);
+        Task UpdateTrainerRevenueRecordAtDateAsync(TrainerDailyRevenueDto trainerInfoDto);
 
         bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);
 

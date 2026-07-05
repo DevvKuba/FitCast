@@ -99,6 +99,16 @@ namespace ClientDashboard_API.Data
             return currentMonthsRecords;
         }
 
+        public async Task<TrainerDailyRevenue?> GetRevenueRecordAtDateForTrainer(int trainerId, DateOnly date)
+        {
+            var revenueRecordAtDate = await context.TrainerDailyRevenue
+                 .Where(r => r.TrainerId == trainerId &&
+                 r.AsOfDate == date)
+                 .FirstOrDefaultAsync();
+
+            return revenueRecordAtDate;
+        }
+
         public async Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year)
         {
             var monthRecords = await context.TrainerDailyRevenue
@@ -129,6 +139,13 @@ namespace ClientDashboard_API.Data
                 .ThenBy(g => g.Key.Month)
                 .SelectMany(g => g.OrderBy(r => r.AsOfDate))
                 .ToList();
+        }
+
+        public async Task UpdateTrainerRevenueRecordAtDateAsync(TrainerDailyRevenueDto trainerInfoDto)
+        {
+            var revenueRecordAtDate = await GetRevenueRecordAtDateForTrainer(trainerInfoDto.TrainerId, trainerInfoDto.AsOfDate);
+
+            mapper.Map(trainerInfoDto, revenueRecordAtDate);
         }
 
         public bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords)
