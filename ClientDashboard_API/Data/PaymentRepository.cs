@@ -57,7 +57,10 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Payment>> GetAllInvisiblePaymentsAsync()
         {
-            return await context.Payments.Where(p => p.IsVisible == false).ToListAsync();
+            return await context.Payments
+                .Where(p => p.IsVisible == false)
+                .IgnoreQueryFilters()
+                .ToListAsync();
         }
 
         public void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo)
@@ -75,7 +78,10 @@ namespace ClientDashboard_API.Data
 
         public async Task UpdateAllTrainerPaymentsToVisibleStatusAsync(Trainer trainer)
         {
-            await context.Payments.Where(p => p.TrainerId == trainer.Id).ForEachAsync(p => p.IsVisible = true);
+            await context.Payments
+                .Where(p => p.TrainerId == trainer.Id)
+                .IgnoreQueryFilters()
+                .ForEachAsync(p => p.IsVisible = true);
 
         }
 

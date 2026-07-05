@@ -239,8 +239,8 @@ namespace ClientDashboard_API.Data
         public async Task<List<Client>> GetSoftDeletedClientsOlderThanAsync(DateTime cutoffDate)
         {
             var clients = await context.Client
-                .IgnoreQueryFilters()
                 .Where(c => c.IsDeleted && c.DeletedAt.HasValue && c.DeletedAt.Value <= cutoffDate)
+                 .IgnoreQueryFilters()
                 .ToListAsync();
             return clients;
         }
