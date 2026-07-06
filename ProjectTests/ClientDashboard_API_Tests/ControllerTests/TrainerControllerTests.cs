@@ -51,11 +51,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             return Task.FromResult(new List<WorkoutAddDto>());
         }
 
-        public Task<List<WorkoutSummaryDto>> CallApiThroughPipelineAsync()
-        {
-            return Task.FromResult(new List<WorkoutSummaryDto>());
-        }
-
         public Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer)
         {
             return Task.FromResult(new List<WorkoutSummaryDto>());
@@ -197,7 +192,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _emailVerificationTokenRepository = new EmailVerificationTokenRepository(_context);
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
-            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
+            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
             _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
 
             _fakeEncrypter = new FakeApiKeyEncrypter();

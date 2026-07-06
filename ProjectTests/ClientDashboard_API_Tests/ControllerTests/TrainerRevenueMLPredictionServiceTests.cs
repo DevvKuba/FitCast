@@ -73,7 +73,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _paymentRepository = new PaymentRepository(_dbContext, _mapper);
             _emailVerificationTokenRepository = new EmailVerificationTokenRepository(_dbContext);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_dbContext);
-            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_dbContext);
+            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_dbContext, _mapper);
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_dbContext);
 
             // Initialize unit of work with all repositories

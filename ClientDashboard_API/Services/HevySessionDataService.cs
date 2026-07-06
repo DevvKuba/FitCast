@@ -49,42 +49,6 @@ namespace ClientDashboard_API.Services
             return workoutDetails;
         }
 
-        public async Task<List<WorkoutSummaryDto>> CallApiThroughPipelineAsync()
-        {
-            DateTime todaysDate = DateTime.Now;
-
-            // TESTING change logic later - may need to have the time always be static to retrieve consistent results
-            DateTime yesterdaysDate = todaysDate.AddDays(-1);
-            // custom date formatter
-            string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
-            Console.WriteLine(desiredDate);
-
-            string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
-
-            // utilise HttpClient for requests
-            using HttpClient client = new HttpClient();
-
-            // Provide appropriate headers 
-            client.DefaultRequestHeaders.Add("accept", "application/json");
-            client.DefaultRequestHeaders.Add("api-key", API_KEY);
-
-            // call get request and retrieve response
-            HttpResponseMessage response = await client.GetAsync(url);
-
-            Console.WriteLine(response.StatusCode);
-
-            // if reponse status code is 200 - successful proceed
-            if (response.IsSuccessStatusCode)
-            {
-                return await RetrieveWorkouts(response);
-            }
-            else
-            {
-                string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
-            }
-        }
-
         public async Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer)
         {
             DateTime todaysDate = DateTime.Now;

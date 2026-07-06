@@ -5,8 +5,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface ISessionDataParser
     {
-        Task<List<WorkoutSummaryDto>> CallApiThroughPipelineAsync();
-
         Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer);
 
         Task<List<WorkoutSummaryDto>> RetrieveWorkouts(HttpResponseMessage response);

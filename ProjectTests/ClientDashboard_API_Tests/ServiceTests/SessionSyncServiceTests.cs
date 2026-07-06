@@ -27,11 +27,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
             return Task.FromResult(_workoutsToReturn);
         }
 
-        public Task<List<WorkoutSummaryDto>> CallApiThroughPipelineAsync()
-        {
-            return Task.FromResult(_workoutsToReturn);
-        }
-
         public Task<List<WorkoutSummaryDto>> RetrieveWorkouts(HttpResponseMessage response)
         {
             return Task.FromResult(_workoutsToReturn);
@@ -130,7 +125,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _emailVerificationTokenRepository = new EmailVerificationTokenRepository(_context);
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
-            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context);
+            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
             _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
         }
 
@@ -839,7 +834,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var emailVerificationTokenRepository = new EmailVerificationTokenRepository(context);
             var passwordResetTokenRepository = new PasswordResetTokenRepository(context);
             var clientDailyFeatureRepository = new ClientDailyFeatureRepository(context);
-            var trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context);
+            var trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context, _mapper);
 
             return new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, new NotificationRecipientStatusRepository(context), paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository);
         }
