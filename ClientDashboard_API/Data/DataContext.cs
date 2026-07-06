@@ -189,6 +189,10 @@ namespace ClientDashboard_API.Data
                 .HasIndex(x => new { x.TrainerId, x.AsOfDate })
                 .IsUnique()
                 .IsClustered(true);
+
+            builder.Entity<TrainerDailyRevenue>()
+                .HasKey(x => x.Id)
+                .IsClustered(false);
         }
     }
 }
