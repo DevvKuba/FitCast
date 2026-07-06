@@ -42,20 +42,20 @@ namespace ClientDashboard_API.Services
                 AsOfDate = todaysDate
             };
 
-            try
-            {
-
-            }
-
-            catch(DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique key") ?? false)
-
             if (await unitOfWork.TrainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainerInfo.TrainerId, trainerInfo.AsOfDate)) 
             {
                 await unitOfWork.TrainerDailyRevenueRepository.UpdateTrainerRevenueRecordAtDateAsync(trainerInfo);
             }
             else
             {
-                await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
+                try
+                {
+                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
+                }
+                catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique key") ?? false)
+                {
+                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
+                }
             }
             await unitOfWork.Complete();
         }

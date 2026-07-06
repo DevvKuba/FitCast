@@ -190,6 +190,5 @@ namespace ClientDashboard_API.Data
                 .IsUnique()
                 .IsClustered(true);
         }
-
     }
 }
