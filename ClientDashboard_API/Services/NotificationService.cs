@@ -75,7 +75,7 @@ namespace ClientDashboard_API.Services
             if (client.NotificationsEnabled && client.PhoneNumber is not null)
             {
                 communicationType = Enums.CommunicationType.Sms;
-                messageService.SendSMSMessage(trainer, client: null, SENDER_PHONE_NUMBER!, notificationMessage);
+                messageService.SendSMSMessage(trainer: null, client, SENDER_PHONE_NUMBER!, notificationMessage);
             }
             else
             {
