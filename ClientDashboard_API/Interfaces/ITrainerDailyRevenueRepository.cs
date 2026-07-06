@@ -33,7 +33,9 @@ namespace ClientDashboard_API.Interfaces
 
         bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);
 
-        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenueDto trainerInfo);
+        Task AddTrainerDailyRevenueDtoRecordAsync(TrainerDailyRevenueDto trainerInfo);
+
+        Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo);
 
         Task ResetTrainerDailyRevenueRecordsAsync(int trainerId);
     }

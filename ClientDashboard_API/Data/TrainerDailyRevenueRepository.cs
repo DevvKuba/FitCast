@@ -169,10 +169,15 @@ namespace ClientDashboard_API.Data
             return true;
         }
 
-        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenueDto trainerInfoDto)
+        public async Task AddTrainerDailyRevenueDtoRecordAsync(TrainerDailyRevenueDto trainerInfoDto)
         {
             var trainerInfo = mapper.Map<TrainerDailyRevenue>(trainerInfoDto);
 
+            await context.TrainerDailyRevenue.AddAsync(trainerInfo);
+        }
+
+        public async Task AddTrainerDailyRevenueRecordAsync(TrainerDailyRevenue trainerInfo)
+        {
             await context.TrainerDailyRevenue.AddAsync(trainerInfo);
         }
 
@@ -181,5 +186,6 @@ namespace ClientDashboard_API.Data
             var trainerRevenueRecords = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).ToListAsync();
             context.RemoveRange(trainerRevenueRecords);
         }
+
     }
 }

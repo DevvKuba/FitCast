@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Services
             }
             else
             {
-                await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueRecordAsync(trainerInfo);
+                await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
             }
             await unitOfWork.Complete();
         }
