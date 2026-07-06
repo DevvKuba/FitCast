@@ -180,10 +180,15 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
-            // Notification Recipient Status relationships
+            // Unique Constraints
             builder.Entity<NotificationRecipientStatus>()
                 .HasIndex(x => new { x.NotificationId, x.UserId })
                 .IsUnique();
+
+            builder.Entity<TrainerDailyRevenue>()
+                .HasIndex(x => new { x.TrainerId, x.AsOfDate })
+                .IsUnique()
+                .IsClustered(true);
         }
 
     }

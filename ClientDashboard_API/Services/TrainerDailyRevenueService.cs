@@ -2,6 +2,7 @@
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services
@@ -40,6 +41,13 @@ namespace ClientDashboard_API.Services
                 AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
                 AsOfDate = todaysDate
             };
+
+            try
+            {
+
+            }
+
+            catch(DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique key") ?? false)
 
             if (await unitOfWork.TrainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainerInfo.TrainerId, trainerInfo.AsOfDate)) 
             {
