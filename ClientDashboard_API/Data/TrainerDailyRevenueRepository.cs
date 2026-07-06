@@ -6,6 +6,7 @@ using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Twilio.Rest.Trunking.V1;
+using Twilio.TwiML.Fax;
 
 namespace ClientDashboard_API.Data
 {
@@ -158,6 +159,8 @@ namespace ClientDashboard_API.Data
 
         public bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords)
         {
+            if (revenueRecords.Count == 0 || revenueRecords == null) return false;
+
             var firstDayMonth = revenueRecords.First().AsOfDate.Month;
 
             var anyRecordsWithDifferentMonth = revenueRecords.Any(r => r.AsOfDate.Month != firstDayMonth);
