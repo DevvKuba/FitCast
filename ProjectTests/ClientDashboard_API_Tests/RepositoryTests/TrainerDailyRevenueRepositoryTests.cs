@@ -33,14 +33,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
         public TrainerDailyRevenueRepositoryTests()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDto, Client>();
-                cfg.CreateMap<PaymentUpdateDto, Payment>();
-                cfg.CreateMap<TrainerUpdateDto, Trainer>();
-            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-            _mapper = config.CreateMapper();
+            _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()

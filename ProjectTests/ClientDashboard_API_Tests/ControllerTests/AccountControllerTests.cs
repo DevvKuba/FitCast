@@ -186,11 +186,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
         public AccountControllerTests()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperProfiles());
-            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-            _mapper = config.CreateMapper();
+            _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()

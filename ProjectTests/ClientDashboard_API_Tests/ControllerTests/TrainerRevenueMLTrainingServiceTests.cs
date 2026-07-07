@@ -52,14 +52,13 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _dbContext = new DataContext(options);
 
             // Initialize mapper and password hasher
-            var mapperConfig = new MapperConfiguration(cfg =>
+            _mapper = TestMapperFactory.Create(cfg =>
             {
                 cfg.CreateMap<Workout, Workout>();
                 cfg.CreateMap<Client, Client>();
                 cfg.CreateMap<Trainer, Trainer>();
                 cfg.CreateMap<Payment, Payment>();
-            }, NullLoggerFactory.Instance);
-            _mapper = mapperConfig.CreateMapper();
+            });
             _passwordHasher = new PasswordHasher();
 
             // Initialize all repositories

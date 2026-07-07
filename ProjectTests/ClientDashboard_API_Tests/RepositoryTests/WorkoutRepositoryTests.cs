@@ -28,12 +28,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
         public WorkoutRepositoryTests()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDto, Client>();
-            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-            _mapper = config.CreateMapper();
+            _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()

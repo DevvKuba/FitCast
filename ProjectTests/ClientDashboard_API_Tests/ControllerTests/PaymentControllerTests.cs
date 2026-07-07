@@ -32,14 +32,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
         public PaymentControllerTests()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDto, Client>();
-                cfg.CreateMap<PaymentUpdateDto, Payment>();
-                cfg.CreateMap<TrainerUpdateDto, Trainer>();
-            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-            _mapper = config.CreateMapper();
+            _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()
@@ -75,7 +68,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -85,7 +78,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 150.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -128,7 +121,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = activeClient.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -138,7 +131,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = deletedClient.Id,
                 Amount = 150.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
@@ -181,7 +174,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = false
@@ -238,7 +231,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestAddNewTrainerPaymentSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "ï¿½" };
             var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Trainer.AddAsync(trainer);
             await _context.Client.AddAsync(client);
@@ -333,7 +326,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 IsVisible = true,
@@ -383,7 +376,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = activeClient.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 IsVisible = true,
@@ -394,7 +387,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = deletedClient.Id,
                 Amount = 150.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 IsVisible = true,
@@ -430,7 +423,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "£",
+                Currency = "ï¿½",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true,

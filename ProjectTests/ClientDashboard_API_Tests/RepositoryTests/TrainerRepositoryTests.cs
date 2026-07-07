@@ -35,14 +35,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
         public TrainerRepositoryTests()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Client, WorkoutDto>();
-                cfg.CreateMap<ClientUpdateDto, Client>();
-                cfg.CreateMap<PaymentUpdateDto, Payment>();
-                cfg.CreateMap<TrainerUpdateDto, Trainer>();
-            }, global::Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
-            _mapper = config.CreateMapper();
+            _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
 
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>()
@@ -436,7 +429,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 Email = "jonathan@example.com",
                 PhoneNumber = "1234567890",
                 BusinessName = "New Business",
-                DefaultCurrency = "£",
+                DefaultCurrency = "ï¿½",
                 AverageSessionPrice = 50.00m
             };
 
@@ -448,7 +441,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal("jonathan@example.com", trainer.Email);
             Assert.Equal("1234567890", trainer.PhoneNumber);
             Assert.Equal("New Business", trainer.BusinessName);
-            Assert.Equal("£", trainer.DefaultCurrency);
+            Assert.Equal("ï¿½", trainer.DefaultCurrency);
             Assert.Equal(50.00m, trainer.AverageSessionPrice);
         }
 
