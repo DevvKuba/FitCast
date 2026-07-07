@@ -51,9 +51,9 @@ namespace ClientDashboard_API.Services
 
         public async Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer)
         {
-            DateTime todaysDate = DateTime.Now;
+            DateTime todaysDate = DateTime.UtcNow;
             DateTime yesterdaysDate = todaysDate.AddDays(-1);
-            string desiredDate = yesterdaysDate.ToString("yyyy-MM-ddTHH:mmmm:ssZ");
+            string desiredDate = yesterdaysDate.ToString("o");
 
             string url = $"https://api.hevyapp.com/v1/workouts/events?page=1&pageSize=10&since={desiredDate}";
 
