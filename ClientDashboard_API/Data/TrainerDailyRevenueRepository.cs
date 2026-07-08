@@ -161,11 +161,15 @@ namespace ClientDashboard_API.Data
         {
             if (revenueRecords.Count == 0 || revenueRecords == null) return false;
 
-            var firstDayMonth = revenueRecords.First().AsOfDate.Month;
+            var firstRevenueRecord = revenueRecords.First();
 
-            var anyRecordsWithDifferentMonth = revenueRecords.Any(r => r.AsOfDate.Month != firstDayMonth);
+            var anyRecordsWithDifferentMonth = revenueRecords
+                .Any(r => r.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month &&
+                firstRevenueRecord.AsOfDate.Year != r.AsOfDate.Year);
 
-            if (anyRecordsWithDifferentMonth) return false;
+            var totalExpectedMonthDayCount = DateTime.DaysInMonth(firstRevenueRecord.AsOfDate.Year, firstRevenueRecord.AsOfDate.Month);
+
+            if (anyRecordsWithDifferentMonth || revenueRecords.Count != totalExpectedMonthDayCount) return false;
             return true;
         }
 
