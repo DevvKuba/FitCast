@@ -15,8 +15,14 @@ namespace ClientDashboard_API_Tests.ServiceTests
     public class FakeMessageService : IMessageService
     {
         private readonly List<string> _sentMessages = new();
+        // Records the actual trainer/client arguments passed to SendSMSMessage, so tests can
+        // assert on WHO the call was addressed to, rather than inferring it from a formatted
+        // string (a null trainer with a set client phone number can look identical to the
+        // reverse case if the assertion only checks the recorded phone number).
+        private readonly List<(Trainer? Trainer, Client? Client, string Message)> _smsCalls = new();
 
         public List<string> SentMessages => _sentMessages;
+        public List<(Trainer? Trainer, Client? Client, string Message)> SmsCalls => _smsCalls;
 
         public void InitialiseBaseTwillioClient()
         {
@@ -33,6 +39,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         {
             // Simulate sending SMS by storing the message
             _sentMessages.Add($"SMS to {trainer?.PhoneNumber ?? client?.PhoneNumber}: {message}");
+            _smsCalls.Add((trainer, client, message));
         }
     }
 
@@ -582,6 +589,84 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var notification = await _context.Notification.FirstOrDefaultAsync();
             Assert.NotNull(notification);
             Assert.Contains("15", notification.Message);
+        }
+
+        #endregion
+
+        #region SMS Recipient Tests
+
+        [Fact]
+        public async Task TestSendClientBlockReminderSendsSMSToClientNotTrainerAsync()
+        {
+            var trainer = new Trainer
+            {
+                FirstName = "john",
+                Surname = "doe",
+                Role = UserRole.Trainer,
+                PhoneNumber = "+1111111111"
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client
+            {
+                FirstName = "alice",
+                Role = UserRole.Client,
+                TrainerId = trainer.Id,
+                PhoneNumber = "+2222222222",
+                CurrentBlockSession = 8,
+                TotalBlockSessions = 8,
+                NotificationsEnabled = true
+            };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var result = await _notificationService.SendClientBlockReminderAsync(trainer.Id, client.Id);
+
+            Assert.True(result.Success);
+            Assert.Single(_fakeMessageService.SmsCalls);
+
+            var call = _fakeMessageService.SmsCalls[0];
+            Assert.Null(call.Trainer);
+            Assert.NotNull(call.Client);
+            Assert.Equal(client.Id, call.Client!.Id);
+        }
+
+        [Fact]
+        public async Task TestSendTrainerBlockReminderSendsSMSToTrainerNotClientAsync()
+        {
+            var trainer = new Trainer
+            {
+                FirstName = "john",
+                Surname = "doe",
+                Role = UserRole.Trainer,
+                PhoneNumber = "+1111111111",
+                NotificationsEnabled = true
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client
+            {
+                FirstName = "alice",
+                Role = UserRole.Client,
+                TrainerId = trainer.Id,
+                PhoneNumber = "+2222222222",
+                CurrentBlockSession = 8,
+                TotalBlockSessions = 8
+            };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var result = await _notificationService.SendTrainerBlockReminderAsync(trainer.Id, client.Id);
+
+            Assert.True(result.Success);
+            Assert.Single(_fakeMessageService.SmsCalls);
+
+            var call = _fakeMessageService.SmsCalls[0];
+            Assert.NotNull(call.Trainer);
+            Assert.Null(call.Client);
+            Assert.Equal(trainer.Id, call.Trainer!.Id);
         }
 
         #endregion

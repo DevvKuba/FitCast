@@ -648,6 +648,76 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(new DateOnly(2025, 2, 1), firstDay);
         }
 
+        [Fact]
+        public async Task TestExecuteTrainerDailyRevenueGatheringRunTwiceSameDayUpdatesInsteadOfDuplicatingAsync()
+        {
+            // Arrange
+            var trainer = new Trainer
+            {
+                FirstName = "victor",
+                Surname = "hugo",
+                Role = UserRole.Trainer,
+                AverageSessionPrice = 50.00m
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client1 = new Client
+            {
+                FirstName = "wendy",
+                Role = UserRole.Client,
+                TrainerId = trainer.Id,
+                IsActive = true
+            };
+            await _context.Client.AddAsync(client1);
+            await _unitOfWork.Complete();
+
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "wendy - Morning", today, 5, 45);
+            await _unitOfWork.Complete();
+
+            var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
+
+            // Act - first run of the day
+            await _trainerDailyRevenueService.ExecuteTrainerDailyRevenueGatheringAsync(trainerWithClients!);
+
+            var afterFirstRun = await _context.TrainerDailyRevenue.ToListAsync();
+            Assert.Single(afterFirstRun);
+            Assert.Equal(1, afterFirstRun[0].SessionsToday);
+            Assert.Equal(50.00m, afterFirstRun[0].RevenueToday);
+
+            // A new client trains later the same day - the exact scenario a same-day re-run
+            // (misfire, manual retrigger) needs to pick up rather than ignore.
+            var client2 = new Client
+            {
+                FirstName = "xavier",
+                Role = UserRole.Client,
+                TrainerId = trainer.Id,
+                IsActive = true
+            };
+            await _context.Client.AddAsync(client2);
+            await _unitOfWork.Complete();
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "xavier - Evening", today, 4, 40);
+            await _unitOfWork.Complete();
+
+            var trainerReloaded = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
+
+            // Act - second run for the same day
+            await _trainerDailyRevenueService.ExecuteTrainerDailyRevenueGatheringAsync(trainerReloaded!);
+
+            // Assert - still exactly one record for (TrainerId, AsOfDate), not a duplicate
+            var afterSecondRun = await _context.TrainerDailyRevenue.ToListAsync();
+            Assert.Single(afterSecondRun);
+
+            var record = afterSecondRun[0];
+            Assert.Equal(trainer.Id, record.TrainerId);
+            Assert.Equal(today, record.AsOfDate);
+            // Values reflect the second, fuller computation - proving this is a real update
+            // rather than a stale no-op or a silently-ignored second call.
+            Assert.Equal(2, record.SessionsToday);
+            Assert.Equal(100.00m, record.RevenueToday);
+            Assert.Equal(2, record.ActiveClients);
+        }
     }
 }
 

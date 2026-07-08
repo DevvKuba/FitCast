@@ -217,6 +217,155 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal(50, savedRecord.ActiveClients);
             Assert.Equal(125.00m, savedRecord.AverageSessionPrice);
         }
+
+        [Fact]
+        public async Task TestDoesTrainerDailyRevenueRecordExistForDateAsyncReturnsFalseWhenNoRecordExists()
+        {
+            var trainer = new Trainer { FirstName = "test", Surname = "trainer", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var exists = await _trainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainer.Id, new DateOnly(2024, 6, 15));
+
+            Assert.False(exists);
+        }
+
+        [Fact]
+        public async Task TestDoesTrainerDailyRevenueRecordExistForDateAsyncReturnsTrueWhenRecordExists()
+        {
+            var trainer = new Trainer { FirstName = "test", Surname = "trainer", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var date = new DateOnly(2024, 6, 15);
+            var dto = new TrainerDailyRevenueDto
+            {
+                TrainerId = trainer.Id,
+                AsOfDate = date,
+                RevenueToday = 50.00m,
+                MonthlyRevenueThusFar = 50.00m,
+                SessionsToday = 1,
+                TotalSessionsThisMonth = 1,
+                NewClientsThisMonth = 0,
+                TotalSessionDuration = 45,
+                ActiveClients = 1,
+                AverageSessionPrice = 50.00m
+            };
+            await _trainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(dto);
+            await _unitOfWork.Complete();
+
+            var exists = await _trainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainer.Id, date);
+
+            Assert.True(exists);
+        }
+
+        [Fact]
+        public async Task TestUpdateTrainerRevenueRecordAtDateAsyncOverwritesExistingRecordAsync()
+        {
+            var trainer = new Trainer { FirstName = "test", Surname = "trainer", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var date = new DateOnly(2024, 6, 15);
+            var initialDto = new TrainerDailyRevenueDto
+            {
+                TrainerId = trainer.Id,
+                AsOfDate = date,
+                RevenueToday = 50.00m,
+                MonthlyRevenueThusFar = 50.00m,
+                SessionsToday = 1,
+                TotalSessionsThisMonth = 1,
+                NewClientsThisMonth = 0,
+                TotalSessionDuration = 45,
+                ActiveClients = 1,
+                AverageSessionPrice = 50.00m
+            };
+            await _trainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(initialDto);
+            await _unitOfWork.Complete();
+
+            var updatedDto = new TrainerDailyRevenueDto
+            {
+                TrainerId = trainer.Id,
+                AsOfDate = date,
+                RevenueToday = 150.00m,
+                MonthlyRevenueThusFar = 150.00m,
+                SessionsToday = 3,
+                TotalSessionsThisMonth = 3,
+                NewClientsThisMonth = 1,
+                TotalSessionDuration = 130,
+                ActiveClients = 2,
+                AverageSessionPrice = 50.00m
+            };
+
+            await _trainerDailyRevenueRepository.UpdateTrainerRevenueRecordAtDateAsync(updatedDto);
+            await _unitOfWork.Complete();
+
+            var records = await _context.TrainerDailyRevenue.ToListAsync();
+            Assert.Single(records); // overwritten, not duplicated
+
+            var record = records[0];
+            Assert.Equal(150.00m, record.RevenueToday);
+            Assert.Equal(3, record.SessionsToday);
+            Assert.Equal(2, record.ActiveClients);
+        }
+
+        [Fact]
+        public void TestIsFullMonthPresentReturnsFalseForEmptyList()
+        {
+            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(new List<TrainerDailyRevenue>());
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void TestIsFullMonthPresentReturnsFalseForPartialMonth()
+        {
+            // Only the first 5 days of a 30-day month
+            var records = new List<TrainerDailyRevenue>();
+            for (int day = 1; day <= 5; day++)
+            {
+                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 6, day), AverageSessionPrice = 50.00m });
+            }
+
+            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void TestIsFullMonthPresentReturnsTrueForCompleteMonth()
+        {
+            var daysInJune = DateTime.DaysInMonth(2024, 6);
+            var records = new List<TrainerDailyRevenue>();
+            for (int day = 1; day <= daysInJune; day++)
+            {
+                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 6, day), AverageSessionPrice = 50.00m });
+            }
+
+            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void TestIsFullMonthPresentReturnsFalseForCrossYearRecordsSharingMonthNumber()
+        {
+            // 15 days from March 2024 + 16 days from March 2025 = 31 records, matching March's
+            // day count, but spanning two different calendar years - not one complete month.
+            var records = new List<TrainerDailyRevenue>();
+            for (int day = 1; day <= 15; day++)
+            {
+                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 3, day), AverageSessionPrice = 50.00m });
+            }
+            for (int day = 16; day <= 31; day++)
+            {
+                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2025, 3, day), AverageSessionPrice = 50.00m });
+            }
+
+            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
+
+            Assert.False(result);
+        }
     }
 }
 

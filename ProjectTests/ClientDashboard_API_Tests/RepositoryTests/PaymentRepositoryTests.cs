@@ -516,6 +516,87 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             Assert.False(_context.Payments.Any());
         }
+
+        [Fact]
+        public async Task TestGetAllInvisiblePaymentsAsyncReturnsOnlyInvisiblePayments()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.AddAsync(trainer);
+            await _context.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            await _paymentRepository.AddNewPaymentAsync(trainer, client, 4, 100.00m, DateOnly.Parse("01/06/2024"), true);
+            await _paymentRepository.AddNewPaymentAsync(trainer, client, 8, 200.00m, DateOnly.Parse("02/06/2024"), true);
+            await _unitOfWork.Complete();
+
+            // Both payments are still visible here, so a normal (filtered) query still sees them
+            var seededPayments = await _context.Payments.ToListAsync();
+            var paymentToHide = seededPayments.First(p => p.Amount == 200.00m);
+            _paymentRepository.DisablePaymentVisibility(paymentToHide);
+            await _unitOfWork.Complete();
+
+            var invisiblePayments = await _paymentRepository.GetAllInvisiblePaymentsAsync();
+
+            Assert.Single(invisiblePayments);
+            Assert.Equal(200.00m, invisiblePayments[0].Amount);
+        }
+
+        [Fact]
+        public async Task TestGetAllInvisiblePaymentsAsyncReturnsEmptyWhenNoneAreInvisible()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.AddAsync(trainer);
+            await _context.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            await _paymentRepository.AddNewPaymentAsync(trainer, client, 4, 100.00m, DateOnly.Parse("01/06/2024"), true);
+            await _unitOfWork.Complete();
+
+            var invisiblePayments = await _paymentRepository.GetAllInvisiblePaymentsAsync();
+
+            Assert.Empty(invisiblePayments);
+        }
+
+        [Fact]
+        public async Task TestUpdateAllTrainerPaymentsToVisibleStatusAsyncOnlyRestoresThatTrainersPaymentsAsync()
+        {
+            var trainerA = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var trainerB = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var clientA = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var clientB = new Client { Role = UserRole.Client, FirstName = "sue", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.AddAsync(trainerA);
+            await _context.AddAsync(trainerB);
+            await _context.AddAsync(clientA);
+            await _context.AddAsync(clientB);
+            await _unitOfWork.Complete();
+
+            await _paymentRepository.AddNewPaymentAsync(trainerA, clientA, 4, 100.00m, DateOnly.Parse("01/06/2024"), true);
+            await _paymentRepository.AddNewPaymentAsync(trainerB, clientB, 4, 150.00m, DateOnly.Parse("01/06/2024"), true);
+            await _unitOfWork.Complete();
+
+            var allPayments = await _context.Payments.ToListAsync();
+            foreach (var payment in allPayments)
+            {
+                _paymentRepository.DisablePaymentVisibility(payment);
+            }
+            await _unitOfWork.Complete();
+
+            // sanity check: both hidden before restoring either
+            var hiddenBeforeRestore = await _paymentRepository.GetAllInvisiblePaymentsAsync();
+            Assert.Equal(2, hiddenBeforeRestore.Count);
+
+            await _paymentRepository.UpdateAllTrainerPaymentsToVisibleStatusAsync(trainerA);
+            await _unitOfWork.Complete();
+
+            var stillInvisible = await _paymentRepository.GetAllInvisiblePaymentsAsync();
+            Assert.Single(stillInvisible);
+            Assert.Equal(trainerB.Id, stillInvisible[0].TrainerId);
+
+            var trainerAPayments = await _paymentRepository.GetAllPaymentsForTrainerAsync(trainerA);
+            Assert.Single(trainerAPayments);
+        }
     }
 }
 

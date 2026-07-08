@@ -164,7 +164,7 @@ namespace ClientDashboard_API.Data
             var firstRevenueRecord = revenueRecords.First();
 
             var anyRecordsWithDifferentMonth = revenueRecords
-                .Any(r => r.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month &&
+                .Any(r => r.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month ||
                 firstRevenueRecord.AsOfDate.Year != r.AsOfDate.Year);
 
             var totalExpectedMonthDayCount = DateTime.DaysInMonth(firstRevenueRecord.AsOfDate.Year, firstRevenueRecord.AsOfDate.Month);
