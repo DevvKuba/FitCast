@@ -51,10 +51,12 @@ namespace ClientDashboard_API.Services
                 try
                 {
                     await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
+                    await unitOfWork.Complete();
                 }
                 catch (DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique key") ?? false)
                 {
-                    await unitOfWork.TrainerDailyRevenueRepository.AddTrainerDailyRevenueDtoRecordAsync(trainerInfo);
+                    unitOfWork.Clear();
+                    await unitOfWork.TrainerDailyRevenueRepository.UpdateTrainerRevenueRecordAtDateAsync(trainerInfo);
                 }
             }
             await unitOfWork.Complete();

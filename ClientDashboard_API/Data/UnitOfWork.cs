@@ -31,6 +31,11 @@ namespace ClientDashboard_API.Data
 
         public ITrainerDailyRevenueRepository TrainerDailyRevenueRepository => trainerDailyRevenueRepository;
 
+        public void Clear()
+        {
+            context.ChangeTracker.Clear();
+        }
+
         public async Task<bool> Complete()
         {
             return await context.SaveChangesAsync() > 0;

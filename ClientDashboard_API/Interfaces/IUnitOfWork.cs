@@ -25,6 +25,8 @@
 
         Task<bool> Complete();
 
+        void Clear();
+
         bool HasChanges();
     }
 }
