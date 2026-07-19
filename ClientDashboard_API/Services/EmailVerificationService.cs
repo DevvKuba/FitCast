@@ -13,6 +13,7 @@ namespace ClientDashboard_API.Services
             var verificationToken = new EmailVerificationToken
             {
                 TrainerId = trainer.Id,
+                TokenHash = "",
                 CreatedOnUtc = currentTime,
                 ExpiresOnUtc = currentTime.AddDays(1)
             };

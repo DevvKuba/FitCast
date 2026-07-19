@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
 
+        public required string TokenHash { get; set; }
+
         public int TrainerId { get; set; }
 
         public DateTime CreatedOnUtc { get; set; }

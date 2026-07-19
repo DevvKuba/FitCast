@@ -11,6 +11,7 @@ namespace ClientDashboard_API.Services
             DateTime currentTime = DateTime.UtcNow;
             var passwordResetToken = new PasswordResetToken
             {
+                TokenHash = "",
                 CreatedOnUtc = currentTime,
                 ExpiresOnUtc = currentTime.AddDays(1),
                 UserId = user.Id
