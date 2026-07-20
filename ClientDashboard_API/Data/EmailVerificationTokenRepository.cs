@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Data
 
             var token = await GetEmailVerificationTokenByTokenHashAsync(tokenHash);
 
-            if (token == null || DateTime.UtcNow > token.ExpiresOnUtc) return null;
+            if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
 
             return token;
         }

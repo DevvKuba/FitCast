@@ -12,6 +12,10 @@
 
         public DateTime ExpiresOnUtc { get; set; }
 
+        public bool IsConsumed { get; set; } = false;
+
+        public DateTime ConsumedAt { get; set; }
+
         public Trainer? Trainer { get; set; } = null;
     }
 }
