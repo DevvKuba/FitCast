@@ -6,6 +6,9 @@ namespace ClientDashboard_API.Interfaces
     {
         Task<PasswordResetToken?> GetPasswordResetTokenByIdAsync(int tokenId);
 
+        Task<PasswordResetToken?> GetPasswordResetTokenByTokenHashAsync(string tokenHash);
+
+        Task<PasswordResetToken?> ValidateTokenAsync(string rawToken);
 
         Task AddPasswordResetTokenAsync(PasswordResetToken token);
     }

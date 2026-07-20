@@ -13,6 +13,22 @@ namespace ClientDashboard_API.Data
             return await context.PasswordResetToken.Where(t => t.Id == tokenId).FirstOrDefaultAsync();
         }
 
+        public async Task<PasswordResetToken?> GetPasswordResetTokenByTokenHashAsync(string tokenHash)
+        {
+            return await context.PasswordResetToken.Where(t => t.TokenHash == tokenHash).FirstOrDefaultAsync();
+        }
+
+        public async Task<PasswordResetToken?> ValidateTokenAsync(string rawToken)
+        {
+            var tokenHash = TokenGenerator.HashToken(rawToken);
+
+            var token = await GetPasswordResetTokenByTokenHashAsync(tokenHash);
+
+            if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
+
+            return token; // validation passes
+
+        }
 
         public async Task AddPasswordResetTokenAsync(PasswordResetToken token)
         {
