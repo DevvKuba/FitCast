@@ -1,6 +1,8 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
+using System.Security.Cryptography;
 
 namespace ClientDashboard_API.Services
 {
@@ -9,9 +11,11 @@ namespace ClientDashboard_API.Services
         public async Task CreateAndSendPasswordResetEmailAsync(UserBase user)
         {
             DateTime currentTime = DateTime.UtcNow;
+            var rawToken = TokenGenerator.GenerateToken();
+
             var passwordResetToken = new PasswordResetToken
             {
-                TokenHash = "",
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 CreatedOnUtc = currentTime,
                 ExpiresOnUtc = currentTime.AddDays(1),
                 UserId = user.Id

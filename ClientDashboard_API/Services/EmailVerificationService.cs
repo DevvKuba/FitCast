@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Data;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using FluentEmail.Core;
 
@@ -10,10 +11,12 @@ namespace ClientDashboard_API.Services
         public async Task CreateAndSendVerificationEmailAsync(Trainer trainer)
         {
             DateTime currentTime = DateTime.UtcNow;
+            var rawToken = TokenGenerator.GenerateToken();
+
             var verificationToken = new EmailVerificationToken
             {
                 TrainerId = trainer.Id,
-                TokenHash = "",
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 CreatedOnUtc = currentTime,
                 ExpiresOnUtc = currentTime.AddDays(1)
             };

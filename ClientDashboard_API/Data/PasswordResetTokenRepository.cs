@@ -1,6 +1,8 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace ClientDashboard_API.Data
 {
@@ -10,6 +12,8 @@ namespace ClientDashboard_API.Data
         {
             return await context.PasswordResetToken.Where(t => t.Id == tokenId).FirstOrDefaultAsync();
         }
+
+
         public async Task AddPasswordResetTokenAsync(PasswordResetToken token)
         {
             await context.AddAsync(token);
