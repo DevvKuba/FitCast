@@ -49,23 +49,25 @@ namespace ClientDashboard_API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("verify-email/{tokenId}", Name = "VerifyEmail")]
-        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(int tokenId)
+        [HttpGet("verify-email/{rawToken}", Name = "VerifyEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(string rawToken)
         {
-            var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(tokenId);
+            var tokenHash = TokenGenerator.HashToken(rawToken);
+
+            var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(tokenHash);
 
             if(verificationToken is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Could not find email verification token", Success = false});
             }
-
+            
             bool success = await verifyEmail.Handle(verificationToken.Id);
 
             if (!success)
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Verification token expired", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = verificationToken.Trainer!.FirstName, Message = "Email verification successful", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = null, Message = "Email verification successful", Success = true });
         }
 
         [AllowAnonymous]
@@ -126,11 +128,8 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"User with email: {userEmail} was not found", Success = false });
             }
 
-            // call service to send the user the reset email
             await passwordResetService.CreateAndSendPasswordResetEmailAsync(user);
 
-            // within the sent fluent link there should be a hyper link that routes to /password-reset
-            // should pass in the user's active Id during as the user clicks on the link
             return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Password reset email successfully sent to: {userEmail}", Success = true });
         }
 

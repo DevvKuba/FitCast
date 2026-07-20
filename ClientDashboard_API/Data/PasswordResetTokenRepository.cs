@@ -25,7 +25,6 @@ namespace ClientDashboard_API.Data
             if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
 
             return token;
-
         }
 
         public async Task AddPasswordResetTokenAsync(PasswordResetToken token)

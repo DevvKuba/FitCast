@@ -19,6 +19,8 @@ namespace ClientDashboard_API.Helpers
             }
 
             token.Trainer.EmailVerified = true;
+            token.IsConsumed = true;
+            token.ConsumedAt = DateTime.UtcNow;
 
             context.EmailVerificationToken.Remove(token);
 
