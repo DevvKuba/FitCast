@@ -8,8 +8,10 @@ namespace ClientDashboard_API.Interfaces
 
         Task<PasswordResetToken?> GetPasswordResetTokenByTokenHashAsync(string tokenHash);
 
-        Task<PasswordResetToken?> ValidateTokenAsync(string rawToken);
+        Task<PasswordResetToken?> ValidateTokenAsync(string tokenHash);
 
         Task AddPasswordResetTokenAsync(PasswordResetToken token);
+
+        void ConsumeToken(PasswordResetToken token);
     }
 }

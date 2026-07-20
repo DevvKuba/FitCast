@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
@@ -137,19 +138,15 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("changeUserPassword")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserPasswordAsync([FromBody] PasswordResetDto passwordResetDetails)
         {
-            var user = await unitOfWork.UserRepository.GetUserByPasswordResetTokenAsync(passwordResetDetails.TokenId);
-            var token = await unitOfWork.PasswordResetTokenRepository.GetPasswordResetTokenByIdAsync(passwordResetDetails.TokenId);
+            var tokenHash = TokenGenerator.HashToken(passwordResetDetails.RawToken);
 
-            if (user is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"User corresponding with reset token: {passwordResetDetails.TokenId} was not found", Success = false });
-            }
-            if (token is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Password reset token was not found", Success = false });
-            }
+            var token = await unitOfWork.PasswordResetTokenRepository.GetPasswordResetTokenByTokenHashAsync(tokenHash);
 
-            // verify that new password is not the same as the old one
+            if (token is null) return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Password reset token was not found", Success = false });
+            
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(token.UserId);
+
+            if (user is null) return NotFound(new ApiResponseDto<string> { Data = null, Message = $"User with reset token: {token.Id} was not found", Success = false });
 
             bool isNewPasswordEqualToOld = passwordHasher.Verify(passwordResetDetails.NewPassword, user.PasswordHash!);
 
@@ -158,20 +155,13 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest( new ApiResponseDto<string> { Data = null, Message = "The new password cannot be the same as the current one", Success = false });
             }
 
-            // token checks
-            if (token.IsConsumed)
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password reset token has already been used", Success = false});
-            }
-            if(token.ExpiresOnUtc < DateTime.UtcNow)
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Password reset token has expired", Success = false });
-            }
+            var validatedToken = await unitOfWork.PasswordResetTokenRepository.ValidateTokenAsync(token.TokenHash);
+
+            if (validatedToken == null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Token did not pass valiation process", Success = false });
 
             unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
 
-            token.IsConsumed = true;
-            token.ConsumedAt = DateTime.UtcNow;
+            unitOfWork.PasswordResetTokenRepository.ConsumeToken(token);
 
             if (!await unitOfWork.Complete())
             {

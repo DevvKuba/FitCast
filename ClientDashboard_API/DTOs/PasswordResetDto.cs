@@ -4,8 +4,8 @@ namespace ClientDashboard_API.DTOs
 {
     public class PasswordResetDto
     {
-        [Required(ErrorMessage = "Token ID is required")]
-        public required int TokenId { get; set; }
+        [Required(ErrorMessage = "Raw token is required")]
+        public required string RawToken { get; set; }
 
         [DataType(DataType.Password)]
         [MinLength(8, ErrorMessage = "Password needs to be at least 8 characters")]
