@@ -4,13 +4,16 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IEmailVerificationTokenRepository
     {
-
         Task<EmailVerificationToken?> GetEmailVerificationTokenByIdAsync(int tokenId);
+
+        Task<EmailVerificationToken?> GetEmailVerificationTokenByIdWithTrainerAsync(int tokenId);
 
         Task<EmailVerificationToken?> GetEmailVerificationTokenByTokenHashAsync(string tokenHash);
 
         Task<EmailVerificationToken?> ValidateTokenAsync(string rawToken);
 
         Task AddEmailVerificationTokenAsync(EmailVerificationToken token);
+
+        void ConsumeToken(EmailVerificationToken token);
     }
 }

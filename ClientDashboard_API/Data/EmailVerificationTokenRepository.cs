@@ -14,6 +14,15 @@ namespace ClientDashboard_API.Data
             return token;
         }
 
+        public async Task<EmailVerificationToken?> GetEmailVerificationTokenByIdWithTrainerAsync(int tokenId)
+        {
+            var token = await context.EmailVerificationToken
+                .Where(t => t.Id == tokenId)
+                .Include(t => t.Trainer)
+                .FirstOrDefaultAsync();
+            return token;
+        }
+
         public async Task<EmailVerificationToken?> GetEmailVerificationTokenByTokenHashAsync(string tokenHash)
         {
             var token = await context.EmailVerificationToken.Where(t => t.TokenHash == tokenHash).FirstOrDefaultAsync();
@@ -34,6 +43,12 @@ namespace ClientDashboard_API.Data
         public async Task AddEmailVerificationTokenAsync(EmailVerificationToken token)
         {
             await context.AddAsync(token);
+        }
+
+        public void ConsumeToken(EmailVerificationToken token)
+        {
+            token.IsConsumed = true;
+            token.ConsumedAt = DateTime.UtcNow;
         }
     }
 }

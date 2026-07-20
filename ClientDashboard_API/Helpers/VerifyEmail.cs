@@ -5,26 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Helpers
 {
-    internal sealed class VerifyEmail(DataContext context) : IVerifyEmail
+    internal sealed class VerifyEmail(IUnitOfWork unitOfWork) : IVerifyEmail
     {
         public async Task<bool> Handle(int tokenId)
         {
-            EmailVerificationToken? token = await context.EmailVerificationToken
-                .Include(e => e.Trainer)
-                .FirstOrDefaultAsync(e => e.Id == tokenId);
+            EmailVerificationToken? token = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByIdWithTrainerAsync(tokenId);
 
-            if(token is null || token.ExpiresOnUtc < DateTime.UtcNow || token.Trainer!.EmailVerified)
+            if (token is null || token.ExpiresOnUtc < DateTime.UtcNow || token.Trainer!.EmailVerified)
             {
                 return false;
             }
 
             token.Trainer.EmailVerified = true;
-            token.IsConsumed = true;
-            token.ConsumedAt = DateTime.UtcNow;
 
-            context.EmailVerificationToken.Remove(token);
+            unitOfWork.EmailVerificationTokenRepository.ConsumeToken(token);
 
-            await context.SaveChangesAsync();
+            await unitOfWork.Complete();
 
             return true;
         } 
