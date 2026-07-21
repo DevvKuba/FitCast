@@ -24,7 +24,7 @@ namespace ClientDashboard_API.Services
             await unitOfWork.PasswordResetTokenRepository.AddPasswordResetTokenAsync(passwordResetToken);
             await unitOfWork.Complete();
 
-            string resetRedirectionLink = linkFactory.Create(passwordResetToken);
+            string resetRedirectionLink = linkFactory.Create(rawToken);
 
             await fluentEmail
                .To(user.Email)
