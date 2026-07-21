@@ -5,12 +5,12 @@ namespace ClientDashboard_API.Helpers
 {
     internal sealed class EmailVerificationLinkFactory(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator) : IEmailVerificationLinkFactory
     {
-        public string Create(EmailVerificationToken emailVerificationToken)
+        public string Create(string rawToken)
         {
             string? verificationLink = linkGenerator.GetUriByName(
                 httpContextAccessor.HttpContext!,
                 "VerifyEmail",
-                new { tokenId = emailVerificationToken.Id });
+                new { rawStringToken = rawToken });
 
             return verificationLink ?? throw new Exception("Could not create email verification link");
         }

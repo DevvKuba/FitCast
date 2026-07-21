@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces
 {
     public interface IEmailVerificationLinkFactory
     {
-        string Create(EmailVerificationToken emailVerificationToken);
+        string Create(string rawToken);
     }
 }

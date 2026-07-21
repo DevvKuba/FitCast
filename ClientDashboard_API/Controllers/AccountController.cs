@@ -49,10 +49,10 @@ namespace ClientDashboard_API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("verify-email/{rawToken}", Name = "VerifyEmail")]
-        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(string rawToken)
+        [HttpGet("verify-email/{rawStringToken}", Name = "VerifyEmail")]
+        public async Task<ActionResult<ApiResponseDto<string>>> VerifyEmailVerificationTokenAsync(string rawStringToken)
         {
-            var tokenHash = TokenGenerator.HashToken(rawToken);
+            var tokenHash = TokenGenerator.HashToken(rawStringToken);
 
             var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(tokenHash);
 
@@ -68,31 +68,6 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Verification token expired", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = "Email verification successful", Success = true });
-        }
-
-        [AllowAnonymous]
-        [HttpGet("verifyClientUnderTrainer")]
-        public async Task<ActionResult<ApiResponseDto<ClientVerificationInfoDto>>> VerfiyClientsTrainerStatusAsync([FromQuery] string trainerPhoneNumber, [FromQuery] string clientFirstName)
-        {
-            // checking if both trainer exists and if the client firstName is currently present under that trainer
-
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByPhoneNumberAsync(trainerPhoneNumber);
-
-            if(trainer is null)
-            {
-                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer not found for client {clientFirstName}", Success = false });
-            }
-
-            var client = await unitOfWork.ClientRepository.GetClientByNameUnderTrainer(trainer, clientFirstName);
-
-            if(client is null)
-            {
-                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer does not have client under the name: ${clientFirstName}", Success = false });
-            }
-
-            var clientVerifiedInfo = new ClientVerificationInfoDto { ClientId = client.Id, TrainerId = trainer.Id };
-
-            return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Client: {clientFirstName} found under Trainer: {trainer.FirstName}", Success = true });
         }
 
         [AllowAnonymous]
@@ -167,6 +142,31 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Failed to update password. Please try again.", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = user.FirstName, Message = $"Successfully changed {user.FirstName}'s password", Success = true });
+        }
+
+        [AllowAnonymous]
+        [HttpGet("verifyClientUnderTrainer")]
+        public async Task<ActionResult<ApiResponseDto<ClientVerificationInfoDto>>> VerfiyClientsTrainerStatusAsync([FromQuery] string trainerPhoneNumber, [FromQuery] string clientFirstName)
+        {
+            // checking if both trainer exists and if the client firstName is currently present under that trainer
+
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByPhoneNumberAsync(trainerPhoneNumber);
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer not found for client {clientFirstName}", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByNameUnderTrainer(trainer, clientFirstName);
+
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer does not have client under the name: ${clientFirstName}", Success = false });
+            }
+
+            var clientVerifiedInfo = new ClientVerificationInfoDto { ClientId = client.Id, TrainerId = trainer.Id };
+
+            return Ok(new ApiResponseDto<ClientVerificationInfoDto> { Data = clientVerifiedInfo, Message = $"Client: {clientFirstName} found under Trainer: {trainer.FirstName}", Success = true });
         }
     }
 }

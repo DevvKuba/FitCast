@@ -24,7 +24,7 @@ namespace ClientDashboard_API.Services
             await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
             await unitOfWork.Complete();
 
-            string verificationLink = linkFactory.Create(verificationToken);
+            string verificationLink = linkFactory.Create(rawToken);
 
             //email verification
             await fluentEmail
