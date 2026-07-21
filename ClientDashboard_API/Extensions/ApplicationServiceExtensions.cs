@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using ClientDashboard_API.Data;
+using ClientDashboard_API.Exceptions;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces;
 using ClientDashboard_API.ML.Helpers;
@@ -93,6 +94,8 @@ namespace ClientDashboard_API.Extensions
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+            services.AddExceptionHandler<GlobalExceptionHandler>();
 
             services.AddAutoMapper(_ => { }, typeof(ApplicationServiceExtensions).Assembly);
 

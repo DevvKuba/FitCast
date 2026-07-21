@@ -266,6 +266,9 @@ namespace ClientDashboard_API
             });
             app.UseHttpsRedirection();
             app.UseCors("AllowSelectiveOrigins");
+
+            app.UseExceptionHandler();
+
             // Authentication should come before Authorization
             // both should run before .MapControllers
             app.UseAuthentication();
