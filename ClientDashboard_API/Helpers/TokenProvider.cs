@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Helpers
                     new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                     new Claim("role", user.Role.ToString())
                     ]),
-                Expires = DateTime.UtcNow.AddDays(configuration.GetValue<int>("Jwt_ExpirationInMinutes")),
+                Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt_ExpirationInMinutes")),
                 SigningCredentials = credentials,
                 Issuer = configuration["Jwt_Issuer"],
                 Audience = configuration["Jwt_Audience"],
