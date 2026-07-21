@@ -95,6 +95,7 @@ namespace ClientDashboard_API.Extensions
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
+            services.AddProblemDetails();
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
             services.AddAutoMapper(_ => { }, typeof(ApplicationServiceExtensions).Assembly);

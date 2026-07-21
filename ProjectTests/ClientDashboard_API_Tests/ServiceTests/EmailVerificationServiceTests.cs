@@ -17,9 +17,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
     // Fake email verification link factory for testing
     public class FakeEmailVerificationLinkFactory : IEmailVerificationLinkFactory
     {
-        public string Create(EmailVerificationToken emailVerificationToken)
+        public string Create(string rawToken)
         {
-            return $"https://example.com/verify/{emailVerificationToken.Id}";
+            return $"https://example.com/verify/{rawToken}";
         }
     }
 

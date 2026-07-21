@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientDashboard_API.Exceptions
 {
-    internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+    internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IProblemDetailsService problemDetailsService) : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
@@ -16,14 +16,17 @@ namespace ClientDashboard_API.Exceptions
                 _ => StatusCodes.Status500InternalServerError
             };
 
-            await httpContext.Response.WriteAsJsonAsync(
-                new ProblemDetails
+            return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+            {
+                HttpContext = httpContext,
+                Exception = exception,
+                ProblemDetails = new ProblemDetails
                 {
                     Type = exception.GetType().Name,
-                    Title = "An error occured",
+                    Title = "An error occurred",
                     Detail = exception.Message
-                });
-            return true;
+                }
+            });
         }
     }
 }

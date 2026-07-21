@@ -17,9 +17,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
     // Fake password reset link factory for testing
     public class FakePasswordResetLinkFactory : IPasswordResetLinkFactory
     {
-        public string Create(PasswordResetToken passwordResetToken)
+        public string Create(string rawToken)
         {
-            return $"https://example.com/reset-password/{passwordResetToken.Id}";
+            return $"https://example.com/reset-password/{rawToken}";
         }
     }
 
