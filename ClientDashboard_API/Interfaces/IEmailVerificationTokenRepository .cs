@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<EmailVerificationToken?> GetEmailVerificationTokenByTokenHashAsync(string tokenHash);
 
-        Task<EmailVerificationToken?> ValidateTokenAsync(string rawToken);
+        Task<EmailVerificationToken?> ValidateTokenAsync(EmailVerificationToken token);
 
         Task AddEmailVerificationTokenAsync(EmailVerificationToken token);
 

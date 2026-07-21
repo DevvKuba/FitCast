@@ -29,12 +29,8 @@ namespace ClientDashboard_API.Data
             return token;
         }
 
-        public async Task<EmailVerificationToken?> ValidateTokenAsync(string rawToken)
+        public async Task<EmailVerificationToken?> ValidateTokenAsync(EmailVerificationToken token)
         {
-            var tokenHash = TokenGenerator.HashToken(rawToken);
-
-            var token = await GetEmailVerificationTokenByTokenHashAsync(tokenHash);
-
             if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
 
             return token;

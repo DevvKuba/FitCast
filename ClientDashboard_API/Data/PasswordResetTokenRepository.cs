@@ -18,10 +18,8 @@ namespace ClientDashboard_API.Data
             return await context.PasswordResetToken.Where(t => t.TokenHash == tokenHash).FirstOrDefaultAsync();
         }
 
-        public async Task<PasswordResetToken?> ValidateTokenAsync(string tokenHash)
+        public async Task<PasswordResetToken?> ValidateTokenAsync(PasswordResetToken token)
         {
-            var token = await GetPasswordResetTokenByTokenHashAsync(tokenHash);
-
             if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
 
             return token;

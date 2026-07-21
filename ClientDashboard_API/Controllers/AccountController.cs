@@ -154,7 +154,7 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest( new ApiResponseDto<string> { Data = null, Message = "The new password cannot be the same as the current one", Success = false });
             }
 
-            var validatedToken = await unitOfWork.PasswordResetTokenRepository.ValidateTokenAsync(token.TokenHash);
+            var validatedToken = await unitOfWork.PasswordResetTokenRepository.ValidateTokenAsync(token);
 
             if (validatedToken == null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Token did not pass valiation process", Success = false });
 
