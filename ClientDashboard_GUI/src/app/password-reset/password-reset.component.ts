@@ -16,15 +16,14 @@ import { ToastService } from '../services/toast.service';
 export class PasswordResetComponent implements OnInit {
   newPassword: string = '';
   confirmPassword: string = '';
-  tokenId: number = 0;
+  rawToken: string = "";
 
   accountService = inject(AccountService);
   toastService = inject(ToastService);
   route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    this.tokenId = Number(this.route.snapshot.queryParamMap.get('token'));
-    console.log(this.tokenId);
+    this.rawToken = String(this.route.snapshot.queryParamMap.get('token'));
   }
 
   resetPassword() {
@@ -32,7 +31,7 @@ export class PasswordResetComponent implements OnInit {
       console.log('Passwords match, proceed with reset');
 
       const passwordResetDetails = {
-        tokenId: this.tokenId,
+        rawToken: this.rawToken,
         newPassword: this.newPassword
       }
       this.accountService.changeUserPassword(passwordResetDetails).subscribe({

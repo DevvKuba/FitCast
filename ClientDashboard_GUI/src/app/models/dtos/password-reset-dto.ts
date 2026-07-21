@@ -1,4 +1,4 @@
 export interface PasswordResetDto {
-  tokenId: number,
+  rawToken: string,
   newPassword: string
 }
