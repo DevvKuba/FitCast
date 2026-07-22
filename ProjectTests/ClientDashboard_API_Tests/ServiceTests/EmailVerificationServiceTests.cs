@@ -17,8 +17,11 @@ namespace ClientDashboard_API_Tests.ServiceTests
     // Fake email verification link factory for testing
     public class FakeEmailVerificationLinkFactory : IEmailVerificationLinkFactory
     {
+        public List<string> CreatedForRawTokens { get; } = new();
+
         public string Create(string rawToken)
         {
+            CreatedForRawTokens.Add(rawToken);
             return $"https://example.com/verify/{rawToken}";
         }
     }
@@ -253,10 +256,15 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Contains("click here", body);
             Assert.Contains("https://example.com/verify/", body);
 
-            // Verify the link includes the token ID
+            // Verify the link contains the raw token, and that its hash matches what was persisted
+            // (the raw token itself is never stored, so this is the only way to tie the two together)
             var tokens = await _context.EmailVerificationToken.ToListAsync();
             Assert.Single(tokens);
-            Assert.Contains($"https://example.com/verify/{tokens[0].Id}", body);
+            Assert.Single(_linkFactory.CreatedForRawTokens);
+
+            var rawToken = _linkFactory.CreatedForRawTokens[0];
+            Assert.Contains($"https://example.com/verify/{rawToken}", body);
+            Assert.Equal(TokenGenerator.HashToken(rawToken), tokens[0].TokenHash);
         }
 
         [Fact]
@@ -352,10 +360,12 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(trainer1.Id, tokens[0].TrainerId);
             Assert.Equal(trainer2.Id, tokens[1].TrainerId);
 
-            // Verify different verification links were sent
+            // Verify different verification links were sent, each containing its own raw token
             Assert.Equal(2, _fluentEmail.SentBodies.Count);
-            Assert.Contains($"https://example.com/verify/{tokens[0].Id}", _fluentEmail.SentBodies[0]);
-            Assert.Contains($"https://example.com/verify/{tokens[1].Id}", _fluentEmail.SentBodies[1]);
+            Assert.Equal(2, _linkFactory.CreatedForRawTokens.Count);
+            Assert.NotEqual(_linkFactory.CreatedForRawTokens[0], _linkFactory.CreatedForRawTokens[1]);
+            Assert.Contains($"https://example.com/verify/{_linkFactory.CreatedForRawTokens[0]}", _fluentEmail.SentBodies[0]);
+            Assert.Contains($"https://example.com/verify/{_linkFactory.CreatedForRawTokens[1]}", _fluentEmail.SentBodies[1]);
         }
 
         [Fact]

@@ -258,13 +258,13 @@ namespace ClientDashboard_API_Tests.ServiceTests
             // Assert
             Assert.NotNull(jsonToken.ValidTo);
             
-            // Expiration should be approximately _expirationInMinutes days from now
-            var expectedExpiration = beforeCreation.AddDays(_expirationInMinutes);
+            // Expiration should be approximately _expirationInMinutes minutes from now
+            var expectedExpiration = beforeCreation.AddMinutes(_expirationInMinutes);
             var actualExpiration = jsonToken.ValidTo;
 
             // Allow 1 minute tolerance for test execution time
             Assert.True(actualExpiration >= expectedExpiration.AddMinutes(-1));
-            Assert.True(actualExpiration <= afterCreation.AddDays(_expirationInMinutes).AddMinutes(1));
+            Assert.True(actualExpiration <= afterCreation.AddMinutes(_expirationInMinutes).AddMinutes(1));
         }
 
         [Fact]

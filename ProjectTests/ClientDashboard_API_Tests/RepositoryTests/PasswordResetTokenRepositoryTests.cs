@@ -1,7 +1,5 @@
 using AutoMapper;
 using ClientDashboard_API.Data;
-using ClientDashboard_API.Dto_s;
-using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
@@ -13,7 +11,7 @@ using Xunit;
 
 namespace ClientDashboard_API_Tests.RepositoryTests
 {
-    public class EmailVerificationTokenRepositoryTests
+    public class PasswordResetTokenRepositoryTests
     {
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
@@ -30,7 +28,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly UnitOfWork _unitOfWork;
 
-        public EmailVerificationTokenRepositoryTests()
+        public PasswordResetTokenRepositoryTests()
         {
             _mapper = TestMapperFactory.Create();
             _passwordHasher = new PasswordHasher();
@@ -53,7 +51,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestAddEmailVerificationTokenAsync()
+        public async Task TestAddPasswordResetTokenAsync()
         {
             var trainer = new Trainer
             {
@@ -67,27 +65,27 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var rawToken = TokenGenerator.GenerateToken();
 
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = trainer.Id,
+                UserId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(rawToken),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
 
-            await _emailVerificationTokenRepository.AddEmailVerificationTokenAsync(token);
+            await _passwordResetTokenRepository.AddPasswordResetTokenAsync(token);
             await _unitOfWork.Complete();
 
-            var savedToken = await _context.EmailVerificationToken.FirstOrDefaultAsync();
+            var savedToken = await _context.PasswordResetToken.FirstOrDefaultAsync();
 
             Assert.NotNull(savedToken);
-            Assert.Equal(trainer.Id, savedToken.TrainerId);
+            Assert.Equal(trainer.Id, savedToken.UserId);
             Assert.True(savedToken.CreatedOnUtc <= DateTime.UtcNow);
             Assert.True(savedToken.ExpiresOnUtc > DateTime.UtcNow);
         }
 
         [Fact]
-        public async Task TestGetEmailVerificationTokenByIdAsync()
+        public async Task TestGetPasswordResetTokenByIdAsync()
         {
             var trainer = new Trainer
             {
@@ -101,69 +99,33 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var rawToken = TokenGenerator.GenerateToken();
 
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = trainer.Id,
+                UserId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(rawToken),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
-            await _context.EmailVerificationToken.AddAsync(token);
+            await _context.PasswordResetToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(token.Id);
+            var retrievedToken = await _passwordResetTokenRepository.GetPasswordResetTokenByIdAsync(token.Id);
 
             Assert.NotNull(retrievedToken);
             Assert.Equal(token.Id, retrievedToken.Id);
-            Assert.Equal(trainer.Id, retrievedToken.TrainerId);
+            Assert.Equal(trainer.Id, retrievedToken.UserId);
         }
 
         [Fact]
-        public async Task TestGetEmailVerificationTokenByIdReturnsNullForNonExistentIdAsync()
+        public async Task TestGetPasswordResetTokenByIdReturnsNullForNonExistentIdAsync()
         {
-            var token = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(999);
+            var token = await _passwordResetTokenRepository.GetPasswordResetTokenByIdAsync(999);
 
             Assert.Null(token);
         }
 
         [Fact]
-        public async Task TestAddEmailVerificationTokenWithExpirationAsync()
-        {
-            var trainer = new Trainer
-            {
-                FirstName = "john",
-                Surname = "doe",
-                Email = "john@example.com",
-                Role = UserRole.Trainer
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var createdTime = DateTime.UtcNow;
-            var expirationTime = createdTime.AddHours(48);
-            var rawToken = TokenGenerator.GenerateToken();
-
-            var token = new EmailVerificationToken
-            {
-                TrainerId = trainer.Id,
-                TokenHash = TokenGenerator.HashToken(rawToken),
-                CreatedOnUtc = createdTime,
-                ExpiresOnUtc = expirationTime
-            };
-
-            await _emailVerificationTokenRepository.AddEmailVerificationTokenAsync(token);
-            await _unitOfWork.Complete();
-
-            var savedToken = await _context.EmailVerificationToken.FirstOrDefaultAsync();
-
-            Assert.NotNull(savedToken);
-            Assert.Equal(trainer.Id, savedToken.TrainerId);
-            Assert.Equal(createdTime.Date, savedToken.CreatedOnUtc.Date);
-            Assert.Equal(expirationTime.Date, savedToken.ExpiresOnUtc.Date);
-        }
-
-        [Fact]
-        public async Task TestGetEmailVerificationTokenByTokenHashAsync()
+        public async Task TestGetPasswordResetTokenByTokenHashAsync()
         {
             var trainer = new Trainer
             {
@@ -178,32 +140,32 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var rawToken = TokenGenerator.GenerateToken();
             var tokenHash = TokenGenerator.HashToken(rawToken);
 
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = trainer.Id,
+                UserId = trainer.Id,
                 TokenHash = tokenHash,
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
-            await _context.EmailVerificationToken.AddAsync(token);
+            await _context.PasswordResetToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(tokenHash);
+            var retrievedToken = await _passwordResetTokenRepository.GetPasswordResetTokenByTokenHashAsync(tokenHash);
 
             Assert.NotNull(retrievedToken);
             Assert.Equal(token.Id, retrievedToken.Id);
         }
 
         [Fact]
-        public async Task TestGetEmailVerificationTokenByTokenHashReturnsNullForUnknownHashAsync()
+        public async Task TestGetPasswordResetTokenByTokenHashReturnsNullForUnknownHashAsync()
         {
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(TokenGenerator.HashToken(TokenGenerator.GenerateToken()));
+            var retrievedToken = await _passwordResetTokenRepository.GetPasswordResetTokenByTokenHashAsync(TokenGenerator.HashToken(TokenGenerator.GenerateToken()));
 
             Assert.Null(retrievedToken);
         }
 
         [Fact]
-        public async Task TestGetEmailVerificationTokenByTokenHashDoesNotMatchADifferentRawTokenAsync()
+        public async Task TestGetPasswordResetTokenByTokenHashDoesNotMatchADifferentRawTokenAsync()
         {
             var trainer = new Trainer
             {
@@ -217,70 +179,35 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var storedRawToken = TokenGenerator.GenerateToken();
 
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = trainer.Id,
+                UserId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(storedRawToken),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
-            await _context.EmailVerificationToken.AddAsync(token);
+            await _context.PasswordResetToken.AddAsync(token);
             await _unitOfWork.Complete();
 
             var differentRawToken = TokenGenerator.GenerateToken();
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(TokenGenerator.HashToken(differentRawToken));
+            var retrievedToken = await _passwordResetTokenRepository.GetPasswordResetTokenByTokenHashAsync(TokenGenerator.HashToken(differentRawToken));
 
             Assert.Null(retrievedToken);
         }
 
         [Fact]
-        public async Task TestGetEmailVerificationTokenByIdWithTrainerIncludesTrainerAsync()
-        {
-            var trainer = new Trainer
-            {
-                FirstName = "john",
-                Surname = "doe",
-                Email = "john@example.com",
-                Role = UserRole.Trainer
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var rawToken = TokenGenerator.GenerateToken();
-
-            var token = new EmailVerificationToken
-            {
-                TrainerId = trainer.Id,
-                TokenHash = TokenGenerator.HashToken(rawToken),
-                CreatedOnUtc = DateTime.UtcNow,
-                ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
-            };
-            await _context.EmailVerificationToken.AddAsync(token);
-            await _unitOfWork.Complete();
-
-            // clear the tracked context so the navigation property can only be populated via .Include
-            _context.ChangeTracker.Clear();
-
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdWithTrainerAsync(token.Id);
-
-            Assert.NotNull(retrievedToken);
-            Assert.NotNull(retrievedToken.Trainer);
-            Assert.Equal(trainer.Id, retrievedToken.Trainer!.Id);
-        }
-
-        [Fact]
         public async Task TestValidateTokenAsyncReturnsTokenWhenValid()
         {
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = 1,
+                UserId = 1,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
                 IsConsumed = false
             };
 
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
+            var result = await _passwordResetTokenRepository.ValidateTokenAsync(token);
 
             Assert.NotNull(result);
             Assert.Equal(token, result);
@@ -289,16 +216,16 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestValidateTokenAsyncReturnsNullForExpiredToken()
         {
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = 1,
+                UserId = 1,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow.AddDays(-2),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(-1),
                 IsConsumed = false
             };
 
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
+            var result = await _passwordResetTokenRepository.ValidateTokenAsync(token);
 
             Assert.Null(result);
         }
@@ -306,9 +233,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestValidateTokenAsyncReturnsNullForConsumedToken()
         {
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = 1,
+                UserId = 1,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
@@ -316,7 +243,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 ConsumedAt = DateTime.UtcNow.AddMinutes(-5)
             };
 
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
+            var result = await _passwordResetTokenRepository.ValidateTokenAsync(token);
 
             Assert.Null(result);
         }
@@ -324,9 +251,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public void TestConsumeTokenSetsIsConsumedAndConsumedAt()
         {
-            var token = new EmailVerificationToken
+            var token = new PasswordResetToken
             {
-                TrainerId = 1,
+                UserId = 1,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
@@ -335,7 +262,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var beforeConsume = DateTime.UtcNow.AddSeconds(-1);
 
-            _emailVerificationTokenRepository.ConsumeToken(token);
+            _passwordResetTokenRepository.ConsumeToken(token);
 
             Assert.True(token.IsConsumed);
             Assert.True(token.ConsumedAt >= beforeConsume);
@@ -343,4 +270,3 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
     }
 }
-

@@ -365,21 +365,23 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var token = new EmailVerificationToken
             {
                 TrainerId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
             await _context.EmailVerificationToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var result = await _accountController.VerifyEmailVerificationTokenAsync(token.Id);
+            var result = await _accountController.VerifyEmailVerificationTokenAsync(rawToken);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("john", response.Data);
 
             var updatedTrainer = await _context.Trainer.FindAsync(trainer.Id);
             Assert.True(updatedTrainer!.EmailVerified);
@@ -388,7 +390,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestVerifyEmailVerificationTokenReturnsNotFoundForInvalidTokenAsync()
         {
-            var result = await _accountController.VerifyEmailVerificationTokenAsync(999);
+            var unusedRawToken = TokenGenerator.GenerateToken();
+
+            var result = await _accountController.VerifyEmailVerificationTokenAsync(unusedRawToken);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -410,15 +414,18 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var token = new EmailVerificationToken
             {
                 TrainerId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(-1) // Expired
             };
             await _context.EmailVerificationToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var result = await _accountController.VerifyEmailVerificationTokenAsync(token.Id);
+            var result = await _accountController.VerifyEmailVerificationTokenAsync(rawToken);
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<string>;
 
@@ -599,9 +606,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var resetToken = new PasswordResetToken
             {
                 UserId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(1),
                 IsConsumed = false
             };
@@ -610,7 +620,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var passwordResetDto = new PasswordResetDto
             {
-                TokenId = resetToken.Id,
+                RawToken = rawToken,
                 NewPassword = "NewPassword456!"
             };
 
@@ -629,9 +639,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeUserPasswordReturnsNotFoundForInvalidUserAsync()
         {
+            var unusedRawToken = TokenGenerator.GenerateToken();
+
             var passwordResetDto = new PasswordResetDto
             {
-                TokenId = 999,
+                RawToken = unusedRawToken,
                 NewPassword = "NewPassword456!"
             };
 
@@ -657,9 +669,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var resetToken = new PasswordResetToken
             {
                 UserId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(1),
                 IsConsumed = false
             };
@@ -668,7 +683,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var passwordResetDto = new PasswordResetDto
             {
-                TokenId = resetToken.Id,
+                RawToken = rawToken,
                 NewPassword = "SamePassword123!"
             };
 
@@ -694,9 +709,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var resetToken = new PasswordResetToken
             {
                 UserId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(1),
                 IsConsumed = true,
                 ConsumedAt = DateTime.UtcNow.AddMinutes(-30)
@@ -706,7 +724,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var passwordResetDto = new PasswordResetDto
             {
-                TokenId = resetToken.Id,
+                RawToken = rawToken,
                 NewPassword = "NewPassword456!"
             };
 
@@ -732,9 +750,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
+            var rawToken = TokenGenerator.GenerateToken();
+
             var resetToken = new PasswordResetToken
             {
                 UserId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(-1), // Expired
                 IsConsumed = false
             };
@@ -743,13 +764,56 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var passwordResetDto = new PasswordResetDto
             {
-                TokenId = resetToken.Id,
+                RawToken = rawToken,
                 NewPassword = "NewPassword456!"
             };
 
             var result = await _accountController.ChangeUserPasswordAsync(passwordResetDto);
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<string>;
+
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
+
+        [Fact]
+        public async Task TestChangeUserPasswordReturnsNotFoundWhenRawTokenDoesNotMatchAnyStoredHashAsync()
+        {
+            var trainer = new Trainer
+            {
+                FirstName = "john",
+                Surname = "doe",
+                Email = "john@example.com",
+                Role = UserRole.Trainer,
+                PasswordHash = _passwordHasher.Hash("OldPassword123!")
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var actualRawToken = TokenGenerator.GenerateToken();
+
+            var resetToken = new PasswordResetToken
+            {
+                UserId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(actualRawToken),
+                ExpiresOnUtc = DateTime.UtcNow.AddHours(1),
+                IsConsumed = false
+            };
+            await _context.PasswordResetToken.AddAsync(resetToken);
+            await _unitOfWork.Complete();
+
+            // a raw token that hashes to a different value than the one stored above
+            var wrongRawToken = TokenGenerator.GenerateToken();
+
+            var passwordResetDto = new PasswordResetDto
+            {
+                RawToken = wrongRawToken,
+                NewPassword = "NewPassword456!"
+            };
+
+            var result = await _accountController.ChangeUserPasswordAsync(passwordResetDto);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            var response = notFoundResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.False(response.Success);
