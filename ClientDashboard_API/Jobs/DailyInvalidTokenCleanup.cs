@@ -3,7 +3,7 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyExpiredTokenCleanup(IUnitOfWork unitOfWork, ILogger<DailyExpiredTokenCleanup> logger ) : IJob
+    public class DailyInvalidTokenCleanup(IUnitOfWork unitOfWork, ILogger<DailyInvalidTokenCleanup> logger ) : IJob
     {
         public Task Execute(IJobExecutionContext context)
         {

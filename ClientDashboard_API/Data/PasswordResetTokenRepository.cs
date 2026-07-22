@@ -18,14 +18,18 @@ namespace ClientDashboard_API.Data
             return await context.PasswordResetToken.Where(t => t.TokenHash == tokenHash).FirstOrDefaultAsync();
         }
 
-        public Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync()
+        public async Task<List<PasswordResetToken>> GetAllExpiredOrConsumedTokensAsync()
         {
-            throw new NotImplementedException();
+            var invalidTokens = await context.PasswordResetToken
+               .Where(t => DateTime.UtcNow >= t.ExpiresOnUtc ||
+               t.IsConsumed == true)
+               .ToListAsync();
+            return invalidTokens;
         }
 
         public async Task<PasswordResetToken?> ValidateTokenAsync(PasswordResetToken token)
         {
-            if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
+            if (token == null || token.IsConsumed || DateTime.UtcNow >= token.ExpiresOnUtc) return null;
 
             return token;
         }

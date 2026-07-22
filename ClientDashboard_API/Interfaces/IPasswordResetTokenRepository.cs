@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Interfaces
 
         Task<PasswordResetToken?> GetPasswordResetTokenByTokenHashAsync(string tokenHash);
 
-        Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync();
+        Task<List<PasswordResetToken>> GetAllExpiredOrConsumedTokensAsync();
 
         Task<PasswordResetToken?> ValidateTokenAsync(PasswordResetToken token);
 

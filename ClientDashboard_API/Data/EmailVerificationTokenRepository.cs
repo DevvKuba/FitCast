@@ -29,14 +29,18 @@ namespace ClientDashboard_API.Data
             return token;
         }
 
-        public Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync()
+        public async Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync()
         {
-            throw new NotImplementedException();
+            var invalidTokens = await context.EmailVerificationToken
+                .Where(t => DateTime.UtcNow >= t.ExpiresOnUtc ||
+                t.IsConsumed == true)
+                .ToListAsync();
+            return invalidTokens;
         }
 
         public async Task<EmailVerificationToken?> ValidateTokenAsync(EmailVerificationToken token)
         {
-            if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
+            if (token == null || token.IsConsumed || DateTime.UtcNow >= token.ExpiresOnUtc) return null;
 
             return token;
         }
