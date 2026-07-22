@@ -3,19 +3,42 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyInvalidTokenCleanup(IUnitOfWork unitOfWork, ILogger<DailyInvalidTokenCleanup> logger ) : IJob
+    public class DailyInvalidTokenCleanup(IUnitOfWork unitOfWork, ILogger<DailyInvalidTokenCleanup> logger) : IJob
     {
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            // log job starting
+            logger.LogInformation("Daily invalid token cleaup STARTING");
 
-            // gather all expired email verification tokens
-            // then all password reset tokens
+            var invalidPasswordResetTokens = await unitOfWork.PasswordResetTokenRepository.GetAllExpiredOrConsumedTokensAsync();
 
-            // call a method as part of each corresponding repository to run a loop 
-            // to remove them all systemetically (mark as deleted via EF core)
+            logger.LogInformation("Retrieved: {tokenCount} invalid password reset tokens", invalidPasswordResetTokens.Count);
 
-            // save changes
+            var invalidEmailVerificationTokens = await unitOfWork.EmailVerificationTokenRepository.GetAllExpiredOrConsumedTokensAsync();
+
+            logger.LogInformation("Retrieved: {tokenCount} invalid email verification tokens", invalidEmailVerificationTokens.Count);
+
+            foreach (var passwordToken in invalidPasswordResetTokens)
+            {
+                unitOfWork.PasswordResetTokenRepository.RemoveToken(passwordToken);
+                invalidPasswordResetTokens.Remove(passwordToken);
+            }
+
+            foreach (var emailToken in invalidEmailVerificationTokens)
+            {
+                unitOfWork.EmailVerificationTokenRepository.RemoveToken(emailToken);
+                invalidEmailVerificationTokens.Remove(emailToken);
+            }
+
+            if(invalidPasswordResetTokens.Count == 0 || invalidEmailVerificationTokens.Count == 0)
+            {
+                logger.LogError("Not all invalid tokens have been removed");
+            }
+            else
+            {
+                logger.LogInformation("Invalid token removed process complete");
+            }
+
+            await unitOfWork.Complete();
         }
     }
 }

@@ -58,7 +58,7 @@ namespace ClientDashboard_API.Data
 
         public void RemoveToken(EmailVerificationToken token)
         {
-            throw new NotImplementedException();
+            context.EmailVerificationToken.Remove(token);
         }
     }
 }

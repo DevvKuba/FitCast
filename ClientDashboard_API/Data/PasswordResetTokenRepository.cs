@@ -47,7 +47,7 @@ namespace ClientDashboard_API.Data
 
         public void RemoveToken(PasswordResetToken token)
         {
-            throw new NotImplementedException();
+            context.PasswordResetToken.Remove(token);
         }
     }
 }
