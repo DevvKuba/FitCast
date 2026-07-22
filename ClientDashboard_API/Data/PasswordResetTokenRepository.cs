@@ -18,6 +18,11 @@ namespace ClientDashboard_API.Data
             return await context.PasswordResetToken.Where(t => t.TokenHash == tokenHash).FirstOrDefaultAsync();
         }
 
+        public Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<PasswordResetToken?> ValidateTokenAsync(PasswordResetToken token)
         {
             if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
@@ -34,6 +39,11 @@ namespace ClientDashboard_API.Data
         {
             token.IsConsumed = true;
             token.ConsumedAt = DateTime.UtcNow;
+        }
+
+        public void RemoveToken(PasswordResetToken token)
+        {
+            throw new NotImplementedException();
         }
     }
 }

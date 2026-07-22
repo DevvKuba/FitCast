@@ -10,10 +10,14 @@ namespace ClientDashboard_API.Interfaces
 
         Task<EmailVerificationToken?> GetEmailVerificationTokenByTokenHashAsync(string tokenHash);
 
+        Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync();
+
         Task<EmailVerificationToken?> ValidateTokenAsync(EmailVerificationToken token);
 
         Task AddEmailVerificationTokenAsync(EmailVerificationToken token);
 
         void ConsumeToken(EmailVerificationToken token);
+
+        void RemoveToken(EmailVerificationToken token);
     }
 }

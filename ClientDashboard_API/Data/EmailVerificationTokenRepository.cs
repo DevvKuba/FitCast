@@ -29,6 +29,11 @@ namespace ClientDashboard_API.Data
             return token;
         }
 
+        public Task<List<EmailVerificationToken>> GetAllExpiredOrConsumedTokensAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<EmailVerificationToken?> ValidateTokenAsync(EmailVerificationToken token)
         {
             if (token == null || token.IsConsumed || DateTime.UtcNow > token.ExpiresOnUtc) return null;
@@ -45,6 +50,11 @@ namespace ClientDashboard_API.Data
         {
             token.IsConsumed = true;
             token.ConsumedAt = DateTime.UtcNow;
+        }
+
+        public void RemoveToken(EmailVerificationToken token)
+        {
+            throw new NotImplementedException();
         }
     }
 }
