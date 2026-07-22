@@ -305,18 +305,29 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
         {
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
-            var revenueRecord = await unitOfWork.TrainerDailyRevenueRepository.GetFirstRevenueRecordForTrainerAsync(trainerId);
 
-            if (trainer is null || revenueRecord is null)
+            if (trainer is null)
             {
-                return NotFound(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "trainer does not exist or doesn't have an revenue records", Success = false });
+                return NotFound(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> {Data = null, Message = "trainer does not exist", Success = false });
             }
 
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
 
             if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
             {
-                return new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = null, Message = "No revenue records for this month", Success = true };
+                return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> {
+                    Data = new CurrentMonthTrainerAnalyticsDto
+                    {
+                        BaseClients = 0,
+                        MonthlyClientSessions = 0,
+                        TotalRevenue = 0,
+                        TotalWorktimeMinutes = 0,
+                        RevenuePerWorkingDay = 0,
+                        WeeklySessionsCounts = []
+                    }, 
+                    Message = "Clean state returning, no revenue records for this month", 
+                    Success = true 
+                });
             }
 
             var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
