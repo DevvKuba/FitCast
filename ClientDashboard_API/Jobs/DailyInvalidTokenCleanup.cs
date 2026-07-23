@@ -20,16 +20,20 @@ namespace ClientDashboard_API.Jobs
             foreach (var passwordToken in invalidPasswordResetTokens)
             {
                 unitOfWork.PasswordResetTokenRepository.RemoveToken(passwordToken);
-                invalidPasswordResetTokens.Remove(passwordToken);
             }
 
             foreach (var emailToken in invalidEmailVerificationTokens)
             {
                 unitOfWork.EmailVerificationTokenRepository.RemoveToken(emailToken);
-                invalidEmailVerificationTokens.Remove(emailToken);
             }
 
-            if(invalidPasswordResetTokens.Count == 0 || invalidEmailVerificationTokens.Count == 0)
+            await unitOfWork.Complete();
+
+            var newInvalidPasswordResetTokens = await unitOfWork.PasswordResetTokenRepository.GetAllExpiredOrConsumedTokensAsync();
+
+            var newInvalidEmailVerificationTokens = await unitOfWork.EmailVerificationTokenRepository.GetAllExpiredOrConsumedTokensAsync();
+
+            if (newInvalidPasswordResetTokens.Count == 0 || newInvalidEmailVerificationTokens.Count == 0)
             {
                 logger.LogError("Not all invalid tokens have been removed");
             }
@@ -38,7 +42,6 @@ namespace ClientDashboard_API.Jobs
                 logger.LogInformation("Invalid token removed process complete");
             }
 
-            await unitOfWork.Complete();
         }
     }
 }

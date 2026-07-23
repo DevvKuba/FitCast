@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
+using Quartz.Listener;
 using System.Globalization;
 using System.Text;
 
@@ -111,80 +112,56 @@ namespace ClientDashboard_API
             // used https://www.youtube.com/watch?v=iD3jrj3RBuc as a means of support
             // when establishing first workout gathering job
 
+            // Job keys are declared here (rather than inline inside AddQuartz) so the same
+            // JobKey instances can be reused below to wire up the JobChainingJobListener once
+            // the scheduler exists. Chain order: WorkoutSync -> InvalidTokenCleanup ->
+            // InvisiblePaymentCleanup -> DeletedClientCleanup -> ClientDataGathering -> TrainerRevenueGathering
+            var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
+            var invalidTokenCleanupJobKey = new JobKey("DailyInvalidTokenCleanup");
+            var invisiblePaymentCleanupJobKey = new JobKey("DailyInvisiblePaymentCleanup");
+            var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
+            var clientDataJobKey = new JobKey("DailyClientDataGathering");
+            var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
+
             builder.Services.AddQuartz(q =>
             {
                 var timezone = TimeZoneInfo.Utc;
 
-                // key for background job
-                var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
-
                 // registering job for DI container
                 q.AddJob<DailyTrainerWorkoutRetrieval>(opts => opts.WithIdentity(workoutSyncJobKey));
 
-                // setting up scheduled job trigger for midnight execution
+                // only the first job in the chain has a cron trigger - every job after it
+                // is started by the JobChainingJobListener once the previous one finishes
                 q.AddTrigger(opts => opts
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
-                .WithCronSchedule("0 0 0 * * ?", x => x 
+                .WithCronSchedule("0 0 0 * * ?", x => x
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
-                .WithDescription("Runs daily at midnight - 12:00AM to sync Hevy workouts")
+                .WithDescription("Runs daily at midnight - 12:00AM to begin all background jobs")
                 );
 
 
-                var clientDataJobKey = new JobKey("DailyClientDataGathering");
-
-                q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey));
-
-                q.AddTrigger(opts => opts
-                .ForJob(clientDataJobKey)
-                .WithIdentity("DailyClientDataGathering-trigger")
-                .WithCronSchedule("0 5 0 * * ?", x => x
-                .InTimeZone(timezone)
-                .WithMisfireHandlingInstructionFireAndProceed())
-                .WithDescription("Runs daily 5 minutes past midnight - 12:05AM to gather Client Feature Data"));
+                // chain-triggered by DailyWorkoutSyncJob completing - no trigger of its own
+                q.AddJob<DailyInvalidTokenCleanup>(opts => opts.WithIdentity(invalidTokenCleanupJobKey));
 
 
-                var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
-
-                q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey));
-
-                q.AddTrigger(opts => opts
-                .ForJob(trainerRevenueJobKey)
-                .WithIdentity("DailyTrainerRevenueGathering-trigger")
-                .WithCronSchedule("0 10 0 * * ?", x => x
-                .InTimeZone(timezone)
-                .WithMisfireHandlingInstructionFireAndProceed())
-                .WithDescription("Runs daily 10 minutes past midnight - 12:10AM to gather Trainer Revenue Data")); 
-
-
-                var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
-
-                q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey));
-
-                q.AddTrigger(opts => opts
-                .ForJob(deletedClientCleanupJobKey)
-                .WithIdentity("DailyDeletedClientCleanup-trigger")
-                .WithCronSchedule("0 15 0 * * ?", x => x
-                .InTimeZone(timezone)
-                .WithMisfireHandlingInstructionFireAndProceed())
-                .WithDescription("Runs daily 15 minutes past midnight - 12:15AM to permanently remove clients soft-deleted for at least 3 months"));
-
-
-                var invisiblePaymentCleanupJobKey = new JobKey("DailyInvisiblePaymentCleanup");
-
+                // chain-triggered by DailyInvalidTokenCleanup completing - no trigger of its own
                 q.AddJob<DailyInvisiblePaymentCleanup>(opts => opts.WithIdentity(invisiblePaymentCleanupJobKey));
 
-                q.AddTrigger(opts => opts
-                .ForJob(invisiblePaymentCleanupJobKey)
-                .WithIdentity("DailyInvisiblePaymentCleanup-trigger")
-                .WithCronSchedule("0 20 0 * * ?", x => x
-                .InTimeZone(timezone)
-                .WithMisfireHandlingInstructionFireAndProceed())
-                .WithDescription("Runs daily 20 minutes past midnight - 12:20AM to permanently remove invisible payments for at least 3 months"));
 
+                // chain-triggered by DailyInvisiblePaymentCleanup completing - no trigger of its own
+                q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey));
+
+
+                // chain-triggered by DailyDeletedClientCleanup completing - no trigger of its own
+                q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey));
+
+
+                // chain-triggered by DailyClientDataGathering completing - no trigger of its own
+                q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey));
             });
-            
+
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
             var app = builder.Build();
@@ -228,6 +205,26 @@ namespace ClientDashboard_API
                         await context.Database.EnsureCreatedAsync(); // bootstrap database schema when no migrations exist
                     }
                 }
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+                var scheduler = await schedulerFactory.GetScheduler();
+
+                // registered globally: it only acts on jobs that have an explicit chain link below,
+                // so it's safe even if more (unrelated) jobs are added to the scheduler later.
+                // Chaining fires the next job regardless of whether the previous one succeeded or
+                // threw - these five jobs are independent cleanup/gathering processes, not a
+                // fail-fast pipeline, so that's the desired behaviour here, not an oversight.
+                var dailyJobChainListener = new JobChainingJobListener("DailyJobChain");
+                dailyJobChainListener.AddJobChainLink(workoutSyncJobKey, invalidTokenCleanupJobKey);
+                dailyJobChainListener.AddJobChainLink(invalidTokenCleanupJobKey, invisiblePaymentCleanupJobKey);
+                dailyJobChainListener.AddJobChainLink(invisiblePaymentCleanupJobKey, deletedClientCleanupJobKey);
+                dailyJobChainListener.AddJobChainLink(deletedClientCleanupJobKey, clientDataJobKey);
+                dailyJobChainListener.AddJobChainLink(clientDataJobKey, trainerRevenueJobKey);
+
+                scheduler.ListenerManager.AddJobListener(dailyJobChainListener);
             }
 
             // captures the bool set to EnableSwagger on azure
