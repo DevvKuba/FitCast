@@ -142,7 +142,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
         public async Task<bool> Handle(int tokenId)
         {
-            var token = await _unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(tokenId);
+            var token = await _unitOfWork.EmailVerificationTokenRepository.GetTokenByIdAsync(tokenId);
 
             if (token == null || token.ExpiresOnUtc < DateTime.UtcNow)
             {

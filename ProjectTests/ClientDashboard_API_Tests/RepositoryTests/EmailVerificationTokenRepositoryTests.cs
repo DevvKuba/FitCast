@@ -13,6 +13,10 @@ using Xunit;
 
 namespace ClientDashboard_API_Tests.RepositoryTests
 {
+    // covers the shared ITokenRepository<EmailVerificationToken> surface (inherited from
+    // TokenRepository<EmailVerificationToken>) plus the entity-specific
+    // GetTokenByIdWithTrainerAsync. IsValid()/Consume() now live on TokenBase and are
+    // covered once, generically, in TokenBaseTests.cs rather than duplicated per repo.
     public class EmailVerificationTokenRepositoryTests
     {
         private readonly IMapper _mapper;
@@ -75,7 +79,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
             };
 
-            await _emailVerificationTokenRepository.AddEmailVerificationTokenAsync(token);
+            await _emailVerificationTokenRepository.AddTokenAsync(token);
             await _unitOfWork.Complete();
 
             var savedToken = await _context.EmailVerificationToken.FirstOrDefaultAsync();
@@ -111,7 +115,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.EmailVerificationToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(token.Id);
+            var retrievedToken = await _emailVerificationTokenRepository.GetTokenByIdAsync(token.Id);
 
             Assert.NotNull(retrievedToken);
             Assert.Equal(token.Id, retrievedToken.Id);
@@ -121,7 +125,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetEmailVerificationTokenByIdReturnsNullForNonExistentIdAsync()
         {
-            var token = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdAsync(999);
+            var token = await _emailVerificationTokenRepository.GetTokenByIdAsync(999);
 
             Assert.Null(token);
         }
@@ -151,7 +155,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 ExpiresOnUtc = expirationTime
             };
 
-            await _emailVerificationTokenRepository.AddEmailVerificationTokenAsync(token);
+            await _emailVerificationTokenRepository.AddTokenAsync(token);
             await _unitOfWork.Complete();
 
             var savedToken = await _context.EmailVerificationToken.FirstOrDefaultAsync();
@@ -188,7 +192,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.EmailVerificationToken.AddAsync(token);
             await _unitOfWork.Complete();
 
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(tokenHash);
+            var retrievedToken = await _emailVerificationTokenRepository.GetTokenByTokenHashAsync(tokenHash);
 
             Assert.NotNull(retrievedToken);
             Assert.Equal(token.Id, retrievedToken.Id);
@@ -197,7 +201,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         [Fact]
         public async Task TestGetEmailVerificationTokenByTokenHashReturnsNullForUnknownHashAsync()
         {
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(TokenGenerator.HashToken(TokenGenerator.GenerateToken()));
+            var retrievedToken = await _emailVerificationTokenRepository.GetTokenByTokenHashAsync(TokenGenerator.HashToken(TokenGenerator.GenerateToken()));
 
             Assert.Null(retrievedToken);
         }
@@ -228,7 +232,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             var differentRawToken = TokenGenerator.GenerateToken();
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(TokenGenerator.HashToken(differentRawToken));
+            var retrievedToken = await _emailVerificationTokenRepository.GetTokenByTokenHashAsync(TokenGenerator.HashToken(differentRawToken));
 
             Assert.Null(retrievedToken);
         }
@@ -261,7 +265,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             // clear the tracked context so the navigation property can only be populated via .Include
             _context.ChangeTracker.Clear();
 
-            var retrievedToken = await _emailVerificationTokenRepository.GetEmailVerificationTokenByIdWithTrainerAsync(token.Id);
+            var retrievedToken = await _emailVerificationTokenRepository.GetTokenByIdWithTrainerAsync(token.Id);
 
             Assert.NotNull(retrievedToken);
             Assert.NotNull(retrievedToken.Trainer);
@@ -269,78 +273,84 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestValidateTokenAsyncReturnsTokenWhenValid()
+        public async Task TestRemoveTokenAsync()
         {
+            var trainer = new Trainer
+            {
+                FirstName = "john",
+                Surname = "doe",
+                Email = "john@example.com",
+                Role = UserRole.Trainer
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var rawToken = TokenGenerator.GenerateToken();
+
             var token = new EmailVerificationToken
             {
-                TrainerId = 1,
+                TrainerId = trainer.Id,
+                TokenHash = TokenGenerator.HashToken(rawToken),
+                CreatedOnUtc = DateTime.UtcNow,
+                ExpiresOnUtc = DateTime.UtcNow.AddHours(24)
+            };
+            await _context.EmailVerificationToken.AddAsync(token);
+            await _unitOfWork.Complete();
+
+            _emailVerificationTokenRepository.RemoveToken(token);
+            await _unitOfWork.Complete();
+
+            var remainingToken = await _context.EmailVerificationToken.FindAsync(token.Id);
+            Assert.Null(remainingToken);
+        }
+
+        [Fact]
+        public async Task TestGetAllExpiredOrConsumedTokensReturnsOnlyInvalidTokensAsync()
+        {
+            var trainer = new Trainer
+            {
+                FirstName = "john",
+                Surname = "doe",
+                Email = "john@example.com",
+                Role = UserRole.Trainer
+            };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var validToken = new EmailVerificationToken
+            {
+                TrainerId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
                 IsConsumed = false
             };
-
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
-
-            Assert.NotNull(result);
-            Assert.Equal(token, result);
-        }
-
-        [Fact]
-        public async Task TestValidateTokenAsyncReturnsNullForExpiredToken()
-        {
-            var token = new EmailVerificationToken
+            var expiredToken = new EmailVerificationToken
             {
-                TrainerId = 1,
+                TrainerId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow.AddDays(-2),
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(-1),
                 IsConsumed = false
             };
-
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task TestValidateTokenAsyncReturnsNullForConsumedToken()
-        {
-            var token = new EmailVerificationToken
+            var consumedToken = new EmailVerificationToken
             {
-                TrainerId = 1,
+                TrainerId = trainer.Id,
                 TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
                 CreatedOnUtc = DateTime.UtcNow,
                 ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
                 IsConsumed = true,
                 ConsumedAt = DateTime.UtcNow.AddMinutes(-5)
             };
+            await _context.EmailVerificationToken.AddRangeAsync(validToken, expiredToken, consumedToken);
+            await _unitOfWork.Complete();
 
-            var result = await _emailVerificationTokenRepository.ValidateTokenAsync(token);
+            var invalidTokens = await _emailVerificationTokenRepository.GetAllExpiredOrConsumedTokensAsync();
 
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void TestConsumeTokenSetsIsConsumedAndConsumedAt()
-        {
-            var token = new EmailVerificationToken
-            {
-                TrainerId = 1,
-                TokenHash = TokenGenerator.HashToken(TokenGenerator.GenerateToken()),
-                CreatedOnUtc = DateTime.UtcNow,
-                ExpiresOnUtc = DateTime.UtcNow.AddHours(24),
-                IsConsumed = false
-            };
-
-            var beforeConsume = DateTime.UtcNow.AddSeconds(-1);
-
-            _emailVerificationTokenRepository.ConsumeToken(token);
-
-            Assert.True(token.IsConsumed);
-            Assert.True(token.ConsumedAt >= beforeConsume);
-            Assert.True(token.ConsumedAt <= DateTime.UtcNow.AddSeconds(1));
+            Assert.Equal(2, invalidTokens.Count);
+            Assert.Contains(invalidTokens, t => t.Id == expiredToken.Id);
+            Assert.Contains(invalidTokens, t => t.Id == consumedToken.Id);
+            Assert.DoesNotContain(invalidTokens, t => t.Id == validToken.Id);
         }
     }
 }
-
