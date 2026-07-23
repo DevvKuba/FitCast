@@ -135,31 +135,34 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
-                .WithCronSchedule("0 0 0 * * ?", x => x
+                .WithCronSchedule("2 11 0 * * ?", x => x
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily at midnight - 12:00AM to begin all background jobs")
                 );
 
 
-                // chain-triggered by DailyWorkoutSyncJob completing - no trigger of its own
-                q.AddJob<DailyInvalidTokenCleanup>(opts => opts.WithIdentity(invalidTokenCleanupJobKey));
+                // chain-triggered by DailyWorkoutSyncJob completing - no trigger of its own.
+                // StoreDurably() is required here: Quartz normally drops triggerless jobs as
+                // orphaned, so a job that's only ever started via TriggerJob (as the chain
+                // listener does) has to opt out of that by declaring itself durable.
+                q.AddJob<DailyInvalidTokenCleanup>(opts => opts.WithIdentity(invalidTokenCleanupJobKey).StoreDurably());
 
 
                 // chain-triggered by DailyInvalidTokenCleanup completing - no trigger of its own
-                q.AddJob<DailyInvisiblePaymentCleanup>(opts => opts.WithIdentity(invisiblePaymentCleanupJobKey));
+                q.AddJob<DailyInvisiblePaymentCleanup>(opts => opts.WithIdentity(invisiblePaymentCleanupJobKey).StoreDurably());
 
 
                 // chain-triggered by DailyInvisiblePaymentCleanup completing - no trigger of its own
-                q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey));
+                q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey).StoreDurably());
 
 
                 // chain-triggered by DailyDeletedClientCleanup completing - no trigger of its own
-                q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey));
+                q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey).StoreDurably());
 
 
                 // chain-triggered by DailyClientDataGathering completing - no trigger of its own
-                q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey));
+                q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey).StoreDurably());
             });
 
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
