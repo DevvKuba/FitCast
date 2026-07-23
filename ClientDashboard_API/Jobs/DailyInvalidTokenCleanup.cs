@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Jobs
 
             var newInvalidEmailVerificationTokens = await unitOfWork.EmailVerificationTokenRepository.GetAllExpiredOrConsumedTokensAsync();
 
-            if (newInvalidPasswordResetTokens.Count == 0 || newInvalidEmailVerificationTokens.Count == 0)
+            if (newInvalidPasswordResetTokens.Count != 0 || newInvalidEmailVerificationTokens.Count != 0)
             {
                 logger.LogError("Not all invalid tokens have been removed");
             }

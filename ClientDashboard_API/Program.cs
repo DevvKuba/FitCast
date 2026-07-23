@@ -135,7 +135,7 @@ namespace ClientDashboard_API
                 q.AddTrigger(opts => opts
                 .ForJob(workoutSyncJobKey)
                 .WithIdentity("DailyWorkoutSyncJob-trigger")
-                .WithCronSchedule("2 11 0 * * ?", x => x
+                .WithCronSchedule("0 0 0 * * ?", x => x
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
                 .WithDescription("Runs daily at midnight - 12:00AM to begin all background jobs")

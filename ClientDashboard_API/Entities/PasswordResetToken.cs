@@ -1,20 +1,10 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using ClientDashboard_API.Helpers;
+
+namespace ClientDashboard_API.Entities
 {
-    public class PasswordResetToken
+    public class PasswordResetToken : TokenBase
     {
-        public int Id { get; set; }
-
-        public required string TokenHash { get; set; }
-
         public int UserId { get; set; }
-
-        public DateTime CreatedOnUtc { get; set; }
-
-        public DateTime ExpiresOnUtc { get; set; }
-
-        public bool IsConsumed { get; set; } = false;
-
-        public DateTime ConsumedAt { get; set; }
 
         public UserBase? User { get; set; } = null;
     }
