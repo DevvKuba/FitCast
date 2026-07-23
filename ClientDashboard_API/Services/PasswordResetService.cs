@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Services
                 UserId = user.Id
             };
 
-            await unitOfWork.PasswordResetTokenRepository.AddPasswordResetTokenAsync(passwordResetToken);
+            await unitOfWork.PasswordResetTokenRepository.AddTokenAsync(passwordResetToken);
             await unitOfWork.Complete();
 
             string resetRedirectionLink = linkFactory.Create(rawToken);

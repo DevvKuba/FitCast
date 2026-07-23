@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Interfaces
 {
-    public interface IPasswordResetTokenRepository
+    public interface IPasswordResetTokenRepository : ITokenRepository<PasswordResetToken>
     {
 
     }

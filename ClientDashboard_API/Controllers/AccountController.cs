@@ -54,7 +54,7 @@ namespace ClientDashboard_API.Controllers
         {
             var tokenHash = TokenGenerator.HashToken(rawStringToken);
 
-            var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByTokenHashAsync(tokenHash);
+            var verificationToken = await unitOfWork.EmailVerificationTokenRepository.GetTokenByTokenHashAsync(tokenHash);
 
             if(verificationToken is null)
             {
@@ -114,10 +114,10 @@ namespace ClientDashboard_API.Controllers
         {
             var tokenHash = TokenGenerator.HashToken(passwordResetDetails.RawToken);
 
-            var token = await unitOfWork.PasswordResetTokenRepository.GetPasswordResetTokenByTokenHashAsync(tokenHash);
+            var token = await unitOfWork.PasswordResetTokenRepository.GetTokenByTokenHashAsync(tokenHash);
 
             if (token is null) return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Password reset token was not found", Success = false });
-            
+
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(token.UserId);
 
             if (user is null) return NotFound(new ApiResponseDto<string> { Data = null, Message = $"User with reset token: {token.Id} was not found", Success = false });
@@ -129,13 +129,11 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest( new ApiResponseDto<string> { Data = null, Message = "The new password cannot be the same as the current one", Success = false });
             }
 
-            var validatedToken = await unitOfWork.PasswordResetTokenRepository.ValidateTokenAsync(token);
-
-            if (validatedToken == null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Token did not pass valiation process", Success = false });
+            if (!token.IsValid()) return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Token did not pass valiation process", Success = false });
 
             unitOfWork.UserRepository.ChangeUserPassword(user, passwordResetDetails.NewPassword);
 
-            unitOfWork.PasswordResetTokenRepository.ConsumeToken(token);
+            token.Consume();
 
             if (!await unitOfWork.Complete())
             {

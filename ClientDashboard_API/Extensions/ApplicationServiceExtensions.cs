@@ -69,6 +69,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
             services.AddScoped<IClientDailyFeatureRepository, ClientDailyFeatureRepository>();
             services.AddScoped<ITrainerDailyRevenueRepository, TrainerDailyRevenueRepository>();
+            services.AddScoped(typeof(ITokenRepository<>), typeof(TokenRepository<>));
 
             services.AddScoped<IVerifyEmail, VerifyEmail>();
             services.AddScoped<ISessionDataParser, HevySessionDataService>();

@@ -2,7 +2,7 @@
 
 namespace ClientDashboard_API.Interfaces
 {
-    public interface IEmailVerificationTokenRepository
+    public interface IEmailVerificationTokenRepository : ITokenRepository<EmailVerificationToken>
     {
         Task<EmailVerificationToken?> GetTokenByIdWithTrainerAsync(int tokenId);
     }

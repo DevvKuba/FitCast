@@ -9,7 +9,7 @@ namespace ClientDashboard_API.Helpers
     {
         public async Task<bool> Handle(int tokenId)
         {
-            EmailVerificationToken? token = await unitOfWork.EmailVerificationTokenRepository.GetEmailVerificationTokenByIdWithTrainerAsync(tokenId);
+            EmailVerificationToken? token = await unitOfWork.EmailVerificationTokenRepository.GetTokenByIdWithTrainerAsync(tokenId);
 
             if (token is null || token.ExpiresOnUtc < DateTime.UtcNow || token.Trainer!.EmailVerified)
             {
@@ -18,7 +18,7 @@ namespace ClientDashboard_API.Helpers
 
             token.Trainer.EmailVerified = true;
 
-            unitOfWork.EmailVerificationTokenRepository.ConsumeToken(token);
+            token.Consume();
 
             await unitOfWork.Complete();
 

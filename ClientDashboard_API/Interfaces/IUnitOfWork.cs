@@ -14,7 +14,6 @@
         INotificationRecipientStatusRepository NotificationRecipientStatusRepository { get; }
 
         IPaymentRepository PaymentRepository { get; }
-
         IEmailVerificationTokenRepository EmailVerificationTokenRepository { get; }
 
         IPasswordResetTokenRepository PasswordResetTokenRepository { get; }

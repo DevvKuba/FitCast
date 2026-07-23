@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Services
                 ExpiresOnUtc = currentTime.AddDays(1)
             };
 
-            await unitOfWork.EmailVerificationTokenRepository.AddEmailVerificationTokenAsync(verificationToken);
+            await unitOfWork.EmailVerificationTokenRepository.AddTokenAsync(verificationToken);
             await unitOfWork.Complete();
 
             string verificationLink = linkFactory.Create(rawToken);
