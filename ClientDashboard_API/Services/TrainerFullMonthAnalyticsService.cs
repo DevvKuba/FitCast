@@ -2,7 +2,7 @@
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Services;
 using ClientDashboard_API.Records;
 
 namespace ClientDashboard_API.Services

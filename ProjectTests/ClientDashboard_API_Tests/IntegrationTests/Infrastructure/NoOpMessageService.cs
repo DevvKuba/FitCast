@@ -1,5 +1,5 @@
 using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Services;
 
 namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 {

@@ -1,6 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 
-namespace ClientDashboard_API.Interfaces
+namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface IClientDailyFeatureRepository
     {

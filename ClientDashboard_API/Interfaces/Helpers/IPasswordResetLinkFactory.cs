@@ -1,6 +1,6 @@
 ﻿using ClientDashboard_API.Entities;
 
-namespace ClientDashboard_API.Interfaces
+namespace ClientDashboard_API.Interfaces.Helpers
 {
     public interface IPasswordResetLinkFactory
     {

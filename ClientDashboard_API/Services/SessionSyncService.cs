@@ -1,5 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
+using ClientDashboard_API.Interfaces.Helpers;
 using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services

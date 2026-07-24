@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.Data;
 using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Helpers

@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
 using Quartz;
 
 namespace ClientDashboard_API.Jobs

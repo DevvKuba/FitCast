@@ -1,6 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
 
 namespace ClientDashboard_API.Data
 {

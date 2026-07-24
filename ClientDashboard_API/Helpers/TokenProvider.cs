@@ -1,5 +1,5 @@
 ﻿using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;

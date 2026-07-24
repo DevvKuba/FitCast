@@ -1,5 +1,5 @@
 using ClientDashboard_API.Data;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

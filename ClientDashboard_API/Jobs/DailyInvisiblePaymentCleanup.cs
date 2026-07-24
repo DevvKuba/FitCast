@@ -1,4 +1,4 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Interfaces.Repositories;
 using Quartz;
 
 namespace ClientDashboard_API.Jobs

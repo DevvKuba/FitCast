@@ -1,7 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Helpers;
 
-namespace ClientDashboard_API.Interfaces
+namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface ITokenRepository<TToken> where TToken : TokenBase
     {

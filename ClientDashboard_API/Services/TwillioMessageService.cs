@@ -1,5 +1,5 @@
 ﻿using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Services;
 using Quartz.Util;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;

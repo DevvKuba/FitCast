@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
 using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
 using Twilio.Rest.Trunking.V1;

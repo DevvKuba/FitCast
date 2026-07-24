@@ -1,5 +1,5 @@
 using ClientDashboard_API.Helpers;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.Extensions.Configuration;
 
 namespace ClientDashboard_API_Tests.ServiceTests

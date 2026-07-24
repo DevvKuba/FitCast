@@ -1,4 +1,4 @@
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;

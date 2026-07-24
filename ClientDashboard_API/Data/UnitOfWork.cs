@@ -1,4 +1,4 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Interfaces.Repositories;
 
 namespace ClientDashboard_API.Data
 {

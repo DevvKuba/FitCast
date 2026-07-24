@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Helpers;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;

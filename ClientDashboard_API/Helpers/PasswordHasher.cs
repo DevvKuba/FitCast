@@ -1,4 +1,4 @@
-﻿using ClientDashboard_API.Interfaces;
+﻿using ClientDashboard_API.Interfaces.Helpers;
 using System.Security.Cryptography;
 
 namespace ClientDashboard_API.Helpers

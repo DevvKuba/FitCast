@@ -2,7 +2,9 @@
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Helpers;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
+using ClientDashboard_API.Interfaces.Helpers;
 using FluentEmail.Core;
 
 

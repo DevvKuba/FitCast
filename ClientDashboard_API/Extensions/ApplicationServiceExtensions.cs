@@ -2,7 +2,9 @@
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Exceptions;
 using ClientDashboard_API.Helpers;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
+using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Services;

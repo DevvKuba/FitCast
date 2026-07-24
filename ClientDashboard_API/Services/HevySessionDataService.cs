@@ -1,7 +1,8 @@
 ﻿using Client_Session_Tracker_C_.Models;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.Entities;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Helpers;
+using ClientDashboard_API.Interfaces.Services;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

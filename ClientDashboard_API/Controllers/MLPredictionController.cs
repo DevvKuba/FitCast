@@ -2,7 +2,7 @@
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
-using ClientDashboard_API.Interfaces;
+using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Models;

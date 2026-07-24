@@ -2,7 +2,7 @@
 using ClientDashboard_API.Entities;
 using System.Xml.Serialization;
 
-namespace ClientDashboard_API.Interfaces
+namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface ITrainerRepository
     {

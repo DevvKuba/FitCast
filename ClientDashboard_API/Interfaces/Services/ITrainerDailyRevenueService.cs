@@ -1,7 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
 using System.Reflection.Metadata.Ecma335;
 
-namespace ClientDashboard_API.Interfaces
+namespace ClientDashboard_API.Interfaces.Services
 {
     public interface ITrainerDailyRevenueService
     {
