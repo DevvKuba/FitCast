@@ -32,7 +32,6 @@ namespace ClientDashboard_API.Services
                 SessionsIn28d = sessionsInLast28Days,
                 DaysSinceLastSession = daysSinceLastSession,
                 RemainingSessions = remainingSessions,
-                DailySteps = client.DailySteps,
                 AverageSessionDuration = averageSessionDuration,
                 LifeTimeValue = lifeTimeValue,
                 CurrentlyActive = client.IsActive,
@@ -40,9 +39,6 @@ namespace ClientDashboard_API.Services
             };
 
             await unitOfWork.ClientDailyFeatureRepository.AddNewRecordAsync(clientDailyDataInfo);
-
-            // reset client daily steps
-            client.DailySteps = 0;
 
             await unitOfWork.Complete();
         }

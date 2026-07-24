@@ -351,8 +351,6 @@ namespace ClientDashboard_API.Controllers
 
                     await dailyClientService.ExecuteClientDailyGatheringAsync(client);
 
-                    client.DailySteps = 0;
-
                 }
             }
 

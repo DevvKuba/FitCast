@@ -187,11 +187,6 @@ namespace ClientDashboard_API.Data
             return await context.Client.AnyAsync(record => record.FirstName == clientName.ToLower());
         }
 
-        public int GatherDailyClientStepsAsync(Client client)
-        {
-            return client.DailySteps;
-        }
-
         public void UnassignTrainerAsync(Client client)
         {
             client.TrainerId = null;

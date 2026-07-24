@@ -11,8 +11,6 @@ namespace ClientDashboard_API.Entities
 
         public int? TotalBlockSessions { get; set; }
 
-        public int DailySteps { get; set; } = 0;
-
         public double? Weight { get; set; }
 
         public List<Workout> Workouts { get; set; } = [];
