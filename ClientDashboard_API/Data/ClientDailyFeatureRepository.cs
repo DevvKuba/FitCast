@@ -15,7 +15,6 @@ namespace ClientDashboard_API.Data
                 SessionsIn28d = clientData.SessionsIn28d,
                 DaysSinceLastSession = clientData.DaysSinceLastSession,
                 RemainingSessions = clientData.RemainingSessions,
-                DailySteps = clientData.DailySteps,
                 AverageSessionDuration = clientData.AverageSessionDuration,
                 LifeTimeValue = clientData.LifeTimeValue,
                 CurrentlyActive = clientData.CurrentlyActive,

@@ -16,8 +16,6 @@
 
         public int? RemainingSessions { get; set; }
 
-        public int DailySteps { get; set; }
-
         public double AverageSessionDuration { get; set; }
 
         public decimal LifeTimeValue { get; set; }
