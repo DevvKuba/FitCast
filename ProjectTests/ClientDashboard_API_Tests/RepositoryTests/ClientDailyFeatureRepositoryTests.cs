@@ -71,7 +71,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 SessionsIn28d = 10,
                 DaysSinceLastSession = 2,
                 RemainingSessions = 4,
-                DailySteps = 8000,
                 AverageSessionDuration = 45.5,
                 LifeTimeValue = 500.00m,
                 CurrentlyActive = true,
@@ -89,7 +88,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.Equal(10, savedRecord.SessionsIn28d);
             Assert.Equal(2, savedRecord.DaysSinceLastSession);
             Assert.Equal(4, savedRecord.RemainingSessions);
-            Assert.Equal(8000, savedRecord.DailySteps);
             Assert.Equal(45.5, savedRecord.AverageSessionDuration);
             Assert.Equal(500.00m, savedRecord.LifeTimeValue);
             Assert.True(savedRecord.CurrentlyActive);
@@ -117,7 +115,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 SessionsIn28d = 0,
                 DaysSinceLastSession = null,
                 RemainingSessions = 8,
-                DailySteps = 5000,
                 AverageSessionDuration = 0,
                 LifeTimeValue = 0m,
                 CurrentlyActive = true,

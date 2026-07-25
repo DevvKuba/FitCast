@@ -417,18 +417,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGatherDailyClientStepsAsync()
-        {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, DailySteps = 10000, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            var client = await _context.Client.FirstOrDefaultAsync();
-            var steps = _clientRepository.GatherDailyClientStepsAsync(client!);
-
-            Assert.Equal(10000, steps);
-        }
-
-        [Fact]
         public async Task TestUnassignTrainerAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };

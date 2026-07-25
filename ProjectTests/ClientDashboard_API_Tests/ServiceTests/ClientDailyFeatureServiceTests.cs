@@ -73,7 +73,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 3,
                 TotalBlockSessions = 8,
-                DailySteps = 5000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -102,14 +101,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(2, feature.SessionsIn7d); // 2 workouts in last 7 days
             Assert.Equal(2, feature.SessionsIn28d); // Same 2 workouts in last 28 days
             Assert.Equal(5, feature.RemainingSessions); // 8 - 3 = 5
-            Assert.Equal(5000, feature.DailySteps);
             Assert.Equal(48, feature.AverageSessionDuration); // (45 + 50) / 2 = 47.5 → 47
             Assert.Equal(200.00m, feature.LifeTimeValue);
             Assert.True(feature.CurrentlyActive);
-
-            // Verify daily steps reset to 0
-            var updatedClient = await _unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
-            Assert.Equal(0, updatedClient!.DailySteps);
         }
 
         [Fact]
@@ -132,7 +126,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 0,
                 TotalBlockSessions = 10,
-                DailySteps = 3000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -173,7 +166,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 2,
                 TotalBlockSessions = 8,
-                DailySteps = 7000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -196,45 +188,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public async Task TestExecuteClientDailyGatheringResetsDailyStepsToZeroAsync()
-        {
-            // Arrange
-            var trainer = new Trainer
-            {
-                FirstName = "john",
-                Surname = "doe",
-                Role = UserRole.Trainer
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var client = new Client
-            {
-                FirstName = "david",
-                Role = UserRole.Client,
-                TrainerId = trainer.Id,
-                CurrentBlockSession = 4,
-                TotalBlockSessions = 8,
-                DailySteps = 12000, // High step count
-                IsActive = true
-            };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            // Act
-            await _clientDailyFeatureService.ExecuteClientDailyGatheringAsync(client);
-
-            // Assert
-            var updatedClient = await _unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
-            Assert.Equal(0, updatedClient!.DailySteps); // Reset to 0
-
-            // Verify the saved daily steps in feature record
-            var dailyFeatures = await _context.ClientDailyFeature.ToListAsync();
-            Assert.Single(dailyFeatures);
-            Assert.Equal(12000, dailyFeatures[0].DailySteps); // Original value saved
-        }
-
-        [Fact]
         public async Task TestExecuteClientDailyGatheringHandlesNullableTotalBlockSessionsAsync()
         {
             // Arrange
@@ -254,7 +207,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 3,
                 TotalBlockSessions = null, // Nullable
-                DailySteps = 4500,
                 IsActive = false
             };
             await _context.Client.AddAsync(client);
@@ -292,7 +244,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 6,
                 TotalBlockSessions = 10,
-                DailySteps = 6000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -340,7 +291,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 5,
                 TotalBlockSessions = 8,
-                DailySteps = 8000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -385,7 +335,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 7,
                 TotalBlockSessions = 10,
-                DailySteps = 9500,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -429,7 +378,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 4,
                 TotalBlockSessions = 8,
-                DailySteps = 5500,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -437,11 +385,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Act - Execute twice on the same day
             await _clientDailyFeatureService.ExecuteClientDailyGatheringAsync(client);
-            
-            // Update daily steps between calls
-            client.DailySteps = 7000;
-            await _unitOfWork.Complete();
-            
             await _clientDailyFeatureService.ExecuteClientDailyGatheringAsync(client);
 
             // Assert
@@ -472,7 +415,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 3,
                 TotalBlockSessions = 8,
-                DailySteps = 4000,
                 IsActive = true
             };
             await _context.Client.AddAsync(client);
@@ -517,7 +459,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 TrainerId = trainer.Id,
                 CurrentBlockSession = 8,
                 TotalBlockSessions = 8, // Completed block
-                DailySteps = 2000,
                 IsActive = false // Inactive
             };
             await _context.Client.AddAsync(client);
@@ -533,47 +474,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var feature = dailyFeatures[0];
             Assert.False(feature.CurrentlyActive);
             Assert.Equal(0, feature.RemainingSessions); // 8 - 8 = 0 (block complete)
-        }
-
-        [Fact]
-        public async Task TestExecuteClientDailyGatheringHandlesClientWithZeroDailyStepsAsync()
-        {
-            // Arrange
-            var trainer = new Trainer
-            {
-                FirstName = "john",
-                Surname = "doe",
-                Role = UserRole.Trainer
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var client = new Client
-            {
-                FirstName = "leo",
-                Role = UserRole.Client,
-                TrainerId = trainer.Id,
-                CurrentBlockSession = 1,
-                TotalBlockSessions = 8,
-                DailySteps = 0, // No steps recorded
-                IsActive = true
-            };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            // Act
-            await _clientDailyFeatureService.ExecuteClientDailyGatheringAsync(client);
-
-            // Assert
-            var dailyFeatures = await _context.ClientDailyFeature.ToListAsync();
-            Assert.Single(dailyFeatures);
-
-            var feature = dailyFeatures[0];
-            Assert.Equal(0, feature.DailySteps);
-
-            // Verify steps remain 0 after "reset"
-            var updatedClient = await _unitOfWork.ClientRepository.GetClientByIdAsync(client.Id);
-            Assert.Equal(0, updatedClient!.DailySteps);
         }
     }
 }
