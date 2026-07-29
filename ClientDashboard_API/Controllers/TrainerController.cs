@@ -289,20 +289,6 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<bool> { Data = trainer.AutoPaymentSetting, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
         }
 
-        [HttpGet("getAllExcludedNames")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetExcludedNamesAsync([FromQuery] int trainerId)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
-        }
-
-
         [HttpGet("getTrainerCurrentMonthsAnalytics")]
         public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
         {
@@ -354,6 +340,19 @@ namespace ClientDashboard_API.Controllers
             var monthAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
 
             return Ok(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
+        }
+
+        [HttpGet("getAllExcludedNames")]
+        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetExcludedNamesAsync([FromQuery] int trainerId)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
         }
 
 

@@ -38,11 +38,11 @@ export class ClientService {
   }
 
   deleteClient(clientId: number) : Observable<ApiResponse<any>>{
-    return this.http.delete<any>( this.baseUrl + `client/ById?clientId=${clientId}`);
+    return this.http.delete<any>( this.baseUrl + `client/removeClientById?clientId=${clientId}`);
   }
 
   addClient(newClient: ClientAddDto): Observable<ApiResponse<ClientAddDto>>{
-    return this.http.post<ApiResponse<ClientAddDto>>(this.baseUrl + `client/ByBody`, newClient);
+    return this.http.post<ApiResponse<ClientAddDto>>(this.baseUrl + `client/addNewClient`, newClient);
   }
 
   gatherClientNames(trainerId: number): Observable<{id: number, name: string}[]>{

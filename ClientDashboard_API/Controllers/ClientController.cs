@@ -39,57 +39,9 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"client: {client.FirstName}'s name retrieved seccessfully", Success = true });
         }
 
-        /// <summary>
-        /// Client method allowing for the retrieval of the clients current session,
-        /// within their respective block
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpGet("{clientName}/currentSession")]
-        public async Task<ActionResult<ApiResponseDto<int>>> GetCurrentClientBlockSessionAsync(string clientName)
-        {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<int> { Data = 0, Message = $"{clientName} was not found", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<int> { Data = client.CurrentBlockSession, Message = $"Current session for {clientName} retrieved successfully", Success = true });
-        }
-
-        /// <summary>
-        /// Client method allowing for the retrieval of all clients, on their last block session
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpGet("onLastSession")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnLastBlockSessionAsync()
-        {
-            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnLastSessionAsync();
-            if (clientSessions is null || !clientSessions.Any())
-            {
-                return NotFound(new ApiResponseDto<List<string>> { Data = [], Message = "No clients currently on their last block session", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<List<string>> { Data = clientSessions, Message = "Clients on last session retrieved successfully", Success = true });
-        }
-
-        /// <summary>
-        /// Client method allowing for the retrieval of all clients 
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpGet("onFirstSession")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetClientsOnFirstBlockSessionAsync()
-        {
-            var clientSessions = await unitOfWork.ClientRepository.GetClientsOnFirstSessionAsync();
-            if (clientSessions is null || !clientSessions.Any())
-            {
-                return NotFound(new ApiResponseDto<List<string>> { Data = [], Message = "No clients currently on their first block session", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<List<string>> { Data = clientSessions, Message = "Clients on first session retrieved successfully", Success = true });
-        }
 
         // <summary>
-        /// Client method allowing for the retrieval of all clients 
+        /// Client method allowing for the retrieval of a client phone number
         /// </summary>
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("getClientPhoneNumber")]
@@ -274,8 +226,8 @@ namespace ClientDashboard_API.Controllers
         /// Client method for adding a new Client to the database via client object body
         /// </summary>
         [Authorize(Roles = "Trainer")]
-        [HttpPost("ByBody")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientObjectAsync([FromBody] ClientAddDto newClient)
+        [HttpPost("addNewClient")]
+        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromBody] ClientAddDto newClient)
         {
             await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.PhoneNumber, newClient.TrainerId);
 
@@ -287,34 +239,12 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-        /// <summary>
-        /// Client method for removing an existing Client from the database via name
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpDelete("ByName")]
-        public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientAsync([FromQuery] string clientName)
-        {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} not found in the database", Success = false });
-            }
-
-            unitOfWork.ClientRepository.SoftDeleteClientAsync(client);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} not removed", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Client: {clientName} removed", Success = true });
-
-        }
 
         /// <summary>
         /// Client method for removing an existing Client from the database via id
         /// </summary>
         [Authorize(Roles = "Trainer")]
-        [HttpDelete("ById")]
+        [HttpDelete("removeClientById")]
         public async Task<ActionResult<ApiResponseDto<string>>> RemoveClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
@@ -330,31 +260,6 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client: {client.FirstName} not removed", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = clientId.ToString(), Message = $"Client: {client.FirstName} was removed", Success = true });
-
-        }
-
-        /// <summary>
-        /// Manually trigger the daily client data gathering job (Admin/Testing only)
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPost("TriggerDailyDataGathering")]
-        public async Task TriggerDailyDataGatheringAsync()
-        {
-            var trainers = await unitOfWork.TrainerRepository.GetAllTrainersAsync();
-
-            foreach (Trainer trainer in trainers)
-            {
-                var trainerClients = await unitOfWork.TrainerRepository.GetTrainerClientsWithWorkoutsAsync(trainer);
-
-                foreach (Client client in trainerClients)
-                {
-
-                    await dailyClientService.ExecuteClientDailyGatheringAsync(client);
-
-                }
-            }
-
-            await unitOfWork.Complete();
 
         }
    
