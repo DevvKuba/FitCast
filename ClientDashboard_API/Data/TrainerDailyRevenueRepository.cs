@@ -71,24 +71,6 @@ namespace ClientDashboard_API.Data
             return latestRecord;
         }
 
-        public async Task<TrainerDailyRevenue?> GetFirstRevenueRecordForTrainerAsync(int trainerId)
-        {
-            var firstRecord = await context.TrainerDailyRevenue.Where(r => r.TrainerId == trainerId).OrderBy(r => r.AsOfDate).FirstOrDefaultAsync();
-            return firstRecord;
-        }
-
-        public async Task<List<TrainerDailyRevenue>> GetLastDayForEachMonthOfTrainerDataAsync(int trainerId)
-        {
-            var allRecords = await GetAllRevenueRecordsForTrainerAsync(trainerId);
-
-            var lastMonthsDayRecords = allRecords
-                .Where(r => r.TrainerId == trainerId &&
-                r.AsOfDate.Day == DateTime.DaysInMonth(r.AsOfDate.Year, r.AsOfDate.Month))
-                .OrderBy(r => r.AsOfDate)
-                .ToList();
-            return lastMonthsDayRecords;
-        }
-
         public async Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId)
         {
             var currentMonthsRecords = await context.TrainerDailyRevenue
