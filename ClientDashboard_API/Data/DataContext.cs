@@ -180,6 +180,15 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
+            // token specific relationships
+
+            builder.Entity<EmailVerificationToken>()
+                .HasOne(t => t.Trainer)
+                .WithMany()
+                .HasForeignKey(t => t.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
             // Unique Constraints
             builder.Entity<NotificationRecipientStatus>()
                 .HasIndex(x => new { x.NotificationId, x.UserId })

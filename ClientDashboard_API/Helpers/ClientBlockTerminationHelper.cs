@@ -22,8 +22,6 @@ namespace ClientDashboard_API.Helpers
                    await autoPaymentService.CreatePendingPaymentAsync(client.Trainer, client);
 
                    await notificationService.SendTrainerPendingPaymentAlertAsync(client.Trainer.Id, client.Id);
-
-                  // notification to client around how much they are due 
                 }
             }
             return new ApiResponseDto<string> { Data = null, Message = "process finalised without any processing errors", Success = true};
