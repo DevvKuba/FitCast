@@ -47,12 +47,6 @@ namespace ClientDashboard_API.Data
             return workouts;
         }
 
-        public async Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate)
-        {
-            var clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate).ToListAsync();
-            return clientData;
-        }
-
         public async Task<List<Workout>> GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(Trainer trainer)
         {
             var allAssociatedClients = await context.Client
@@ -98,24 +92,6 @@ namespace ClientDashboard_API.Data
         {
             Workout? clientData = await context.Workouts.Where(x => x.SessionDate == workoutDate && x.ClientId == clientId).FirstOrDefaultAsync();
             return clientData;
-        }
-
-        public async Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate)
-        {
-            List<Workout> clientData = await context.Workouts.Where(x => x.SessionDate >= workoutDate).ToListAsync();
-            return clientData;
-        }
-
-        public async Task<Workout?> GetLatestClientWorkoutAsync(string clientName)
-        {
-            Workout? clientWorkout = await context.Workouts.Where(x => x.ClientName == clientName.ToLower()).OrderByDescending(x => x.SessionDate).FirstOrDefaultAsync();
-            return clientWorkout;
-        }
-
-        public async Task<int> GetSessionCountAsync(Client client, DateOnly fromDate, DateOnly untilDate)
-        {
-            var workoutsBetweenDates = await context.Workouts.Where(w => w.SessionDate >= fromDate && w.SessionDate <= untilDate && w.ClientId == client.Id).ToListAsync();
-            return workoutsBetweenDates.Count;
         }
 
         public async Task<int> GetSessionCountLast7DaysAsync(Client client, DateOnly untilDate)

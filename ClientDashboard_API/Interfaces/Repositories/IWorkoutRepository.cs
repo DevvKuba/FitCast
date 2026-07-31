@@ -7,7 +7,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
         List<Workout> GetSpecificClientsWorkoutsAsync(List<Client> clientList);
 
         Task<List<Workout>> GetClientWorkoutsAsync(Client client);
-        Task<List<Workout>> GetClientWorkoutsAtDateAsync(DateOnly workoutDate);
 
         Task<List<Workout>> GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(Trainer trainer);
 
@@ -21,11 +20,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<int> GetTotalClientSessionDurationAtDateAsync(Trainer trainer, DateOnly sessionsDate);
 
-        Task<List<Workout>> GetClientWorkoutsFromDateAsync(DateOnly workoutDate);
-
         Task<Workout?> GetLatestClientWorkoutAsync(string clientName);
-
-        Task<int> GetSessionCountAsync(Client client, DateOnly fromDate, DateOnly untilDate);
 
         Task<int> GetSessionCountLast7DaysAsync(Client client, DateOnly untilDate);
 
