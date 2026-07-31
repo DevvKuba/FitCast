@@ -141,7 +141,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             client.DefaultRequestHeaders.Add("X-Test-Role", "Trainer");
             client.DefaultRequestHeaders.Add("X-Test-UserId", trainerId.ToString());
 
-            var response = await client.DeleteAsync($"/api/Client/ById?clientId={clientId}");
+            var response = await client.DeleteAsync($"/api/Client/removeClientById?clientId={clientId}");
             response.EnsureSuccessStatusCode();
 
             using (var scope = _factory.Services.CreateScope())

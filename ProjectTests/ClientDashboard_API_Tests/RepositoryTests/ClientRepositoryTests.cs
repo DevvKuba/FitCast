@@ -92,44 +92,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGettingAllClientsOnLastSessionsAsync()
-        {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 4, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "mark", CurrentBlockSession = 8, TotalBlockSessions = 8, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            var clientList = await _clientRepository.GetClientsOnLastSessionAsync();
-
-            Assert.True(_context.Client.Any(x => x.FirstName == "rob"));
-            Assert.True(_context.Client.Any(x => x.FirstName == "mark"));
-        }
-
-        [Fact]
-        public async Task TestGettingAllClientsOnFirstSessionsAsync()
-        {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] });
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            var clientList = await _clientRepository.GetClientsOnFirstSessionAsync();
-
-            Assert.True(_context.Client.Any(x => x.FirstName == "rob"));
-            Assert.True(_context.Client.Any(x => x.FirstName == "mark"));
-        }
-
-        [Fact]
-        public async Task TestGettingClientsCurrentSessionAsync()
-        {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            var clientSession = await _clientRepository.GetClientsCurrentSessionAsync("rob");
-            var expectedSessions = 2;
-
-            Assert.Equal(clientSession, expectedSessions);
-        }
-
-        [Fact]
         public async Task TestGettingClientByNameAsync()
         {
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
@@ -431,35 +393,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             Assert.Null(client!.TrainerId);
-        }
-
-        [Fact]
-        public async Task TestAddNewClientUserAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            await _context.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var clientData = new Client
-            {
-                FirstName = "Rob",
-                Surname = "smith",
-                PhoneNumber = "123456789",
-                Role = UserRole.Client,
-            };
-
-            var newClient = await _clientRepository.AddNewClientUserAsync(clientData, trainer.Id);
-            await _unitOfWork.Complete();
-
-            var databaseClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "rob");
-
-            Assert.NotNull(databaseClient);
-            Assert.Equal("rob", databaseClient.FirstName);
-            Assert.Equal("smith", databaseClient.Surname);
-            Assert.Equal("123456789", databaseClient.PhoneNumber);
-            Assert.Equal(trainer.Id, databaseClient.TrainerId);
-            Assert.True(databaseClient.IsActive);
-            Assert.Equal(UserRole.Client, databaseClient.Role);
         }
 
         [Fact]

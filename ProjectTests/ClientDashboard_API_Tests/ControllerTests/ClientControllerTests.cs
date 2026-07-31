@@ -140,96 +140,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestGetCurrentClientBlockSessionReturnsSessionSuccessfullyAsync()
-        {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 8 };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.GetCurrentClientBlockSessionAsync("alice");
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(5, response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetCurrentClientBlockSessionReturnsNotFoundForNonExistentClientAsync()
-        {
-            var result = await _clientController.GetCurrentClientBlockSessionAsync("NonExistent");
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGetClientsOnLastSessionReturnsClientsSuccessfullyAsync()
-        {
-            var client1 = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 8, TotalBlockSessions = 8 };
-            var client2 = new Client { FirstName = "bob", Role = UserRole.Client, CurrentBlockSession = 12, TotalBlockSessions = 12 };
-            var client3 = new Client { FirstName = "charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
-            await _context.Client.AddRangeAsync(client1, client2, client3);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.GetClientsOnLastBlockSessionAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<List<string>>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(2, response.Data!.Count);
-            Assert.Contains("alice", response.Data);
-            Assert.Contains("bob", response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetClientsOnLastSessionReturnsNotFoundWhenNoClientsAsync()
-        {
-            var result = await _clientController.GetClientsOnLastBlockSessionAsync();
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<List<string>>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGetClientsOnFirstSessionReturnsClientsSuccessfullyAsync()
-        {
-            var client1 = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            var client2 = new Client { FirstName = "bob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 12 };
-            var client3 = new Client { FirstName = "charlie", Role = UserRole.Client, CurrentBlockSession = 5, TotalBlockSessions = 10 };
-            await _context.Client.AddRangeAsync(client1, client2, client3);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.GetClientsOnFirstBlockSessionAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<List<string>>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(2, response.Data!.Count);
-            Assert.Contains("alice", response.Data);
-            Assert.Contains("bob", response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetClientsOnFirstSessionReturnsNotFoundWhenNoClientsAsync()
-        {
-            var result = await _clientController.GetClientsOnFirstBlockSessionAsync();
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<List<string>>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-
-        [Fact]
         public async Task TestGetClientPhoneNumberReturnsPhoneNumberSuccessfullyAsync()
         {
             var client = new Client { FirstName = "alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
@@ -591,7 +501,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id
             };
 
-            var result = await _clientController.AddNewClientObjectAsync(clientDto);
+            var result = await _clientController.AddNewClientAsync(clientDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -603,37 +513,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(savedClient);
             Assert.Equal(12, savedClient.TotalBlockSessions);
             Assert.Equal("0987654321", savedClient.PhoneNumber);
-        }
-
-
-        [Fact]
-        public async Task TestRemoveClientByNameSuccessfullyAsync()
-        {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.RemoveClientAsync("alice");
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("alice", response.Data);
-
-            var deletedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "alice");
-            Assert.Null(deletedClient);
-        }
-
-        [Fact]
-        public async Task TestRemoveClientByNameReturnsNotFoundForNonExistentClientAsync()
-        {
-            var result = await _clientController.RemoveClientAsync("NonExistent");
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
         }
 
 
