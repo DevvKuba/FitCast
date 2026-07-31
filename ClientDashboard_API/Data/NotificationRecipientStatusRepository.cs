@@ -7,22 +7,6 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRecipientStatusRepository(DataContext context) : INotificationRecipientStatusRepository
     {
-        public async Task<NotificationRecipientStatus> GetNotificationRecipientStatusByIdAsync(int statusId)
-        {
-            return await context.NotificationRecipientStatuses.Where(n => n.Id == statusId).FirstAsync();
-        }
-        public async Task<List<NotificationRecipientStatus>> GetLatestUserNotificationStatusesAsync(int userId)
-        {
-            var latestRecipientStatuses = await context.NotificationRecipientStatuses
-                .Include(n => n.Notification)
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.Notification.SentAt)
-                .Take(10)
-                .ToListAsync();
-
-            return latestRecipientStatuses;
-        }
-
         public async Task<int> GetUnreadUserNotificationCountAsync(UserBase user)
         {
             var expectedAudience = user.Role == UserRole.Trainer
@@ -46,27 +30,6 @@ namespace ClientDashboard_API.Data
                 notification.IsRead = true;
                 notification.ReadAt = DateTime.UtcNow;
             }
-        }
-
-        public async Task AddNotificationRecipientStatusAsync(int userId, int notificationId)
-        {
-            var recipientStatus = new NotificationRecipientStatus
-            {
-                UserId = userId,
-                NotificationId = notificationId,
-            };
-
-            await context.NotificationRecipientStatuses.AddAsync(recipientStatus);
-        }
-
-        public async Task AddNotificationRecipientStatusesAsync(List<NotificationRecipientStatus> recipientStatuses)
-        {
-            await context.NotificationRecipientStatuses.AddRangeAsync(recipientStatuses);
-        }
-
-        public void DeleteNotificationRecipientStatus(NotificationRecipientStatus recipientStatus)
-        {
-            context.NotificationRecipientStatuses.Remove(recipientStatus);
         }
     }
 }

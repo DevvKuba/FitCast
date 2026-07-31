@@ -20,8 +20,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<int> GetTotalClientSessionDurationAtDateAsync(Trainer trainer, DateOnly sessionsDate);
 
-        Task<Workout?> GetLatestClientWorkoutAsync(string clientName);
-
         Task<int> GetSessionCountLast7DaysAsync(Client client, DateOnly untilDate);
 
         Task<int> GetSessionCountLast28DaysAsync(Client client, DateOnly untilDate);

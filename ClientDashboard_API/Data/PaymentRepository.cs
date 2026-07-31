@@ -126,17 +126,6 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public async Task<bool> IsMostRecentClientPayment(Client client, int paymentId)
-        {
-            var mostRecentClientPayment = await context.Payments.Where(p => p.ClientId == client.Id).OrderByDescending(p => p.PaymentDate).FirstAsync();
-
-            if(mostRecentClientPayment.Id == paymentId)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public void DisablePaymentVisibility(Payment payment)
         {
             payment.IsVisible = false;

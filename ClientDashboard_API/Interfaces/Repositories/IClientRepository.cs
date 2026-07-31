@@ -19,12 +19,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<Client?> GetClientByEmailAsync(string email);
 
-        Task<int?> GetClientsCurrentSessionAsync(string name);
-
-        Task<List<string>> GetClientsOnLastSessionAsync();
-
-        Task<List<string>> GetClientsOnFirstSessionAsync();
-
         void UpdateClientPhoneNumber(Client client, string phoneNumber);
 
         void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions, string? phoneNumber);
@@ -44,8 +38,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
         void UnassignTrainerAsync(Client client);
 
         Task<Client?> AddNewClientUnderTrainerAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId);
-
-        Task<Client?> AddNewClientUserAsync(Client client, int trainerId);
 
         Task<List<Client>> GetSoftDeletedClientsOlderThanAsync(DateTime cutoffDate);
 

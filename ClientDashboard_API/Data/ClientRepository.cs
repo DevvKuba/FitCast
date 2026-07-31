@@ -162,25 +162,6 @@ namespace ClientDashboard_API.Data
             return client;
         }
 
-        public async Task<int?> GetClientsCurrentSessionAsync(string clientName)
-        {
-            var clientData = await context.Client.Where(x => x.FirstName == clientName.ToLower()).Select(x => x.CurrentBlockSession).FirstOrDefaultAsync();
-            return clientData;
-        }
-
-
-        public async Task<List<string>> GetClientsOnFirstSessionAsync()
-        {
-            var clients = await context.Client.Where(x => x.CurrentBlockSession == 1).Select(x => x.FirstName.ToLower()).ToListAsync();
-            return clients;
-        }
-
-        public async Task<List<string>> GetClientsOnLastSessionAsync()
-        {
-            var clients = await context.Client.Where(x => x.CurrentBlockSession == x.TotalBlockSessions).Select(x => x.FirstName.ToLower()).ToListAsync();
-            return clients;
-        }
-
         public async Task<bool> CheckIfClientExistsAsync(string clientName)
         {
             return await context.Client.AnyAsync(record => record.FirstName == clientName.ToLower());
@@ -191,7 +172,7 @@ namespace ClientDashboard_API.Data
             client.TrainerId = null;
         }
 
-        // eventually when pipeline is no longer needed, maybe trainerId a non-nullable type
+        // TODO eventually when pipeline is no longer needed, maybe trainerId a non-nullable type
         public async Task<Client?> AddNewClientUnderTrainerAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId)
         {
             var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
@@ -203,25 +184,6 @@ namespace ClientDashboard_API.Data
                 CurrentBlockSession = 0,
                 TotalBlockSessions = blockSessions,
                 PhoneNumber = phoneNumber?.Replace(" ", ""),
-                TrainerId = trainerId,
-                Trainer = trainer,
-            };
-
-            await context.Client.AddAsync(newClient);
-
-            return newClient;
-        }
-
-        public async Task<Client?> AddNewClientUserAsync(Client client, int trainerId)
-        {
-            var trainer = await context.Trainer.Where(x => x.Id == trainerId).FirstOrDefaultAsync();
-            var newClient = new Client
-            {
-                FirstName = client.FirstName.ToLower(),
-                Role = Enums.UserRole.Client,
-                Surname = client.Surname ?? "".ToLower(),
-                PhoneNumber = client.PhoneNumber?.Replace(" ", ""),
-                IsActive = true,
                 TrainerId = trainerId,
                 Trainer = trainer,
             };
