@@ -94,6 +94,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ITrainerFullMonthAnalyticsService, TrainerFullMonthAnalyticsService>();
             services.AddScoped<ITrainerCurrentMonthAnalyticsService, TrainerCurrentMonthAnalyticsService>();
 
+            services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
