@@ -123,18 +123,13 @@ namespace ClientDashboard_API.Data
             client.PhoneNumber = phoneNumber.Replace(" ", "");
         }
 
-        public async Task<Client?> GetClientByNameAsync(string clientName)
+        public async Task<Client?> GetClientByNameWithTrainerAsync(Trainer trainer, string clientName)
         {
-            var clientData = await context.Client.
-                Where(x => x.FirstName == clientName.ToLower())
-                .Include(x => x.Trainer)
+            var client = await context.Client
+                .Where(c => c.FirstName == clientName.ToLower() &&
+                c.TrainerId == trainer.Id)
+                .Include(c => c.Trainer)
                 .FirstOrDefaultAsync();
-            return clientData;
-        }
-
-        public async Task<Client?> GetClientByNameUnderTrainer(Trainer trainer, string clientName)
-        {
-            var client = await context.Client.Where(c => c.FirstName == clientName.ToLower() && c.TrainerId == trainer.Id).FirstOrDefaultAsync();
             return client;
         }
 

@@ -23,7 +23,7 @@ namespace ClientDashboard_API.Services
                 if (!trainer.ExcludedNames.Contains(clientName.ToLower()))
                 {
                     // this client name will always be retrived during syncing
-                    var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+                    var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
 
                     if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
                     {

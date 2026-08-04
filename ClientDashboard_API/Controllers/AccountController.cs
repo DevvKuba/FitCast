@@ -157,7 +157,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<ClientVerificationInfoDto> { Data = null, Message = $"Trainer not found for client {clientFirstName}", Success = false });
             }
 
-            var client = await unitOfWork.ClientRepository.GetClientByNameUnderTrainer(trainer, clientFirstName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientFirstName);
 
             if (client is null)
             {

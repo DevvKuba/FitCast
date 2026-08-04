@@ -65,7 +65,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });

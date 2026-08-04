@@ -116,7 +116,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
@@ -139,7 +139,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("{clientName}/{currentSession}/newCurrentSession")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientCurrentSessionAsync(string clientName, int currentSession)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(clientName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
@@ -161,7 +161,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("{currentName}/{newName}/newClientName")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientNameAsync(string currentName, string newName)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameAsync(currentName);
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(currentName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {currentName} found", Success = false });

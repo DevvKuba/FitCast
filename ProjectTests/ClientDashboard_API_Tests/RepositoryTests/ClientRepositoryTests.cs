@@ -274,7 +274,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer.Id, Workouts = [] });
             await _unitOfWork.Complete();
 
-            var client = await _clientRepository.GetClientByNameUnderTrainer(trainer, "rob");
+            var client = await _clientRepository.GetClientByNameWithTrainerAsync(trainer, "rob");
 
             Assert.NotNull(client);
             Assert.Equal("rob", client.FirstName);
@@ -293,7 +293,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, TrainerId = trainer1.Id, Workouts = [] });
             await _unitOfWork.Complete();
 
-            var client = await _clientRepository.GetClientByNameUnderTrainer(trainer2, "rob");
+            var client = await _clientRepository.GetClientByNameWithTrainerAsync(trainer2, "rob");
 
             Assert.Null(client);
         }
