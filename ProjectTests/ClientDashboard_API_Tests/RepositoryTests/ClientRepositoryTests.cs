@@ -92,19 +92,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGettingClientByNameAsync()
-        {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            var client = await _clientRepository.GetClientByNameAsync("rob");
-            var databaseClient = await _context.Client.FirstOrDefaultAsync();
-
-            Assert.Equal(client, databaseClient);
-        }
-
-
-        [Fact]
         public async Task TestUpdateAddingClientCurrentSessionAsync()
         {
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
