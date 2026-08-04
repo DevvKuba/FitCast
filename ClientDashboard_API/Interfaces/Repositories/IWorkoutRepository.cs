@@ -12,6 +12,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<Workout?> GetWorkoutByIdAsync(int id);
 
+        Task<Workout?> GetWorkoutByIdWithClientAsync(int id);
+
         Task<Workout?> GetClientWorkoutAtDateByNameAsync(string clientName, DateOnly workoutDate);
 
         Task<Workout?> GetClientWorkoutAtDateByIdAsync(int id, DateOnly workoutDate);

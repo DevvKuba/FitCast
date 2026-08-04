@@ -33,6 +33,15 @@ namespace ClientDashboard_API.Data
             Workout? workout = await context.Workouts.Where(x => x.Id == id).FirstOrDefaultAsync();
             return workout;
         }
+
+        public async Task<Workout?> GetWorkoutByIdWithClientAsync(int id)
+        {
+            Workout? workout = await context.Workouts
+                .Where(x => x.Id == id)
+                .Include(x => x.Client)
+                .FirstOrDefaultAsync();
+            return workout;
+        }
         public async Task<List<Workout>> GetClientWorkoutsAsync(Client client)
         {
             List<Workout> workouts = await context.Workouts
