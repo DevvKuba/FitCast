@@ -210,8 +210,19 @@ namespace ClientDashboard_API
                 }
             }
 
-            using (var scope = app.Services.CreateScope())
+            // Skipped entirely in the Testing environment: CustomWebApplicationFactory already
+            // strips the Quartz hosted service so background jobs never run during integration
+            // tests, but ISchedulerFactory.GetScheduler() below fully constructs a real scheduler
+            // (thread pool included) regardless of that - bypassing the hosted-service removal
+            // entirely. Left unguarded, every WebApplicationFactory instance in the test run spins
+            // up its own live scheduler bound to that host's ILoggerFactory; when the host is later
+            // disposed, the scheduler's background thread pool can still be running and throws
+            // ObjectDisposedException on 'LoggerFactory' the next time it logs. Timing-dependent,
+            // so it surfaces on whichever test happens to be running at the time - and more often
+            // under CI's different scheduling/load than locally.
+            if (!app.Environment.IsEnvironment("Testing"))
             {
+                using var scope = app.Services.CreateScope();
                 var schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
                 var scheduler = await schedulerFactory.GetScheduler();
 
