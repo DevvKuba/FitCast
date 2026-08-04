@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces.Repositories;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper) : BaseAPIController
+    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper, IAuthorizationService authorizationService, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
     {
         [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
@@ -21,6 +22,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No clients with that id found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<List<Workout>> { Data = [], Message = "Not authorized to view this client's workouts", Success = false });
             }
 
             var clientWorkouts = await unitOfWork.WorkoutRepository.GetClientWorkoutsAsync(client);
@@ -65,7 +72,13 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("Auto/NewWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });
@@ -94,6 +107,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {newWorkout.ClientName} not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to add a workout for this client", Success = false });
             }
 
             var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, DateOnly.Parse(newWorkout.SessionDate));
@@ -126,6 +145,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {quickAddClient.FirstName} not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to add a workout for this client", Success = false });
             }
 
             if(client.Trainer is null)
@@ -163,11 +188,17 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("updateWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutDetailsAsync([FromBody] WorkoutUpdateDto newWorkoutInfo)
         {
-            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(newWorkoutInfo.Id);
+            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdWithClientAsync(newWorkoutInfo.Id);
 
             if (workout is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, workout, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to update this workout", Success = false });
             }
 
             unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, DateOnly.Parse(newWorkoutInfo.SessionDate), newWorkoutInfo.ExerciseCount, newWorkoutInfo.Duration);
@@ -188,22 +219,26 @@ namespace ClientDashboard_API.Controllers
         [HttpDelete("DeleteWorkout")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteWorkoutAsync([FromQuery] int workoutId)
         {
-            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdAsync(workoutId);
+            var workout = await unitOfWork.WorkoutRepository.GetWorkoutByIdWithClientAsync(workoutId);
 
             if (workout is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Workout doesn't exist", Success = false });
             }
 
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(workout.ClientId);
+            var authResult = await authorizationService.AuthorizeAsync(User, workout, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to remove this workout", Success = false });
+            }
 
-            if (client is null)
+            if (workout.Client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"client doesn't exist", Success = false });
             }
 
             unitOfWork.WorkoutRepository.RemoveWorkout(workout);
-            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(client);
+            unitOfWork.ClientRepository.UpdateDeletingClientCurrentSession(workout.Client);
 
             if (!await unitOfWork.Complete())
             {

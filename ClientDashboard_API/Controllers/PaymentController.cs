@@ -1,6 +1,8 @@
-﻿using ClientDashboard_API.DTOs;
+﻿using ClientDashboard_API.Authorization;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -9,7 +11,7 @@ using System.Runtime.CompilerServices;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class PaymentController(IUnitOfWork unitOfWork) : BaseAPIController
+    public class PaymentController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
     {
         [Authorize(Roles = "Client")]
         [HttpGet("getClientSpecificPayments")]
@@ -20,6 +22,13 @@ namespace ClientDashboard_API.Controllers
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to view this client's payments", Success = false });
+            }
+
             var clientPayments = await unitOfWork.PaymentRepository.GetAllClientSpecificPaymentsAsync(client);
 
             return Ok(new ApiResponseDto<List<Payment>> { Data = clientPayments, Message = $"Successfully gathered client: {client.FirstName}'s payments", Success = true });
@@ -52,9 +61,13 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment does not exist", Success = false });
             }
 
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(payment.ClientId);
+            var authResult = await authorizationService.AuthorizeAsync(User, payment, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to update this payment", Success = false });
+            }
 
-            if (client is null)
+            if (payment.Client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "client does not exist", Success = false });
             }
@@ -93,7 +106,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("addPayment")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewTrainerPaymentAsync([FromBody] PaymentAddDto paymentInfo)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(paymentInfo.TrainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
             if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
@@ -103,6 +116,12 @@ namespace ClientDashboard_API.Controllers
             if (client == null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id:{paymentInfo.ClientId} found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to add a payment for this client", Success = false });
             }
 
             await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, paymentInfo.NumberOfSessions, paymentInfo.Amount, DateOnly.Parse(paymentInfo.PaymentDate), paymentInfo.Confirmed);
@@ -129,6 +148,12 @@ namespace ClientDashboard_API.Controllers
             if (payment is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"payment with id: {paymentId} does not exist", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, payment, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to remove this payment", Success = false });
             }
 
             unitOfWork.PaymentRepository.DisablePaymentVisibility(payment);

@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Exceptions;
 using ClientDashboard_API.Helpers;
@@ -9,6 +10,7 @@ using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
 using ClientDashboard_API.ML.Services;
 using ClientDashboard_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Quartz;
@@ -95,6 +97,9 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<ITrainerCurrentMonthAnalyticsService, TrainerCurrentMonthAnalyticsService>();
 
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+            services.AddScoped<IAuthorizationHandler, ClientOwnershipHandler>();
+            services.AddScoped<IAuthorizationHandler, PaymentOwnershipHandler>();
+            services.AddScoped<IAuthorizationHandler, WorkoutOwnershipHandler>();
             services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
