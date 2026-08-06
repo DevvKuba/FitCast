@@ -88,7 +88,7 @@ describe('ClientWorkouts', () => {
 
   describe('table data behavior', () => {
     it('loads workouts on init', () => {
-      expect(workoutServiceSpy.retrieveTrainerClientWorkouts).toHaveBeenCalledWith(13);
+      expect(workoutServiceSpy.retrieveTrainerClientWorkouts).toHaveBeenCalled();
       expect(component.workouts?.length).toBe(1);
       expect(component.workouts?.[0].workoutTitle).toBe('Push Day');
     });

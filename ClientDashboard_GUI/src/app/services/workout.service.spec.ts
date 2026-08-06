@@ -33,9 +33,7 @@ describe('WorkoutService', () => {
   });
 
   describe('GET request contracts', () => {
-    it('retrieveTrainerClientWorkouts sends GET with trainerId query parameter', () => {
-      const trainerId = 42;
-
+    it('retrieveTrainerClientWorkouts sends GET with no query parameters', () => {
       service.retrieveTrainerClientWorkouts().subscribe();
 
       const req = httpMock.expectOne(
@@ -124,16 +122,6 @@ describe('WorkoutService', () => {
       const req = httpMock.expectOne(`${baseUrl}workout/DeleteWorkout?workoutId=${workoutId}`);
       expect(req.request.method).toBe('DELETE');
       req.flush({ success: true, message: 'deleted' });
-    });
-  });
-
-  describe('documentation: how these service contract tests work', () => {
-    it('intercepts requests and verifies URL, method, and payload before flushing mock responses', () => {
-      service.retrieveTrainerClientWorkouts().subscribe();
-
-      const req = httpMock.expectOne(`${baseUrl}workout/GetTrainerWorkouts?trainerId=1`);
-      expect(req.request.method).toBe('GET');
-      req.flush({ success: true, message: 'ok', data: [] });
     });
   });
 });
