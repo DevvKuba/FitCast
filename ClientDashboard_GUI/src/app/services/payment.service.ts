@@ -12,8 +12,8 @@ export class PaymentService {
   http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  getTrainerPayments(trainerId: number) : Observable<any>{
-    return this.http.get(this.baseUrl + `payment/getAllTrainerPayments?trainerId=${trainerId}`);
+  getTrainerPayments() : Observable<any>{
+    return this.http.get(this.baseUrl + `payment/getAllTrainerPayments`);
   }
 
   getClientSpecificPayments(clientId: number) : Observable<any>{
@@ -28,8 +28,8 @@ export class PaymentService {
     return this.http.post(this.baseUrl + 'payment/addPayment', paymentInfo); 
   }
 
-  filterOldClientPayments(trainerId: number) : Observable<any> {
-    return this.http.put(this.baseUrl + `payment/filterClientPayments?trainerId=${trainerId}`, null);
+  filterOldClientPayments() : Observable<any> {
+    return this.http.put(this.baseUrl + `payment/filterClientPayments`, null);
   }
 
   deleteTrainerPayment(paymentId: number) : Observable<any> {

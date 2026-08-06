@@ -37,9 +37,9 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer")]
         [HttpGet("getAllTrainerPayments")]
-        public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetTrainerPaymentsAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
             if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });

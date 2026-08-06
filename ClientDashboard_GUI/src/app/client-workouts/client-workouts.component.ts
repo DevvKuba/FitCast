@@ -283,9 +283,7 @@ export class ClientWorkouts {
     }
 
     displayWorkouts(){
-        this.trainerId = this.currentUserId;
-        console.log(this.trainerId);
-        this.workoutService.retrieveTrainerClientWorkouts(this.trainerId).subscribe({
+        this.workoutService.retrieveTrainerClientWorkouts().subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },

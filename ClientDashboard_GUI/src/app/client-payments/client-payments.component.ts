@@ -189,7 +189,7 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     filterClientPayments(){
-      this.paymentService.filterOldClientPayments(this.currentUserId).subscribe({
+      this.paymentService.filterOldClientPayments().subscribe({
         next: (response) => {
           if(response.data === 0) {
             this.toastService.showNeutral('Filtering Not Complete', response.message);
@@ -240,7 +240,7 @@ export class ClientPaymentsComponent implements OnInit {
     }
     
     gatherAllTrainerPayments(){
-      this.paymentService.getTrainerPayments(this.currentUserId).subscribe({
+      this.paymentService.getTrainerPayments().subscribe({
         next: (response) => {
           // add clientName property to each element
           this.payments = response.data.map((payment : Payment) => ({
