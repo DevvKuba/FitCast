@@ -84,7 +84,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("newClientInformation")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByIdWithTrainerAsync(updatedClient.Id);
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
@@ -141,81 +141,6 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-
-        /// <summary>
-        /// Client method allowing update of ones total sessions
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-            if(trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "No trainer found", Success = false });
-            }
-
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
-            }
-
-            unitOfWork.ClientRepository.UpdateClientTotalBlockSession(client, totalSessions);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while saving {clientName}'s new total block sessions", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"{clientName}'s total block sessions have now been updated to {totalSessions}", Success = true });
-
-        }
-
-        /// <summary>
-        /// Client method allowing update of ones current session
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPut("{clientName}/{currentSession}/newCurrentSession")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientCurrentSessionAsync(string clientName, int currentSession)
-        {
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
-            }
-            unitOfWork.ClientRepository.UpdateClientCurrentSession(client, currentSession);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while saving {clientName}'s new current session", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"{clientName}'s current session has now been updated to {currentSession}", Success = true });
-
-        }
-
-        /// <summary>
-        /// Client method allowing update of client's given name
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPut("{currentName}/{newName}/newClientName")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientNameAsync(string currentName, string newName)
-        {
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(currentName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {currentName} found", Success = false });
-            }
-
-            unitOfWork.ClientRepository.UpdateClientName(client, newName);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Problem occurring while saving {currentName}'s new name", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = newName, Message = $"{currentName}'s name is now updated to {newName}", Success = true });
-
-        }
-
         /// <summary>
         /// Client method for removing currently allocated trainer
         /// </summary>
@@ -245,35 +170,18 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Client method for adding a new Client to the database via client params
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPost("ByParams")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromQuery] string clientName, [FromQuery] int? blockSessions, [FromQuery] string phoneNumber, [FromQuery] int trainerId)
-        {
-            var clientExists = await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName);
-            if (clientExists)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} already exists in the database", Success = false });
-            }
-
-            await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, blockSessions, phoneNumber, trainerId);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Client {clientName} not added", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Client: {clientName} added", Success = true });
-
-        }
-
-        /// <summary>
         /// Client method for adding a new Client to the database via client object body
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpPost("addNewClient")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddNewClientAsync([FromBody] ClientAddDto newClient)
         {
+            var trainerId = currentUserAccessor.GetUserId();
+            if(trainerId != newClient.TrainerId)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "This trainer cannot add this client under themselves", Success = false });
+            }
+
             await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(newClient.FirstName, newClient.TotalBlockSessions, newClient.PhoneNumber, newClient.TrainerId);
 
             if (!await unitOfWork.Complete())
@@ -296,6 +204,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id: {clientId} not found in the database", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to remove this client", Success = false });
             }
 
             unitOfWork.ClientRepository.SoftDeleteClientAsync(client);
