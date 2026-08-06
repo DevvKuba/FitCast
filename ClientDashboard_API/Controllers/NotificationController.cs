@@ -1,6 +1,8 @@
-﻿using ClientDashboard_API.Data;
+﻿using ClientDashboard_API.Authorization;
+using ClientDashboard_API.Data;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,14 +13,28 @@ namespace ClientDashboard_API.Controllers
 {
     public class NotificationController(
         IUnitOfWork unitOfWork,
-        INotificationService notificationService
+        INotificationService notificationService,
+        IAuthorizationService authorizationService,
+        ICurrentUserAccessor currentUserAccessor
         ) : BaseAPIController
     {
         [Authorize(Roles = "Trainer")]
         [HttpPost("SendTrainerBlockCompletionReminder")]
-        public async Task<ActionResult<ApiResponseDto<string>>> TrainerBlockCompletionReminderAsync(int trainerId, int clientId)
+        public async Task<ActionResult<ApiResponseDto<string>>> TrainerBlockCompletionReminderAsync(int clientId)
         {
-            var messageResponse = await notificationService.SendTrainerBlockReminderAsync(trainerId, clientId);
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Client not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to send a reminder for this client", Success = false });
+            }
+
+            var messageResponse = await notificationService.SendTrainerBlockReminderAsync(currentUserAccessor.GetUserId(), clientId);
 
             if (messageResponse.Success == false)
             {
@@ -31,9 +47,21 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer")]
         [HttpPost("SendClientBlockCompletionReminder")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ClientBlockCompletionReminderAsync(int trainerId, int clientId)
+        public async Task<ActionResult<ApiResponseDto<string>>> ClientBlockCompletionReminderAsync(int clientId)
         {
-            var messageResponse = await notificationService.SendClientBlockReminderAsync(trainerId, clientId);
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Client not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to send a reminder for this client", Success = false });
+            }
+
+            var messageResponse = await notificationService.SendClientBlockReminderAsync(currentUserAccessor.GetUserId(), clientId);
 
             if (messageResponse.Success == false)
             {

@@ -23,16 +23,17 @@ namespace ClientDashboard_API.Controllers
         ISessionDataParser hevyDataParser,
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
         ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
-        ISessionSyncService syncService
+        ISessionSyncService syncService,
+        ICurrentUserAccessor currentUserAccessor
         ) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing for the retrieval of a specific Trainer by id
         /// </summary>
         [HttpGet("retrieveTrainerById")]
-        public async Task<ActionResult<ApiResponseDto<Trainer>>> RetrieveTrainerByIdAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<Trainer>>> RetrieveTrainerByIdAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -46,9 +47,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of client under them
         /// </summary>
         [HttpPut("updateTrainerProfileDetails")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerProfileAsync([FromQuery] int trainerId, [FromBody] TrainerUpdateDto updatedTrainerProfile)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerProfileAsync([FromBody] TrainerUpdateDto updatedTrainerProfile)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -68,9 +69,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of client under them
         /// </summary>
         [HttpPut("assignClient")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateClientAssignmentAsync([FromQuery] int clientId, [FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateClientAssignmentAsync([FromQuery] int clientId)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -97,9 +98,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of a new phone number
         /// </summary>
         [HttpPut("updateTrainerPhoneNumber")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePhoneNumberAsync([FromQuery] int trainerId, [FromQuery] string phoneNumber)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePhoneNumberAsync([FromQuery] string phoneNumber)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -119,9 +120,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method allowing assignment of a new Workout Retrieval Api Key
         /// </summary>
         [HttpPut("updateTrainerApiKey")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKeyAsync([FromQuery] int trainerId, [FromQuery] string providedApiKey)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKeyAsync([FromQuery] string providedApiKey)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -151,9 +152,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
         /// </summary>
         [HttpPut("updateTrainerRetrievalDetails")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerRetrievalDetailsAsync([FromQuery] int trainerId, [FromQuery] string providedApiKey, [FromQuery] bool enabled)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerRetrievalDetailsAsync([FromQuery] string providedApiKey, [FromQuery] bool enabled)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -183,9 +184,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
         /// </summary>
         [HttpPut("updateTrainerPaymentSetting")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPaymentSettingAsync([FromQuery] int trainerId, [FromQuery] bool enabled)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerPaymentSettingAsync([FromQuery] bool enabled)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -212,9 +213,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method to collect daily client workout's from Hevy Workout Tracker
         /// </summary>
         [HttpPut("getDailyHevyWorkouts")]
-        public async Task<ActionResult<ApiResponseDto<int>>> GatherAndUpdateHevyClientWorkoutsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<int>>> GatherAndUpdateHevyClientWorkoutsAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -239,9 +240,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method to retrieve a trainer's Hevy Api Key
         /// </summary>
         [HttpGet("getHevyApiKey")]
-        public async Task<ActionResult<ApiResponseDto<string>>> GetWorkoutRetrievalApiKeyAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<string>>> GetWorkoutRetrievalApiKeyAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -262,9 +263,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method to retrieve a trainer's Auto Retrieval status
         /// </summary>
         [HttpGet("getAutoRetrievalWorkoutStatus")]
-        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoRetrievalStatusAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoRetrievalStatusAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -278,9 +279,9 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method to retrieve a trainer's Auto Payment Setting status
         /// </summary>
         [HttpGet("getAutoPaymentSettingStatus")]
-        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoPaymentSettingStatusAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoPaymentSettingStatusAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -291,16 +292,16 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpGet("getTrainerCurrentMonthsAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<CurrentMonthTrainerAnalyticsDto>>> GetCurrentMonthAnalytics()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> {Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainerId);
+            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainer.Id);
 
             if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
             {
@@ -325,9 +326,9 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpGet("getTrainerSpecificMonthAnalytics")]
-        public async Task<ActionResult<ApiResponseDto<CompleteMonthTrainerAnalyticsDto>>> GetSpecificMonthsAnalytics(int trainerId, int month, int year) // need to get the month / year & ofc trainerId
+        public async Task<ActionResult<ApiResponseDto<CompleteMonthTrainerAnalyticsDto>>> GetSpecificMonthsAnalytics(int month, int year)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer == null) return NotFound(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = null, Message = "trainer not found", Success = false });
 
@@ -344,9 +345,9 @@ namespace ClientDashboard_API.Controllers
         }
 
         [HttpGet("getAllExcludedNames")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetExcludedNamesAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetExcludedNamesAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -360,7 +361,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("addExcludedName")]
         public async Task<ActionResult<ApiResponseDto<string>>> AddExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(exclusionDetails.TrainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -380,7 +381,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("deleteExcludedName")]
         public async Task<ActionResult<ApiResponseDto<string>>> DeleteExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(exclusionDetails.TrainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {

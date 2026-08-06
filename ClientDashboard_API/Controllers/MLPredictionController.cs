@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.ML.Helpers;
 using ClientDashboard_API.ML.Interfaces;
@@ -15,14 +16,16 @@ namespace ClientDashboard_API.Controllers
         IMLModelTrainingService trainingService,
         ILogger<MLPredictionController> logger,
         IUnitOfWork unitOfWork,
-        IWebHostEnvironment environment
+        IWebHostEnvironment environment,
+        ICurrentUserAccessor currentUserAccessor
         ) : BaseAPIController
     {
         [HttpGet("trainAndPredictRevenue")]
-        public async Task<ActionResult<ApiResponseDto<PredictionResultDto>>> TrainModelAndPredictRevenueAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<PredictionResultDto>>> TrainModelAndPredictRevenueAsync()
         {
             try
             {
+                var trainerId = currentUserAccessor.GetUserId();
                 var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
 
                 var allRecords = await unitOfWork.TrainerDailyRevenueRepository.GetAllRevenueRecordsForTrainerAsync(trainerId);
@@ -78,16 +81,14 @@ namespace ClientDashboard_API.Controllers
         /// </summary>
         /// <remarks>Returns a bad request response if the specified trainer does not exist or if model
         /// training cannot be performed due to invalid input or state.</remarks>
-        /// <param name="trainerId">The unique identifier of the trainer for whom the revenue model will be trained. Must correspond to an
-        /// existing trainer.</param>
         /// <returns>An ActionResult containing an ApiResponseDto with the model training metrics if successful; otherwise, an
         /// error response with details about the failure.</returns>
         [HttpPost("trainRevenueModel")]
-        public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> TrainRevenueModelAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<ModelMetrics>>> TrainRevenueModelAsync()
         {
             try
             {
-                var metrics = await trainingService.TrainModelAsync(trainerId);
+                var metrics = await trainingService.TrainModelAsync(currentUserAccessor.GetUserId());
 
                 return Ok(new ApiResponseDto<ModelMetrics>{ Data = metrics, Message = $"Model trained successfully. R² = {metrics.RSquared:F3}", Success = true });
             }
@@ -102,8 +103,8 @@ namespace ClientDashboard_API.Controllers
         }
 
 
-        [HttpPost("generateDummyData")] // Remove eventually
-        [AllowAnonymous] // Remove this if you want to keep auth
+        [HttpPost("generateDummyData")] // Remove / comment out eventually
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResponseDto<DummyDataSummaryDto>>> GenerateDummyDataAsync([FromQuery] int trainerId,[FromQuery] int numberOfMonths = 12)
         {
             if (!environment.IsDevelopment())
