@@ -11,8 +11,13 @@ using System.Runtime.CompilerServices;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class PaymentController(IUnitOfWork unitOfWork, IAuthorizationService authorizationService, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
+    public class PaymentController(
+        IUnitOfWork unitOfWork,
+        IAuthorizationService authorizationService,
+        ICurrentUserAccessor currentUserAccessor
+        ) : BaseAPIController
     {
+
         [Authorize(Roles = "Client")]
         [HttpGet("getClientSpecificPayments")]
         public async Task<ActionResult<ApiResponseDto<List<Payment>>>> GetClientPaymentsAsync([FromQuery] int clientId)

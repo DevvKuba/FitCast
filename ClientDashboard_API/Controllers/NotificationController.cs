@@ -9,7 +9,10 @@ using Twilio.Rest.Api.V2010.Account.Sip.Domain.AuthTypes.AuthTypeCalls;
 
 namespace ClientDashboard_API.Controllers
 {
-    public class NotificationController(IUnitOfWork unitOfWork, INotificationService notificationService) : BaseAPIController
+    public class NotificationController(
+        IUnitOfWork unitOfWork,
+        INotificationService notificationService
+        ) : BaseAPIController
     {
         [Authorize(Roles = "Trainer")]
         [HttpPost("SendTrainerBlockCompletionReminder")]

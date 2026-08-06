@@ -12,8 +12,16 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class WorkoutController(IUnitOfWork unitOfWork, INotificationService notificationService, IClientBlockTerminationHelper clientBlockTerminator, IMapper mapper, IAuthorizationService authorizationService, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
+    public class WorkoutController(
+        IUnitOfWork unitOfWork,
+        INotificationService notificationService,
+        IClientBlockTerminationHelper clientBlockTerminator,
+        IMapper mapper,
+        IAuthorizationService authorizationService,
+        ICurrentUserAccessor currentUserAccessor
+        ) : BaseAPIController
     {
+
         [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientSpecificWorkouts([FromQuery] int clientId)

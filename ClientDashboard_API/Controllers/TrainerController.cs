@@ -23,7 +23,8 @@ namespace ClientDashboard_API.Controllers
         ISessionDataParser hevyDataParser,
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
         ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
-        ISessionSyncService syncService) : BaseAPIController
+        ISessionSyncService syncService
+        ) : BaseAPIController
     {
         /// <summary>
         /// Trainer method allowing for the retrieval of a specific Trainer by id

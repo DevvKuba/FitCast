@@ -1,8 +1,10 @@
-﻿using ClientDashboard_API.DTOs;
+﻿using ClientDashboard_API.Authorization;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
+using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
-using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
@@ -11,13 +13,19 @@ using System.Runtime.CompilerServices;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize]
-    public class ClientController(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTerminator, IClientDailyFeatureService dailyClientService) : BaseAPIController
+    public class ClientController(
+        IUnitOfWork unitOfWork,
+        IClientBlockTerminationHelper clientBlockTerminator,
+        IAuthorizationService authorizationService,
+        ICurrentUserAccessor currentUserAccessor
+        ) : BaseAPIController
     {
+
         [Authorize(Roles = "Trainer")]
         [HttpGet("allTrainerClients")]
-        public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync()
         {
-            var clients = await unitOfWork.ClientRepository.GetAllTrainerClientDataAsync(trainerId);
+            var clients = await unitOfWork.ClientRepository.GetAllTrainerClientDataAsync(currentUserAccessor.GetUserId());
             if (!clients.Any())
             {
                 return Ok(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = true });
@@ -31,11 +39,17 @@ namespace ClientDashboard_API.Controllers
         public async Task<ActionResult<ApiResponseDto<string>>> GetClientByIdAsync([FromQuery] int clientId)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientId);
-
-            if(client is null)
+            if (client is null)
             {
                 return NotFound(new ApiResponseDto<int> { Data = 0, Message = $"client with id: {clientId} was not found", Success = false });
             }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to retrieve this client", Success = false });
+            }
+
             return Ok(new ApiResponseDto<string> { Data = client.FirstName, Message = $"client: {client.FirstName}'s name retrieved seccessfully", Success = true });
         }
 
@@ -52,6 +66,13 @@ namespace ClientDashboard_API.Controllers
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to retrieve phone number", Success = false });
             }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to retrieve this client's phone number", Success = false });
+            }
+
             return Ok(new ApiResponseDto<string> { Data = client.PhoneNumber, Message = $"{client.FirstName}'s phone number returned successfully", Success = true });
 
         }
@@ -67,6 +88,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client with id {updatedClient.Id} not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to update this client's information", Success = false });
             }
 
             unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive,
@@ -98,6 +125,12 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to assign phone number", Success = false });
             }
 
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to set this client's phone number", Success = false });
+            }
+
             unitOfWork.ClientRepository.UpdateClientPhoneNumber(client, clientInfo.PhoneNumber);
 
             if (!await unitOfWork.Complete())
@@ -116,7 +149,13 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("{clientName}/{totalSessions}/newTotalSessions")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientTotalSessionsAsync(string clientName, int totalSessions)
         {
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(clientName);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+            if(trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "No trainer found", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the name {clientName} found", Success = false });
@@ -188,6 +227,12 @@ namespace ClientDashboard_API.Controllers
             if (client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client with the id {clientId} found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to unassign from this client", Success = false });
             }
 
             unitOfWork.ClientRepository.UnassignTrainerAsync(client);
