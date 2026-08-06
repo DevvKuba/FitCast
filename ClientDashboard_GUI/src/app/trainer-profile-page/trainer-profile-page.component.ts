@@ -76,7 +76,7 @@ export class TrainerProfilePageComponent implements OnInit {
     const currentUser = this.accountService.currentUser();
     // get trainer through currentUser.id and then store properties
     if(currentUser){
-      this.trainerService.retrieveTrainerById(currentUser.id).subscribe({
+      this.trainerService.retrieveTrainerById().subscribe({
         next: (response) => {
           this.profileForm.patchValue(response.data);
           this.isLoading = false;
@@ -97,7 +97,7 @@ export class TrainerProfilePageComponent implements OnInit {
       const currentUser = this.accountService.currentUser();
 
       if(currentUser){
-        this.trainerService.updateTrainerProfile(currentUser.id, trainerUpdatedProfile).subscribe({
+        this.trainerService.updateTrainerProfile(trainerUpdatedProfile).subscribe({
           next: (response) => {
             this.toastService.showSuccess("Success Updating Profile",  `${response.data}'s profile has been updated`);
           },

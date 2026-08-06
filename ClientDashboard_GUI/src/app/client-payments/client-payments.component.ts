@@ -178,7 +178,7 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     automaticPaymentsSettingSave(){
-      this.trainerService.updateTrainerPaymentSetting(this.currentUserId, this.automaticPaymentsChecked ).subscribe({
+      this.trainerService.updateTrainerPaymentSetting(this.automaticPaymentsChecked ).subscribe({
         next: (response) => {
           this.toastService.showSuccess('Updated Payment Setting', response.message)
         },
@@ -272,7 +272,7 @@ export class ClientPaymentsComponent implements OnInit {
   }
 
   getAutoPaymentSettingStatus(){
-    this.trainerService.getAutoPaymentSettingStatus(this.currentUserId).subscribe({
+    this.trainerService.getAutoPaymentSettingStatus().subscribe({
       next: (response) => {
         this.automaticPaymentsChecked = response.data;
       }

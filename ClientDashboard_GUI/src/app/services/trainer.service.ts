@@ -13,28 +13,28 @@ export class TrainerService {
   http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  assignClient(clientId : number, trainerId : number) : Observable<any>{
-  return this.http.put(this.baseUrl + `trainer/assignClient?clientId=${clientId}&trainerId=${trainerId}`, null);
+  assignClient(clientId : number) : Observable<any>{
+  return this.http.put(this.baseUrl + `trainer/assignClient?clientId=${clientId}`, null);
   }
 
-  retrieveTrainerById(trainerId: number) : Observable<any>{
-    return this.http.get(this.baseUrl + `trainer/retrieveTrainerById?trainerId=${trainerId}`);
+  retrieveTrainerById() : Observable<any>{
+    return this.http.get(this.baseUrl + `trainer/retrieveTrainerById`);
   }
 
-  gatherAndUpdateExternalWorkouts(trainerId: number) : Observable<any> {
-    return this.http.put(this.baseUrl + `trainer/getDailyHevyWorkouts?trainerId=${trainerId}`, null);
+  gatherAndUpdateExternalWorkouts() : Observable<any> {
+    return this.http.put(this.baseUrl + `trainer/getDailyHevyWorkouts`, null);
   }
 
-  getWorkoutRetrievalApiKey(trainerId : number) : Observable<any>{
-    return this.http.get(this.baseUrl +  `trainer/getHevyApiKey?trainerId=${trainerId}`);
+  getWorkoutRetrievalApiKey() : Observable<any>{
+    return this.http.get(this.baseUrl +  `trainer/getHevyApiKey`);
   }
 
-  getAutoWorkoutRetrievalStatus(trainerId : number) : Observable<any> {
-    return this.http.get(this.baseUrl + `trainer/getAutoRetrievalWorkoutStatus?trainerId=${trainerId}`);
+  getAutoWorkoutRetrievalStatus() : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getAutoRetrievalWorkoutStatus`);
   }
 
-  getAutoPaymentSettingStatus(trainerId: number) : Observable<any> {
-    return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus?trainerId=${trainerId}`);
+  getAutoPaymentSettingStatus() : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus`);
   }
 
   getLastMonthsAnalytics(trainerId: number) : Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
@@ -45,20 +45,20 @@ export class TrainerService {
     return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerAllMonthsAnalytics?trainerId=${trainerId}`);
   }
 
-  getAllExcludedNames(trainerId: number) : Observable<any> {
-    return this.http.get(this.baseUrl + `trainer/getAllExcludedNames?trainerId=${trainerId}`);
+  getAllExcludedNames() : Observable<any> {
+    return this.http.get(this.baseUrl + `trainer/getAllExcludedNames`);
   }
 
-  updateTrainerProfile(trainerId: number, newProfile: TrainerUpdateDto) : Observable<any>{
-    return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails?trainerId=${trainerId}`, newProfile);
+  updateTrainerProfile(newProfile: TrainerUpdateDto) : Observable<any>{
+    return this.http.put(this.baseUrl + `trainer/updateTrainerProfileDetails`, newProfile);
   }
 
-  updateTrainerRetrievalDetails(trainerId: number, providedApiKey: string, enabled: boolean) : Observable<any>{
-    return this.http.put(this.baseUrl + `trainer/updateTrainerRetrievalDetails?trainerId=${trainerId}&providedApiKey=${providedApiKey}&enabled=${enabled}`, null);
+  updateTrainerRetrievalDetails(providedApiKey: string, enabled: boolean) : Observable<any>{
+    return this.http.put(this.baseUrl + `trainer/updateTrainerRetrievalDetails?providedApiKey=${providedApiKey}&enabled=${enabled}`, null);
   }
 
-  updateTrainerPaymentSetting(trainerId: number, enabled: boolean) : Observable<any> {
-    return this.http.put(this.baseUrl +  `trainer/updateTrainerPaymentSetting?trainerId=${trainerId}&enabled=${enabled}`, null);
+  updateTrainerPaymentSetting(enabled: boolean) : Observable<any> {
+    return this.http.put(this.baseUrl +  `trainer/updateTrainerPaymentSetting?enabled=${enabled}`, null);
   }
 
   addExcludedName(excludedDetails : ExcludeNameDto) : Observable<any> {

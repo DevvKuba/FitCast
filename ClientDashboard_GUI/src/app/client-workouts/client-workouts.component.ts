@@ -135,7 +135,7 @@ export class ClientWorkouts {
     }
 
     getTrainerApiKey(){
-        this.trainerService.getWorkoutRetrievalApiKey(this.currentUserId).subscribe({
+        this.trainerService.getWorkoutRetrievalApiKey().subscribe({
             next: (response) => {
                 this.trainerApiKey = response.data;
             }
@@ -143,7 +143,7 @@ export class ClientWorkouts {
     }
 
     getAutoWorkoutRetrievalStatus(){
-        this.trainerService.getAutoWorkoutRetrievalStatus(this.currentUserId).subscribe({
+        this.trainerService.getAutoWorkoutRetrievalStatus().subscribe({
             next: (response) => {
                 this.automaticRetrievalChecked = response.data;
             }
@@ -151,8 +151,7 @@ export class ClientWorkouts {
     }
 
     updateWorkoutRetrievalDetails(apiKey: string, retrievalStatus: boolean){
-        this.trainerService.updateTrainerRetrievalDetails(this.currentUserId,
-        apiKey, retrievalStatus).subscribe({
+        this.trainerService.updateTrainerRetrievalDetails(apiKey, retrievalStatus).subscribe({
             next: (response) => {
                 this.toastService.showSuccess('Success updated details', response.message);
                 this.autoWorkoutRetrievalVisible = false
@@ -294,7 +293,7 @@ export class ClientWorkouts {
     }
 
   gatherExternalWorkouts(){
-    this.trainerService.gatherAndUpdateExternalWorkouts(this.currentUserId).subscribe({
+    this.trainerService.gatherAndUpdateExternalWorkouts().subscribe({
         next: (response) => {
             if(response.data == 0){
                 this.toastService.showNeutral('Success Gathering Workouts', `Accessed workouts successfully, No workouts found to retrieve`);
@@ -350,7 +349,7 @@ export class ClientWorkouts {
     }
 
   gatherExcludedNames(){
-    this.trainerService.getAllExcludedNames(this.currentUserId).subscribe({
+    this.trainerService.getAllExcludedNames().subscribe({
         next: (response) => {
             this.excludedNames = response.data.map((name: string) => ({name: name}));
         }

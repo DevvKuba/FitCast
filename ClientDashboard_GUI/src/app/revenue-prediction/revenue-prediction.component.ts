@@ -34,7 +34,7 @@ export class RevenuePredictionComponent implements OnInit{
   }
 
   predictNextMonthsRevenue(){
-    this.mlPredictionService.trainModelAndPredictTrainerRevenue(this.accountService.currentUser()?.id ?? 0).subscribe({
+    this.mlPredictionService.trainModelAndPredictTrainerRevenue().subscribe({
       next: (response) => {
         this.predictionDate = response.data?.predictedDate ? new Date(response.data?.predictedDate) : null;
         this.monthsOfData = response.data?.monthsOfData ?? 0;

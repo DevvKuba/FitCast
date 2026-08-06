@@ -14,7 +14,7 @@ export class MlPredictionService {
   baseUrl = environment.apiUrl;
   accountService = inject(AccountService);
 
-  trainModelAndPredictTrainerRevenue(trainerId: number) : Observable<ApiResponse<PredictionResult>> {
-    return this.http.get<ApiResponse<PredictionResult>>(this.baseUrl + `mlprediction/trainAndPredictRevenue?trainerId=${trainerId}`);
+  trainModelAndPredictTrainerRevenue() : Observable<ApiResponse<PredictionResult>> {
+    return this.http.get<ApiResponse<PredictionResult>>(this.baseUrl + `mlprediction/trainAndPredictRevenue`);
   }
 }
