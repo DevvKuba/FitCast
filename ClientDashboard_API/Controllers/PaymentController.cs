@@ -84,9 +84,9 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer")]
         [HttpPut("updateAllPaymentVisibilityStatusses")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainersPaymentVisibilityStatussesAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainersPaymentVisibilityStatussesAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
@@ -99,7 +99,7 @@ namespace ClientDashboard_API.Controllers
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = "error saving payment statusses", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Updated all payment to visible, for trainer with id: {trainerId}", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Updated all payment to visible, for trainer with id: {trainer.Id}", Success = true });
         }
 
         [Authorize(Roles = "Trainer")]
@@ -167,16 +167,16 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer")]
         [HttpPut("filterClientPayments")]
-        public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<int?>>> FilterClientPaymentsAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(currentUserAccessor.GetUserId());
 
             if(trainer is null)
             {
                 return NotFound(new ApiResponseDto<int?> { Data = null, Message = $"Trainer was not found", Success = false });
             }
 
-            var trainerDeletedClients = await unitOfWork.TrainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainerId);
+            var trainerDeletedClients = await unitOfWork.TrainerRepository.GatherDeletedTrainerClientsByTrainerIdAsync(trainer.Id);
 
             var filteredPaymentCount = await unitOfWork.PaymentRepository.FilterOldClientPaymentsAsync(trainerDeletedClients);
 

@@ -45,9 +45,9 @@ namespace ClientDashboard_API.Controllers
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpGet("GetTrainerWorkouts")]
-        public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkouts([FromQuery] int trainerId)
+        public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetWorkoutsAsync()
         {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(trainerId);
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerWithClientsByIdAsync(currentUserAccessor.GetUserId());
             if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<List<Workout>> { Data = [], Message = "No trainers with that id found", Success = false });
