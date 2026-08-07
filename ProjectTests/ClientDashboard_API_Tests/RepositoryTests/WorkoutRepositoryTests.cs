@@ -204,6 +204,39 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task TestGetWorkoutByIdWithClientAsync()
+        {
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var workout = new Workout
+            {
+                ClientId = client.Id,
+                ClientName = "rob",
+                WorkoutTitle = "test workout",
+                SessionDate = DateOnly.Parse("19/06/2024")
+            };
+            await _context.Workouts.AddAsync(workout);
+            await _unitOfWork.Complete();
+
+            var retrievedWorkout = await _workoutRepository.GetWorkoutByIdWithClientAsync(workout.Id);
+
+            Assert.NotNull(retrievedWorkout);
+            Assert.Equal(workout.Id, retrievedWorkout.Id);
+            Assert.NotNull(retrievedWorkout.Client);
+            Assert.Equal(client.Id, retrievedWorkout.Client.Id);
+        }
+
+        [Fact]
+        public async Task TestGetWorkoutByIdWithClientReturnsNullForNonExistentIdAsync()
+        {
+            var workout = await _workoutRepository.GetWorkoutByIdWithClientAsync(999);
+
+            Assert.Null(workout);
+        }
+
+        [Fact]
         public async Task TestGetClientWorkoutsAsync()
         {
             var client = new Client 
