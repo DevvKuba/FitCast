@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
@@ -7,6 +8,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +31,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly PaymentController _paymentController;
+        private readonly FakeHttpContextAccessor _httpContextAccessor;
 
         public PaymentControllerTests()
         {
@@ -51,8 +54,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
             _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
 
-            _paymentController = new PaymentController(_unitOfWork);
+            var (authorizationService, currentUserAccessor, httpContextAccessor) =
+                TestAuthHelpers.CreateAuthInfrastructure(new ClientOwnershipHandler(), new PaymentOwnershipHandler());
+            _httpContextAccessor = httpContextAccessor;
+
+            _paymentController = new PaymentController(_unitOfWork, authorizationService, currentUserAccessor);
+            TestAuthHelpers.AttachHttpContext(_paymentController, _httpContextAccessor);
         }
+
+        private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
+        private void AuthenticateAsClient(int clientId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Client", clientId);
 
         [Fact]
         public async Task TestGetClientPaymentsReturnsPaymentsAsync()
@@ -68,7 +79,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -78,13 +89,14 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 150.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
             });
             await _unitOfWork.Complete();
 
+            AuthenticateAsClient(client.Id);
             var result = await _paymentController.GetClientPaymentsAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<List<Payment>>;
@@ -106,6 +118,24 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
+        public async Task TestGetClientPaymentsReturnsForbiddenForDifferentClientAsync()
+        {
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var otherClient = new Client { FirstName = "sam", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Client.AddRangeAsync(client, otherClient);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsClient(otherClient.Id);
+            var result = await _paymentController.GetClientPaymentsAsync(client.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
+
+        [Fact]
         public async Task TestGetTrainerPaymentsReturnsPaymentsAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
@@ -121,7 +151,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = activeClient.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true
@@ -131,14 +161,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = deletedClient.Id,
                 Amount = 150.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 Confirmed = false
             });
             await _unitOfWork.Complete();
 
-            var result = await _paymentController.GetTrainerPaymentsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _paymentController.GetTrainerPaymentsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<List<Payment>>;
 
@@ -152,7 +183,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetTrainerPaymentsReturnsNotFoundAsync()
         {
-            var result = await _paymentController.GetTrainerPaymentsAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _paymentController.GetTrainerPaymentsAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -174,7 +206,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = false
@@ -192,6 +224,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Confirmed = true
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _paymentController.UpdatePaymentInformationAsync(updateDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -229,11 +262,59 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
+        public async Task TestUpdatePaymentInformationReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var payment = new Payment
+            {
+                TrainerId = owningTrainer.Id,
+                ClientId = client.Id,
+                Amount = 100.00m,
+                Currency = "£",
+                NumberOfSessions = 8,
+                PaymentDate = DateOnly.Parse("15/06/2024"),
+                Confirmed = false
+            };
+            await _context.Payments.AddAsync(payment);
+            await _unitOfWork.Complete();
+
+            var updateDto = new PaymentUpdateRequestDto
+            {
+                Id = payment.Id,
+                Amount = 200.00m,
+                Currency = "$",
+                NumberOfSessions = 12,
+                PaymentDate = "20/06/2024",
+                Confirmed = true
+            };
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _paymentController.UpdatePaymentInformationAsync(updateDto);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var savedPayment = await _context.Payments.FindAsync(payment.Id);
+            Assert.Equal(100.00m, savedPayment!.Amount);
+        }
+
+        [Fact]
         public async Task TestAddNewTrainerPaymentSuccessfullyAsync()
         {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "�" };
-            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
             await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -247,6 +328,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Confirmed = true
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _paymentController.AddNewTrainerPaymentAsync(paymentDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -260,6 +342,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(150.00m, savedPayment.Amount);
             Assert.Equal(8, savedPayment.NumberOfSessions);
             Assert.True(savedPayment.Confirmed);
+            Assert.Equal(trainer.Id, savedPayment.TrainerId);
         }
 
         [Fact]
@@ -279,6 +362,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Confirmed = true
             };
 
+            // The caller's own id is what's resolved to a trainer now, not paymentDto.TrainerId - authenticate
+            // as an id with no matching Trainer row to exercise this branch.
+            AuthenticateAsTrainer(999);
             var result = await _paymentController.AddNewTrainerPaymentAsync(paymentDto);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
@@ -304,12 +390,50 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Confirmed = true
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _paymentController.AddNewTrainerPaymentAsync(paymentDto);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.False(response.Success);
+        }
+
+        [Fact]
+        public async Task TestAddNewTrainerPaymentReturnsForbiddenWhenClientBelongsToAnotherTrainerAsync()
+        {
+            // Proves the AddNewTrainerPaymentAsync payload-trust gap is closed: the caller's own identity
+            // builds the Payment.TrainerId now, and the client-ownership check stops a caller from adding a
+            // payment against a client that isn't theirs, regardless of what paymentDto.TrainerId claims.
+            var owningTrainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer, DefaultCurrency = "£" };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = owningTrainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var paymentDto = new PaymentAddDto
+            {
+                TrainerId = otherTrainer.Id,
+                ClientId = client.Id,
+                Amount = 150.00m,
+                NumberOfSessions = 8,
+                PaymentDate = "15/06/2024",
+                Confirmed = true
+            };
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _paymentController.AddNewTrainerPaymentAsync(paymentDto);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            Assert.False(await _context.Payments.AnyAsync());
         }
 
         [Fact]
@@ -326,7 +450,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 IsVisible = true,
@@ -335,6 +459,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Payments.AddAsync(payment);
             await _unitOfWork.Complete();
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _paymentController.DeleteTrainerPaymentAsync(payment.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -359,6 +484,43 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
+        public async Task TestDeleteTrainerPaymentReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var payment = new Payment
+            {
+                TrainerId = owningTrainer.Id,
+                ClientId = client.Id,
+                Amount = 100.00m,
+                Currency = "£",
+                NumberOfSessions = 8,
+                PaymentDate = DateOnly.Parse("15/06/2024"),
+                IsVisible = true,
+                Confirmed = true
+            };
+            await _context.Payments.AddAsync(payment);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _paymentController.DeleteTrainerPaymentAsync(payment.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var survivingPayment = await _context.Payments.FindAsync(payment.Id);
+            Assert.True(survivingPayment!.IsVisible);
+        }
+
+        [Fact]
         public async Task TestFilterClientPaymentsSuccessfullyAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
@@ -376,7 +538,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = activeClient.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 IsVisible = true,
@@ -387,7 +549,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = deletedClient.Id,
                 Amount = 150.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 12,
                 PaymentDate = DateOnly.Parse("20/06/2024"),
                 IsVisible = true,
@@ -395,7 +557,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
             await _unitOfWork.Complete();
 
-            var result = await _paymentController.FilterClientPaymentsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _paymentController.FilterClientPaymentsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<int?>;
 
@@ -423,7 +586,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
                 Amount = 100.00m,
-                Currency = "�",
+                Currency = "£",
                 NumberOfSessions = 8,
                 PaymentDate = DateOnly.Parse("15/06/2024"),
                 Confirmed = true,
@@ -431,7 +594,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
             await _unitOfWork.Complete();
 
-            var result = await _paymentController.FilterClientPaymentsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _paymentController.FilterClientPaymentsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<int?>;
 
@@ -443,7 +607,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestFilterClientPaymentsReturnsNotFoundAsync()
         {
-            var result = await _paymentController.FilterClientPaymentsAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _paymentController.FilterClientPaymentsAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<int?>;
 
@@ -452,4 +617,3 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 }
-

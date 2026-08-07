@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
@@ -9,6 +10,7 @@ using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Services;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -34,6 +36,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly TestTwillioMessageService _messageService;
         private readonly NotificationService _notificationService;
         private readonly NotificationController _notificationController;
+        private readonly FakeHttpContextAccessor _httpContextAccessor;
 
         public class TestTwillioMessageService : IMessageService
         {
@@ -75,15 +78,23 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, 
-                _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, 
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository,
+                _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository,
                 _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
 
 
             _messageService = new TestTwillioMessageService();
             _notificationService = new NotificationService(_unitOfWork, _messageService);
-            _notificationController = new NotificationController(_unitOfWork, _notificationService);
+
+            var (authorizationService, currentUserAccessor, httpContextAccessor) =
+                TestAuthHelpers.CreateAuthInfrastructure(new ClientOwnershipHandler());
+            _httpContextAccessor = httpContextAccessor;
+
+            _notificationController = new NotificationController(_unitOfWork, _notificationService, authorizationService, currentUserAccessor);
+            TestAuthHelpers.AttachHttpContext(_notificationController, _httpContextAccessor);
         }
+
+        private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
 
         [Fact]
         public async Task TestSuccessfullySendingTrainerBlockCompletionReminderAsync()
@@ -114,7 +125,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(trainer.Id, client.Id);
+            client.TrainerId = trainer.Id;
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
+            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(client.Id);
             var okResult = actionResult.Result as ObjectResult;
             var response = okResult?.Value as ApiResponseDto<string>;
 
@@ -132,35 +147,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsuccessfullySendingTrainerBlockCompletionReminderWithInvalidTrainerIdAsync()
-        {
-            var client = new Client
-            {
-                Role = UserRole.Client,
-                FirstName = "Jane",
-                Surname = "Smith",
-                PhoneNumber = "+0987654321",
-                CurrentBlockSession = 8,
-                TotalBlockSessions = 8
-            };
-
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var invalidTrainerId = 999;
-
-            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(invalidTrainerId, client.Id);
-            var badRequestResult = actionResult.Result as ObjectResult;
-            var response = badRequestResult?.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-            Assert.Null(response.Data);
-            Assert.Contains($"Trainer with id: {invalidTrainerId}", response.Message);
-        }
-
-        [Fact]
-        public async Task TestUnsuccessfullySendingTrainerBlockCompletionReminderWithInvalidClientIdAsync()
+        public async Task TestTrainerBlockCompletionReminderReturnsNotFoundForInvalidClientIdAsync()
         {
             var trainer = new Trainer
             {
@@ -177,14 +164,77 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var invalidClientId = 999;
 
-            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(trainer.Id, invalidClientId);
+            AuthenticateAsTrainer(trainer.Id);
+            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(invalidClientId);
+            var notFoundResult = actionResult.Result as NotFoundObjectResult;
+            var response = notFoundResult?.Value as ApiResponseDto<string>;
+
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.Null(response.Data);
+        }
+
+        [Fact]
+        public async Task TestTrainerBlockCompletionReminderReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { Role = UserRole.Trainer, FirstName = "John", Surname = "Doe", Email = "john@example.com", PhoneNumber = "+1234567890", PasswordHash = "hash123" };
+            var otherTrainer = new Trainer { Role = UserRole.Trainer, FirstName = "Jane", Surname = "Smith", Email = "jane@example.com", PhoneNumber = "+1234567891", PasswordHash = "hash456" };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client
+            {
+                Role = UserRole.Client,
+                FirstName = "Jane",
+                Surname = "Smith",
+                PhoneNumber = "+0987654321",
+                TrainerId = owningTrainer.Id,
+                CurrentBlockSession = 8,
+                TotalBlockSessions = 8
+            };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(client.Id);
+            var forbiddenResult = actionResult.Result as ObjectResult;
+            var response = forbiddenResult?.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult!.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.False(await _context.Notification.AnyAsync());
+        }
+
+        [Fact]
+        public async Task TestUnsuccessfullySendingTrainerBlockCompletionReminderWhenTrainerRowMissingAsync()
+        {
+            // The controller's ownership check compares raw ids (client.TrainerId == callerId) - it doesn't
+            // verify a Trainer row actually exists for that id. This proves the deeper service-level failure
+            // still surfaces when the client's TrainerId points at an id with no corresponding Trainer row.
+            var client = new Client
+            {
+                Role = UserRole.Client,
+                FirstName = "Jane",
+                Surname = "Smith",
+                PhoneNumber = "+0987654321",
+                TrainerId = 999,
+                CurrentBlockSession = 8,
+                TotalBlockSessions = 8
+            };
+
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(999);
+            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(client.Id);
             var badRequestResult = actionResult.Result as ObjectResult;
             var response = badRequestResult?.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.False(response.Success);
             Assert.Null(response.Data);
-            Assert.Contains($"Client with id: {invalidClientId}", response.Message);
+            Assert.Contains("Trainer with id: 999", response.Message);
         }
 
         [Fact]
@@ -215,7 +265,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(trainer.Id, client.Id);
+            client.TrainerId = trainer.Id;
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
+            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(client.Id);
             var okResult = actionResult.Result as ObjectResult;
             var response = okResult?.Value as ApiResponseDto<string>;
 
@@ -233,7 +287,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsuccessfullySendingClientBlockCompletionReminderWithInvalidTrainerIdAsync()
+        public async Task TestUnsuccessfullySendingClientBlockCompletionReminderWhenTrainerRowMissingAsync()
         {
             var client = new Client
             {
@@ -241,6 +295,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 FirstName = "Jane",
                 Surname = "Smith",
                 PhoneNumber = "+0987654321",
+                TrainerId = 999,
                 CurrentBlockSession = 8,
                 TotalBlockSessions = 8
             };
@@ -248,20 +303,19 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var invalidTrainerId = 999;
-
-            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(invalidTrainerId, client.Id);
+            AuthenticateAsTrainer(999);
+            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(client.Id);
             var badRequestResult = actionResult.Result as ObjectResult;
             var response = badRequestResult?.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.False(response.Success);
             Assert.Null(response.Data);
-            Assert.Contains($"Trainer with id: {invalidTrainerId}", response.Message);
+            Assert.Contains("Trainer with id: 999", response.Message);
         }
 
         [Fact]
-        public async Task TestUnsuccessfullySendingClientBlockCompletionReminderWithInvalidClientIdAsync()
+        public async Task TestClientBlockCompletionReminderReturnsNotFoundForInvalidClientIdAsync()
         {
             var trainer = new Trainer
             {
@@ -278,14 +332,46 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var invalidClientId = 999;
 
-            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(trainer.Id, invalidClientId);
-            var badRequestResult = actionResult.Result as ObjectResult;
-            var response = badRequestResult?.Value as ApiResponseDto<string>;
+            AuthenticateAsTrainer(trainer.Id);
+            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(invalidClientId);
+            var notFoundResult = actionResult.Result as NotFoundObjectResult;
+            var response = notFoundResult?.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.False(response.Success);
             Assert.Null(response.Data);
-            Assert.Contains($"Client with id: {invalidClientId}", response.Message);
+        }
+
+        [Fact]
+        public async Task TestClientBlockCompletionReminderReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { Role = UserRole.Trainer, FirstName = "John", Surname = "Doe", Email = "john@example.com", PhoneNumber = "+1234567890", PasswordHash = "hash123" };
+            var otherTrainer = new Trainer { Role = UserRole.Trainer, FirstName = "Jane", Surname = "Smith", Email = "jane@example.com", PhoneNumber = "+1234567891", PasswordHash = "hash456" };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client
+            {
+                Role = UserRole.Client,
+                FirstName = "Jane",
+                Surname = "Smith",
+                PhoneNumber = "+0987654321",
+                TrainerId = owningTrainer.Id,
+                CurrentBlockSession = 8,
+                TotalBlockSessions = 8
+            };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(client.Id);
+            var forbiddenResult = actionResult.Result as ObjectResult;
+            var response = forbiddenResult?.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult!.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.False(await _context.Notification.AnyAsync());
         }
 
         [Fact]
@@ -315,8 +401,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            await _notificationController.TrainerBlockCompletionReminderAsync(trainer.Id, client.Id);
-            
+            client.TrainerId = trainer.Id;
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
+            await _notificationController.TrainerBlockCompletionReminderAsync(client.Id);
+
             var notificationCount = await _context.Notification.CountAsync();
             Assert.Equal(1, notificationCount);
 
@@ -353,7 +443,11 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            await _notificationController.ClientBlockCompletionReminderAsync(trainer.Id, client.Id);
+            client.TrainerId = trainer.Id;
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
+            await _notificationController.ClientBlockCompletionReminderAsync(client.Id);
 
             var notificationCount = await _context.Notification.CountAsync();
             Assert.Equal(1, notificationCount);
@@ -365,4 +459,3 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
     }
 }
-

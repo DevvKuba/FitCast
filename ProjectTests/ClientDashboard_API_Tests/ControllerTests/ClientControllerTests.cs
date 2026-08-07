@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.Controllers;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
@@ -8,21 +9,13 @@ using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Services;
 using ClientDashboard_API.Interfaces.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API_Tests.ControllerTests
 {
-    // Fake implementation for testing
-    public class FakeClientDailyFeatureService : IClientDailyFeatureService
-    {
-        public Task ExecuteClientDailyGatheringAsync(Client client)
-        {
-            // Simulate daily data gathering without actual logic
-            return Task.CompletedTask;
-        }
-    }
-
     public class ClientControllerTests
     {
         private readonly IMapper _mapper;
@@ -41,9 +34,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly INotificationService _fakeNotificationService;
         private readonly IAutoPaymentCreationService _fakeAutoPaymentService;
         private readonly IClientBlockTerminationHelper _fakeClientBlockTerminator;
-        private readonly IClientDailyFeatureService _fakeClientDailyFeatureService;
         private readonly UnitOfWork _unitOfWork;
         private readonly ClientController _clientController;
+        private readonly FakeHttpContextAccessor _httpContextAccessor;
 
         public ClientControllerTests()
         {
@@ -69,10 +62,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _fakeNotificationService = new FakeNotificationService();
             _fakeAutoPaymentService = new FakeAutoPaymentCreationService();
             _fakeClientBlockTerminator = new ClientBlockTerminationHelper(_fakeNotificationService, _fakeAutoPaymentService);
-            _fakeClientDailyFeatureService = new FakeClientDailyFeatureService();
-            _clientController = new ClientController(_unitOfWork, _fakeClientBlockTerminator, _fakeClientDailyFeatureService);
+
+            var (authorizationService, currentUserAccessor, httpContextAccessor) =
+                TestAuthHelpers.CreateAuthInfrastructure(new ClientOwnershipHandler());
+            _httpContextAccessor = httpContextAccessor;
+
+            _clientController = new ClientController(_unitOfWork, _fakeClientBlockTerminator, authorizationService, currentUserAccessor);
+            TestAuthHelpers.AttachHttpContext(_clientController, _httpContextAccessor);
         }
 
+        private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
 
         [Fact]
         public async Task TestGetTrainerClientsReturnsClientsSuccessfullyAsync()
@@ -86,7 +85,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddRangeAsync(client1, client2);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.GetTrainerClientsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _clientController.GetTrainerClientsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<List<Client>>;
 
@@ -102,7 +102,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.GetTrainerClientsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _clientController.GetTrainerClientsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<List<Client>>;
 
@@ -115,10 +116,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetClientByIdReturnsClientSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.GetClientByIdAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -140,12 +146,39 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestGetClientPhoneNumberReturnsPhoneNumberSuccessfullyAsync()
+        public async Task TestGetClientByIdReturnsForbiddenForNonOwningTrainerAsync()
         {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.GetClientByIdAsync(client.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
+
+        [Fact]
+        public async Task TestGetClientPhoneNumberReturnsPhoneNumberSuccessfullyAsync()
+        {
+            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.GetClientPhoneNumberAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -167,19 +200,41 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
+        public async Task TestGetClientPhoneNumberReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.GetClientPhoneNumberAsync(client.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
+
+        [Fact]
         public async Task TestChangeClientInformationUpdatesSuccessfullyAsync()
         {
             var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client 
-            { 
-                FirstName = "alice", 
-                Role = UserRole.Client, 
+            var client = new Client
+            {
+                FirstName = "alice",
+                Role = UserRole.Client,
                 TrainerId = trainer.Id,
                 IsActive = true,
-                CurrentBlockSession = 1, 
+                CurrentBlockSession = 1,
                 TotalBlockSessions = 8,
                 PhoneNumber = "1234567890"
             };
@@ -197,6 +252,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "0987654321"
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.ChangeClientInformationAsync(updatedClient);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -242,6 +298,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "1234567890"
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.ChangeClientInformationAsync(updatedClient);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -275,11 +332,58 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.False(response.Success);
         }
 
+        [Fact]
+        public async Task TestChangeClientInformationReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client
+            {
+                FirstName = "alice",
+                Role = UserRole.Client,
+                TrainerId = owningTrainer.Id,
+                IsActive = true,
+                CurrentBlockSession = 1,
+                TotalBlockSessions = 8
+            };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var updatedClient = new Client
+            {
+                Id = client.Id,
+                Role = UserRole.Client,
+                FirstName = "alice updated",
+                IsActive = true,
+                CurrentBlockSession = 1,
+                TotalBlockSessions = 8
+            };
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.ChangeClientInformationAsync(updatedClient);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var savedClient = await _context.Client.FindAsync(client.Id);
+            Assert.Equal("alice", savedClient!.FirstName);
+        }
+
 
         [Fact]
         public async Task TestChangeClientPhoneNumberUpdatesSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
@@ -289,6 +393,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "0987654321"
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.ChangeClientPhoneNumberAsync(phoneUpdateDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -318,97 +423,35 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.False(response.Success);
         }
 
-
         [Fact]
-        public async Task TestChangeClientTotalSessionsUpdatesSuccessfullyAsync()
+        public async Task TestChangeClientPhoneNumberReturnsForbiddenForNonOwningTrainerAsync()
         {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.ChangeClientTotalSessionsAsync("alice", 12);
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
+            var phoneUpdateDto = new ClientPhoneNumberUpdateDto
+            {
+                Id = client.Id,
+                PhoneNumber = "0987654321"
+            };
 
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("alice", response.Data);
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.ChangeClientPhoneNumberAsync(phoneUpdateDto);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
 
-            var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal(12, savedClient!.TotalBlockSessions);
-        }
-
-        [Fact]
-        public async Task TestChangeClientTotalSessionsReturnsNotFoundForNonExistentClientAsync()
-        {
-            var result = await _clientController.ChangeClientTotalSessionsAsync("NonExistent", 12);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
             Assert.NotNull(response);
             Assert.False(response.Success);
-        }
-
-
-        [Fact]
-        public async Task TestChangeClientCurrentSessionUpdatesSuccessfullyAsync()
-        {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.ChangeClientCurrentSessionAsync("alice", 5);
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("alice", response.Data);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal(5, savedClient!.CurrentBlockSession);
-        }
-
-        [Fact]
-        public async Task TestChangeClientCurrentSessionReturnsNotFoundForNonExistentClientAsync()
-        {
-            var result = await _clientController.ChangeClientCurrentSessionAsync("NonExistent", 5);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-
-        [Fact]
-        public async Task TestChangeClientNameUpdatesSuccessfullyAsync()
-        {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var result = await _clientController.ChangeClientNameAsync("alice", "alicia");
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("alicia", response.Data);
-
-            var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal("alicia", savedClient!.FirstName);
-        }
-
-        [Fact]
-        public async Task TestChangeClientNameReturnsNotFoundForNonExistentClientAsync()
-        {
-            var result = await _clientController.ChangeClientNameAsync("NonExistent", "NewName");
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
+            Assert.Equal("1234567890", savedClient!.PhoneNumber);
         }
 
 
@@ -423,6 +466,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.UnAssignCurrentTrainerAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -446,44 +490,28 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestAddNewClientByParamsSuccessfullyAsync()
+        public async Task TestUnAssignTrainerReturnsForbiddenForNonOwningTrainerAsync()
         {
-            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.AddNewClientAsync("alice", 8, "1234567890", trainer.Id);
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("alice", response.Data);
-
-            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "alice");
-            Assert.NotNull(savedClient);
-            Assert.Equal(8, savedClient.TotalBlockSessions);
-            Assert.Equal("1234567890", savedClient.PhoneNumber);
-            Assert.Equal(trainer.Id, savedClient.TrainerId);
-        }
-
-        [Fact]
-        public async Task TestAddNewClientByParamsReturnsNotFoundWhenClientExistsAsync()
-        {
-            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _clientController.AddNewClientAsync("alice", 8, "1234567890", trainer.Id);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.UnAssignCurrentTrainerAsync(client.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
 
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
             Assert.NotNull(response);
             Assert.False(response.Success);
+
+            var savedClient = await _context.Client.FindAsync(client.Id);
+            Assert.Equal(owningTrainer.Id, savedClient!.TrainerId);
         }
 
         [Fact]
@@ -501,6 +529,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 TrainerId = trainer.Id
             };
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.AddNewClientAsync(clientDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -515,14 +544,47 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal("0987654321", savedClient.PhoneNumber);
         }
 
+        [Fact]
+        public async Task TestAddNewClientReturnsBadRequestWhenTrainerIdDoesNotMatchCallerAsync()
+        {
+            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(trainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var clientDto = new ClientAddDto
+            {
+                FirstName = "bob",
+                TotalBlockSessions = 12,
+                PhoneNumber = "0987654321",
+                TrainerId = otherTrainer.Id
+            };
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _clientController.AddNewClientAsync(clientDto);
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            var response = badRequestResult!.Value as ApiResponseDto<string>;
+
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var savedClient = await _context.Client.FirstOrDefaultAsync(c => c.FirstName == "bob");
+            Assert.Null(savedClient);
+        }
+
 
         [Fact]
         public async Task TestRemoveClientByIdSuccessfullyAsync()
         {
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
+            AuthenticateAsTrainer(trainer.Id);
             var result = await _clientController.RemoveClientByIdAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
@@ -545,6 +607,30 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.NotNull(response);
             Assert.False(response.Success);
         }
+
+        [Fact]
+        public async Task TestRemoveClientByIdReturnsForbiddenForNonOwningTrainerAsync()
+        {
+            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(otherTrainer.Id);
+            var result = await _clientController.RemoveClientByIdAsync(client.Id);
+            var forbiddenResult = result.Result as ObjectResult;
+            var response = forbiddenResult!.Value as ApiResponseDto<string>;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var savedClient = await _context.Client.FindAsync(client.Id);
+            Assert.False(savedClient!.IsDeleted);
+        }
     }
 }
-

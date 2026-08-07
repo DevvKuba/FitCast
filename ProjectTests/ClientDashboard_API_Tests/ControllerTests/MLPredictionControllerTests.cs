@@ -53,6 +53,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly MLPredictionController _mlPredictionController;
         private readonly IModelStore _modelStore;
         private readonly List<string> _tempDirectories = [];
+        private readonly FakeHttpContextAccessor _httpContextAccessor;
 
         public MLPredictionControllerTests()
         {
@@ -103,13 +104,20 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 NullLogger<TrainerRevenueMLPredictionService>.Instance,
                 _modelStore);
 
+            var (_, currentUserAccessor, httpContextAccessor) = TestAuthHelpers.CreateAuthInfrastructure();
+            _httpContextAccessor = httpContextAccessor;
+
             _mlPredictionController = new MLPredictionController(
                 _predictionService,
                 _trainingService,
                 NullLogger<MLPredictionController>.Instance,
                 _unitOfWork,
-                _webHostEnvironment);
+                _webHostEnvironment,
+                currentUserAccessor);
+            TestAuthHelpers.AttachHttpContext(_mlPredictionController, _httpContextAccessor);
         }
+
+        private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
 
         [Fact]
         public async Task TrainRevenueModelAsync_ReturnsOk_WhenTrainerHasSufficientDataAsync()
@@ -117,7 +125,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var trainerId = await AddTrainerAsync();
             await AddDummyRevenueDataAsync(trainerId, numberOfMonths: 6);
 
-            var result = await _mlPredictionController.TrainRevenueModelAsync(trainerId);
+            AuthenticateAsTrainer(trainerId);
+            var result = await _mlPredictionController.TrainRevenueModelAsync();
 
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var response = Assert.IsType<ApiResponseDto<ClientDashboard_API.ML.Models.ModelMetrics>>(okResult.Value);
@@ -133,7 +142,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var trainerId = await AddTrainerAsync();
             // No revenue data added
 
-            var result = await _mlPredictionController.TrainRevenueModelAsync(trainerId);
+            AuthenticateAsTrainer(trainerId);
+            var result = await _mlPredictionController.TrainRevenueModelAsync();
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var response = Assert.IsType<ApiResponseDto<ClientDashboard_API.ML.Models.ModelMetrics>>(badRequestResult.Value);
@@ -146,7 +156,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var trainerId = await AddTrainerAsync();
 
-            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync(trainerId);
+            AuthenticateAsTrainer(trainerId);
+            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync();
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var response = Assert.IsType<ApiResponseDto<PredictionResultDto>>(badRequestResult.Value);
@@ -161,7 +172,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var trainerId = await AddTrainerAsync();
             await AddDummyRevenueDataAsync(trainerId, numberOfMonths: 6);
 
-            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync(trainerId);
+            AuthenticateAsTrainer(trainerId);
+            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync();
 
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
             var response = Assert.IsType<ApiResponseDto<PredictionResultDto>>(okResult.Value);
@@ -180,7 +192,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var invalidTrainerId = 999;
 
-            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync(invalidTrainerId);
+            AuthenticateAsTrainer(invalidTrainerId);
+            var result = await _mlPredictionController.TrainModelAndPredictRevenueAsync();
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var response = Assert.IsType<ApiResponseDto<PredictionResultDto>>(badRequestResult.Value);

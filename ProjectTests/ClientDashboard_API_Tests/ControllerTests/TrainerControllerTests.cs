@@ -166,6 +166,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly FakeTrainerCurrentMonthAnalyticsService _fakeTrainerCurrentMonthAnalyticsService;
         private readonly FakeSessionSyncService _fakeSyncService;
         private readonly TrainerController _trainerController;
+        private readonly FakeHttpContextAccessor _httpContextAccessor;
 
         public TrainerControllerTests()
         {
@@ -193,8 +194,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _fakeTrainerFullMonthAnalyticsService = new FakeTrainerFullMonthAnalyticsService();
             _fakeTrainerCurrentMonthAnalyticsService = new FakeTrainerCurrentMonthAnalyticsService();
             _fakeSyncService = new FakeSessionSyncService();
-            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService);
+
+            var (_, currentUserAccessor, httpContextAccessor) = TestAuthHelpers.CreateAuthInfrastructure();
+            _httpContextAccessor = httpContextAccessor;
+
+            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService, currentUserAccessor);
+            TestAuthHelpers.AttachHttpContext(_trainerController, _httpContextAccessor);
         }
+
+        private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
 
         [Fact]
         public async Task TestRetrieveTrainerByIdReturnsTrainerAsync()
@@ -203,7 +211,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.RetrieveTrainerByIdAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.RetrieveTrainerByIdAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<Trainer>;
 
@@ -215,7 +224,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestRetrieveTrainerByIdReturnsNotFoundAsync()
         {
-            var result = await _trainerController.RetrieveTrainerByIdAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.RetrieveTrainerByIdAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<Trainer>;
 
@@ -242,7 +252,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 AverageSessionPrice = 50.00m
             };
 
-            var result = await _trainerController.UpdateTrainerProfileAsync(trainer.Id, updateDto);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -265,7 +276,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Email = "jonathan@example.com"
             };
 
-            var result = await _trainerController.UpdateTrainerProfileAsync(999, updateDto);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<Trainer>;
 
@@ -282,7 +294,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.UpdateClientAssignmentAsync(client.Id, trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateClientAssignmentAsync(client.Id);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -301,7 +314,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.UpdateClientAssignmentAsync(client.Id, 999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdateClientAssignmentAsync(client.Id);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -316,7 +330,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.UpdateClientAssignmentAsync(999, trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateClientAssignmentAsync(999);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -331,7 +346,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.UpdatePhoneNumberAsync(trainer.Id, "9876543210");
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdatePhoneNumberAsync("9876543210");
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -346,7 +362,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdatePhoneNumberReturnsNotFoundAsync()
         {
-            var result = await _trainerController.UpdatePhoneNumberAsync(999, "9876543210");
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdatePhoneNumberAsync("9876543210");
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -363,7 +380,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSessionDataParser.SetValidationResult(true);
 
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync(trainer.Id, "test-api-key");
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("test-api-key");
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -378,7 +396,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateWorkoutRetrievalApiKeyReturnsNotFoundAsync()
         {
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync(999, "test-api-key");
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("test-api-key");
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -395,7 +414,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSessionDataParser.SetValidationResult(false);
 
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync(trainer.Id, "invalid-key");
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("invalid-key");
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<string>;
 
@@ -412,7 +432,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSessionDataParser.SetValidationResult(true);
 
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync(trainer.Id, "test-api-key", true);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("test-api-key", true);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -428,7 +449,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerRetrievalDetailsReturnsNotFoundAsync()
         {
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync(999, "test-api-key", true);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("test-api-key", true);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -445,7 +467,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSessionDataParser.SetValidationResult(false);
 
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync(trainer.Id, "invalid-key", true);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("invalid-key", true);
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<string>;
 
@@ -460,7 +483,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.UpdateTrainerPaymentSettingAsync(trainer.Id, true);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerPaymentSettingAsync(true);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -475,7 +499,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestUpdateTrainerPaymentSettingReturnsNotFoundAsync()
         {
-            var result = await _trainerController.UpdateTrainerPaymentSettingAsync(999, true);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.UpdateTrainerPaymentSettingAsync(true);
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -492,7 +517,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSyncService.SetSessionCount(5);
 
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<int>;
 
@@ -510,7 +536,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             _fakeSyncService.SetSessionCount(0);
 
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<int>;
 
@@ -522,7 +549,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsNotFoundAsync()
         {
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<int>;
 
@@ -537,7 +565,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<int>;
 
@@ -553,7 +582,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
@@ -565,7 +595,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetWorkoutRetrievalApiKeyReturnsNotFoundAsync()
         {
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -580,7 +611,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
             var badRequestResult = result.Result as BadRequestObjectResult;
             var response = badRequestResult!.Value as ApiResponseDto<string>;
 
@@ -595,7 +627,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.GetAutoRetrievalStatusAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GetAutoRetrievalStatusAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<bool>;
 
@@ -607,7 +640,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetAutoRetrievalStatusReturnsNotFoundAsync()
         {
-            var result = await _trainerController.GetAutoRetrievalStatusAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.GetAutoRetrievalStatusAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
@@ -622,7 +656,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var result = await _trainerController.GetAutoPaymentSettingStatusAsync(trainer.Id);
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.GetAutoPaymentSettingStatusAsync();
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<bool>;
 
@@ -634,7 +669,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestGetAutoPaymentSettingStatusReturnsNotFoundAsync()
         {
-            var result = await _trainerController.GetAutoPaymentSettingStatusAsync(999);
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.GetAutoPaymentSettingStatusAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
