@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using ClientDashboard_API.Data;
 using ClientDashboard_API.DTOs;
@@ -59,7 +60,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
 
             var trainerHttp = CreateAuthorizedClient("Trainer", trainerId);
 
-            var sendResponse = await trainerHttp.PostAsync($"/api/Notification/SendClientBlockCompletionReminder?trainerId={trainerId}&clientId={clientId}", null);
+            var sendResponse = await trainerHttp.PostAsync($"/api/Notification/SendClientBlockCompletionReminder?clientId={clientId}", null);
             sendResponse.EnsureSuccessStatusCode();
 
             using (var scope = _factory.Services.CreateScope())
@@ -146,8 +147,8 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             }
 
             var trainerHttp = CreateAuthorizedClient("Trainer", trainerId);
-            (await trainerHttp.PostAsync($"/api/Notification/SendTrainerBlockCompletionReminder?trainerId={trainerId}&clientId={clientId}", null)).EnsureSuccessStatusCode();
-            (await trainerHttp.PostAsync($"/api/Notification/SendClientBlockCompletionReminder?trainerId={trainerId}&clientId={clientId}", null)).EnsureSuccessStatusCode();
+            (await trainerHttp.PostAsync($"/api/Notification/SendTrainerBlockCompletionReminder?clientId={clientId}", null)).EnsureSuccessStatusCode();
+            (await trainerHttp.PostAsync($"/api/Notification/SendClientBlockCompletionReminder?clientId={clientId}", null)).EnsureSuccessStatusCode();
 
             var trainerLatest = await trainerHttp.GetFromJsonAsync<ApiResponseDto<List<Notification>>>($"/api/Notification/gatherLatestUserNotifications?userId={trainerId}");
             trainerLatest.Should().NotBeNull();
@@ -161,6 +162,54 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             clientLatest!.Success.Should().BeTrue();
             clientLatest.Data.Should().NotBeNull();
             clientLatest.Data!.Should().OnlyContain(n => n.Audience == NotificationAudience.Client);
+        }
+
+        [Fact]
+        public async Task ClientReminderFlow_ShouldReturnForbidden_WhenClientBelongsToAnotherTrainer()
+        {
+            await _factory.ResetDatabaseAsync();
+
+            int otherTrainerId;
+            int clientId;
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+                var owningTrainer = new Trainer { FirstName = "owning-trainer", Role = UserRole.Trainer };
+                var otherTrainer = new Trainer { FirstName = "other-trainer", Role = UserRole.Trainer };
+
+                var client = new Client
+                {
+                    FirstName = "not-yours-client",
+                    Role = UserRole.Client,
+                    Trainer = owningTrainer,
+                    CurrentBlockSession = 4,
+                    TotalBlockSessions = 4,
+                    IsActive = true
+                };
+
+                dbContext.Trainer.AddRange(owningTrainer, otherTrainer);
+                dbContext.Client.Add(client);
+                await dbContext.SaveChangesAsync();
+
+                otherTrainerId = otherTrainer.Id;
+                clientId = client.Id;
+            }
+
+            var otherTrainerHttp = CreateAuthorizedClient("Trainer", otherTrainerId);
+
+            var sendResponse = await otherTrainerHttp.PostAsync($"/api/Notification/SendClientBlockCompletionReminder?clientId={clientId}", null);
+
+            sendResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+                var notifications = await dbContext.Notification.ToListAsync();
+                notifications.Should().BeEmpty();
+            }
         }
 
         private HttpClient CreateAuthorizedClient(string role, int userId)

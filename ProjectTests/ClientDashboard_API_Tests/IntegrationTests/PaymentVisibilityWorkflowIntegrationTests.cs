@@ -95,7 +95,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
 
             var trainerHttp = CreateAuthorizedClient(trainerId);
 
-            var response = await trainerHttp.PutAsync($"/api/Payment/filterClientPayments?trainerId={trainerId}", null);
+            var response = await trainerHttp.PutAsync("/api/Payment/filterClientPayments", null);
             response.EnsureSuccessStatusCode();
 
             var payload = await response.Content.ReadFromJsonAsync<ApiResponseDto<int?>>();
