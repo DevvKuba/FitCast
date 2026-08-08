@@ -10,7 +10,7 @@ namespace ClientDashboard_API.Jobs
         {
             logger.LogInformation("DailyDeletedClientCleanup job STARTED at {StartTime} UTC", DateTime.UtcNow);
 
-            var cutoffDate = DateTime.UtcNow.AddMonths(-3);
+            var cutoffDate = DateTime.UtcNow.AddMonths(-1);
             var clientsToDelete = await unitOfWork.ClientRepository.GetSoftDeletedClientsOlderThanAsync(cutoffDate);
 
             if (clientsToDelete.Count == 0)
