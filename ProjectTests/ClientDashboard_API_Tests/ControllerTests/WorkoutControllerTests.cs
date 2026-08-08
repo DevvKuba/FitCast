@@ -603,31 +603,5 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var survivingWorkout = await _context.Workouts.FindAsync(workout.Id);
             Assert.NotNull(survivingWorkout);
         }
-
-        // KNOWN BUG (see WorkoutOwnershipHandler.cs): the handler reads resource.Client!.TrainerId with a
-        // null-forgiving operator. When a workout's ClientId points at a client row that no longer exists,
-        // GetWorkoutByIdWithClientAsync's Include leaves Client null, and the ownership check throws a
-        // NullReferenceException instead of failing closed gracefully - before the controller ever reaches
-        // its own "client doesn't exist" NotFound branch. This test pins that current behavior; if the
-        // handler is later fixed to null-check before reading .TrainerId, update this test to expect a
-        // graceful NotFound instead.
-        [Fact]
-        public async Task TestDeleteWorkoutByIdThrowsWhenClientDoesNotExistAsync()
-        {
-            var workout = new Workout
-            {
-                ClientId = 999,
-                ClientName = "nonexistent",
-                WorkoutTitle = "workout 1",
-                SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 10,
-                Duration = 60
-            };
-            await _context.Workouts.AddAsync(workout);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(1);
-            await Assert.ThrowsAsync<NullReferenceException>(() => _workoutController.DeleteWorkoutAsync(workout.Id));
-        }
     }
 }

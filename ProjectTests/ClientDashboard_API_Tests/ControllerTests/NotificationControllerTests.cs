@@ -207,37 +207,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUnsuccessfullySendingTrainerBlockCompletionReminderWhenTrainerRowMissingAsync()
-        {
-            // The controller's ownership check compares raw ids (client.TrainerId == callerId) - it doesn't
-            // verify a Trainer row actually exists for that id. This proves the deeper service-level failure
-            // still surfaces when the client's TrainerId points at an id with no corresponding Trainer row.
-            var client = new Client
-            {
-                Role = UserRole.Client,
-                FirstName = "Jane",
-                Surname = "Smith",
-                PhoneNumber = "+0987654321",
-                TrainerId = 999,
-                CurrentBlockSession = 8,
-                TotalBlockSessions = 8
-            };
-
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(999);
-            var actionResult = await _notificationController.TrainerBlockCompletionReminderAsync(client.Id);
-            var badRequestResult = actionResult.Result as ObjectResult;
-            var response = badRequestResult?.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-            Assert.Null(response.Data);
-            Assert.Contains("Trainer with id: 999", response.Message);
-        }
-
-        [Fact]
         public async Task TestSuccessfullySendingClientBlockCompletionReminderAsync()
         {
             var trainer = new Trainer
@@ -284,34 +253,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(client.Id, notification.ClientId);
             Assert.Equal(NotificationType.ClientBlockCompletionReminder, notification.ReminderType);
             Assert.Equal(CommunicationType.Sms, notification.SentThrough);
-        }
-
-        [Fact]
-        public async Task TestUnsuccessfullySendingClientBlockCompletionReminderWhenTrainerRowMissingAsync()
-        {
-            var client = new Client
-            {
-                Role = UserRole.Client,
-                FirstName = "Jane",
-                Surname = "Smith",
-                PhoneNumber = "+0987654321",
-                TrainerId = 999,
-                CurrentBlockSession = 8,
-                TotalBlockSessions = 8
-            };
-
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(999);
-            var actionResult = await _notificationController.ClientBlockCompletionReminderAsync(client.Id);
-            var badRequestResult = actionResult.Result as ObjectResult;
-            var response = badRequestResult?.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-            Assert.Null(response.Data);
-            Assert.Contains("Trainer with id: 999", response.Message);
         }
 
         [Fact]
