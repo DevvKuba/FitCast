@@ -1,4 +1,4 @@
-@if(analyticsData == undefined){
+@if(completeMonthAnalyticsData == undefined){
 	<app-spinner></app-spinner>
 }
 @else {
@@ -38,34 +38,34 @@
 			<div class="analytics-left-column">
 				<div class="analytics-section left-section">
 					<h3>CLIENT METRICS</h3>
-					<p>Current: {{ analyticsData.baseClients }} clients</p>
+					<p>Current: {{ completeMonthAnalyticsData.baseClients }} clients</p>
 					<p>
-						{{ selectedScope === 'lastMonth' ? 'Acquired last month' : 'Average monthly acquisitions' }}: {{ analyticsData.acquiredClients }}
-						(+{{ analyticsData.acquisitionPercentage }}%)
+						{{ selectedScope === 'lastMonth' ? 'Acquired last month' : 'Average monthly acquisitions' }}: {{ completeMonthAnalyticsData.acquiredClients }}
+						(+{{ completeMonthAnalyticsData.acquisitionPercentage }}%)
 					</p>
 					<p>
-						{{ selectedScope === 'lastMonth' ? 'Churned last month' : 'Average monthly churn' }}: {{ analyticsData.churnedClients }}
-						({{ analyticsData.churnPercentage }}%)
+						{{ selectedScope === 'lastMonth' ? 'Churned last month' : 'Average monthly churn' }}: {{ completeMonthAnalyticsData.churnedClients }}
+						({{ completeMonthAnalyticsData.churnPercentage }}%)
 					</p>
-					<p>Net growth: +{{ analyticsData.netGrowth }} (+{{ analyticsData.netGrowthPercentage }}%)</p>
-					<p>Sessions per client: {{ analyticsData.averageSessionsPerClient }}</p>
-					<p>Monthly sessions: {{ analyticsData.totalClientSessions }}</p>
+					<p>Net growth: +{{ completeMonthAnalyticsData.netGrowth }} (+{{ completeMonthAnalyticsData.netGrowthPercentage }}%)</p>
+					<p>Sessions per client: {{ completeMonthAnalyticsData.averageSessionsPerClient }}</p>
+					<p>Monthly sessions: {{ completeMonthAnalyticsData.totalClientSessions }}</p>
 				</div>
 
 				<div class="analytics-section left-section">
 					<h3>REVENUE PATTERNS</h3>
-					<p>Monthly working days: {{ analyticsData.monthlyWorkingDays }}</p>
-					<p>Average session price: ${{ analyticsData.sessionsPrice }}</p>
-					<p>Revenue per working day: ${{ analyticsData.revenuePerWorkingDay }}</p>
-					<p>Revenue per working week: ${{ analyticsData.revenuePerWorkingWeek }}</p>
+					<p>Monthly working days: {{ completeMonthAnalyticsData.monthlyWorkingDays }}</p>
+					<p>Average session price: ${{ completeMonthAnalyticsData.sessionsPrice }}</p>
+					<p>Revenue per working day: ${{ completeMonthAnalyticsData.revenuePerWorkingDay }}</p>
+					<p>Revenue per working week: ${{ completeMonthAnalyticsData.revenuePerWorkingWeek }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">
 					<h3>ACTIVITY PATTERNS</h3>
-					<p>Busiest days: {{ formatWeeklyMultipliers(analyticsData.busiestDays)}}</p>
-					<p>Light days: {{ formatWeeklyMultipliers(analyticsData.lightDays)}}</p>
+					<p>Busiest days: {{ formatWeeklyMultipliers(completeMonthAnalyticsData.busiestDays)}}</p>
+					<p>Light days: {{ formatWeeklyMultipliers(completeMonthAnalyticsData.lightDays)}}</p>
 					<p class="all-weekdays-title">All weekdays:</p>
-					<p class="weekday-item" *ngFor="let weekday of analyticsData.allWeekdays">{{ formatWeeklyMultiplier(weekday) }}</p>
+					<p class="weekday-item" *ngFor="let weekday of completeMonthAnalyticsData.allWeekdays">{{ formatWeeklyMultiplier(weekday) }}</p>
 				</div>
 			</div>
 
