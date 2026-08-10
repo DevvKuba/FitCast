@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Interfaces.Helpers;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ClientDashboard_API.Helpers
 {
@@ -7,7 +8,7 @@ namespace ClientDashboard_API.Helpers
     {
         public int GetUserId()
         {
-            var sub = httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var sub = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if(sub is null || !int.TryParse(sub, out var id))
             {

@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
@@ -31,7 +30,6 @@ namespace ClientDashboard_API_Tests.IntegrationTests.Infrastructure
 
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, userId),
                 new(ClaimTypes.NameIdentifier, userId),
                 new(ClaimTypes.Name, "integration-test-user"),
                 new(ClaimTypes.Role, role)

@@ -1,6 +1,7 @@
 ﻿using ClientDashboard_API.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ClientDashboard_API.Authorization
 {
@@ -9,7 +10,7 @@ namespace ClientDashboard_API.Authorization
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context, ResourceOwnerRequirement requirement, Client resource)
         {
-            var sub = context.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var sub = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (sub is null || !int.TryParse(sub, out var callerId))
                 return Task.CompletedTask;
 

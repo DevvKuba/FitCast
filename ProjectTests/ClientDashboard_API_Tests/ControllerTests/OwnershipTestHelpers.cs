@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using ClientDashboard_API.Authorization;
 using ClientDashboard_API.Helpers;
@@ -37,12 +36,14 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
     public static class TestAuthHelpers
     {
-        // Mirrors the Sub claim TokenProvider issues in real JWTs and the Role claim [Authorize(Roles=...)] checks.
+        // NameIdentifier, not Sub: ASP.NET Core's JwtBearer handler rewrites the "sub" claim to
+        // ClaimTypes.NameIdentifier by default (MapInboundClaims), so that's what a real validated
+        // token's principal actually carries by the time CurrentUserAccessor/the ownership handlers see it.
         public static ClaimsPrincipal CreateUser(string role, int userId)
         {
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
                 new(ClaimTypes.Role, role)
             };
             var identity = new ClaimsIdentity(claims, "TestAuth");
