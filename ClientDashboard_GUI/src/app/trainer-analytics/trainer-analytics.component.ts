@@ -10,6 +10,7 @@ import { ChartModule } from 'primeng/chart';
 import { ChartData, ChartOptions } from 'chart.js';
 import { WeekDays } from '../enums/weekdays';
 import { SpinnerComponent } from "../spinner/spinner.component";
+import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
 
 @Component({
   selector: 'app-trainer-analytics',
@@ -22,12 +23,13 @@ export class TrainerAnalyticsComponent implements OnInit{
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
-  analyticsData : CompleteTrainerAnalyticsDto | undefined;
+  currentMonthAnalyticsData: CurrentMonthTrainerAnalyticsDto | undefined;
+  completeMonthAnalyticsData : CompleteTrainerAnalyticsDto | undefined;
   currentUserId: number = 0; 
 
   ngOnInit(): void {
    this.currentUserId = this.accountService.currentUser()?.id ?? 0;
-   this.retrieveAnalytics();
+   this.retrieveCurrentMonthAnalytics();
   }
 
   selectedScope: 'lastMonth' | 'allData' = 'lastMonth';
@@ -93,34 +95,33 @@ export class TrainerAnalyticsComponent implements OnInit{
 
   setMetricScope(scope: 'lastMonth' | 'allData'): void {
     this.selectedScope = scope;
-    this.retrieveAnalytics();
+    this.retrieveCurrentMonthAnalytics();
   }
 
-  retrieveAnalytics(){
-    if(this.selectedScope == 'lastMonth'){
-      this.trainerService.getLastMonthsAnalytics(this.currentUserId).subscribe({
+  retrieveCurrentMonthAnalytics(){
+    this.trainerService.getCurrentMonthsAnalytics().subscribe({
+      next: (response) => {
+        this.currentMonthAnalyticsData = response.data;
+      },
+      error: (response) => {
+        this.toastService.showError('Error getting current month data', response.error.message);
+      }
+    })
+  }
+
+  retrieveSpecificMonthAnalytics(month: number, year: number){
+      this.trainerService.getSpecificMonthAnalytics(month, year).subscribe({
         next: (response) => {
-          this.analyticsData = response.data;
+          this.completeMonthAnalyticsData = response.data;
         },
         error: (response) => {
-          this.toastService.showError('Error', response.error.message);
+          this.toastService.showError(`Error getting ${month}/${year} data`, response.error.message);
         }
       })
-    }
-    else if(this.selectedScope == 'allData'){
-      this.trainerService.getFullMonthsAnalytics(this.currentUserId).subscribe({
-        next: (response) => {
-          this.analyticsData = response.data;
-        },
-        error: (response) => {
-          this.toastService.showError('Error', response.error.message);
-        }
-      })
-    }
   }
 
   get clientMetricsChartData(): ChartData<'bar'> {
-    if (!this.analyticsData) {
+    if (!this.completeMonthAnalyticsData) {
       return { labels: [], datasets: [] };
     }
 
@@ -133,9 +134,9 @@ export class TrainerAnalyticsComponent implements OnInit{
       datasets: [
         {
           data: [
-            this.analyticsData.baseClients,
-            this.analyticsData.averageSessionsPerClient,
-            this.analyticsData.totalClientSessions
+            this.completeMonthAnalyticsData.baseClients,
+            this.completeMonthAnalyticsData.averageSessionsPerClient,
+            this.completeMonthAnalyticsData.totalClientSessions
           ],
           backgroundColor: ['#1d4ed8', '#14b8a6', '#0f766e'],
           borderRadius: 8,
@@ -146,7 +147,7 @@ export class TrainerAnalyticsComponent implements OnInit{
   }
 
   get revenuePatternsChartData(): ChartData<'bar'> {
-    if (!this.analyticsData) {
+    if (!this.completeMonthAnalyticsData) {
       return { labels: [], datasets: [] };
     }
 
@@ -155,8 +156,8 @@ export class TrainerAnalyticsComponent implements OnInit{
       datasets: [
         {
           data: [
-            this.analyticsData.revenuePerWorkingDay,
-            this.analyticsData.revenuePerWorkingWeek
+            this.completeMonthAnalyticsData.revenuePerWorkingDay,
+            this.completeMonthAnalyticsData.revenuePerWorkingWeek
           ],
           backgroundColor: ['#14b8a6', '#0ea5e9'],
           borderRadius: 8,
@@ -167,18 +168,18 @@ export class TrainerAnalyticsComponent implements OnInit{
   }
 
   get activityPatternsChartData(): ChartData<'line'> {
-    if (!this.analyticsData) {
+    if (!this.completeMonthAnalyticsData) {
       return { labels: [], datasets: [] };
     }
 
-    const days = this.analyticsData.allWeekdays.map((weekday) => weekday.day);
+    const days = this.completeMonthAnalyticsData.allWeekdays.map((weekday) => weekday.day);
 
     return {
       labels: days.map((weekday) => WeekDays[weekday]),
       datasets: [
         {
           label: 'All weekdays',
-          data: this.analyticsData.allWeekdays.map((weekday) => weekday.multiplier),
+          data: this.completeMonthAnalyticsData.allWeekdays.map((weekday) => weekday.multiplier),
           borderColor: '#2563eb',
           backgroundColor: '#2563eb',
           pointBackgroundColor: '#2563eb',

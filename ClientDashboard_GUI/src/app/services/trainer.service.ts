@@ -5,6 +5,7 @@ import { Observable, ObservableLike, ObservedValueOf } from 'rxjs';
 import { ExcludeNameDto } from '../models/dtos/exclude-name-dto';
 import { ApiResponse } from '../models/api-response';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
+import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +38,12 @@ export class TrainerService {
     return this.http.get(this.baseUrl + `trainer/getAutoPaymentSettingStatus`);
   }
 
-  getLastMonthsAnalytics(trainerId: number) : Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
-    return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerLastMonthsAnalytics?trainerId=${trainerId}`);
+  getSpecificMonthAnalytics(month: number, year: number): Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
+    return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerSpecificMonthAnalytics?month=${month}&year=${year}`);
   }
 
-  getFullMonthsAnalytics(trainerId: number) : Observable<ApiResponse<CompleteTrainerAnalyticsDto>> {
-    return this.http.get<ApiResponse<CompleteTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerAllMonthsAnalytics?trainerId=${trainerId}`);
+  getCurrentMonthsAnalytics() : Observable<ApiResponse<CurrentMonthTrainerAnalyticsDto>> {
+    return this.http.get<ApiResponse<CurrentMonthTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerCurrentMonthsAnalytics`);
   }
 
   getAllExcludedNames() : Observable<any> {

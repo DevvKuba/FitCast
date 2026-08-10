@@ -77,7 +77,7 @@ describe('TrainerAnalyticsComponent', () => {
 
   describe('computed chart data', () => {
     it('returns empty chart structures when analyticsData is undefined', () => {
-      component.analyticsData = undefined;
+      component.completeMonthAnalyticsData = undefined;
 
       expect(component.clientMetricsChartData).toEqual({ labels: [], datasets: [] });
       expect(component.revenuePatternsChartData).toEqual({ labels: [], datasets: [] });
@@ -86,7 +86,7 @@ describe('TrainerAnalyticsComponent', () => {
 
     it('client metrics labels use "Monthly sessions" when scope is lastMonth', () => {
       component.selectedScope = 'lastMonth';
-      component.analyticsData = sampleAnalytics;
+      component.completeMonthAnalyticsData = sampleAnalytics;
 
       const chartData = component.clientMetricsChartData;
 
@@ -100,7 +100,7 @@ describe('TrainerAnalyticsComponent', () => {
 
     it('client metrics labels use "Average monthly sessions" when scope is allData', () => {
       component.selectedScope = 'allData';
-      component.analyticsData = sampleAnalytics;
+      component.completeMonthAnalyticsData = sampleAnalytics;
 
       const chartData = component.clientMetricsChartData;
 
@@ -112,7 +112,7 @@ describe('TrainerAnalyticsComponent', () => {
     });
 
     it('revenue chart maps day/week values correctly', () => {
-      component.analyticsData = sampleAnalytics;
+      component.completeMonthAnalyticsData = sampleAnalytics;
 
       const chartData = component.revenuePatternsChartData;
 
@@ -121,7 +121,7 @@ describe('TrainerAnalyticsComponent', () => {
     });
 
     it('activity chart maps weekday enum values to readable labels', () => {
-      component.analyticsData = sampleAnalytics;
+      component.completeMonthAnalyticsData = sampleAnalytics;
 
       const chartData = component.activityPatternsChartData;
 
@@ -164,7 +164,7 @@ describe('TrainerAnalyticsComponent', () => {
 
   describe('documentation: how these tests operate', () => {
     it('validates chart getter outputs by assigning analyticsData directly (pure computation tests)', () => {
-      component.analyticsData = sampleAnalytics;
+      component.completeMonthAnalyticsData = sampleAnalytics;
 
       const labels = component.activityPatternsChartData.labels;
 
