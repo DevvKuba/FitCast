@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RevenuePredictionComponent } from '../revenue-prediction/revenue-prediction.component';
-import { WeeklyMultiplier } from '../models/dtos/weekly-multiplier';
+import { WeeklyActivityPattern } from '../models/dtos/weekly-activity-pattern';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 import { TrainerService } from '../services/trainer.service';
 import { AccountService } from '../services/account.service';
@@ -134,8 +134,8 @@ export class TrainerAnalyticsComponent implements OnInit{
         {
           data: [
             this.analyticsData.baseClients,
-            this.analyticsData.sessionsPerClient,
-            this.analyticsData.monthlyClientSessions
+            this.analyticsData.averageSessionsPerClient,
+            this.analyticsData.totalClientSessions
           ],
           backgroundColor: ['#1d4ed8', '#14b8a6', '#0f766e'],
           borderRadius: 8,
@@ -151,15 +151,14 @@ export class TrainerAnalyticsComponent implements OnInit{
     }
 
     return {
-      labels: ['Revenue / day', 'Revenue / week', 'Revenue / month'],
+      labels: ['Revenue / day', 'Revenue / week'],
       datasets: [
         {
           data: [
             this.analyticsData.revenuePerWorkingDay,
-            this.analyticsData.revenuePerWorkingWeek,
-            this.analyticsData.revenuePerWorkingMonth
+            this.analyticsData.revenuePerWorkingWeek
           ],
-          backgroundColor: ['#14b8a6', '#0ea5e9', '#2563eb'],
+          backgroundColor: ['#14b8a6', '#0ea5e9'],
           borderRadius: 8,
           borderSkipped: false
         }
@@ -193,13 +192,13 @@ export class TrainerAnalyticsComponent implements OnInit{
     };
   }
 
-  formatWeeklyMultipliers(values: WeeklyMultiplier[]): string {
+  formatWeeklyMultipliers(values: WeeklyActivityPattern[]): string {
     return values
       .map((value) => `${WeekDays[value.day]} (${value.multiplier}x)`)
       .join(', ');
   }
 
-  formatWeeklyMultiplier(value: WeeklyMultiplier): string {
+  formatWeeklyMultiplier(value: WeeklyActivityPattern): string {
     return `${WeekDays[value.day]} - (${value.multiplier}x)`;
   }
 

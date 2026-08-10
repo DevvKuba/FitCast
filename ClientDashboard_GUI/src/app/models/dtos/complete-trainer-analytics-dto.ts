@@ -1,4 +1,4 @@
-import { WeeklyMultiplier } from './weekly-multiplier';
+import { WeeklyActivityPattern } from './weekly-activity-pattern';
 
 export interface CompleteTrainerAnalyticsDto {
   baseClients: number;
@@ -8,14 +8,17 @@ export interface CompleteTrainerAnalyticsDto {
   churnPercentage: number;
   netGrowth: number;
   netGrowthPercentage: number;
-  sessionsPerClient: number;
-  monthlyClientSessions: number;
+  averageSessionsPerClient: number;
+  totalClientSessions: number;
   sessionsPrice: number;
   monthlyWorkingDays: number;
+  totalRevenue: number;
   revenuePerWorkingDay: number;
   revenuePerWorkingWeek: number;
-  revenuePerWorkingMonth: number;
-  allWeekdays: WeeklyMultiplier[];
-  busiestDays: WeeklyMultiplier[];
-  lightDays: WeeklyMultiplier[];
+  totalWorktimeMinutes: number;
+  averageDailyWorktime: number;
+  averageWeeklyWorktime: number;
+  allWeekdays: WeeklyActivityPattern[];
+  busiestDays: WeeklyActivityPattern[];
+  lightDays: WeeklyActivityPattern[];
 }

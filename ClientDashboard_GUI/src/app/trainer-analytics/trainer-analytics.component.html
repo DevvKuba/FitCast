@@ -48,8 +48,8 @@
 						({{ analyticsData.churnPercentage }}%)
 					</p>
 					<p>Net growth: +{{ analyticsData.netGrowth }} (+{{ analyticsData.netGrowthPercentage }}%)</p>
-					<p>Sessions per client: {{ analyticsData.sessionsPerClient }}</p>
-					<p>Monthly sessions: {{ analyticsData.monthlyClientSessions }}</p>
+					<p>Sessions per client: {{ analyticsData.averageSessionsPerClient }}</p>
+					<p>Monthly sessions: {{ analyticsData.totalClientSessions }}</p>
 				</div>
 
 				<div class="analytics-section left-section">
@@ -58,7 +58,6 @@
 					<p>Average session price: ${{ analyticsData.sessionsPrice }}</p>
 					<p>Revenue per working day: ${{ analyticsData.revenuePerWorkingDay }}</p>
 					<p>Revenue per working week: ${{ analyticsData.revenuePerWorkingWeek }}</p>
-					<p>Revenue per working month: ${{ analyticsData.revenuePerWorkingMonth }}</p>
 				</div>
 
 				<div class="analytics-section left-section analytics-section-last">

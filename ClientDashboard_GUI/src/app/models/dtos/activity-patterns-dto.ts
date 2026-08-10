@@ -1,6 +1,6 @@
-import { WeeklyMultiplier } from './weekly-multiplier';
+import { WeeklyActivityPattern } from './weekly-activity-pattern';
 
 export interface ActivityPatternsDto {
-  busiestDays: WeeklyMultiplier[];
-  lightDays: WeeklyMultiplier[];
+  busiestDays: WeeklyActivityPattern[];
+  lightDays: WeeklyActivityPattern[];
 }

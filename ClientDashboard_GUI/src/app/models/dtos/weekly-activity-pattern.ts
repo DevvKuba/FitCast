@@ -1,6 +1,7 @@
 import { WeekDays } from "../../enums/weekdays";
 
-export interface WeeklyMultiplier {
+export interface WeeklyActivityPattern {
   day: WeekDays;
+  totalSessions: number;
   multiplier: number;
 }

@@ -22,20 +22,23 @@ describe('TrainerAnalyticsComponent', () => {
     churnPercentage: 16,
     netGrowth: 2,
     netGrowthPercentage: 17,
-    sessionsPerClient: 6,
-    monthlyClientSessions: 72,
+    averageSessionsPerClient: 6,
+    totalClientSessions: 72,
     sessionsPrice: 40,
     monthlyWorkingDays: 20,
+    totalRevenue: 2880,
     revenuePerWorkingDay: 144,
     revenuePerWorkingWeek: 720,
-    revenuePerWorkingMonth: 2880,
+    totalWorktimeMinutes: 4320,
+    averageDailyWorktime: 60,
+    averageWeeklyWorktime: 300,
     allWeekdays: [
-      { day: WeekDays.Mon, multiplier: 1.2 },
-      { day: WeekDays.Wed, multiplier: 1.5 },
-      { day: WeekDays.Sun, multiplier: 0.9 }
+      { day: WeekDays.Mon, totalSessions: 10, multiplier: 1.2 },
+      { day: WeekDays.Wed, totalSessions: 14, multiplier: 1.5 },
+      { day: WeekDays.Sun, totalSessions: 5, multiplier: 0.9 }
     ],
-    busiestDays: [{ day: WeekDays.Wed, multiplier: 1.5 }],
-    lightDays: [{ day: WeekDays.Sun, multiplier: 0.9 }]
+    busiestDays: [{ day: WeekDays.Wed, totalSessions: 14, multiplier: 1.5 }],
+    lightDays: [{ day: WeekDays.Sun, totalSessions: 5, multiplier: 0.9 }]
   };
 
   beforeEach(async () => {
@@ -108,13 +111,13 @@ describe('TrainerAnalyticsComponent', () => {
       ]);
     });
 
-    it('revenue chart maps day/week/month values correctly', () => {
+    it('revenue chart maps day/week values correctly', () => {
       component.analyticsData = sampleAnalytics;
 
       const chartData = component.revenuePatternsChartData;
 
-      expect(chartData.labels).toEqual(['Revenue / day', 'Revenue / week', 'Revenue / month']);
-      expect(chartData.datasets[0].data).toEqual([144, 720, 2880]);
+      expect(chartData.labels).toEqual(['Revenue / day', 'Revenue / week']);
+      expect(chartData.datasets[0].data).toEqual([144, 720]);
     });
 
     it('activity chart maps weekday enum values to readable labels', () => {
@@ -130,8 +133,8 @@ describe('TrainerAnalyticsComponent', () => {
   describe('formatting helpers', () => {
     it('formatWeeklyMultipliers creates a comma-separated summary string', () => {
       const formatted = component.formatWeeklyMultipliers([
-        { day: WeekDays.Mon, multiplier: 1.2 },
-        { day: WeekDays.Wed, multiplier: 1.5 }
+        { day: WeekDays.Mon, totalSessions: 10, multiplier: 1.2 },
+        { day: WeekDays.Wed, totalSessions: 14, multiplier: 1.5 }
       ]);
 
       expect(formatted).toBe('Mon (1.2x), Wed (1.5x)');
@@ -140,6 +143,7 @@ describe('TrainerAnalyticsComponent', () => {
     it('formatWeeklyMultiplier formats one weekday multiplier item', () => {
       const formatted = component.formatWeeklyMultiplier({
         day: WeekDays.Fri,
+        totalSessions: 8,
         multiplier: 1.1
       });
 
