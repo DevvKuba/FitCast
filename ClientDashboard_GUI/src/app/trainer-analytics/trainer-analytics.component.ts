@@ -203,6 +203,10 @@ export class TrainerAnalyticsComponent implements OnInit{
     return `${WeekDays[value.day]} - (${value.multiplier}x)`;
   }
 
+  convertMinutesToDecimalHours(totalMinutes: number): number {
+    return Math.round((totalMinutes / 60) * 10) / 10;
+  }
+
   convertMinutesToHoursAndMinutes(totalMinutes: number): { hours: number; minutes: number } {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
