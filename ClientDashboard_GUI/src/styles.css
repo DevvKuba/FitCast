@@ -1,11 +1,126 @@
-/* PrimeIcons for icons */
+@import "tailwindcss";
+
+/* Official PrimeNG<->Tailwind bridge: exposes PrimeNG's design tokens (from the
+   custom preset in app.config.ts) as Tailwind utilities, e.g. bg-primary, text-surface-500. */
+@plugin "tailwindcss-primeui";
+
+/* PrimeIcons for icons still in use on pages not yet refactored */
 @import 'primeicons/primeicons.css';
+
+/* Stitch "Precision Performance" design system - source of truth: the FitCast Management
+   Dashboard Stitch project. Keep this in sync if the Stitch theme changes. */
+@theme {
+  /* Colors */
+  --color-primary: #0058be;
+  --color-primary-container: #2170e4;
+  --color-on-primary: #ffffff;
+  --color-primary-fixed: #d8e2ff;
+
+  --color-secondary: #006c49;
+  --color-secondary-container: #6cf8bb;
+  --color-secondary-fixed: #6ffbbe;
+  --color-secondary-fixed-dim: #4edea3;
+  --color-on-secondary-fixed-variant: #005236;
+
+  --color-tertiary: #545c72;
+  --color-tertiary-container: #6c748b;
+
+  --color-background: #f7f9fb;
+  --color-surface: #f7f9fb;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-dim: #d8dadc;
+  --color-surface-variant: #e0e3e5;
+  --color-surface-container: #eceef0;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #424754;
+  --color-outline: #727785;
+  --color-outline-variant: #c2c6d6;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  /* Named brand accents used directly in the Stitch markup */
+  --color-slate-navy: #1e293b;
+  --color-border-subtle: #e2e8f0;
+  --color-success-emerald: #10b981;
+  --color-action-royal: #2563eb;
+  --color-error-rose: #e11d48;
+
+  /* Typography - Hanken Grotesk throughout */
+  --font-display-lg: "Hanken Grotesk", sans-serif;
+  --font-headline-md: "Hanken Grotesk", sans-serif;
+  --font-kpi-value: "Hanken Grotesk", sans-serif;
+  --font-table-header: "Hanken Grotesk", sans-serif;
+  --font-label-caps: "Hanken Grotesk", sans-serif;
+  --font-body-base: "Hanken Grotesk", sans-serif;
+  --font-body-sm: "Hanken Grotesk", sans-serif;
+
+  --text-display-lg: 36px;
+  --text-display-lg--line-height: 44px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+
+  --text-kpi-value: 28px;
+  --text-kpi-value--line-height: 32px;
+  --text-kpi-value--letter-spacing: -0.01em;
+  --text-kpi-value--font-weight: 700;
+
+  --text-table-header: 13px;
+  --text-table-header--line-height: 18px;
+  --text-table-header--letter-spacing: 0.01em;
+  --text-table-header--font-weight: 600;
+
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 16px;
+  --text-label-caps--letter-spacing: 0.05em;
+  --text-label-caps--font-weight: 700;
+
+  --text-body-base: 16px;
+  --text-body-base--line-height: 24px;
+  --text-body-base--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
+
+  /* Roundness profile: soft, not pill-shaped by default */
+  --radius: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
+
+  /* Named spacing used throughout the Stitch markup (p-gutter-lg, mb-stack-lg, etc.) */
+  --spacing-unit: 4px;
+  --spacing-stack-sm: 8px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-lg: 32px;
+  --spacing-gutter-md: 16px;
+  --spacing-gutter-lg: 24px;
+  --spacing-container-margin: 24px;
+}
 
 /* Basic global styles */
 body {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8fafc;
+    font-family: 'Hanken Grotesk', sans-serif;
+    color: var(--color-on-surface);
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 .header {
