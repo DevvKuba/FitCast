@@ -1,189 +1,173 @@
 <app-home-navbar></app-home-navbar>
 
-<div class="home-container">
-  <!-- Header Section -->
-  <div class="header-section">
-    <h1 class="main-title">Welcome to FitCast Platform</h1>
-    <p class="subtitle">Integrated Client & Trainer Management System</p>
-  </div>
+<div class="p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1440px] mx-auto">
 
-  <!-- Feature Cards -->
-  <div class="stats-grid">
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-users stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">Client Management</span>
-          <span class="stat-description">Track & manage all clients</span>
+  <!-- Hero -->
+  <section class="text-center py-8">
+    <h2 class="text-3xl sm:text-4xl font-bold text-on-surface mb-2">Welcome to FitCast Platform</h2>
+    <p class="text-lg text-on-surface-variant">Integrated Client &amp; Trainer Management System</p>
+  </section>
+
+  <!-- Feature Grid -->
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <p-card *ngFor="let feature of platformFeatures" styleClass="border border-border-subtle shadow-none rounded-xl">
+      <div class="flex items-start gap-4">
+        <div class="p-3 rounded-full bg-surface-container-low text-primary">
+          <i class="pi {{feature.icon}} text-2xl"></i>
+        </div>
+        <div>
+          <h3 class="font-semibold text-on-surface text-lg">{{feature.title}}</h3>
+          <p class="text-sm text-on-surface-variant mt-1">{{feature.description}}</p>
         </div>
       </div>
     </p-card>
+  </section>
 
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-chart-line stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">Workout Tracking</span>
-          <span class="stat-description">Log workout sessions for each client</span>
+  <!-- Analytics Overview -->
+  <section class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+        <p class="text-xs font-bold tracking-widest text-on-surface-variant mb-2 uppercase">Base Clients</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-navy">13</span>
+          <span class="text-sm text-success-emerald font-bold">+2</span>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-2 opacity-70">Total active roster</p>
+      </p-card>
+
+      <p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+        <p class="text-xs font-bold tracking-widest text-on-surface-variant mb-2 uppercase">Monthly Sessions</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-navy">101</span>
+          <span class="text-sm text-success-emerald font-bold">+12%</span>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-2 opacity-70">Completed this month</p>
+      </p-card>
+
+      <p-card styleClass="border border-border-subtle shadow-none rounded-xl border-l-4 border-l-action-royal">
+        <p class="text-xs font-bold tracking-widest text-on-surface-variant mb-2 uppercase">Total Revenue</p>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-navy">£4,872</span>
+          <span class="text-sm text-success-emerald font-bold">+8.4%</span>
+        </div>
+        <p class="text-xs text-on-surface-variant mt-2 opacity-70">Gross earnings (MTD)</p>
+      </p-card>
+    </div>
+
+    <p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+      <div class="flex justify-between items-start mb-8">
+        <div>
+          <h3 class="text-lg font-bold text-slate-navy">Activity Patterns</h3>
+          <p class="text-sm text-on-surface-variant">Illustrative weekly session distribution</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-action-royal"></span>
+          <span class="text-[10px] font-bold text-on-surface-variant uppercase">Core Sessions</span>
         </div>
       </div>
+      <p-chart type="bar" [data]="activityPatternsChartData" [options]="activityPatternsChartOptions" height="220px"></p-chart>
     </p-card>
+  </section>
 
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-pound stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">Payment Processing</span>
-          <span class="stat-description">Monitor revenue & payments</span>
-        </div>
-      </div>
-    </p-card>
+  <!-- Application Features -->
+  <section>
+    <h2 class="text-2xl font-bold text-on-surface mb-6">Application Features</h2>
 
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-cloud-download stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">Auto Workout Collection</span>
-          <span class="stat-description">Integrate workout logger for automatic syncing</span>
-        </div>
-      </div>
-    </p-card>
-
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-bell stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">In-App Notifications</span>
-          <span class="stat-description">Alerts for sessions, step tracking & more</span>
-        </div>
-      </div>
-    </p-card>
-
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <i class="pi pi-send stat-icon"></i>
-        <div class="stat-details">
-          <span class="stat-feature">SMS Reminders</span>
-          <span class="stat-description">Automated client & trainer text alerts and reminders</span>
-        </div>
-      </div>
-    </p-card>
-
-  </div>
-
-  <!-- Analytics Charts Section -->
-  <div class="charts-section">
-    <p-card class="chart-card">
+    <!-- Client Roster -->
+    <p-card styleClass="border border-border-subtle shadow-none rounded-xl mb-6 overflow-hidden">
       <ng-template pTemplate="header">
-        <div class="card-header">
-          <h3>Revenue Analytics</h3>
-          <span class="badge">Monthly Overview</span>
-        </div>
-      </ng-template>
-      <p-chart type="line" [data]="revenueChartData" [options]="chartOptions" height="300px"></p-chart>
-    </p-card>
-
-    <p-card class="chart-card">
-      <ng-template pTemplate="header">
-        <div class="card-header">
-          <h3>Workout Activity</h3>
-          <span class="badge">Tracking Trends</span>
-        </div>
-      </ng-template>
-      <p-chart type="bar" [data]="workoutChartData" [options]="chartOptions" height="300px"></p-chart>
-    </p-card>
-  </div>
-
-  <!-- Feature Showcase Section -->
-  <div class="features-section">
-    <h2 class="section-title">Application Features</h2>
-    
-    <!-- Client Management Feature -->
-    <p-card class="feature-card">
-      <ng-template pTemplate="header">
-        <div class="feature-header">
-          <div class="feature-title-section">
-            <i class="pi pi-users feature-icon"></i>
-            <h3>Client Management</h3>
+        <div class="p-5 border-b border-border-subtle flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-surface-container-low text-primary">
+              <i class="pi pi-users text-xl"></i>
+            </div>
+            <h3 class="font-semibold text-lg text-on-surface">Client Roster</h3>
           </div>
-          <a [routerLink]="['/client-info']" class="view-full-link">
-            View Full Page <i class="pi pi-arrow-right"></i>
+          <a [routerLink]="['/client-info']" class="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+            View Full Roster <i class="pi pi-arrow-right"></i>
           </a>
         </div>
       </ng-template>
-      <p-table [value]="sampleClients" [tableStyle]="{'min-width': '50rem'}">
+      <p-table [value]="sampleClients">
         <ng-template pTemplate="header">
           <tr>
-            <th>Client Name</th>
-            <th>Current Session</th>
-            <th>Block Sessions</th>
-            <th>Activity Status</th>
+            <th>Client</th>
+            <th>Last Active</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-client>
           <tr>
-            <td>{{client.firstName}}</td>
-            <td>{{client.currentBlockSession}}</td>
-            <td>{{client.totalBlockSessions}}</td>
             <td>
-              <p-tag [severity]="client.isActive ? 'success' : 'danger'" 
-                     [value]="client.isActive ? 'Active' : 'Inactive'">
-              </p-tag>
+              <div class="flex items-center gap-3">
+                <p-avatar [label]="client.initials" shape="circle" [styleClass]="client.avatarBg + ' text-white'"></p-avatar>
+                <span class="font-medium text-on-surface">{{client.name}}</span>
+              </div>
+            </td>
+            <td>
+              <p-tag [severity]="client.isActive ? 'success' : 'secondary'" [value]="client.lastActive"></p-tag>
             </td>
           </tr>
         </ng-template>
       </p-table>
     </p-card>
 
-    <!-- Workouts & Payments Side by Side -->
-    <div class="side-by-side-features">
-      <!-- Workout Tracking Feature -->
-      <p-card class="feature-card flex-card">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Recent Workouts -->
+      <p-card styleClass="border border-border-subtle shadow-none rounded-xl overflow-hidden">
         <ng-template pTemplate="header">
-          <div class="feature-header">
-            <div class="feature-title-section">
-              <i class="pi pi-chart-bar feature-icon"></i>
-              <h3>Workout Tracking</h3>
+          <div class="p-5 border-b border-border-subtle flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-surface-container-low text-primary">
+                <i class="pi pi-chart-bar text-xl"></i>
+              </div>
+              <h3 class="font-semibold text-lg text-on-surface">Recent Workouts</h3>
             </div>
-            <a [routerLink]="['/client-workouts']" class="view-full-link">
-              View Full <i class="pi pi-arrow-right"></i>
+            <a [routerLink]="['/client-workouts']" class="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              View Feed <i class="pi pi-arrow-right"></i>
             </a>
           </div>
         </ng-template>
-        <p-table [value]="sampleWorkouts" [tableStyle]="{'min-width': '100%'}">
+        <p-table [value]="sampleWorkouts">
           <ng-template pTemplate="header">
             <tr>
               <th>Workout Title</th>
               <th>Client</th>
-              <th>Session</th>
-              <th>Date</th>
+              <th>Exercises</th>
+              <th>Duration</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-workout>
             <tr>
-              <td>{{workout.workoutTitle}}</td>
-              <td>{{workout.clientName}}</td>
-              <td>{{workout.currentBlockSession}}/{{workout.totalBlockSessions}}</td>
-              <td>{{workout.sessionDate | date:'dd/MM/yyyy'}}</td>
+              <td class="font-medium text-on-surface">{{workout.workoutTitle}}</td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <p-avatar [label]="workout.clientInitials" shape="circle" size="normal" [styleClass]="workout.avatarBg + ' text-white'"></p-avatar>
+                  <span class="text-sm">{{workout.clientName}}</span>
+                </div>
+              </td>
+              <td>{{workout.exerciseCount}}</td>
+              <td>{{workout.durationMinutes}}m</td>
             </tr>
           </ng-template>
         </p-table>
       </p-card>
 
-      <!-- Payment Management Feature -->
-      <p-card class="feature-card flex-card">
+      <!-- Payments Overview -->
+      <p-card styleClass="border border-border-subtle shadow-none rounded-xl overflow-hidden">
         <ng-template pTemplate="header">
-          <div class="feature-header">
-            <div class="feature-title-section">
-              <i class="pi pi-credit-card feature-icon"></i>
-              <h3>Payment Management</h3>
+          <div class="p-5 border-b border-border-subtle flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-lg bg-surface-container-low text-primary">
+                <i class="pi pi-credit-card text-xl"></i>
+              </div>
+              <h3 class="font-semibold text-lg text-on-surface">Payments Overview</h3>
             </div>
-            <a [routerLink]="['/client-payments']" class="view-full-link">
-              View Full <i class="pi pi-arrow-right"></i>
+            <a [routerLink]="['/client-payments']" class="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              Manage <i class="pi pi-arrow-right"></i>
             </a>
           </div>
         </ng-template>
-        <p-table [value]="samplePayments" [tableStyle]="{'min-width': '100%'}">
+        <p-table [value]="samplePayments">
           <ng-template pTemplate="header">
             <tr>
               <th>Client</th>
@@ -194,45 +178,21 @@
           </ng-template>
           <ng-template pTemplate="body" let-payment>
             <tr>
-              <td>{{payment.clientName}}</td>
-              <td>{{ "£" + payment.amount}}</td>
+              <td>
+                <div class="flex items-center gap-3">
+                  <p-avatar [label]="payment.initials" shape="circle" [styleClass]="payment.avatarBg + ' text-white'"></p-avatar>
+                  <span class="font-medium text-on-surface">{{payment.clientName}}</span>
+                </div>
+              </td>
+              <td class="font-medium">{{ "£" + payment.amount.toFixed(2) }}</td>
               <td>{{payment.numberOfSessions}}</td>
               <td>
-                <p-tag [severity]="payment.confirmed ? 'success' : 'info'" 
-                       [value]="payment.confirmed ? 'Confirmed' : 'Pending'">
-                </p-tag>
+                <p-tag [severity]="payment.confirmed ? 'success' : 'warn'" [value]="payment.confirmed ? 'Paid' : 'Pending'"></p-tag>
               </td>
             </tr>
           </ng-template>
         </p-table>
       </p-card>
     </div>
-  </div>
-
-  <!-- Platform Highlights -->
-  <div class="highlights-section">
-    <h2 class="section-title">Platform Capabilities</h2>
-    <div class="highlights-grid">
-      <div class="highlight-item">
-        <i class="pi pi-sync highlight-icon"></i>
-        <h4>Integrated System</h4>
-        <p>Unified platform connecting trainers and clients seamlessly</p>
-      </div>
-      <div class="highlight-item">
-        <i class="pi pi-chart-line highlight-icon"></i>
-        <h4>Progress Tracking</h4>
-        <p>Monitor client sessions, workouts, and performance metrics</p>
-      </div>
-      <div class="highlight-item">
-        <i class="pi pi-wallet highlight-icon"></i>
-        <h4>Payment Processing</h4>
-        <p>Track payments, sessions, and financial records efficiently</p>
-      </div>
-      <div class="highlight-item">
-        <i class="pi pi-bell highlight-icon"></i>
-        <h4>Smart Notifications</h4>
-        <p>Stay updated with automated alerts and reminders</p>
-      </div>
-    </div>
-  </div>
+  </section>
 </div>
