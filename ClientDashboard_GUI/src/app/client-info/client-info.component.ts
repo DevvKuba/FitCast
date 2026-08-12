@@ -34,7 +34,6 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrl: './client-info.component.css'
 })
 export class ClientInfoComponent implements OnInit {
-  @ViewChild('currentSessionPopover') currentSessionPopover!: Popover;
   @ViewChild('phoneNumberInfoPopover') phoneNumberInfoPopover!: Popover;
 
   showPopover(event: MouseEvent, popover: Popover){

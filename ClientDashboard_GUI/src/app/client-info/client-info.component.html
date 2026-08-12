@@ -4,13 +4,6 @@
 @else {
 
 <p-toast />
-
-  <p-popover #currentSessionPopover appendTo="body">
-    <div style="padding: 0.25rem 0.5rem; font-size: 0.75rem; max-width: 180px;">
-        <p style="margin: 0; font-size: 0.85rem;">States which session the client finished</p>
-    </div>
-  </p-popover>
-
   <!-- Add Dialog -->
   <p-dialog header="Add new Client" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem' }">
       <div class="dialog-form-group">
@@ -104,11 +97,8 @@
                 <th pSortableColumn="firstName" class="font-table-header text-base">
                       Client <p-sortIcon field="firstName" />
                 </th>
-                <th
-                  class="font-table-header text-base"
-                  (mouseenter)="showPopover($event, currentSessionPopover)"
-                  (mouseleave)="hidePopover(currentSessionPopover)">
-                      Progress
+                <th pSortableColumn="currentBlockSession" class= "font-table-header text-base">
+                      Progress <p-sortIcon field="currentBlockSession"/>
                 </th>
                 <th pSortableColumn="isActive" class="font-table-header text-base text-center">
                       Activity Status <p-sortIcon field="isActive" />
