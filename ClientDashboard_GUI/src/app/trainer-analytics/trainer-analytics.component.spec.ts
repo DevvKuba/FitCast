@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { WeekDays } from '../enums/weekdays';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
+import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { TrainerService } from '../services/trainer.service';
@@ -14,7 +15,19 @@ describe('TrainerAnalyticsComponent', () => {
   let accountServiceMock: { currentUser: jasmine.Spy };
   let toastServiceSpy: jasmine.SpyObj<ToastService>;
 
-  const sampleAnalytics: CompleteTrainerAnalyticsDto = {
+  const sampleCurrentMonth: CurrentMonthTrainerAnalyticsDto = {
+    baseClients: 12,
+    monthlyClientSessions: 72,
+    totalRevenue: 2880,
+    totalWorktimeMinutes: 4320,
+    revenuePerWorkingDay: 144,
+    weeklySessionsCounts: [
+      { day: WeekDays.Mon, totalSessions: 10 },
+      { day: WeekDays.Wed, totalSessions: 14 }
+    ]
+  };
+
+  const sampleCompleteMonth: CompleteTrainerAnalyticsDto = {
     baseClients: 12,
     acquiredClients: 4,
     acquisitionPercentage: 33,
@@ -43,14 +56,14 @@ describe('TrainerAnalyticsComponent', () => {
 
   beforeEach(async () => {
     trainerServiceSpy = jasmine.createSpyObj<TrainerService>('TrainerService', [
-      'getLastMonthsAnalytics',
-      'getFullMonthsAnalytics'
+      'getCurrentMonthsAnalytics',
+      'getSpecificMonthAnalytics'
     ]);
-    trainerServiceSpy.getLastMonthsAnalytics.and.returnValue(
-      of({ success: true, message: 'ok', data: sampleAnalytics })
+    trainerServiceSpy.getCurrentMonthsAnalytics.and.returnValue(
+      of({ success: true, message: 'ok', data: sampleCurrentMonth })
     );
-    trainerServiceSpy.getFullMonthsAnalytics.and.returnValue(
-      of({ success: true, message: 'ok', data: sampleAnalytics })
+    trainerServiceSpy.getSpecificMonthAnalytics.and.returnValue(
+      of({ success: true, message: 'ok', data: sampleCompleteMonth })
     );
 
     accountServiceMock = {
@@ -67,7 +80,6 @@ describe('TrainerAnalyticsComponent', () => {
       ]
     });
 
-    // This keeps tests focused on computation logic and avoids template dependency noise.
     component = TestBed.runInInjectionContext(() => new TrainerAnalyticsComponent());
   });
 
@@ -75,101 +87,129 @@ describe('TrainerAnalyticsComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('view mode', () => {
+    it('defaults to current month', () => {
+      expect(component.viewMode).toBe('current');
+    });
+
+    it('fetches specific-month data the first time it switches to past', () => {
+      component.setViewMode('past');
+
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalledWith(
+        component.selectedMonthDate.getMonth() + 1,
+        component.selectedMonthDate.getFullYear()
+      );
+      expect(component.completeMonthAnalyticsData).toEqual(sampleCompleteMonth);
+    });
+
+    it('does not re-fetch past-month data on a second switch once already loaded', () => {
+      component.setViewMode('past');
+      trainerServiceSpy.getSpecificMonthAnalytics.calls.reset();
+
+      component.setViewMode('current');
+      component.setViewMode('past');
+
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('month navigation', () => {
+    it('selectedMonthDate defaults to the most recent fully-completed month', () => {
+      const now = new Date();
+      const expected = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+      expect(component.selectedMonthDate.getFullYear()).toBe(expected.getFullYear());
+      expect(component.selectedMonthDate.getMonth()).toBe(expected.getMonth());
+    });
+
+    it('disables moving to the next month once at the max selectable month', () => {
+      expect(component.isNextMonthDisabled).toBeTrue();
+    });
+
+    it('goToPreviousMonth steps back a month and refetches', () => {
+      const before = component.selectedMonthDate;
+
+      component.goToPreviousMonth();
+
+      expect(component.selectedMonthDate.getTime()).toBeLessThan(before.getTime());
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalled();
+    });
+
+    it('goToNextMonth is a no-op when already at the max selectable month', () => {
+      component.goToNextMonth();
+
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
+    });
+  });
+
   describe('computed chart data', () => {
-    it('returns empty chart structures when analyticsData is undefined', () => {
+    it('returns empty chart structures when the underlying data is undefined', () => {
+      component.currentMonthAnalyticsData = undefined;
       component.completeMonthAnalyticsData = undefined;
 
+      expect(component.currentMonthActivityChartData).toEqual({ labels: [], datasets: [] });
       expect(component.clientMetricsChartData).toEqual({ labels: [], datasets: [] });
-      expect(component.revenuePatternsChartData).toEqual({ labels: [], datasets: [] });
-      expect(component.activityPatternsChartData).toEqual({ labels: [], datasets: [] });
     });
 
-    it('client metrics labels use "Monthly sessions" when scope is lastMonth', () => {
-      component.selectedScope = 'lastMonth';
-      component.completeMonthAnalyticsData = sampleAnalytics;
+    it('current month activity chart maps weekday enum values to readable labels', () => {
+      component.currentMonthAnalyticsData = sampleCurrentMonth;
+
+      const chartData = component.currentMonthActivityChartData;
+
+      expect(chartData.labels).toEqual(['Mon', 'Wed']);
+      expect(chartData.datasets[0].data).toEqual([10, 14]);
+    });
+
+    it('client metrics chart maps active/churned/acquired/total sessions', () => {
+      component.completeMonthAnalyticsData = sampleCompleteMonth;
 
       const chartData = component.clientMetricsChartData;
 
-      expect(chartData.labels).toEqual([
-        'Base clients',
-        'Sessions per client',
-        'Monthly sessions'
-      ]);
-      expect(chartData.datasets[0].data).toEqual([12, 6, 72]);
+      expect(chartData.labels).toEqual(['Active Clients', 'Churned', 'Acquisitions', 'Total Sessions']);
+      expect(chartData.datasets[0].data).toEqual([12, 2, 4, 72]);
+    });
+  });
+
+  describe('activity heatmap ring helper', () => {
+    it('gives the busiest day (max multiplier) a dash offset of 0', () => {
+      component.completeMonthAnalyticsData = sampleCompleteMonth;
+
+      const busiest = sampleCompleteMonth.allWeekdays.find((weekday) => weekday.multiplier === 1.5)!;
+
+      expect(component.getWeekdayRingDashOffset(busiest)).toBeCloseTo(0, 5);
     });
 
-    it('client metrics labels use "Average monthly sessions" when scope is allData', () => {
-      component.selectedScope = 'allData';
-      component.completeMonthAnalyticsData = sampleAnalytics;
+    it('scales lighter days proportionally to the max multiplier', () => {
+      component.completeMonthAnalyticsData = sampleCompleteMonth;
 
-      const chartData = component.clientMetricsChartData;
+      const lightest = sampleCompleteMonth.allWeekdays.find((weekday) => weekday.multiplier === 0.9)!;
+      const circumference = 2 * Math.PI * 28;
+      const expectedOffset = circumference * (1 - 0.9 / 1.5);
 
-      expect(chartData.labels).toEqual([
-        'Base clients',
-        'Sessions per client',
-        'Average monthly sessions'
-      ]);
-    });
-
-    it('revenue chart maps day/week values correctly', () => {
-      component.completeMonthAnalyticsData = sampleAnalytics;
-
-      const chartData = component.revenuePatternsChartData;
-
-      expect(chartData.labels).toEqual(['Revenue / day', 'Revenue / week']);
-      expect(chartData.datasets[0].data).toEqual([144, 720]);
-    });
-
-    it('activity chart maps weekday enum values to readable labels', () => {
-      component.completeMonthAnalyticsData = sampleAnalytics;
-
-      const chartData = component.activityPatternsChartData;
-
-      expect(chartData.labels).toEqual(['Mon', 'Wed', 'Sun']);
-      expect(chartData.datasets[0].data).toEqual([1.2, 1.5, 0.9]);
+      expect(component.getWeekdayRingDashOffset(lightest)).toBeCloseTo(expectedOffset, 5);
     });
   });
 
   describe('formatting helpers', () => {
-    it('formatWeeklyMultipliers creates a comma-separated summary string', () => {
-      const formatted = component.formatWeeklyMultipliers([
+    it('formatWeekdayList joins weekday names without multiplier suffixes', () => {
+      const formatted = component.formatWeekdayList([
         { day: WeekDays.Mon, totalSessions: 10, multiplier: 1.2 },
         { day: WeekDays.Wed, totalSessions: 14, multiplier: 1.5 }
       ]);
 
-      expect(formatted).toBe('Mon (1.2x), Wed (1.5x)');
+      expect(formatted).toBe('Mon, Wed');
     });
 
-    it('formatWeeklyMultiplier formats one weekday multiplier item', () => {
-      const formatted = component.formatWeeklyMultiplier({
-        day: WeekDays.Fri,
-        totalSessions: 8,
-        multiplier: 1.1
-      });
-
-      expect(formatted).toBe('Fri - (1.1x)');
+    it('weekdayLabel resolves a single enum value to its short name', () => {
+      expect(component.weekdayLabel(WeekDays.Fri)).toBe('Fri');
     });
-  });
 
-  describe('scope behavior', () => {
-    it('setMetricScope updates scope and triggers data refresh', () => {
-      const retrieveSpy = spyOn(component, 'retrieveAnalytics');
-
-      component.setMetricScope('allData');
-
-      expect(component.selectedScope).toBe('allData');
-      expect(retrieveSpy).toHaveBeenCalled();
+    it('convertMinutesToDecimalHours rounds to one decimal place', () => {
+      expect(component.convertMinutesToDecimalHours(95)).toBe(1.6);
     });
-  });
 
-  describe('documentation: how these tests operate', () => {
-    it('validates chart getter outputs by assigning analyticsData directly (pure computation tests)', () => {
-      component.completeMonthAnalyticsData = sampleAnalytics;
-
-      const labels = component.activityPatternsChartData.labels;
-
-      expect(labels).toEqual(['Mon', 'Wed', 'Sun']);
-      expect(component.activityPatternsChartData.datasets.length).toBe(1);
+    it('convertMinutesToHoursAndMinutes splits into whole hours and remainder minutes', () => {
+      expect(component.convertMinutesToHoursAndMinutes(125)).toEqual({ hours: 2, minutes: 5 });
     });
   });
 });

@@ -1,99 +1,258 @@
-@if(completeMonthAnalyticsData == undefined){
+@if(currentMonthAnalyticsData == undefined){
 	<app-spinner></app-spinner>
 }
 @else {
-	<section class="trainer-analytics-shell">
-	<div class="analytics-panel">
-		<div class="analytics-header">
-			<h2 class="analytics-title">Trainer Analytics Dashboard</h2>
-			<div class="analytics-header-controls">
-				<h3 class="analytics-trends-title">TRENDS</h3>
-				<div class="analytics-header-actions">
-					<div class="analytics-scope-toggle" role="group" aria-label="Analytics data range">
-						<button
-							type="button"
-							class="scope-toggle-button"
-							[class.active]="selectedScope === 'lastMonth'"
-							(click)="setMetricScope('lastMonth')"
-						>
-							Last month
-						</button>
-						<button
-							type="button"
-							class="scope-toggle-button"
-							[class.active]="selectedScope === 'allData'"
-							(click)="setMetricScope('allData')"
-						>
-							All data
-						</button>
-					</div>
-					<div class="analytics-prediction-action">
-						<app-revenue-prediction></app-revenue-prediction>
-					</div>
-				</div>
-			</div>
+<div class="space-y-8">
+
+	<!-- Header + view toggle -->
+	<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+		<div>
+			<h2 class="text-display-lg font-display-lg text-slate-navy">Trainer Analytics Dashboard</h2>
+			<p class="text-body-sm text-on-surface-variant flex items-center gap-2">
+				@if(viewMode === 'current'){
+					<span class="w-2 h-2 bg-success-emerald rounded-full"></span> Current Month - Live Performance
+				} @else {
+					<span class="w-2 h-2 bg-slate-navy rounded-full"></span> Past Month - Historical Analytics
+				}
+			</p>
 		</div>
-
-		<div class="analytics-content">
-			<div class="analytics-left-column">
-				<div class="analytics-section left-section">
-					<h3>CLIENT METRICS</h3>
-					<p>Current: {{ completeMonthAnalyticsData.baseClients }} clients</p>
-					<p>
-						{{ selectedScope === 'lastMonth' ? 'Acquired last month' : 'Average monthly acquisitions' }}: {{ completeMonthAnalyticsData.acquiredClients }}
-						(+{{ completeMonthAnalyticsData.acquisitionPercentage }}%)
-					</p>
-					<p>
-						{{ selectedScope === 'lastMonth' ? 'Churned last month' : 'Average monthly churn' }}: {{ completeMonthAnalyticsData.churnedClients }}
-						({{ completeMonthAnalyticsData.churnPercentage }}%)
-					</p>
-					<p>Net growth: +{{ completeMonthAnalyticsData.netGrowth }} (+{{ completeMonthAnalyticsData.netGrowthPercentage }}%)</p>
-					<p>Sessions per client: {{ completeMonthAnalyticsData.averageSessionsPerClient }}</p>
-					<p>Monthly sessions: {{ completeMonthAnalyticsData.totalClientSessions }}</p>
-				</div>
-
-				<div class="analytics-section left-section">
-					<h3>REVENUE PATTERNS</h3>
-					<p>Monthly working days: {{ completeMonthAnalyticsData.monthlyWorkingDays }}</p>
-					<p>Average session price: ${{ completeMonthAnalyticsData.sessionsPrice }}</p>
-					<p>Revenue per working day: ${{ completeMonthAnalyticsData.revenuePerWorkingDay }}</p>
-					<p>Revenue per working week: ${{ completeMonthAnalyticsData.revenuePerWorkingWeek }}</p>
-				</div>
-
-				<div class="analytics-section left-section analytics-section-last">
-					<h3>ACTIVITY PATTERNS</h3>
-					<p>Busiest days: {{ formatWeeklyMultipliers(completeMonthAnalyticsData.busiestDays)}}</p>
-					<p>Light days: {{ formatWeeklyMultipliers(completeMonthAnalyticsData.lightDays)}}</p>
-					<p class="all-weekdays-title">All weekdays:</p>
-					<p class="weekday-item" *ngFor="let weekday of completeMonthAnalyticsData.allWeekdays">{{ formatWeeklyMultiplier(weekday) }}</p>
-				</div>
-			</div>
-
-			<div class="analytics-right-column">
-				<div class="analytics-section trends-section analytics-section-last">
-					<div class="trend-block">
-						<h4>Client Metrics</h4>
-						<div class="trend-chart">
-							<p-chart type="bar" [data]="clientMetricsChartData" [options]="clientMetricsChartOptions"></p-chart>
-						</div>
-					</div>
-					<div class="trend-block">
-						<h4>Revenue Patterns</h4>
-						<div class="trend-chart">
-							<p-chart type="bar" [data]="revenuePatternsChartData" [options]="revenuePatternsChartOptions"></p-chart>
-						</div>
-					</div>
-					<div class="trend-block">
-						<h4>Activity Patterns</h4>
-						<div class="trend-chart">
-							<p-chart type="line" [data]="activityPatternsChartData" [options]="activityPatternsChartOptions"></p-chart>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div class="flex bg-surface-container rounded-lg p-1">
+			<button
+				type="button"
+				class="px-6 py-2 rounded-md text-table-header font-bold transition-all"
+				[class.bg-white]="viewMode === 'current'"
+				[class.shadow-sm]="viewMode === 'current'"
+				[class.text-primary]="viewMode === 'current'"
+				[class.text-on-surface-variant]="viewMode !== 'current'"
+				(click)="setViewMode('current')">Current Month</button>
+			<button
+				type="button"
+				class="px-6 py-2 rounded-md text-table-header font-bold transition-all"
+				[class.bg-white]="viewMode === 'past'"
+				[class.shadow-sm]="viewMode === 'past'"
+				[class.text-primary]="viewMode === 'past'"
+				[class.text-on-surface-variant]="viewMode !== 'past'"
+				(click)="setViewMode('past')">Past Month</button>
 		</div>
-
 	</div>
-</section>
-}
 
+	<!-- CURRENT MONTH VIEW -->
+	@if(viewMode === 'current'){
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-gutter-md">
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">BASE CLIENTS</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.baseClients}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Total active roster</p>
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">MONTHLY SESSIONS</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.monthlyClientSessions}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Completed this month</p>
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl border-l-4 border-l-action-royal">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL REVENUE</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">£{{currentMonthAnalyticsData.totalRevenue | number:'1.0-2'}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Gross earnings (MTD)</p>
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL WORKTIME</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Face-to-face active time</p>
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">£{{currentMonthAnalyticsData.revenuePerWorkingDay | number:'1.0-2'}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
+			</p-card>
+		</div>
+
+		<p-card styleClass="border border-border-subtle shadow-none rounded-xl mt-stack-lg">
+			<div class="flex justify-between items-start mb-10">
+				<div>
+					<h3 class="text-headline-md font-headline-md text-slate-navy">Activity Patterns</h3>
+					<p class="text-body-sm text-on-surface-variant">Live tracking of session distribution</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<span class="w-3 h-3 rounded-full bg-action-royal"></span>
+					<span class="text-[11px] font-bold text-on-surface-variant uppercase">Sessions</span>
+				</div>
+			</div>
+			<p-chart type="bar" [data]="currentMonthActivityChartData" [options]="currentMonthActivityChartOptions" height="260px"></p-chart>
+		</p-card>
+	}
+
+	<!-- PAST MONTH VIEW -->
+	@if(viewMode === 'past'){
+		<div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-xl border border-border-subtle">
+			<div class="flex items-center gap-3">
+				<span class="text-label-caps font-label-caps text-on-surface-variant">HISTORICAL DATA</span>
+				<div class="h-4 w-[1px] bg-border-subtle mx-2"></div>
+				<div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+					<button type="button" class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-white hover:shadow-sm transition-all" (click)="goToPreviousMonth()" aria-label="Previous month">
+						<i class="pi pi-chevron-left text-sm"></i>
+					</button>
+					<span class="px-4 py-1.5 text-body-sm font-bold text-primary">{{selectedMonthDate | date:'MMMM yyyy'}}</span>
+					<button
+						type="button"
+						class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+						(click)="goToNextMonth()"
+						[disabled]="isNextMonthDisabled"
+						aria-label="Next month">
+						<i class="pi pi-chevron-right text-sm"></i>
+					</button>
+				</div>
+			</div>
+			<p-datepicker
+				[ngModel]="selectedMonthDate"
+				(onSelect)="onMonthPickerSelect($event)"
+				view="month"
+				dateFormat="MM yy"
+				[maxDate]="maxSelectableMonthDate"
+				[showIcon]="true"
+				[readonlyInput]="true"
+				placeholder="Jump to month"
+				styleClass="w-44">
+			</p-datepicker>
+		</div>
+
+		@if(completeMonthAnalyticsData == undefined){
+			<app-spinner></app-spinner>
+		} @else {
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-md items-start">
+				<!-- Client Metrics -->
+				<div class="lg:col-span-8">
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<div class="flex justify-between items-center mb-6">
+						<h3 class="text-headline-md font-headline-md flex items-center text-slate-navy">
+							<i class="pi pi-users mr-2 text-primary"></i> Client Metrics
+						</h3>
+						<span class="text-body-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full font-semibold">{{completeMonthAnalyticsData.monthlyWorkingDays}} working days</span>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Total Active</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.baseClients}} <span class="text-body-sm text-success-emerald font-semibold block mt-1">Net +{{completeMonthAnalyticsData.netGrowth}} ({{completeMonthAnalyticsData.netGrowthPercentage}}%)</span></p>
+						</div>
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Acquisitions</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.acquiredClients}} <span class="text-body-sm text-success-emerald font-semibold block mt-1">+{{completeMonthAnalyticsData.acquisitionPercentage}}%</span></p>
+						</div>
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Churn Rate</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.churnedClients}} <span class="text-body-sm text-error-rose font-semibold block mt-1">{{completeMonthAnalyticsData.churnPercentage}}%</span></p>
+						</div>
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Sessions / Client</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.averageSessionsPerClient}}</p>
+						</div>
+					</div>
+					<div class="h-64">
+						<p-chart type="bar" [data]="clientMetricsChartData" [options]="clientMetricsChartOptions" height="256px"></p-chart>
+					</div>
+				</p-card>
+				</div>
+
+				<!-- Session Durations -->
+				<div class="lg:col-span-4">
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<h3 class="text-headline-md font-headline-md flex items-center mb-6 text-slate-navy">
+						<i class="pi pi-clock mr-2 text-primary"></i> Session Times
+					</h3>
+					<div class="space-y-4">
+						<div class="flex justify-between items-center p-4 bg-surface rounded-lg border border-border-subtle">
+							<div>
+								<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Total Worktime</p>
+								<p class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(completeMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(completeMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</p>
+							</div>
+							<div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-primary">
+								<i class="pi pi-history"></i>
+							</div>
+						</div>
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Avg Daily</p>
+							<p class="text-body-base font-body-base font-bold text-slate-navy">{{convertMinutesToDecimalHours(completeMonthAnalyticsData.averageDailyWorktime)}} hrs / day</p>
+						</div>
+						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Avg Weekly</p>
+							<p class="text-body-base font-body-base font-bold text-slate-navy">{{convertMinutesToDecimalHours(completeMonthAnalyticsData.averageWeeklyWorktime)}} hrs / week</p>
+						</div>
+					</div>
+				</p-card>
+				</div>
+
+				<!-- Revenue Patterns -->
+				<div class="lg:col-span-12">
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+						<h3 class="text-headline-md font-headline-md flex items-center text-slate-navy">
+							<i class="pi pi-wallet mr-2 text-primary"></i> Revenue Patterns
+						</h3>
+						<div class="flex items-center gap-2">
+							<a [routerLink]="['/client-payments']" class="text-body-sm px-4 py-1.5 border border-border-subtle rounded-lg hover:bg-surface transition-colors font-semibold">View Payments</a>
+						</div>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div class="p-4 bg-primary text-on-primary rounded-lg">
+							<p class="text-[10px] font-label-caps opacity-90 uppercase">Total Revenue</p>
+							<p class="text-kpi-value font-kpi-value">£{{completeMonthAnalyticsData.totalRevenue | number:'1.0-2'}}</p>
+						</div>
+						<div class="p-4 bg-surface border border-border-subtle rounded-lg">
+							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Avg Session</p>
+							<p class="text-[24px] font-kpi-value text-slate-navy">£{{completeMonthAnalyticsData.sessionsPrice | number:'1.0-2'}}</p>
+						</div>
+						<div class="p-4 bg-surface-container-low rounded-lg flex items-center border border-border-subtle">
+							<i class="pi pi-calendar text-secondary mr-3"></i>
+							<span class="text-body-sm font-bold text-slate-navy">{{completeMonthAnalyticsData.monthlyWorkingDays}} working days recorded</span>
+						</div>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+						<div class="p-4 bg-surface border border-border-subtle rounded-lg flex justify-between">
+							<span class="text-body-sm font-semibold text-on-surface-variant">Revenue per Working Day</span>
+							<span class="text-body-sm font-bold text-slate-navy">£{{completeMonthAnalyticsData.revenuePerWorkingDay | number:'1.0-2'}}</span>
+						</div>
+						<div class="p-4 bg-surface border border-border-subtle rounded-lg flex justify-between">
+							<span class="text-body-sm font-semibold text-on-surface-variant">Revenue per Working Week</span>
+							<span class="text-body-sm font-bold text-slate-navy">£{{completeMonthAnalyticsData.revenuePerWorkingWeek | number:'1.0-2'}}</span>
+						</div>
+					</div>
+				</p-card>
+				</div>
+
+				<!-- Activity Heatmap -->
+				<div class="lg:col-span-12">
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+						<h3 class="text-headline-md font-headline-md flex items-center text-slate-navy">
+							<i class="pi pi-chart-line mr-2 text-primary"></i> Activity Heatmap &amp; Multipliers
+						</h3>
+						<div class="flex items-center gap-6 flex-wrap">
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 bg-action-royal rounded-full"></span>
+								<span class="text-body-sm font-bold text-slate-navy">Busiest: {{formatWeekdayList(completeMonthAnalyticsData.busiestDays)}}</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 bg-secondary-container rounded-full"></span>
+								<span class="text-body-sm font-bold text-slate-navy">Lightest: {{formatWeekdayList(completeMonthAnalyticsData.lightDays)}}</span>
+							</div>
+						</div>
+					</div>
+					<div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
+						<div *ngFor="let weekday of completeMonthAnalyticsData.allWeekdays" class="p-4 bg-surface border border-border-subtle rounded-lg flex flex-col items-center">
+							<span class="text-label-caps font-label-caps text-on-surface-variant mb-2 uppercase">{{weekdayLabel(weekday.day)}}</span>
+							<span class="text-body-base font-bold text-primary mb-2">{{weekday.totalSessions}}</span>
+							<div class="relative w-16 h-16 flex items-center justify-center">
+								<svg class="w-full h-full -rotate-90">
+									<circle cx="32" cy="32" fill="none" r="28" stroke="#E2E8F0" stroke-width="5"></circle>
+									<circle cx="32" cy="32" fill="none" r="28" stroke="#2563EB" stroke-dasharray="176" [attr.stroke-dashoffset]="getWeekdayRingDashOffset(weekday)" stroke-linecap="round" stroke-width="5"></circle>
+								</svg>
+								<span class="absolute font-bold text-body-sm text-slate-navy">{{weekday.multiplier}}x</span>
+							</div>
+						</div>
+					</div>
+				</p-card>
+				</div>
+			</div>
+		}
+	}
+</div>
+}

@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RevenuePredictionComponent } from '../revenue-prediction/revenue-prediction.component';
 import { WeeklyActivityPattern } from '../models/dtos/weekly-activity-pattern';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
@@ -11,10 +12,15 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { WeekDays } from '../enums/weekdays';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
+import { DatePickerModule } from 'primeng/datepicker';
+import { CardModule } from 'primeng/card';
+import { RouterLink } from '@angular/router';
+
+type AnalyticsViewMode = 'current' | 'past';
 
 @Component({
   selector: 'app-trainer-analytics',
-  imports: [CommonModule, RevenuePredictionComponent, ChartModule, SpinnerComponent],
+  imports: [CommonModule, FormsModule, RevenuePredictionComponent, ChartModule, SpinnerComponent, DatePickerModule, CardModule, RouterLink],
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })
@@ -23,79 +29,56 @@ export class TrainerAnalyticsComponent implements OnInit{
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
+  viewMode: AnalyticsViewMode = 'current';
+
   currentMonthAnalyticsData: CurrentMonthTrainerAnalyticsDto | undefined;
   completeMonthAnalyticsData : CompleteTrainerAnalyticsDto | undefined;
-  currentUserId: number = 0; 
+
+  // The most recent fully-completed calendar month - the upper bound for past-month selection.
+  readonly maxSelectableMonthDate: Date = this.previousMonthDate(new Date());
+  selectedMonthDate: Date = this.maxSelectableMonthDate;
 
   ngOnInit(): void {
-   this.currentUserId = this.accountService.currentUser()?.id ?? 0;
    this.retrieveCurrentMonthAnalytics();
   }
 
-  selectedScope: 'lastMonth' | 'allData' = 'lastMonth';
+  setViewMode(mode: AnalyticsViewMode): void {
+    this.viewMode = mode;
 
-  clientMetricsChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0
-        }
-      }
+    if (mode === 'past' && !this.completeMonthAnalyticsData) {
+      this.retrieveSelectedMonthAnalytics();
     }
-  };
+  }
 
-  revenuePatternsChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0
-        }
-      }
-    }
-  };
+  private previousMonthDate(from: Date): Date {
+    return new Date(from.getFullYear(), from.getMonth() - 1, 1); 
+    // - 1 to account for JS Date 0 indexes months
+  }
 
-  activityPatternsChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      x: {
-        ticks: {
-          autoSkip: false
-        }
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          precision: 0
-        }
-      }
-    }
-  };
+  get isNextMonthDisabled(): boolean {
+    return this.selectedMonthDate.getFullYear() === this.maxSelectableMonthDate.getFullYear()
+      && this.selectedMonthDate.getMonth() === this.maxSelectableMonthDate.getMonth();
+  }
 
-  setMetricScope(scope: 'lastMonth' | 'allData'): void {
-    this.selectedScope = scope;
-    this.retrieveCurrentMonthAnalytics();
+  goToPreviousMonth(): void {
+    this.selectedMonthDate = new Date(this.selectedMonthDate.getFullYear(), this.selectedMonthDate.getMonth() - 1, 1);
+    this.retrieveSelectedMonthAnalytics();
+  }
+
+  goToNextMonth(): void {
+    if (this.isNextMonthDisabled) return;
+    this.selectedMonthDate = new Date(this.selectedMonthDate.getFullYear(), this.selectedMonthDate.getMonth() + 1, 1);
+    this.retrieveSelectedMonthAnalytics();
+  }
+
+  onMonthPickerSelect(date: Date): void {
+    this.selectedMonthDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    this.retrieveSelectedMonthAnalytics();
+  }
+
+  retrieveSelectedMonthAnalytics(): void {
+    this.retrieveSpecificMonthAnalytics(this.selectedMonthDate.getMonth() + 1, this.selectedMonthDate.getFullYear());
+    // the + 1 to send appropriate month int format to API
   }
 
   retrieveCurrentMonthAnalytics(){
@@ -110,6 +93,7 @@ export class TrainerAnalyticsComponent implements OnInit{
   }
 
   retrieveSpecificMonthAnalytics(month: number, year: number){
+      this.completeMonthAnalyticsData = undefined;
       this.trainerService.getSpecificMonthAnalytics(month, year).subscribe({
         next: (response) => {
           this.completeMonthAnalyticsData = response.data;
@@ -120,25 +104,67 @@ export class TrainerAnalyticsComponent implements OnInit{
       })
   }
 
+  // ---- Current month: weekly activity chart ----
+
+  currentMonthActivityChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  };
+
+  get currentMonthActivityChartData(): ChartData<'bar'> {
+    if (!this.currentMonthAnalyticsData) {
+      return { labels: [], datasets: [] };
+    }
+
+    return {
+      labels: this.currentMonthAnalyticsData.weeklySessionsCounts.map((day) => WeekDays[day.day]),
+      datasets: [
+        {
+          data: this.currentMonthAnalyticsData.weeklySessionsCounts.map((day) => day.totalSessions),
+          backgroundColor: '#2563eb',
+          borderRadius: 4,
+          borderSkipped: false
+        }
+      ]
+    };
+  }
+
+  // ---- Past month: client metrics chart (Active / Churned / Acquisitions / Total Sessions) ----
+
+  clientMetricsChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      y: { beginAtZero: true, ticks: { precision: 0 } }
+    }
+  };
+
   get clientMetricsChartData(): ChartData<'bar'> {
     if (!this.completeMonthAnalyticsData) {
       return { labels: [], datasets: [] };
     }
 
     return {
-      labels: [
-        'Base clients',
-        'Sessions per client',
-        this.selectedScope === 'lastMonth' ? 'Monthly sessions' : 'Average monthly sessions'
-      ],
+      labels: ['Active Clients', 'Churned', 'Acquisitions', 'Total Sessions'],
       datasets: [
         {
           data: [
             this.completeMonthAnalyticsData.baseClients,
-            this.completeMonthAnalyticsData.averageSessionsPerClient,
+            this.completeMonthAnalyticsData.churnedClients,
+            this.completeMonthAnalyticsData.acquiredClients,
             this.completeMonthAnalyticsData.totalClientSessions
           ],
-          backgroundColor: ['#1d4ed8', '#14b8a6', '#0f766e'],
+          backgroundColor: ['#0058be', '#6cf8bb', '#4edea3', '#2563eb'],
           borderRadius: 8,
           borderSkipped: false
         }
@@ -146,62 +172,29 @@ export class TrainerAnalyticsComponent implements OnInit{
     };
   }
 
-  get revenuePatternsChartData(): ChartData<'bar'> {
-    if (!this.completeMonthAnalyticsData) {
-      return { labels: [], datasets: [] };
-    }
+  // ---- Past month: activity heatmap rings ----
 
-    return {
-      labels: ['Revenue / day', 'Revenue / week'],
-      datasets: [
-        {
-          data: [
-            this.completeMonthAnalyticsData.revenuePerWorkingDay,
-            this.completeMonthAnalyticsData.revenuePerWorkingWeek
-          ],
-          backgroundColor: ['#14b8a6', '#0ea5e9'],
-          borderRadius: 8,
-          borderSkipped: false
-        }
-      ]
-    };
+  private readonly ringCircumference = 2 * Math.PI * 28;
+
+  get maxWeekdayMultiplier(): number {
+    if (!this.completeMonthAnalyticsData?.allWeekdays.length) return 1;
+    return Math.max(...this.completeMonthAnalyticsData.allWeekdays.map((weekday) => weekday.multiplier));
   }
 
-  get activityPatternsChartData(): ChartData<'line'> {
-    if (!this.completeMonthAnalyticsData) {
-      return { labels: [], datasets: [] };
-    }
-
-    const days = this.completeMonthAnalyticsData.allWeekdays.map((weekday) => weekday.day);
-
-    return {
-      labels: days.map((weekday) => WeekDays[weekday]),
-      datasets: [
-        {
-          label: 'All weekdays',
-          data: this.completeMonthAnalyticsData.allWeekdays.map((weekday) => weekday.multiplier),
-          borderColor: '#2563eb',
-          backgroundColor: '#2563eb',
-          pointBackgroundColor: '#2563eb',
-          pointBorderColor: '#2563eb',
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          tension: 0.3,
-          fill: false
-        }
-      ]
-    };
+  getWeekdayRingDashOffset(pattern: WeeklyActivityPattern): number {
+    const ratio = this.maxWeekdayMultiplier > 0 ? pattern.multiplier / this.maxWeekdayMultiplier : 0;
+    return this.ringCircumference * (1 - ratio);
   }
 
-  formatWeeklyMultipliers(values: WeeklyActivityPattern[]): string {
-    return values
-      .map((value) => `${WeekDays[value.day]} (${value.multiplier}x)`)
-      .join(', ');
+  formatWeekdayList(patterns: WeeklyActivityPattern[]): string {
+    return patterns.map((pattern) => WeekDays[pattern.day]).join(', ');
   }
 
-  formatWeeklyMultiplier(value: WeeklyActivityPattern): string {
-    return `${WeekDays[value.day]} - (${value.multiplier}x)`;
+  weekdayLabel(day: WeekDays): string {
+    return WeekDays[day];
   }
+
+  // ---- Worktime formatting ----
 
   convertMinutesToDecimalHours(totalMinutes: number): number {
     return Math.round((totalMinutes / 60) * 10) / 10;
@@ -212,5 +205,4 @@ export class TrainerAnalyticsComponent implements OnInit{
     const minutes = totalMinutes % 60;
     return { hours, minutes };
   }
-
 }
