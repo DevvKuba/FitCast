@@ -223,6 +223,25 @@ export class ClientInfoComponent implements OnInit {
     return (first + second).toUpperCase();
   }
 
+  // Six evenly-spread, complementary pastel pairs - assigned by first-letter bucket so the
+  // same client name always lands on the same colour.
+  private readonly avatarColorPalette: string[] = [
+    'bg-primary-fixed text-primary',
+    'bg-secondary-fixed text-secondary',
+    'bg-violet-100 text-violet-700',
+    'bg-amber-100 text-amber-700',
+    'bg-rose-100 text-rose-700',
+    'bg-cyan-100 text-cyan-700'
+  ];
+
+  getAvatarColorClass(client: Client): string {
+    const letter = (client.firstName?.charAt(0) ?? 'A').toUpperCase();
+    const letterIndex = Math.max(0, letter.charCodeAt(0) - 'A'.charCodeAt(0));
+    const bucketSize = 26 / this.avatarColorPalette.length;
+    const index = Math.min(Math.floor(letterIndex / bucketSize), this.avatarColorPalette.length - 1);
+    return this.avatarColorPalette[index];
+  }
+
   getAddedLabel(createdAt: string): string {
     const diffDays = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
 

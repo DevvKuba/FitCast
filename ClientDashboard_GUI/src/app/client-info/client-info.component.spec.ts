@@ -139,6 +139,20 @@ describe('ClientInfoComponent', () => {
 
       expect(component.getAddedLabel(twoWeeksAgo)).toBe('Added 2 weeks ago');
     });
+
+    it('getAvatarColorClass assigns the same colour to the same starting letter', () => {
+      const first = component.getAvatarColorClass(createClient(8, 'Amanda'));
+      const second = component.getAvatarColorClass(createClient(9, 'Aaron'));
+
+      expect(first).toBe(second);
+    });
+
+    it('getAvatarColorClass spreads early vs late alphabet names across different colours', () => {
+      const early = component.getAvatarColorClass(createClient(10, 'Amanda'));
+      const late = component.getAvatarColorClass(createClient(11, 'Zoe'));
+
+      expect(early).not.toBe(late);
+    });
   });
 
   describe('documentation: how these simple table tests work', () => {

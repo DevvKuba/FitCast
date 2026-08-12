@@ -71,7 +71,7 @@
     </div>
 </p-dialog>
 
-  <div class="space-y-6">
+  <div class="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-6">
 
     <!-- Page header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -101,20 +101,20 @@
 
         <ng-template #header>
             <tr>
-                <th pSortableColumn="firstName" class="font-table-header text-table-header">
+                <th pSortableColumn="firstName" class="font-table-header text-sm">
                       Client <p-sortIcon field="firstName" />
                 </th>
                 <th
-                  class="font-table-header text-table-header"
+                  class="font-table-header text-sm"
                   (mouseenter)="showPopover($event, currentSessionPopover)"
                   (mouseleave)="hidePopover(currentSessionPopover)">
                       Progress
                 </th>
-                <th pSortableColumn="isActive" class="font-table-header text-table-header">
+                <th pSortableColumn="isActive" class="font-table-header text-sm text-center">
                       Activity Status <p-sortIcon field="isActive" />
                 </th>
-                <th class="font-table-header text-table-header">Phone</th>
-                <th class="action-column action-header-cell font-table-header text-table-header text-right">Actions</th>
+                <th class="font-table-header text-sm text-center">Phone</th>
+                <th class="action-column action-header-cell font-table-header text-sm text-right">Actions</th>
             </tr>
         </ng-template>
         <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
@@ -129,7 +129,7 @@
                       </ng-template>
                       <ng-template #output>
                           <div class="flex items-center gap-3 justify-center md:justify-start">
-                              <div class="w-8 h-8 rounded bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs flex-shrink-0">{{getInitials(client)}}</div>
+                              <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-xs flex-shrink-0" [class]="getAvatarColorClass(client)">{{getInitials(client)}}</div>
                               <div class="text-left">
                                   <div class="font-bold text-slate-navy">{{client.firstName}}</div>
                                   <div class="text-[11px] text-on-surface-variant opacity-60">{{getAddedLabel(client.createdAt)}}</div>
@@ -149,8 +149,8 @@
                           </div>
                       </ng-template>
                       <ng-template #output>
-                          <div class="flex flex-col gap-1.5 w-32 mx-auto md:mx-0">
-                              <div class="flex justify-between text-[11px] font-semibold">
+                          <div class="flex flex-col gap-1.5 w-40 mx-auto md:mx-0">
+                              <div class="flex justify-between text-sm font-semibold">
                                   <span>{{client.currentBlockSession}} / {{client.totalBlockSessions ?? 0}} Sessions</span>
                                   <span>{{getProgressPercentage(client)}}%</span>
                               </div>
@@ -267,6 +267,9 @@
           </tr>
         </ng-template>
       </p-table>
+      <div class="px-gutter-md py-4 border-t border-border-subtle bg-surface-container-lowest">
+        <span class="text-body-sm font-body-sm text-on-surface-variant">Showing {{clients.length}} client{{clients.length === 1 ? '' : 's'}}</span>
+      </div>
     </div>
   </div>
 }
