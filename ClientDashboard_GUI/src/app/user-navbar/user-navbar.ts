@@ -1,7 +1,7 @@
-import { Component, effect, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, effect, inject } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { Menubar } from 'primeng/menubar';
+import { Menu } from 'primeng/menu';
+import { Avatar } from 'primeng/avatar';
 import { LoginComponent } from '../login/login.component';
 import { AccountService } from '../services/account.service';
 import { DrawerModule } from 'primeng/drawer';
@@ -14,7 +14,7 @@ import { NotificationReadStatusDto } from '../models/dtos/notification-read-stat
 
 @Component({
   selector: 'app-navbar',
-  imports: [Menubar, DrawerModule, NotificationToggleComponent, OverlayBadgeModule],
+  imports: [Menu, Avatar, DrawerModule, NotificationToggleComponent, OverlayBadgeModule],
   providers: [LoginComponent],
   templateUrl: './user-navbar.html',
   styleUrl: './user-navbar.css'
@@ -25,19 +25,20 @@ export class UserNavbar{
     accountService = inject(AccountService);
     notificationService = inject(NotificationService);
 
-    functionItems: MenuItem[] | undefined;
-    generalItems: MenuItem[] | undefined;
+    sidebarItems: MenuItem[] = [];
+    accountMenuItems: MenuItem[] = [];
     mobileMenuItems: MenuItem[] = [];
     latestNotifications: Notification[] = [];
     notificationVisibility: boolean = false;
+    mobileNavVisible: boolean = false;
 
     constructor(){
         effect(() => {
             const user = this.accountService.currentUser();
 
             if(!user){
-                this.functionItems = [];
-                this.generalItems = [];
+                this.sidebarItems = [];
+                this.accountMenuItems = [];
                 this.mobileMenuItems = [];
                 return;
             }
@@ -47,27 +48,18 @@ export class UserNavbar{
 
         // watch signal and rebuild when the signal changes
         effect(() => {
-            const count = this.notificationService.unreadNotificationCount();
             const user = this.accountService.currentUser();
 
             if(user){
                 this.buildMenuItems(user.role);
             }
         })
-        
-    }
 
-    buildMobileMenuItems() {
-        const functionItems = this.functionItems ?? [];
-        const generalItems = this.generalItems ?? [];
-
-        this.mobileMenuItems = [...functionItems, ...generalItems];
     }
 
     buildMenuItems(role: UserRole){
         if(role == UserRole.Trainer){
-            console.log(this.accountService.currentUser()?.role)
-            this.functionItems = [
+            this.sidebarItems = [
             {
                 label: 'Client Info',
                 routerLink: '/client-info',
@@ -88,19 +80,9 @@ export class UserNavbar{
                 routerLink: '/trainer-analytics',
                 icon: 'pi pi-chart-bar'
             },
-            
+
         ];
-        this.generalItems = [
-            {
-              icon: 'pi pi-bell',
-              styleClass: 'notification-menu-item',
-              badge: this.getBellBadge(),
-              command: () => {
-                this.notificationVisibility = true;
-                this.onNotificationDrawerOpen();
-              }
-              
-            },
+        this.accountMenuItems = [
             {
                 label: 'Home',
                 routerLink: '/',
@@ -117,10 +99,9 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
-            this.buildMobileMenuItems();
         }
         else if (role == UserRole.Client) {
-            this.functionItems = [
+            this.sidebarItems = [
             {
                 label: 'Workouts',
                 routerLink: '/client-personal-workouts',
@@ -131,36 +112,24 @@ export class UserNavbar{
                 routerLink: '/client-personal-payments',
                 icon: 'pi pi-credit-card'
             }
-            
+
         ];
-        this.generalItems = [
-             {
-              icon: 'pi pi-bell',
-                            styleClass: 'notification-menu-item',
-              badge: this.getBellBadge(),
-              command: () => {
-                this.notificationVisibility = true;
-                this.onNotificationDrawerOpen();
-              }
-              
-            },
+        this.accountMenuItems = [
             {
                 label: 'Home',
                 routerLink: '/',
                 icon: 'pi pi-home'
-            },            
-            // client profile
+            },
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
         ]
-            this.buildMobileMenuItems();
         }
         else {
-            this.functionItems = [];
-            this.generalItems = [
+            this.sidebarItems = [];
+            this.accountMenuItems = [
                 {
                 label: 'Home',
                 routerLink: '/',
@@ -172,8 +141,14 @@ export class UserNavbar{
                 command: () => this.loginComponent.userLogout(this.loginComponent.storageItem)
             },
             ];
-                this.buildMobileMenuItems();
         }
+
+        this.mobileMenuItems = [...this.sidebarItems, ...this.accountMenuItems];
+    }
+
+    onNotificationBellClick(){
+        this.notificationVisibility = true;
+        this.onNotificationDrawerOpen();
     }
 
     onNotificationDrawerOpen(){

@@ -1,21 +1,48 @@
 @if(accountService.currentUser()){
-    
+
     <p-drawer header="Latest Notifications" [(visible)]="notificationVisibility" position="right">
         <app-notification-toggle [latestNotifications]="latestNotifications"></app-notification-toggle>
     </p-drawer>
 
-    <div class="desktop-navbar">
-        <p-menubar [model]="functionItems">
-            <ng-template #end>
-                <div class="flex align-items-center gap-2">
-                    <p-menubar [model]="generalItems" [style]="{'border': 'none', 'background': 'transparent'}"></p-menubar>
-                </div>
-            </ng-template>
-        </p-menubar>
-    </div>
+    <p-drawer [(visible)]="mobileNavVisible" position="left" styleClass="md:hidden !w-72">
+        <p-menu [model]="mobileMenuItems" styleClass="w-full border-none"></p-menu>
+    </p-drawer>
 
-    <div class="mobile-navbar">
-        <p-menubar [model]="mobileMenuItems"></p-menubar>
-    </div>
+    <p-menu #accountMenu [model]="accountMenuItems" [popup]="true"></p-menu>
+
+    <!-- Sidebar (desktop) -->
+    <aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col bg-surface border-r border-border-subtle py-stack-md z-50">
+        <div class="px-6 mb-8">
+            <h1 class="font-headline-md text-headline-md font-bold text-primary">FitCast</h1>
+        </div>
+        <nav class="flex-1 px-3">
+            <p-menu [model]="sidebarItems" styleClass="w-full border-none bg-transparent"></p-menu>
+        </nav>
+    </aside>
+
+    <!-- Top app bar -->
+    <header class="fixed top-0 right-0 left-0 md:left-64 h-16 bg-surface-container-lowest border-b border-border-subtle flex justify-between items-center px-gutter-lg z-40">
+        <div class="flex items-center gap-3">
+            <button
+                class="md:hidden p-2 -ml-2 text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors"
+                (click)="mobileNavVisible = true"
+                aria-label="Open navigation menu">
+                <i class="pi pi-bars text-xl"></i>
+            </button>
+            <h1 class="md:hidden font-headline-md text-headline-md font-bold text-primary">FitCast</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="p-2 text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors"
+                (click)="onNotificationBellClick()"
+                aria-label="Notifications">
+                <p-overlay-badge [value]="getBellBadge()" severity="danger" [badgeDisabled]="notificationService.unreadNotificationCount() === 0">
+                    <i class="pi pi-bell text-xl"></i>
+                </p-overlay-badge>
+            </button>
+            <button (click)="accountMenu.toggle($event)" aria-label="Account menu">
+                <p-avatar [label]="accountService.currentUser()?.firstName?.charAt(0)" shape="circle" styleClass="bg-slate-navy text-white"></p-avatar>
+            </button>
+        </div>
+    </header>
 }
-
