@@ -10,28 +10,25 @@ import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
-import { PrimeIcons, MenuItem } from 'primeng/api';
-import { concatWith } from 'rxjs';
 import { Dialog } from 'primeng/dialog';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { Ripple } from 'primeng/ripple';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { RouterLink } from "@angular/router";
-import { UserDto } from '../models/dtos/user-dto';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { InputMask } from 'primeng/inputmask';
 import { NotificationService } from '../services/notification.service';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
-import { TWO_THIRDS_PI } from 'chart.js/helpers';
 import { WorkoutService } from '../services/workout.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-client-info',
   imports: [TableModule, CommonModule, TagModule, SelectModule, ButtonModule, InputTextModule, FormsModule,
-     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, InputMask, PopoverModule, TooltipModule],
+     Dialog, SpinnerComponent, Toast, Ripple, InputNumberModule, InputMask, PopoverModule, TooltipModule,
+     IconFieldModule, InputIconModule],
   providers: [MessageService, ConfirmationService],
   templateUrl: './client-info.component.html',
   styleUrl: './client-info.component.css'
@@ -213,6 +210,33 @@ export class ClientInfoComponent implements OnInit {
 
   getActivityLabel(isActive: boolean) : string {
     return isActive ? 'Active' : 'Inactive';
+  }
+
+  getProgressPercentage(client: Client): number {
+    if (!client.totalBlockSessions) return 0;
+    return Math.round((client.currentBlockSession / client.totalBlockSessions) * 100);
+  }
+
+  getInitials(client: Client): string {
+    const first = client.firstName?.charAt(0) ?? '';
+    const second = client.surname?.charAt(0) ?? client.firstName?.charAt(1) ?? '';
+    return (first + second).toUpperCase();
+  }
+
+  getAddedLabel(createdAt: string): string {
+    const diffDays = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 1) return 'Added today';
+    if (diffDays < 7) return `Added ${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffWeeks < 5) return `Added ${diffWeeks} week${diffWeeks === 1 ? '' : 's'} ago`;
+
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) return `Added ${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
+
+    const diffYears = Math.floor(diffDays / 365);
+    return `Added ${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
   }
 
   validateClientAddFields(clientName: string, totalBlockSessions: number) : boolean {

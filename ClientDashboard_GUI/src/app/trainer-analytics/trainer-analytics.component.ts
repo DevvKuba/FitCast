@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RevenuePredictionComponent } from '../revenue-prediction/revenue-prediction.component';
 import { WeeklyActivityPattern } from '../models/dtos/weekly-activity-pattern';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 import { TrainerService } from '../services/trainer.service';
@@ -20,7 +19,7 @@ type AnalyticsViewMode = 'current' | 'past';
 
 @Component({
   selector: 'app-trainer-analytics',
-  imports: [CommonModule, FormsModule, RevenuePredictionComponent, ChartModule, SpinnerComponent, DatePickerModule, CardModule, RouterLink],
+  imports: [CommonModule, FormsModule, ChartModule, SpinnerComponent, DatePickerModule, CardModule, RouterLink],
   templateUrl: './trainer-analytics.component.html',
   styleUrl: './trainer-analytics.component.css'
 })

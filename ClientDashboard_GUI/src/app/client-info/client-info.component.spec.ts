@@ -107,6 +107,40 @@ describe('ClientInfoComponent', () => {
     });
   });
 
+  describe('roster display helpers', () => {
+    it('getProgressPercentage rounds the current/total session ratio', () => {
+      expect(component.getProgressPercentage(createClient(4, 'Jordan'))).toBe(13);
+    });
+
+    it('getProgressPercentage returns 0 when totalBlockSessions is falsy', () => {
+      const client = { ...createClient(5, 'Casey'), totalBlockSessions: 0 };
+
+      expect(component.getProgressPercentage(client)).toBe(0);
+    });
+
+    it('getInitials uses first name + surname when surname is present', () => {
+      const client = { ...createClient(6, 'Morgan'), surname: 'Lee' };
+
+      expect(component.getInitials(client)).toBe('ML');
+    });
+
+    it('getInitials falls back to the first two letters of the first name', () => {
+      expect(component.getInitials(createClient(7, 'Morgan'))).toBe('MO');
+    });
+
+    it('getAddedLabel reports days for recent clients', () => {
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+
+      expect(component.getAddedLabel(threeDaysAgo)).toBe('Added 3 days ago');
+    });
+
+    it('getAddedLabel reports weeks for clients added over a week ago', () => {
+      const twoWeeksAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+
+      expect(component.getAddedLabel(twoWeeksAgo)).toBe('Added 2 weeks ago');
+    });
+  });
+
   describe('documentation: how these simple table tests work', () => {
     it('checks class-level table behavior without relying on PrimeNG DOM internals', () => {
       component.clients = [createClient(3, 'Taylor')];

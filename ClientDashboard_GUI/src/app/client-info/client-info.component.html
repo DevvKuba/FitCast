@@ -10,8 +10,8 @@
         <p style="margin: 0; font-size: 0.85rem;">States which session the client finished</p>
     </div>
   </p-popover>
-  
-  <!-- Add Dialog - Moved outside table -->
+
+  <!-- Add Dialog -->
   <p-dialog header="Add new Client" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem' }">
       <div class="dialog-form-group">
         <span class="dialog-intro-text">Enter new client details:</span>
@@ -34,7 +34,7 @@
       </div>
   </p-dialog>
 
-  <!-- Delete Dialog - Moved outside table -->
+  <!-- Delete Dialog -->
   <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">
       <span class="p-text-secondary block mb-8">Are you sure you want to delete {{deleteClientName}} from your client table?</span>
@@ -48,14 +48,14 @@
   <!-- Phone Number Dialog -->
   <p-dialog header="Phone Number" [modal]="true" [(visible)]="phoneDialogVisible" [style]="{ width: '25rem' }">
     <div class="info-button-container">
-        <p-button 
-            type="button" 
-            icon="pi pi-exclamation-circle" 
-            severity="secondary" 
-            size="small" 
-            (onClick)="toggleForInfo($event)" 
+        <p-button
+            type="button"
+            icon="pi pi-exclamation-circle"
+            severity="secondary"
+            size="small"
+            (onClick)="toggleForInfo($event)"
             styleClass="info-button" />
-        <p-popover 
+        <p-popover
             #phoneNumberInfoPopover
             [appendTo]="'body'"
             [style]="{ 'max-width': '300px' }">
@@ -71,177 +71,202 @@
     </div>
 </p-dialog>
 
-  <div class="table-container">
-  <p-table #dt1 [value]="clients" dataKey="id" editMode="row" responsiveLayout="stack" [breakpoint]="'768px'" [tableStyle]="{ 'min-width': '50rem' }">
-      <ng-template #caption>
-        <div class="header-buttons">
-          <div class="left-segment">
-            <p-button icon="pi pi-plus" styleClass="add-button" label="New" severity="secondary" (onClick)="showDialogForAdd()"></p-button>
-          </div>
-        </div>
-      </ng-template>
+  <div class="space-y-6">
 
-      <ng-template #header>
-          <tr>
-              <th pSortableColumn="firstName" style="width:25%; text-align: center;">
-                    Client Name <p-sortIcon field="firstName" />
-              </th>
-              <th pSortableColumn="currentBlockSession" style="width:25%; text-align: center;"
-               (mouseenter)="showPopover($event, currentSessionPopover)"
-               (mouseleave)="hidePopover(currentSessionPopover)">
-                    Current Session <p-sortIcon field="currentBlockSession"/>
-              </th>
-              <th pSortableColumn="totalBlockSessions" style="width:25%; text-align: center;">
-                    Block Sessions <p-sortIcon field="totalBlockSessions" />
-              </th>
-              <th pSortableColumn="isActive" style="width:25%; text-align: center;">
-                    Activity Status <p-sortIcon field="isActive" />
-              </th>
-                <th class="action-column action-header-cell">
-                    <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+    <!-- Page header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <span class="text-label-caps font-label-caps text-primary uppercase tracking-widest mb-2 block">Management</span>
+        <h2 class="text-display-lg font-display-lg text-slate-navy">Client Roster</h2>
+      </div>
+    </div>
+
+    <div class="bg-white border border-border-subtle rounded-lg overflow-hidden">
+      <p-table #dt1 [value]="clients" dataKey="id" editMode="row" responsiveLayout="stack" [breakpoint]="'768px'" [tableStyle]="{ 'min-width': '55rem' }">
+        <ng-template #caption>
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <p-iconfield iconPosition="left" styleClass="w-full md:w-72">
+              <p-inputicon>
+                <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input class="w-full" pInputText type="text" (input)="dt1.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Search roster by name" />
+            </p-iconfield>
+            <div class="flex items-center gap-2">
+              <p-button icon="pi pi-filter-slash" label="Clear" [outlined]="true" (click)="clear(dt1)" />
+              <p-button icon="pi pi-plus" label="Add Client" (onClick)="showDialogForAdd()" />
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="firstName" class="font-table-header text-table-header">
+                      Client <p-sortIcon field="firstName" />
                 </th>
-          </tr>
-      </ng-template>
-      <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
-          <tr [pEditableRow]="client">
-              <td class="client-td">
-                <span class="p-column-title">Client Name</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input
-                            pInputText type="text"
-                            [(ngModel)]= "client.firstName" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{client.firstName}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-              <td class="client-td">
-                <span class="p-column-title">Current Session</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <p-inputnumber
-                            [(ngModel)]= "client.currentBlockSession" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{client.currentBlockSession}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-              <td class="client-td">
-                <span class="p-column-title">Block Sessions</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <p-inputnumber
-                            [(ngModel)]= "client.totalBlockSessions" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{client.totalBlockSessions}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-              <td class="client-td">
-                <span class="p-column-title">Activity Status</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <p-select
-                            [options]="activityStatuses"
-                          appendTo="body"
-                            [(ngModel)]= "client.isActive"
-                            [style]="{'width':'100%'}" 
-                            />
-                    </ng-template>
-                    <ng-template #output>
-                         <p-tag
-                            [value]="getActivityLabel(client.isActive)"
-                            [severity]="getActivities(client.isActive)" />
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-              <td class="client-td action-column">
-                <span class="p-column-title">Actions</span>
-                <div class="flex items-center justify-center gap-2 flex-wrap">
-                  <a [href]="`https://wa.me/${client.phoneNumber}`" target="_blank" rel="noopener noreferrer">
-                    <button
-                      *ngIf="!editing"
-                      pButton
-                      pRipple
-                      severity="secondary"
-                      icon="pi pi-whatsapp"
-                      rounded
-                    ></button></a>
-                    <button
-                      *ngIf="!editing"
-                      pButton
-                      pRipple
-                      type="button"
-                      icon="pi pi-bolt"
-                      (click)="onQuickAddForClient(client)"
-                      pTooltip="Quick add session"
-                      tooltipPosition="top"
-                      text
-                      rounded
-                      severity="secondary"
-                    ></button>
-                    <p-button 
-                        *ngIf="editing"
-                        (onClick)="showPhoneDialog(client)"
-                        icon="pi pi-phone"
+                <th
+                  class="font-table-header text-table-header"
+                  (mouseenter)="showPopover($event, currentSessionPopover)"
+                  (mouseleave)="hidePopover(currentSessionPopover)">
+                      Progress
+                </th>
+                <th pSortableColumn="isActive" class="font-table-header text-table-header">
+                      Activity Status <p-sortIcon field="isActive" />
+                </th>
+                <th class="font-table-header text-table-header">Phone</th>
+                <th class="action-column action-header-cell font-table-header text-table-header text-right">Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="client">
+                <td class="client-td">
+                  <span class="p-column-title">Client</span>
+                  <p-cellEditor>
+                      <ng-template #input>
+                          <input
+                              pInputText type="text"
+                              [(ngModel)]= "client.firstName" />
+                      </ng-template>
+                      <ng-template #output>
+                          <div class="flex items-center gap-3 justify-center md:justify-start">
+                              <div class="w-8 h-8 rounded bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs flex-shrink-0">{{getInitials(client)}}</div>
+                              <div class="text-left">
+                                  <div class="font-bold text-slate-navy">{{client.firstName}}</div>
+                                  <div class="text-[11px] text-on-surface-variant opacity-60">{{getAddedLabel(client.createdAt)}}</div>
+                              </div>
+                          </div>
+                      </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td class="client-td">
+                  <span class="p-column-title">Progress</span>
+                  <p-cellEditor>
+                      <ng-template #input>
+                          <div class="flex items-center justify-center gap-2">
+                              <p-inputnumber [(ngModel)]="client.currentBlockSession" placeholder="Current" styleClass="w-20" />
+                              <span class="text-on-surface-variant">/</span>
+                              <p-inputnumber [(ngModel)]="client.totalBlockSessions" placeholder="Total" styleClass="w-20" />
+                          </div>
+                      </ng-template>
+                      <ng-template #output>
+                          <div class="flex flex-col gap-1.5 w-32 mx-auto md:mx-0">
+                              <div class="flex justify-between text-[11px] font-semibold">
+                                  <span>{{client.currentBlockSession}} / {{client.totalBlockSessions ?? 0}} Sessions</span>
+                                  <span>{{getProgressPercentage(client)}}%</span>
+                              </div>
+                              <div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                  <div class="h-full bg-primary" [style.width.%]="getProgressPercentage(client)"></div>
+                              </div>
+                          </div>
+                      </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td class="client-td">
+                  <span class="p-column-title">Activity Status</span>
+                  <p-cellEditor>
+                      <ng-template #input>
+                          <p-select
+                              [options]="activityStatuses"
+                            appendTo="body"
+                              [(ngModel)]= "client.isActive"
+                              [style]="{'width':'100%'}"
+                              />
+                      </ng-template>
+                      <ng-template #output>
+                           <p-tag
+                              [value]="getActivityLabel(client.isActive)"
+                              [severity]="getActivities(client.isActive)" />
+                      </ng-template>
+                  </p-cellEditor>
+                </td>
+                <td class="client-td text-on-surface-variant">
+                  <span class="p-column-title">Phone</span>
+                  {{client.phoneNumber || '—'}}
+                </td>
+                <td class="client-td action-column">
+                  <span class="p-column-title">Actions</span>
+                  <div class="flex items-center justify-center gap-2 flex-wrap">
+                    <a [href]="`https://wa.me/${client.phoneNumber}`" target="_blank" rel="noopener noreferrer">
+                      <button
+                        *ngIf="!editing"
+                        pButton
+                        pRipple
                         severity="secondary"
-                    />
-                    <button
+                        icon="pi pi-whatsapp"
+                        rounded
+                      ></button></a>
+                      <button
                         *ngIf="!editing"
                         pButton
                         pRipple
                         type="button"
-                        pInitEditableRow
-                        icon="pi pi-pencil"
-                        (click)="onRowEditInit(client)"
+                        icon="pi pi-bolt"
+                        (click)="onQuickAddForClient(client)"
+                        pTooltip="Quick add session"
+                        tooltipPosition="top"
                         text
                         rounded
                         severity="secondary"
-                    ></button>
-                    <button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pSaveEditableRow
-                        icon="pi pi-check"
-                        (click)="onRowEditSave(client)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    <button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pCancelEditableRow
-                        icon="pi pi-times"
-                        (click)="onRowEditCancel(client, ri)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    <button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        icon="pi pi-trash"
-                        (click)="showDialogForDelete(client.id, client.firstName)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    
-                </div>
-            </td>
-        </tr>
-      </ng-template>
-  </p-table>
-</div>
+                      ></button>
+                      <p-button
+                          *ngIf="editing"
+                          (onClick)="showPhoneDialog(client)"
+                          icon="pi pi-phone"
+                          severity="secondary"
+                      />
+                      <button
+                          *ngIf="!editing"
+                          pButton
+                          pRipple
+                          type="button"
+                          pInitEditableRow
+                          icon="pi pi-pencil"
+                          (click)="onRowEditInit(client)"
+                          text
+                          rounded
+                          severity="secondary"
+                      ></button>
+                      <button
+                          *ngIf="editing"
+                          pButton
+                          pRipple
+                          type="button"
+                          pSaveEditableRow
+                          icon="pi pi-check"
+                          (click)="onRowEditSave(client)"
+                          text
+                          rounded
+                          severity="secondary"
+                      ></button>
+                      <button
+                          *ngIf="editing"
+                          pButton
+                          pRipple
+                          type="button"
+                          pCancelEditableRow
+                          icon="pi pi-times"
+                          (click)="onRowEditCancel(client, ri)"
+                          text
+                          rounded
+                          severity="secondary"
+                      ></button>
+                      <button
+                          *ngIf="editing"
+                          pButton
+                          pRipple
+                          type="button"
+                          icon="pi pi-trash"
+                          (click)="showDialogForDelete(client.id, client.firstName)"
+                          text
+                          rounded
+                          severity="secondary"
+                      ></button>
+
+                  </div>
+              </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
 }

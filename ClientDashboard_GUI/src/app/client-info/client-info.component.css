@@ -1,33 +1,6 @@
-.table-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 /* Keep stack helper labels hidden on desktop */
 ::ng-deep .p-column-title {
   display: none;
-}
-
-.header-buttons {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.left-segment {
-  display: flex;
-  justify-content: flex-start;
-  flex: 1;
-}
-
-.right-segment {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 0 0 200px;
-  min-width: 200px;
 }
 
 .action-header-cell {
@@ -108,14 +81,6 @@
     flex-shrink: 0;
 }
 
-::ng-deep .add-button {
-  margin-top: 10px;
-}
-
-::ng-deep .clear-button {
-  margin-top: 0;
-}
-
 .popover-text {
     margin: 0;
     font-size: 0.9rem;
@@ -124,23 +89,6 @@
 }
 
 @media (max-width: 768px) {
-  .table-container {
-    justify-content: center;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .header-buttons {
-    justify-content: center;
-  }
-
-  .left-segment {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
   .action-column {
     width: auto;
     min-width: 0;
