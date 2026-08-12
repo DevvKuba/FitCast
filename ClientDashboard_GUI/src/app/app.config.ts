@@ -46,6 +46,21 @@ const FitCastPreset = definePreset(Aura, {
         }
       }
     }
+  },
+  components: {
+    datatable: {
+      headerCell: {
+        background: '{surface.100}',
+        color: '{surface.700}',
+        // Applied automatically by PrimeNG (.p-datatable-column-sorted) to whichever
+        // column is currently sorted - gives sorting a visible, built-in "active" state.
+        selectedBackground: '{primary.100}',
+        selectedColor: '{primary.700}'
+      },
+      columnTitle: {
+        fontWeight: '700'
+      }
+    }
   }
 });
 

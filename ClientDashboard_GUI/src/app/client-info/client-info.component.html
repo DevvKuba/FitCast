@@ -101,20 +101,20 @@
 
         <ng-template #header>
             <tr>
-                <th pSortableColumn="firstName" class="font-table-header text-sm">
+                <th pSortableColumn="firstName" class="font-table-header text-base">
                       Client <p-sortIcon field="firstName" />
                 </th>
                 <th
-                  class="font-table-header text-sm"
+                  class="font-table-header text-base"
                   (mouseenter)="showPopover($event, currentSessionPopover)"
                   (mouseleave)="hidePopover(currentSessionPopover)">
                       Progress
                 </th>
-                <th pSortableColumn="isActive" class="font-table-header text-sm text-center">
+                <th pSortableColumn="isActive" class="font-table-header text-base text-center">
                       Activity Status <p-sortIcon field="isActive" />
                 </th>
-                <th class="font-table-header text-sm text-center">Phone</th>
-                <th class="action-column action-header-cell font-table-header text-sm text-right">Actions</th>
+                <th class="font-table-header text-base text-center">Phone</th>
+                <th class="action-column action-header-cell font-table-header text-base text-right">Actions</th>
             </tr>
         </ng-template>
         <ng-template #body let-client let-editing="editing" let-ri="rowIndex">
