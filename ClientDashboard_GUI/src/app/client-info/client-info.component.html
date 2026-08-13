@@ -75,7 +75,7 @@
     </div>
 
     <div class="bg-white border border-border-subtle rounded-lg overflow-hidden">
-      <p-table #dt1 [value]="clients" dataKey="id" editMode="row" responsiveLayout="stack" [breakpoint]="'768px'" [tableStyle]="{ 'min-width': '55rem' }">
+      <p-table #dt1 [globalFilterFields] = "['firstName']" [value]="clients" dataKey="id" editMode="row" responsiveLayout="stack" [breakpoint]="'768px'" [tableStyle]="{ 'min-width': '55rem' }">
         <ng-template #caption>
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <p-iconfield iconPosition="left" styleClass="w-full md:w-72">
@@ -171,7 +171,14 @@
                 </td>
                 <td class="client-td text-on-surface-variant">
                   <span class="p-column-title">Phone</span>
-                  {{client.phoneNumber || '—'}}
+                  <p-cellEditor>
+                      <ng-template #input>
+                          <p-inputmask [(ngModel)]="client.phoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
+                      </ng-template>
+                      <ng-template #output>
+                          {{client.phoneNumber || '—'}}
+                      </ng-template>
+                  </p-cellEditor>
                 </td>
                 <td class="client-td action-column">
                   <span class="p-column-title">Actions</span>
