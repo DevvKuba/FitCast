@@ -38,32 +38,6 @@
       </div>
   </p-dialog>
 
-  <!-- Phone Number Dialog -->
-  <p-dialog header="Phone Number" [modal]="true" [(visible)]="phoneDialogVisible" [style]="{ width: '25rem' }">
-    <div class="info-button-container">
-        <p-button
-            type="button"
-            icon="pi pi-exclamation-circle"
-            severity="secondary"
-            size="small"
-            (onClick)="toggleForInfo($event)"
-            styleClass="info-button" />
-        <p-popover
-            #phoneNumberInfoPopover
-            [appendTo]="'body'"
-            [style]="{ 'max-width': '300px' }">
-            <div class="popover-content">
-                <p class="popover-text">{{phoneNumberInputInfo}}</p>
-            </div>
-        </p-popover>
-    </div>
-    <span class="p-text-secondary block mb-4">Set {{editingClientName}}'s phone number below:</span>
-    <div class="flex items-center gap-4 mb-8">
-        <label for="phoneNumber" class="font-semibold w-32">Phone Number</label>
-        <p-inputmask [(ngModel)]="this.editingPhoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
-    </div>
-</p-dialog>
-
   <div class="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-6">
 
     <!-- Page header -->
@@ -205,12 +179,6 @@
                         rounded
                         severity="secondary"
                       ></button>
-                      <p-button
-                          *ngIf="editing"
-                          (onClick)="showPhoneDialog(client)"
-                          icon="pi pi-phone"
-                          severity="secondary"
-                      />
                       <button
                           *ngIf="!editing"
                           pButton

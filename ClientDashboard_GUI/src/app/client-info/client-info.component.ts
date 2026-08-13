@@ -58,22 +58,17 @@ export class ClientInfoComponent implements OnInit {
   trainerId : number = 0;
   deleteDialogVisible: boolean = false;
   addDialogVisible: boolean = false;
-  phoneDialogVisible: boolean = false;
   newClientName : string = "";
   newPhoneNumber: string = "";
   editingPhoneNumber: string = "";
-  editingClientName: string = "";
-  editingClientId: number = 0;
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   deleteClientId: number = 0;
   deleteClientName: string = "";
-  phoneNumberInputInfo: string = "test";
 
   ngOnInit() {
       this.currentUserId = this.accountService.currentUser()?.id ?? 0;
       this.getClients();
-      this.setPhoneNumberInfoText();
       this.activityStatuses = [
       {label: 'Active', value: true},
       {label: 'Inactive', value: false}
@@ -117,10 +112,6 @@ export class ClientInfoComponent implements OnInit {
 
   toggleForInfo(event: any) {
     this.phoneNumberInfoPopover.toggle(event);
-  }
-
-  setPhoneNumberInfoText(){
-    this.phoneNumberInputInfo = "To ensure the client phone number is saved make sure to save the record itself"
   }
 
   onRowEditCancel(client: Client, index: number) {
@@ -172,12 +163,6 @@ export class ClientInfoComponent implements OnInit {
         this.clients = response.data ?? [];
       }
     })
-  }
-
-  showPhoneDialog(client: Client){
-    this.phoneDialogVisible = true;
-    this.editingClientName = client.firstName;
-    this.editingClientId = client.id;
   }
 
   showDialogForDelete(clientId: number, clientName: string){
