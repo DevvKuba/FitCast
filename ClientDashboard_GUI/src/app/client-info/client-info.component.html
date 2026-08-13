@@ -27,6 +27,28 @@
       </div>
   </p-dialog>
 
+  <!-- Field help popovers, shown when hovering a column header -->
+  <p-popover #clientNamePopover appendTo="body">
+    <div style="padding: 0.25rem 0.5rem; font-size: 0.75rem; max-width: 180px;">
+        <p style="margin: 0; font-size: 0.85rem;">The client's display name, shown throughout the app.</p>
+    </div>
+  </p-popover>
+  <p-popover #progressPopover appendTo="body">
+    <div style="padding: 0.25rem 0.5rem; font-size: 0.75rem; max-width: 220px;">
+        <p style="margin: 0; font-size: 0.85rem;">Editable here: which session the client has currently reached, and the total number of sessions in their block.</p>
+    </div>
+  </p-popover>
+  <p-popover #activityStatusPopover appendTo="body">
+    <div style="padding: 0.25rem 0.5rem; font-size: 0.75rem; max-width: 180px;">
+        <p style="margin: 0; font-size: 0.85rem;">Whether this client is currently active or paused.</p>
+    </div>
+  </p-popover>
+  <p-popover #phonePopover appendTo="body">
+    <div style="padding: 0.25rem 0.5rem; font-size: 0.75rem; max-width: 200px;">
+        <p style="margin: 0; font-size: 0.85rem;">Used for the WhatsApp quick-link and SMS reminders.</p>
+    </div>
+  </p-popover>
+
   <!-- Delete Dialog -->
   <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">
@@ -68,16 +90,26 @@
 
         <ng-template #header>
             <tr>
-                <th pSortableColumn="firstName" class="font-table-header text-base">
+                <th pSortableColumn="firstName" class="font-table-header text-base"
+                  (mouseenter)="showPopover($event, clientNamePopover)"
+                  (mouseleave)="hidePopover(clientNamePopover)">
                       Client <p-sortIcon field="firstName" />
                 </th>
-                <th pSortableColumn="currentBlockSession" class= "font-table-header text-base">
+                <th pSortableColumn="currentBlockSession" class= "font-table-header text-base"
+                  (mouseenter)="showPopover($event, progressPopover)"
+                  (mouseleave)="hidePopover(progressPopover)">
                       Progress <p-sortIcon field="currentBlockSession"/>
                 </th>
-                <th pSortableColumn="isActive" class="font-table-header text-base text-center">
+                <th pSortableColumn="isActive" class="font-table-header text-base text-center"
+                  (mouseenter)="showPopover($event, activityStatusPopover)"
+                  (mouseleave)="hidePopover(activityStatusPopover)">
                       Activity Status <p-sortIcon field="isActive" />
                 </th>
-                <th class="font-table-header text-base text-center">Phone</th>
+                <th class="font-table-header text-base text-center"
+                  (mouseenter)="showPopover($event, phonePopover)"
+                  (mouseleave)="hidePopover(phonePopover)">
+                      Phone
+                </th>
                 <th class="action-column action-header-cell font-table-header text-base text-right">Actions</th>
             </tr>
         </ng-template>
@@ -87,9 +119,12 @@
                   <span class="p-column-title">Client</span>
                   <p-cellEditor>
                       <ng-template #input>
-                          <input
-                              pInputText type="text"
-                              [(ngModel)]= "client.firstName" />
+                          <div class="flex justify-center md:justify-start">
+                              <input
+                                  pInputText type="text"
+                                  class="w-full max-w-48"
+                                  [(ngModel)]= "client.firstName" />
+                          </div>
                       </ng-template>
                       <ng-template #output>
                           <div class="flex items-center gap-3 justify-center md:justify-start">
@@ -106,10 +141,10 @@
                   <span class="p-column-title">Progress</span>
                   <p-cellEditor>
                       <ng-template #input>
-                          <div class="flex items-center justify-center gap-2">
-                              <p-inputnumber [(ngModel)]="client.currentBlockSession" placeholder="Current" styleClass="w-20" />
+                          <div class="flex items-center gap-2 w-40 mx-auto md:mx-0">
+                              <p-inputnumber [(ngModel)]="client.currentBlockSession" placeholder="Current" styleClass="w-16" inputStyleClass="w-full" />
                               <span class="text-on-surface-variant">/</span>
-                              <p-inputnumber [(ngModel)]="client.totalBlockSessions" placeholder="Total" styleClass="w-20" />
+                              <p-inputnumber [(ngModel)]="client.totalBlockSessions" placeholder="Total" styleClass="w-16" inputStyleClass="w-full" />
                           </div>
                       </ng-template>
                       <ng-template #output>
@@ -133,7 +168,7 @@
                               [options]="activityStatuses"
                             appendTo="body"
                               [(ngModel)]= "client.isActive"
-                              [style]="{'width':'100%'}"
+                              styleClass="w-full max-w-36 mx-auto md:mx-0"
                               />
                       </ng-template>
                       <ng-template #output>
@@ -147,7 +182,7 @@
                   <span class="p-column-title">Phone</span>
                   <p-cellEditor>
                       <ng-template #input>
-                          <p-inputmask [(ngModel)]="client.phoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" />
+                          <p-inputmask [(ngModel)]="client.phoneNumber" mask="+44 9999 999999" placeholder="+44 7700 900000" styleClass="w-full max-w-48 mx-auto" />
                       </ng-template>
                       <ng-template #output>
                           {{client.phoneNumber || '—'}}

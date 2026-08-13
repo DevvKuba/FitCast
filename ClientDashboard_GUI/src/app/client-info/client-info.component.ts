@@ -61,7 +61,6 @@ export class ClientInfoComponent implements OnInit {
   addDialogVisible: boolean = false;
   newClientName : string = "";
   newPhoneNumber: string = "";
-  editingPhoneNumber: string = "";
   newActivity: boolean = true;
   newTotalBlockSessions : number = 0;
   deleteClientId: number = 0;
@@ -83,13 +82,6 @@ export class ClientInfoComponent implements OnInit {
 
   onRowEditInit(client: Client) {
       this.clonedClients[client.id as number] = { ...client };
-
-      // todo remove ?
-    //   this.clientService.getClientPhoneNumber(client.id).subscribe({
-    //   next: (response) => {
-    //     this.editingPhoneNumber = response.data?? "";
-    //   }
-    // })
     }
 
   onRowEditSave(client: Client) {
