@@ -23,6 +23,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { WorkoutService } from '../services/workout.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ClientUpdateDto } from '../models/dtos/client-update-dto';
 
 @Component({
   selector: 'app-client-info',
@@ -83,18 +84,27 @@ export class ClientInfoComponent implements OnInit {
   onRowEditInit(client: Client) {
       this.clonedClients[client.id as number] = { ...client };
 
-      this.clientService.getClientPhoneNumber(client.id).subscribe({
-      next: (response) => {
-        this.editingPhoneNumber = response.data?? "";
-      }
-    })
+      // todo remove ?
+    //   this.clientService.getClientPhoneNumber(client.id).subscribe({
+    //   next: (response) => {
+    //     this.editingPhoneNumber = response.data?? "";
+    //   }
+    // })
     }
 
-  onRowEditSave(newClient: Client) {
-      if (newClient.currentBlockSession >= 0 && newClient.totalBlockSessions > 0) {
-          delete this.clonedClients[newClient.id as number];
+  onRowEditSave(client: Client) {
+      if (client.currentBlockSession >= 0 && client.totalBlockSessions > 0
+        && client.id !== null && client.isActive !== null) {
+          delete this.clonedClients[client.id as number];
 
-          newClient.phoneNumber = this.editingPhoneNumber;
+          const newClient : ClientUpdateDto = {
+            id: client.id,
+            firstName: client.firstName,
+            isActive: client.isActive,
+            currentBlockSession: client.currentBlockSession,
+            totalBlockSessions: client.totalBlockSessions,
+            phoneNumber: client.phoneNumber?.trim() ?? ""
+          }  
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               this.toastService.showSuccess('Success Updating', response.message);

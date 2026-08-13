@@ -27,12 +27,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         void UpdateDeletingClientCurrentSession(Client client);
 
-        void UpdateClientTotalBlockSession(Client client, int? blockSessions);
-
-        void UpdateClientCurrentSession(Client client, int? currentSession);
-
-        void UpdateClientName(Client client, string name);
-
         void UnassignTrainerAsync(Client client);
 
         Task<Client?> AddNewClientUnderTrainerAsync(string clientName, int? blockSessions, string? phoneNumber, int? trainerId);

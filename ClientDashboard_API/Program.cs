@@ -109,9 +109,7 @@ namespace ClientDashboard_API
                     };
                 });
 
-            // used https://www.youtube.com/watch?v=iD3jrj3RBuc as a means of support
-            // when establishing first workout gathering job
-
+          
             // Job keys are declared here (rather than inline inside AddQuartz) so the same
             // JobKey instances can be reused below to wire up the JobChainingJobListener once
             // the scheduler exists. Chain order: WorkoutSync -> InvalidTokenCleanup ->
@@ -148,20 +146,12 @@ namespace ClientDashboard_API
                 // listener does) has to opt out of that by declaring itself durable.
                 q.AddJob<DailyInvalidTokenCleanup>(opts => opts.WithIdentity(invalidTokenCleanupJobKey).StoreDurably());
 
-
-                // chain-triggered by DailyInvalidTokenCleanup completing - no trigger of its own
                 q.AddJob<DailyInvisiblePaymentCleanup>(opts => opts.WithIdentity(invisiblePaymentCleanupJobKey).StoreDurably());
 
-
-                // chain-triggered by DailyInvisiblePaymentCleanup completing - no trigger of its own
                 q.AddJob<DailyDeletedClientCleanup>(opts => opts.WithIdentity(deletedClientCleanupJobKey).StoreDurably());
 
-
-                // chain-triggered by DailyDeletedClientCleanup completing - no trigger of its own
                 q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey).StoreDurably());
 
-
-                // chain-triggered by DailyClientDataGathering completing - no trigger of its own
                 q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey).StoreDurably());
             });
 
