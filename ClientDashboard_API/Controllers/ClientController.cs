@@ -1,4 +1,5 @@
 ﻿using ClientDashboard_API.Authorization;
+using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Helpers;
@@ -82,7 +83,7 @@ namespace ClientDashboard_API.Controllers
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpPut("newClientInformation")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] Client updatedClient)
+        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientInformationAsync([FromBody] ClientUpdateDto updatedClient)
         {
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(updatedClient.Id);
             if (client is null)
@@ -96,8 +97,7 @@ namespace ClientDashboard_API.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to update this client's information", Success = false });
             }
 
-            unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient.FirstName, updatedClient.IsActive,
-                updatedClient.CurrentBlockSession, updatedClient.TotalBlockSessions, updatedClient.PhoneNumber);
+            unitOfWork.ClientRepository.UpdateClientDetailsAsync(client, updatedClient);
 
             if (!await unitOfWork.Complete())
             {
@@ -109,35 +109,6 @@ namespace ClientDashboard_API.Controllers
                 await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"{updatedClient.FirstName}'s details have been updated successfully", Success = true });
-
-        }
-
-        /// <summary>
-        /// Client method allowing update of client's phone number
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPut("setClientPhoneNumber")]
-        public async Task<ActionResult<ApiResponseDto<string>>> ChangeClientPhoneNumberAsync([FromBody] ClientPhoneNumberUpdateDto clientInfo)
-        {
-            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(clientInfo.Id);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"No client found when trying to assign phone number", Success = false });
-            }
-
-            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
-            if (!authResult.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to set this client's phone number", Success = false });
-            }
-
-            unitOfWork.ClientRepository.UpdateClientPhoneNumber(client, clientInfo.PhoneNumber);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Failed to update {client.FirstName}'s phone number", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = client.PhoneNumber, Message = $"{client.FirstName}'s phone number haas been updated successfully", Success = true });
 
         }
 

@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.DTOs;
+﻿using ClientDashboard_API.Dto_s;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 
 namespace ClientDashboard_API.Interfaces.Repositories
@@ -18,9 +19,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<Client?> GetClientByEmailAsync(string email);
 
-        void UpdateClientPhoneNumber(Client client, string phoneNumber);
-
-        void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions, string? phoneNumber);
+        void UpdateClientDetailsAsync(Client client, ClientUpdateDto updatedClient);
 
         void UpdateClientDetailsUponRegisterationAsync(Trainer trainer, Client client, RegisterDto clientDetails);
 

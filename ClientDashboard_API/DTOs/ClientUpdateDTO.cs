@@ -4,6 +4,9 @@ namespace ClientDashboard_API.Dto_s
 {
     public class ClientUpdateDto
     {
+        [Required(ErrorMessage = "Must supply Id field")]
+        public int Id { get; set; }
+
         [Required(ErrorMessage = "Must fill in Client Name field")]
         public string? FirstName { get; set; }
 

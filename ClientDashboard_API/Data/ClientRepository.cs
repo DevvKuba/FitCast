@@ -29,6 +29,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
+                Id = client.Id,
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
@@ -60,6 +61,7 @@ namespace ClientDashboard_API.Data
 
             var updatedData = new ClientUpdateDto
             {
+                Id = client.Id,
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
@@ -68,59 +70,9 @@ namespace ClientDashboard_API.Data
             mapper.Map(updatedData, client);
         }
 
-        public void UpdateClientDetailsAsync(Client client, string newClientName, bool newActivity, int? newCurrentSession, int? newTotalSessions, string? phoneNumber)
+        public void UpdateClientDetailsAsync(Client client, ClientUpdateDto updatedClient)
         {
-            var updatedData = new ClientUpdateDto
-            {
-                FirstName = newClientName.ToLower(),
-                IsActive = newActivity,
-                CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = newTotalSessions,
-                PhoneNumber = phoneNumber != null ? phoneNumber.Replace(" ", "") : phoneNumber,
-            };
-            mapper.Map(updatedData, client);
-        }
-
-        public void UpdateClientTotalBlockSession(Client client, int? blockSessions)
-        {
-            var updatedData = new ClientUpdateDto
-            {
-                FirstName = client.FirstName,
-                IsActive = client.IsActive,
-                TotalBlockSessions = blockSessions == null ? client.TotalBlockSessions : blockSessions,
-                CurrentBlockSession = client.CurrentBlockSession
-
-            };
-            mapper.Map(updatedData, client);
-        }
-
-        public void UpdateClientCurrentSession(Client client, int? currentSession)
-        {
-            var updatedData = new ClientUpdateDto
-            {
-                FirstName = client.FirstName,
-                IsActive = client.IsActive,
-                TotalBlockSessions = client.TotalBlockSessions,
-                CurrentBlockSession = currentSession
-            };
-            mapper.Map(updatedData, client);
-        }
-
-        public void UpdateClientName(Client client, string name)
-        {
-            var updatedData = new ClientUpdateDto
-            {
-                FirstName = name,
-                IsActive = client.IsActive,
-                TotalBlockSessions = client.TotalBlockSessions,
-                CurrentBlockSession = client.CurrentBlockSession,
-            };
-            mapper.Map(updatedData, client);
-        }
-
-        public void UpdateClientPhoneNumber(Client client, string phoneNumber)
-        {
-            client.PhoneNumber = phoneNumber.Replace(" ", "");
+            mapper.Map(updatedClient, client);
         }
 
         public async Task<Client?> GetClientByNameWithTrainerAsync(Trainer trainer, string clientName)
