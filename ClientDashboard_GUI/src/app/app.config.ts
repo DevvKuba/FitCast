@@ -11,8 +11,17 @@ import { MessageService } from 'primeng/api';
 import { jwtInterceptorInterceptor } from './interceptors/jwt-interceptor.interceptor';
 import { AccountService } from './services/account.service';
 
-// "Precision Performance" - same palette as the Stitch design tokens in styles.css.
-// Keep the primary/surface scales here in sync if the Stitch theme changes.
+// "Precision Performance" - same primary palette as the Stitch design tokens in styles.css.
+// Keep this in sync if the Stitch theme changes.
+//
+// Deliberately NOT overriding semantic.colorScheme.surface here. Aura uses that scale as a
+// general-purpose neutral ramp - text, icons, borders AND backgrounds all read from it across
+// every component (button icons, menu items, table borders, sort icons, etc.), not just card
+// backgrounds. An earlier attempt replaced the whole scale with Stitch's literal background
+// hexes (which are deliberately very pale) and made every muted icon/text element in the app
+// render almost invisibly. Aura's default surface scale (Tailwind's slate palette) is close
+// enough to Stitch's own greys to look right, and keeps every component's text/icon colour
+// legible without per-token patching.
 const FitCastPreset = definePreset(Aura, {
   semantic: {
     primary: {
@@ -27,24 +36,6 @@ const FitCastPreset = definePreset(Aura, {
       800: '#003c80',
       900: '#003066',
       950: '#001f42'
-    },
-    colorScheme: {
-      light: {
-        surface: {
-          0: '#ffffff',
-          50: '#f7f9fb',
-          100: '#f2f4f6',
-          200: '#eceef0',
-          300: '#e6e8ea',
-          400: '#e0e3e5',
-          500: '#d8dadc',
-          600: '#c2c6d6',
-          700: '#727785',
-          800: '#424754',
-          900: '#191c1e',
-          950: '#0c0d0e'
-        }
-      }
     }
   },
   components: {
