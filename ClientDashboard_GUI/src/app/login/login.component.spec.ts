@@ -37,7 +37,12 @@ describe('LoginComponent', () => {
     };
 
     toastServiceSpy = jasmine.createSpyObj<ToastService>('ToastService', ['showSuccess', 'showError']);
-    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
+    // RouterLink (used by the "To Register" link in the template) subscribes to router.events
+    // and calls createUrlTree internally to track active-link state and resolve its href, so
+    // the mock needs more than just navigateByUrl.
+    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigateByUrl', 'createUrlTree', 'serializeUrl'], { events: of() });
+    routerSpy.createUrlTree.and.returnValue({} as any);
+    routerSpy.serializeUrl.and.returnValue('/register');
     messageServiceSpy = jasmine.createSpyObj<MessageService>('MessageService', ['add']);
 
     await TestBed.configureTestingModule({
