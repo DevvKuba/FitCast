@@ -1,178 +1,77 @@
-import { Component, inject, resolveForwardRef, ViewChild} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Workout } from '../models/workout';
 import { WorkoutService } from '../services/workout.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
-import { SelectModule } from 'primeng/select';
 import { AccountService } from '../services/account.service';
-import { UserDto } from '../models/dtos/user-dto';
 import { Toast } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { Dialog } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { Client } from '../models/client';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ClientService } from '../services/client.service';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { MessageService } from 'primeng/api';
 import { ToastService } from '../services/toast.service';
-import { TagModule } from 'primeng/tag';
-import { ToggleButton, ToggleButtonModule } from 'primeng/togglebutton';
-import { PasswordModule } from 'primeng/password';
-import { TrainerService } from '../services/trainer.service';
-import { Popover, PopoverModule } from 'primeng/popover';
+import { NotificationService } from '../services/notification.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
-     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, ToggleButton, PasswordModule, PopoverModule, IconFieldModule, InputIconModule ],
+     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, IconFieldModule, InputIconModule],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'
 })
-export class ClientWorkouts {
-    @ViewChild('opRetrieval') opRetrieval!: Popover;
-    @ViewChild('opExclusion') opExclusion!: Popover;
+export class ClientWorkouts implements OnInit {
     workouts: Workout[] | null = null;
-    trainerId : number  = 0;
-    autoWorkoutRetrievalVisible: boolean = false;
-    nameExclusionVisible: boolean = false;
     addDialogVisible: boolean = false;
     deleteDialogVisible: boolean = false;
 
-    selectedClient :{id: number, name: string} = {id: 0, name: ""};
-    selectedExcludedName : string = "";
+    selectedClient: { id: number, name: string } = { id: 0, name: "" };
     workoutTitle: string = "";
-    sessionDate: Date  = new Date();
+    sessionDate: Date = new Date();
     workoutDuration: number = 60;
     exerciseCount: number = 8;
     currentUserId: number = 0;
 
-    clients: {id: number, name: string}[] = [];
-    excludedNames: {name: string}[] = [];
+    clients: { id: number, name: string }[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
 
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
-    trainerApiKey: string = "";
-    retrievalInfoText: string = "";
-    exclusionInfoText: string = "";
-    automaticRetrievalChecked: boolean = false;
-    validApiKeyProvided: boolean = false;
 
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
-    private trainerService = inject(TrainerService);
     private notificationService = inject(NotificationService);
     private toastService = inject(ToastService);
-
-    first = 0; // offset
-    rows = 10; // pageSize
 
     ngOnInit() {
         this.currentUserId = this.accountService.currentUser()?.id ?? 0;
         this.displayWorkouts();
-        this.getAutoWorkoutRetrievalStatus();
-        this.setUpInfoTexts();
-        this.getTrainerApiKey();
-        if(this.trainerApiKey !== null){
-            this.validApiKeyProvided = true;
-        }
     }
 
-    clear(table: Table){
+    clear(table: Table) {
         table.clear();
         this.displayWorkouts();
     }
 
-    next() {
-        this.first = this.first + this.rows;
-    }
-
-    prev() {
-        this.first = this.first - this.rows;
-    }
-
-    reset() {
-        this.first = 0;
-    }
-
-    pageChange(event: { first: number; rows: number; }) {
-        this.first = event.first;
-        this.rows = event.rows;
-    }
-
-    isLastPage(): boolean {
-        return this.workouts ? this.first + this.rows >= this.workouts.length : true;
-    }
-
-    isFirstPage(): boolean {
-        return this.workouts ? this.first === 0 : true;
-    }
-
-     toggleForRetrieval(event: any) {
-        this.opRetrieval.toggle(event);
-    }
-
-    toggleForExclusion(event: any) {
-        this.opExclusion.toggle(event);
-    }
-
-    setUpInfoTexts(){
-        this.retrievalInfoText = "You can configure your Hevy Workout Api for either manual or automated" +
-        " workout collection, the automatic background retrieval process occurs daily at midnight";
-
-        this.exclusionInfoText = "You can set up any client names that will not be picked up" +
-        " during the automatic workout collection process";
-    }
-
-    getTrainerApiKey(){
-        this.trainerService.getWorkoutRetrievalApiKey().subscribe({
-            next: (response) => {
-                this.trainerApiKey = response.data;
-            }
-        })
-    }
-
-    getAutoWorkoutRetrievalStatus(){
-        this.trainerService.getAutoWorkoutRetrievalStatus().subscribe({
-            next: (response) => {
-                this.automaticRetrievalChecked = response.data;
-            }
-        })
-    }
-
-    updateWorkoutRetrievalDetails(apiKey: string, retrievalStatus: boolean){
-        this.trainerService.updateTrainerRetrievalDetails(apiKey, retrievalStatus).subscribe({
-            next: (response) => {
-                this.toastService.showSuccess('Success updated details', response.message);
-                this.autoWorkoutRetrievalVisible = false
-            }, 
-            error: (response) => {
-                this.toastService.showError('Error updating details', response.error.message);
-            }
-        })
-    }
-
-     onRowEditInit(workout: Workout) {
+    onRowEditInit(workout: Workout) {
         this.clonedWorkouts[workout.id as number] = { ...workout };
     }
 
     onRowEditSave(newWorkout: Workout) {
-        console.log(typeof(newWorkout.sessionDate));
-        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null 
+        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null
             && newWorkout.exerciseCount > 0 && newWorkout.id !== null) {
             delete this.clonedWorkouts[newWorkout.id as number];
 
-            var updatedInfo =  {
+            const updatedInfo = {
                 id: newWorkout.id,
                 workoutTitle: newWorkout.workoutTitle,
                 sessionDate: newWorkout.sessionDate,
@@ -180,12 +79,10 @@ export class ClientWorkouts {
                 duration: newWorkout.duration
             }
             this.workoutService.updateWorkout(updatedInfo).subscribe({
-                next: (response) => {
-                    console.log(response);
+                next: () => {
                     this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
-                }, 
-                error: (response) => {
-                    console.log(response);
+                },
+                error: () => {
                     this.toastService.showError('Unsuccessful Update', `Workout: ${newWorkout.workoutTitle} not updated`);
                 }
             })
@@ -195,13 +92,13 @@ export class ClientWorkouts {
     }
 
     onRowEditCancel(workout: Workout, index: number) {
-        if(this.workouts && this.clonedWorkouts[workout.id as number]){
+        if (this.workouts && this.clonedWorkouts[workout.id as number]) {
             this.workouts[index] = this.clonedWorkouts[workout.id as number];
             delete this.clonedWorkouts[workout.id as number];
         }
     }
 
-    onRowDelete(workoutId: number){
+    onRowDelete(workoutId: number) {
         this.workoutService.deleteWorkout(workoutId).subscribe({
             next: (response) => {
                 this.toastService.showSuccess('Success Deleting Workout', response.message);
@@ -209,19 +106,17 @@ export class ClientWorkouts {
                 this.displayWorkouts();
             },
             error: (response) => {
-                console.log(response);
                 this.toastService.showError('Unsuccessful Workout Deletion', response.error.message);
             }
         })
     }
 
-    addNewWorkout(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number | null, duration: number | null){
-        // Frontend validation
-        if(!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, exerciseCount, duration)){
+    addNewWorkout(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, exerciseCount: number | null, duration: number | null) {
+        if (!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, exerciseCount, duration)) {
             return;
         }
 
-        var newWorkout = {
+        const newWorkout = {
             workoutTitle: workoutTitle,
             clientName: selectedClient.name,
             clientId: selectedClient.id,
@@ -243,146 +138,100 @@ export class ClientWorkouts {
         })
     }
 
-    addNewExcludedName(selectedName : {name: string} | string){
-        const name = typeof selectedName === 'string' ? selectedName : selectedName.name;
-        const excludeDetails = {
-            trainerId: this.currentUserId,
-            name: name
-        }
-
-        this.trainerService.addExcludedName(excludeDetails).subscribe({
-            next: (response) => {
-                this.toastService.showSuccess('Success', response.message);
-                this.gatherExcludedNames();
-                this.selectedExcludedName = "";
-            },
-            error: (response) => {
-                this.toastService.showError('Error', response.error.message);
-            }
-        })
-    }
-
-    deleteExcludedName(selectedName: {name: string} | string) {
-        const name = typeof selectedName === 'string' ? selectedName : selectedName.name;
-        const excludeDetails = {
-            trainerId: this.currentUserId,
-            name: name
-        }
-       
-        this.trainerService.deleteExcludedName(excludeDetails).subscribe({
-            next: (response) => {
-                this.toastService.showSuccess('Success', response.message);
-                this.gatherExcludedNames();
-                this.selectedExcludedName = "";
-            },
-            error: (response) => {
-                this.toastService.showError('Error', response.error.message);
-            }
-        })
-    }
-
-    displayWorkouts(){
+    displayWorkouts() {
         this.workoutService.retrieveTrainerClientWorkouts().subscribe({
             next: (response) => {
                 this.workouts = response.data ?? [];
             },
             error: (response) => {
-                console.log(response.error.message)
+                this.toastService.showError('Error Loading Workouts', response.error.message);
             }
         });
     }
 
-  gatherExternalWorkouts(){
-    this.trainerService.gatherAndUpdateExternalWorkouts().subscribe({
-        next: (response) => {
-            if(response.data == 0){
-                this.toastService.showNeutral('Success Gathering Workouts', `Accessed workouts successfully, No workouts found to retrieve`);
-            }else {
-                this.toastService.showSuccess('Success Gathering Workouts', `All ${response.data} workouts have been added and client details updated`);
+    showDialogForAdd() {
+        this.gatherClientNames();
+        this.addDialogVisible = true;
+    }
+
+    showDialogForDelete(workoutId: number, workoutTitle: string) {
+        this.deleteDialogVisible = true;
+        this.deleteWorkoutId = workoutId;
+        this.deleteWorkoutTitle = workoutTitle;
+    }
+
+    formatDateForApi(date: Date | undefined): string {
+        if (!date) return '';
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${year}/${month}/${day}`;
+    }
+
+    gatherClientNames() {
+        this.clientService.gatherClientNames(this.currentUserId).subscribe({
+            next: (response) => {
+                this.clients = response
             }
-            this.displayWorkouts();
-            this.notificationService.refreshUnreadCount(this.currentUserId);
-        },
-        error: () => {
-            this.toastService.showError('Error Gathering Workouts', 'An error occurred calling the external api');
+        });
+    }
+
+    validateWorkoutAddFields(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, exerciseCount: number | null, duration: number | null): boolean {
+        if (!selectedClient.id || !selectedClient.name || selectedClient.name.trim() === '') {
+            this.toastService.showError('Error adding workout', 'Must select a valid client');
+            return false;
         }
-    })
-  }
 
-  showDialogForAutoWorkoutRetrieval(){
-    this.autoWorkoutRetrievalVisible = true;
-  }
-
-  showDialogForAdd() {
-    this.gatherClientNames();
-    this.addDialogVisible = true;
-    }
-
-  showDialogForDelete(workoutId: number, workoutTitle : string){
-    this.deleteDialogVisible = true;
-    this.deleteWorkoutId = workoutId;
-    this.deleteWorkoutTitle = workoutTitle;
-  }
-
-  showDialogForNameExclusions(){
-    this.gatherExcludedNames();
-    this.nameExclusionVisible = true;
-  }
-
-
-  formatDateForApi(date: Date | undefined): string {
-  if (!date) return '';
-  
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-
-  return `${year}/${month}/${day}`;
-    }
-
-  gatherClientNames(){
-    this.clientService.gatherClientNames(this.currentUserId).subscribe({
-        next: (response) => {
-            this.clients = response
+        if (!workoutTitle || workoutTitle.trim() === '') {
+            this.toastService.showError('Error adding workout', 'Must provide a workout title');
+            return false;
         }
-    });
-    }
 
-  gatherExcludedNames(){
-    this.trainerService.getAllExcludedNames().subscribe({
-        next: (response) => {
-            this.excludedNames = response.data.map((name: string) => ({name: name}));
+        if (!sessionDate) {
+            this.toastService.showError('Error adding workout', 'Must provide a session date');
+            return false;
         }
-    })
-  }
 
-  validateWorkoutAddFields(selectedClient : {id: number, name: string}, workoutTitle: string, sessionDate : Date | undefined, exerciseCount: number | null, duration: number | null) : boolean{
-    if(!selectedClient.id || !selectedClient.name || selectedClient.name.trim() === ''){
-        this.toastService.showError('Error adding workout', 'Must select a valid client');
-        return false;
+        if (!exerciseCount || exerciseCount === null || exerciseCount <= 0) {
+            this.toastService.showError('Error adding workout', 'Must provide a valid exercise count');
+            return false;
+        }
+
+        if (!duration || duration === null || duration <= 0) {
+            this.toastService.showError('Error adding workout', 'Must provide a valid duration');
+            return false;
+        }
+
+        return true;
     }
 
-    if(!workoutTitle || workoutTitle.trim() === ''){
-        this.toastService.showError('Error adding workout', 'Must provide a workout title');
-        return false;
+    getProgressPercentage(workout: Workout): number {
+        if (!workout.totalBlockSessions) return 0;
+        return Math.round(((workout.currentBlockSession ?? 0) / workout.totalBlockSessions) * 100);
     }
 
-    if(!sessionDate){
-        this.toastService.showError('Error adding workout', 'Must provide a session date');
-        return false;
+    // Six evenly-spread, complementary pastel pairs - same palette/bucketing as the client
+    // roster's avatars so colours stay consistent app-wide.
+    private readonly avatarColorPalette: string[] = [
+        'bg-primary-fixed text-primary',
+        'bg-secondary-fixed text-secondary',
+        'bg-violet-100 text-violet-700',
+        'bg-amber-100 text-amber-700',
+        'bg-rose-100 text-rose-700',
+        'bg-cyan-100 text-cyan-700'
+    ];
+
+    getAvatarColorClass(clientName: string): string {
+        const letter = (clientName?.charAt(0) ?? 'A').toUpperCase();
+        const letterIndex = Math.max(0, letter.charCodeAt(0) - 'A'.charCodeAt(0));
+        const bucketSize = 26 / this.avatarColorPalette.length;
+        const index = Math.min(Math.floor(letterIndex / bucketSize), this.avatarColorPalette.length - 1);
+        return this.avatarColorPalette[index];
     }
 
-    if(!exerciseCount || exerciseCount === null || exerciseCount <= 0){
-        this.toastService.showError('Error adding workout', 'Must provide a valid exercise count');
-        return false;
+    getInitials(clientName: string): string {
+        return (clientName?.charAt(0) ?? '').toUpperCase();
     }
-
-    if(!duration || duration === null || duration <= 0){
-        this.toastService.showError('Error adding workout', 'Must provide a valid duration');
-        return false;
-    }
-
-    return true;
-  }
- 
 }

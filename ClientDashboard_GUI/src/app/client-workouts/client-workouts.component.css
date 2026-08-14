@@ -1,57 +1,22 @@
-.table-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Keep stack helper labels hidden on desktop */
 ::ng-deep .p-column-title {
     display: none;
 }
 
-.p-inputtext {
-    max-width: 135px;
+.workout-td {
+    text-align: center;
+    vertical-align: middle;
 }
 
-.workout-caption {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.action-column {
+    width: 140px;
+    min-width: 140px;
+    white-space: nowrap;
 }
 
-.workout-search {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-right: 0.5rem;
-}
-
-.workout-search-input {
-    max-width: none;
-}
-
-.workout-add-button {
-    margin-right: 40px;
-}
-
-.clear-button {
-    margin-left: 0;
-}
-
-.left-segment {
-    display: flex;
-    justify-content: space-between;
-}
-
-.right-segment {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    gap: 0.75rem;
-}
-
-.exercise-count-input {
-    max-width: 80px;
+.action-header-cell {
+    text-align: center;
+    vertical-align: middle;
 }
 
 /* Dialog Form Styling */
@@ -102,103 +67,11 @@
   padding-top: 1.5rem;
 }
 
-.duration-count-input {
-    max-width: 60px;
-}
-
-.workout-td {
-    text-align: center;
-}
-
-.action-column {
-    width: 120px;
-    min-width: 120px;
-    white-space: nowrap;
-}
-
-.action-header-cell {
-    text-align: center;
-    vertical-align: middle;
-}
-
-.header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.name-exclusion-buttons {
-    display: flex;
-    justify-content: end;
-}
-
-.info-button-container {
-    display: inline-block;
-    margin-bottom: 1rem;
-}
-
-.popover-content {
-    padding: 1rem;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.popover-text {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #374151;
-}
-
-::ng-deep .p-popover {
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 1px solid #e5e7eb;
-}
-
-::ng-deep .p-popover .p-popover-content {
-    padding: 0;
-    border-radius: 8px;
+.delete-message {
+  margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
-    .table-container {
-        justify-content: center;
-        width: 100%;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .workout-caption {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .left-segment,
-    .right-segment {
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-        flex-wrap: wrap;
-    }
-
-    .workout-add-button {
-        margin-right: 0;
-    }
-
-    .workout-search {
-        margin-right: 0;
-        justify-content: center;
-    }
-
-    .header-buttons {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
     .action-column {
         width: auto;
         min-width: 0;

@@ -32,7 +32,6 @@ describe('ClientInfoComponent', () => {
 
     clientServiceSpy = jasmine.createSpyObj<ClientService>('ClientService', [
       'getAllTrainerClients',
-      'getClientPhoneNumber',
       'updateClient',
       'deleteClient',
       'addClient'
@@ -40,7 +39,6 @@ describe('ClientInfoComponent', () => {
     clientServiceSpy.getAllTrainerClients.and.returnValue(
       of({ success: true, message: 'ok', data: [createClient(1, 'Alex')] })
     );
-    clientServiceSpy.getClientPhoneNumber.and.returnValue(of({ success: true, message: 'ok', data: '+44 1234 123456' }));
     clientServiceSpy.updateClient.and.returnValue(of({ success: true, message: 'updated' }));
     clientServiceSpy.deleteClient.and.returnValue(of({ success: true, message: 'deleted' }));
     clientServiceSpy.addClient.and.returnValue(of({ success: true, message: 'added' }));

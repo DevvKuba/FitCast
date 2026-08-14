@@ -4,342 +4,235 @@
 @else {
     <p-toast />
 
-    <p-dialog header="Set up Hevy App Workout Retrieval" [modal]="true" [(visible)]="autoWorkoutRetrievalVisible" [style]="{ width: '25rem' }">
-                <div class="info-button-container">
-                    <p-button 
-                        type="button" 
-                        icon="pi pi-exclamation-circle" 
-                        severity="secondary" 
-                        size="small" 
-                        (onClick)="toggleForRetrieval($event)" 
-                        styleClass="info-button" />
-                    <p-popover 
-                        #opRetrieval
-                        [appendTo]="'body'"
-                        [style]="{ 'max-width': '300px' }">
-                        <div class="popover-content">
-                            <p class="popover-text">{{retrievalInfoText}}</p>
-                        </div>
-                    </p-popover>
+    <p-dialog header="Add new Workout" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
+            <div class="dialog-form-group">
+                <span class="dialog-intro-text">Enter new workout details:</span>
+                <div class="form-field">
+                    <label for="workout-title">Workout Title</label>
+                    <input pInputText id="workout-title" [(ngModel)]="workoutTitle" autocomplete="off" />
                 </div>
-
-                <div class="flex items-center gap-4 mb-4">
-                    <label for="username" class="font-semibold w-24">ApiKey</label>
-                    <p-password [(ngModel)]="trainerApiKey" [toggleMask]="true" [feedback]="false" />
-                    <p-button label="Reset" styleClass="w-full sm:w-40" severity="secondary" (click)="getTrainerApiKey()"></p-button>
+                <div class="form-field">
+                    <label for="client-name">Client Name</label>
+                    <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
                 </div>
-                <div class="flex items-center gap-4 mb-8">
-                    <label for="email" class="font-semibold w-24">Toggle Automatic Collection</label>
-                    <p-togglebutton 
-                        [(ngModel)]="automaticRetrievalChecked" 
-                        styleClass="w-full sm:w-40" 
-                        aria-label="Confirmation">
-                    </p-togglebutton>
+                <div class="form-field">
+                    <label for="workout-date">Session Date</label>
+                    <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
                 </div>
-                <div class="flex justify-end gap-2">
-                    <p-button label="Cancel" severity="secondary" (click)="autoWorkoutRetrievalVisible = false" />
-                    <p-button label="Save" (click)="updateWorkoutRetrievalDetails(trainerApiKey, automaticRetrievalChecked)" />
+                <div class="form-field">
+                    <label for="session-duration">Session Duration</label>
+                    <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="session-duration" autocomplete="off" />
                 </div>
-            </p-dialog>
-
-            <p-dialog header="Add new Workout" [modal]="true" [(visible)]="addDialogVisible" [style]="{ width: '20rem', height: 'auto'}" >
-                    <div class="dialog-form-group">
-                        <span class="dialog-intro-text">Enter new workout details:</span>
-                        <div class="form-field">
-                            <label for="workout-title">Workout Title</label>
-                            <input pInputText id="workout-title" [(ngModel)]="workoutTitle" autocomplete="off" />
-                        </div>
-                        <div class="form-field">
-                            <label for="client-name">Client Name</label>
-                            <p-autocomplete [appendTo]="'body'" [(ngModel)]="selectedClient" [dropdown]="true" [suggestions]="clients" optionLabel="name" (onDropdownClick)="gatherClientNames()" />
-                        </div>
-                        <div class="form-field">
-                            <label for="workout-date">Session Date</label>
-                            <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
-                        </div>
-                        <div class="form-field">
-                            <label for="session-duration">Session Duration</label>
-                            <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="session-duration" autocomplete="off" />
-                        </div>
-                        <div class="form-field">
-                            <label for="exercise-count">Exercise Count</label>
-                            <p-inputnumber inputId="exercise-count" [(ngModel)]="exerciseCount" id="exercise-count" autocomplete="off" />
-                        </div>
-                    </div>
-                    <div class="dialog-actions">
-                        <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
-                        <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, exerciseCount, workoutDuration)" />
-                    </div>
-                </p-dialog>
-
-                <p-dialog header="Delete Workout" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
-                        <div class="delete-message">
-                          <span class="p-text-secondary block mb-8">Are you sure you want to delete workout titled {{deleteWorkoutTitle}} from your table?</span>
-                        </div>
-                          <div class="flex justify-end gap-2">
-                              <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
-                              <p-button label="Delete" (click)=" onRowDelete(deleteWorkoutId)" />
-                          </div>
-                </p-dialog>
-
-                <p-dialog header="Set up excluded client names" [modal]="true" [(visible)]="nameExclusionVisible" [style]="{ width: '25rem' }">
-                <div class="info-button-container">
-                    <p-button 
-                        type="button" 
-                        icon="pi pi-exclamation-circle" 
-                        severity="secondary" 
-                        size="small" 
-                        (onClick)="toggleForExclusion($event)" 
-                        styleClass="info-button" />
-                    <p-popover 
-                        #opExclusion 
-                        [appendTo]="'body'"
-                        [style]="{ 'max-width': '300px' }">
-                        <div class="popover-content">
-                            <p class="popover-text">{{exclusionInfoText}}</p>
-                        </div>
-                    </p-popover>
-                </div>
-                
-                <div class="flex items-center gap-4 mb-8">
-                    <label for="excluded-name" class="font-semibold w-24">Excluded Name</label>
-                    <p-autocomplete 
-                        [appendTo]="'body'"
-                        [(ngModel)]="selectedExcludedName"
-                        [dropdown]="true"
-                        [suggestions]="excludedNames"
-                        optionLabel="name"
-                        (onDropdownClick)="gatherExcludedNames()" />
-                </div>
-                
-                <div class="flex justify-end gap-2">
-                    <p-button label="Delete" severity="danger" (click)="deleteExcludedName(selectedExcludedName)" [disabled]="!selectedExcludedName" />
-                    <p-button label="Add" (click)="addNewExcludedName(selectedExcludedName)" [disabled]="!selectedExcludedName" />
-                </div>
-            </p-dialog>
-
-    <div class="table-container">
-    <p-table
-        #dt2
-        [value]="workouts"
-        responsiveLayout="stack"
-        [breakpoint]="'768px'"
-        [globalFilterFields] = "['clientName']"
-        [paginator]="true"
-        [rows]="10"
-        [first]="first"
-        [showCurrentPageReport]="true"
-        [tableStyle]="{ 'width': '1000px' , 'table-layout': 'fixed' }"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        (onPage)="pageChange($event)"
-        [rowsPerPageOptions]="[10, 20, 30]"
-        dataKey="id"
-        editMode="row"
-    >
-    <ng-template #caption>
-        <div class="workout-caption">
-            <div class="left-segment">   
-                <div class="workout-add-button">
-                    <p-button icon="pi pi-plus" (click)="showDialogForAdd()" severity="secondary" label="New" />
-                    
-                </div>
-                <div class="header-buttons">
-                    <p-button
-                        pButton
-                        pRipple
-                        type="button"
-                        icon="pi pi-globe"
-                        (click)="showDialogForAutoWorkoutRetrieval()"
-                        text
-                        rounded
-                        severity="secondary">
-                    </p-button>
-                    <p-togglebutton
-                        [disabled]="!validApiKeyProvided"
-                        (click)="gatherExternalWorkouts()"
-                        [onLabel]="'Gather Workouts'"
-                        [offLabel]="'Gather Workouts'"
-                        styleClass="w-full sm:w-40"
-                        ariaLabel="Gather Workouts"
-                        size="small">
-                    </p-togglebutton>
+                <div class="form-field">
+                    <label for="exercise-count">Exercise Count</label>
+                    <p-inputnumber inputId="exercise-count" [(ngModel)]="exerciseCount" id="exercise-count" autocomplete="off" />
                 </div>
             </div>
-
-            <div class="right-segment">
-                <div class="workout-search">
-                    <p-iconfield iconPosition="left" class="ml-auto">
-                        <p-inputicon>
-                            <i class="pi pi-search"></i>
-                        </p-inputicon>
-                        <input class="workout-search-input" pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')"
-                          placeholder="Search client name" />
-                    </p-iconfield>
-                </div>
-                <p-button icon="pi pi-times-circle" (click)="showDialogForNameExclusions()" severity="secondary" label="Exclude" />
+            <div class="dialog-actions">
+                <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
+                <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, exerciseCount, workoutDuration)" />
             </div>
-            
+        </p-dialog>
+
+        <p-dialog header="Delete Workout" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
+                <div class="delete-message">
+                  <span class="p-text-secondary block mb-8">Are you sure you want to delete workout titled {{deleteWorkoutTitle}} from your table?</span>
+                </div>
+                  <div class="flex justify-end gap-2">
+                      <p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
+                      <p-button label="Delete" (click)=" onRowDelete(deleteWorkoutId)" />
+                  </div>
+        </p-dialog>
+
+    <div class="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-6">
+
+        <!-- Page header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <span class="text-label-caps font-label-caps text-primary uppercase tracking-widest mb-2 block">Management</span>
+                <h2 class="text-display-lg font-display-lg text-slate-navy">Workouts Feed</h2>
+            </div>
         </div>
-    </ng-template>
+
+        <div class="bg-white border border-border-subtle rounded-lg overflow-hidden">
+        <p-table
+            #dt2
+            [value]="workouts"
+            responsiveLayout="stack"
+            [breakpoint]="'768px'"
+            [globalFilterFields] = "['clientName']"
+            [paginator]="true"
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [rowsPerPageOptions]="[10, 20, 30]"
+            dataKey="id"
+            editMode="row"
+        >
+        <ng-template #caption>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <p-iconfield iconPosition="left" styleClass="w-full md:w-72">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input class="w-full" pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')"
+                      placeholder="Search client name" />
+                </p-iconfield>
+                <div class="flex items-center gap-2">
+                    <p-button icon="pi pi-filter-slash" label="Clear" [outlined]="true" (click)="clear(dt2)" />
+                    <p-button icon="pi pi-plus" label="Add Workout" (onClick)="showDialogForAdd()" />
+                </div>
+            </div>
+        </ng-template>
 
         <ng-template #header>
-            
-            <div class="mb-4">
-                <p-button type="button" icon="pi pi-chevron-left" (click)="prev()" [disabled]="isFirstPage()" text />
-                <p-button type="button" icon="pi pi-refresh" (click)="reset()" text />
-                <p-button type="button" icon="pi pi-chevron-right" (click)="next()" [disabled]="isLastPage()" text />
-            </div>
             <tr>
-                <th pSortableColumn="workoutTitle" style="width:22%; text-align: center;">
+                <th pSortableColumn="workoutTitle" class="font-table-header text-base">
                     Workout Title <p-sortIcon field="workoutTitle" />
                 </th>
-                 <th pSortableColumn="clientName" style="width:16%; text-align: center;">
-                    Client Name <p-sortIcon field="clientName" />
+                <th pSortableColumn="clientName" class="font-table-header text-base">
+                    Client <p-sortIcon field="clientName" />
                 </th>
-                 <th pSortableColumn="currentBlockSession" style="width:16%; text-align: center;">
-                    Current Session <p-sortIcon field="currentBlockSession" />
+                <th class="font-table-header text-base text-center">
+                    Progress
                 </th>
-                 <th pSortableColumn="totalBlockSessions" style="width:16%; text-align: center;">
-                    Total Sessions <p-sortIcon field="totalBlockSessions" />
+                <th pSortableColumn="sessionDate" class="font-table-header text-base text-center">
+                    Date <p-sortIcon field="sessionDate" />
                 </th>
-                 <th pSortableColumn="sessionDate" style="width:15%; text-align: center;" >
-                    Session Date <p-sortIcon field="sessionDate" />
-                </th>
-                <th pSortableColumn="duration" style="width:15%; text-align: center;">
+                <th pSortableColumn="duration" class="font-table-header text-base text-center">
                     Duration <p-sortIcon field="duration" />
                 </th>
-                 <th pSortableColumn="exerciseCount" style="width:15%; text-align: center;">
+                <th pSortableColumn="exerciseCount" class="font-table-header text-base text-center">
                     Exercises <p-sortIcon field="exerciseCount" />
                 </th>
-                <th class="action-column action-header-cell">
-                    <p-button label="Clear" styleClass="clear-button" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt2)" />
-                </th>
+                <th class="action-column action-header-cell font-table-header text-base text-right">Actions</th>
             </tr>
         </ng-template>
         <ng-template #body let-workout let-editing="editing" let-ri="rowIndex">
             <tr [pEditableRow]="workout">
                 <td class="workout-td">
-                <span class="p-column-title">Workout Title</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input
-                            pInputText type="text"
-                            [(ngModel)]= "workout.workoutTitle" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{workout.workoutTitle}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-                                <td class="workout-td">
-                                <span class="p-column-title">Client Name</span>
-                                {{ workout.clientName }}</td>
-                                <td class="workout-td">
-                                <span class="p-column-title">Current Session</span>
-                                {{ workout.currentBlockSession }}</td>
-                                <td class="workout-td">
-                                <span class="p-column-title">Total Sessions</span>
-                                {{ workout.totalBlockSessions }}</td>
+                    <span class="p-column-title">Workout Title</span>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <input
+                                pInputText type="text"
+                                class="w-full max-w-48"
+                                [(ngModel)]= "workout.workoutTitle" />
+                        </ng-template>
+                        <ng-template #output>
+                            <div class="font-semibold text-slate-navy">{{workout.workoutTitle}}</div>
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
                 <td class="workout-td">
-                                <span class="p-column-title">Session Date</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input
-                            pInputText type="date"
-                            [(ngModel)]= "workout.sessionDate" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{workout.sessionDate | date:'dd/MM/yyyy'}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-              <td class="workout-td">
-                                <span class="p-column-title">Duration</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input class="duration-count-input"
-                            pInputText type="number"
-                            [(ngModel)]= "workout.duration" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{workout.duration + ' mins'}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-                <td class="workout-td">
-                                <span class="p-column-title">Exercises</span>
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input class="exercise-count-input"
-                            pInputText type="number"
-                            [(ngModel)]= "workout.exerciseCount" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{workout.exerciseCount}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-                <td class="workout-td">
-                                <span class="p-column-title">Actions</span>
-                <div class="flex items-center justify-center gap-2">
-                    <button
-                        *ngIf="!editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pInitEditableRow
-                        icon="pi pi-pencil"
-                        (click)="onRowEditInit(workout)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    <button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pSaveEditableRow
-                        icon="pi pi-check"
-                        (click)="onRowEditSave(workout)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    <button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pCancelEditableRow
-                        icon="pi pi-times"
-                        (click)="onRowEditCancel(workout, ri)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></button>
-                    <div class="card flex justify-center">
-                      <p-button
-                        *ngIf="editing"
-                        pButton
-                        pRipple
-                        type="button"
-                        pCancelEditableRow
-                        icon="pi pi-trash"
-                        (click)="showDialogForDelete(workout.id, workout.workoutTitle)"
-                        text
-                        rounded
-                        severity="secondary"
-                    ></p-button>
-                      
+                    <span class="p-column-title">Client</span>
+                    <div class="flex items-center gap-2 justify-center md:justify-start">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0" [class]="getAvatarColorClass(workout.clientName)">{{getInitials(workout.clientName)}}</div>
+                        <span>{{ workout.clientName }}</span>
                     </div>
-                    
-                </div>
-            </td>
+                </td>
+                <td class="workout-td">
+                    <span class="p-column-title">Progress</span>
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="text-sm font-semibold">{{ workout.currentBlockSession ?? 0 }} / {{ workout.totalBlockSessions ?? 0 }}</div>
+                        <div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                            <div class="h-full bg-primary" [style.width.%]="getProgressPercentage(workout)"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="workout-td">
+                    <span class="p-column-title">Date</span>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <input
+                                pInputText type="date"
+                                class="w-full max-w-40"
+                                [(ngModel)]= "workout.sessionDate" />
+                        </ng-template>
+                        <ng-template #output>
+                            {{workout.sessionDate | date:'dd/MM/yyyy'}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td class="workout-td">
+                    <span class="p-column-title">Duration</span>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <p-inputnumber [(ngModel)]="workout.duration" styleClass="w-20" inputStyleClass="w-full" />
+                        </ng-template>
+                        <ng-template #output>
+                            {{workout.duration + ' mins'}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td class="workout-td">
+                    <span class="p-column-title">Exercises</span>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <p-inputnumber [(ngModel)]="workout.exerciseCount" styleClass="w-20" inputStyleClass="w-full" />
+                        </ng-template>
+                        <ng-template #output>
+                            {{workout.exerciseCount}}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td class="workout-td action-column">
+                    <span class="p-column-title">Actions</span>
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            *ngIf="!editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pInitEditableRow
+                            icon="pi pi-pencil"
+                            (click)="onRowEditInit(workout)"
+                            text
+                            rounded
+                            severity="secondary"
+                        ></button>
+                        <button
+                            *ngIf="editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pSaveEditableRow
+                            icon="pi pi-check"
+                            (click)="onRowEditSave(workout)"
+                            text
+                            rounded
+                            severity="secondary"
+                        ></button>
+                        <button
+                            *ngIf="editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            pCancelEditableRow
+                            icon="pi pi-times"
+                            (click)="onRowEditCancel(workout, ri)"
+                            text
+                            rounded
+                            severity="secondary"
+                        ></button>
+                        <button
+                            *ngIf="editing"
+                            pButton
+                            pRipple
+                            type="button"
+                            icon="pi pi-trash"
+                            (click)="showDialogForDelete(workout.id, workout.workoutTitle)"
+                            text
+                            rounded
+                            severity="secondary"
+                        ></button>
+                    </div>
+                </td>
             </tr>
         </ng-template>
-        
+
     </p-table>
-</div>
+    </div>
+    </div>
 
 }

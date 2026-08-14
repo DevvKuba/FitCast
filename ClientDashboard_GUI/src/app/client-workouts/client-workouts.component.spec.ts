@@ -4,7 +4,6 @@ import { AccountService } from '../services/account.service';
 import { ClientService } from '../services/client.service';
 import { NotificationService } from '../services/notification.service';
 import { ToastService } from '../services/toast.service';
-import { TrainerService } from '../services/trainer.service';
 import { WorkoutService } from '../services/workout.service';
 import { Workout } from '../models/workout';
 
@@ -47,32 +46,11 @@ describe('ClientWorkouts', () => {
         { provide: WorkoutService, useValue: workoutServiceSpy },
         { provide: AccountService, useValue: { currentUser: jasmine.createSpy('currentUser').and.returnValue({ id: 13 }) } },
         { provide: ClientService, useValue: jasmine.createSpyObj<ClientService>('ClientService', ['gatherClientNames']) },
-        {
-          provide: TrainerService,
-          useValue: jasmine.createSpyObj<TrainerService>('TrainerService', [
-            'getWorkoutRetrievalApiKey',
-            'getAutoWorkoutRetrievalStatus',
-            'updateTrainerRetrievalDetails',
-            'addExcludedName',
-            'deleteExcludedName',
-            'getAllExcludedNames',
-            'gatherAndUpdateExternalWorkouts'
-          ])
-        },
         { provide: ToastService, useValue: jasmine.createSpyObj<ToastService>('ToastService', ['showSuccess', 'showError', 'showNeutral']) },
         { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['refreshUnreadCount']) }
       ]
     })
     .compileComponents();
-
-    const trainerService = TestBed.inject(TrainerService) as jasmine.SpyObj<TrainerService>;
-    trainerService.getWorkoutRetrievalApiKey.and.returnValue(of({ success: true, message: 'ok', data: '' }));
-    trainerService.getAutoWorkoutRetrievalStatus.and.returnValue(of({ success: true, message: 'ok', data: false }));
-    trainerService.updateTrainerRetrievalDetails.and.returnValue(of({ success: true, message: 'ok' }));
-    trainerService.addExcludedName.and.returnValue(of({ success: true, message: 'ok' }));
-    trainerService.deleteExcludedName.and.returnValue(of({ success: true, message: 'ok' }));
-    trainerService.getAllExcludedNames.and.returnValue(of({ success: true, message: 'ok', data: [] }));
-    trainerService.gatherAndUpdateExternalWorkouts.and.returnValue(of({ success: true, message: 'ok', data: 0 }));
 
     const clientService = TestBed.inject(ClientService) as jasmine.SpyObj<ClientService>;
     clientService.gatherClientNames.and.returnValue(of([]));
@@ -103,32 +81,6 @@ describe('ClientWorkouts', () => {
     });
   });
 
-  describe('table pagination behavior', () => {
-    it('next/prev/reset update first row offset correctly', () => {
-      component.rows = 10;
-      component.first = 0;
-
-      component.next();
-      expect(component.first).toBe(10);
-
-      component.prev();
-      expect(component.first).toBe(0);
-
-      component.first = 20;
-      component.reset();
-      expect(component.first).toBe(0);
-    });
-
-    it('isFirstPage and isLastPage use current pagination against row count', () => {
-      component.workouts = [workoutRow];
-      component.rows = 10;
-      component.first = 0;
-
-      expect(component.isFirstPage()).toBeTrue();
-      expect(component.isLastPage()).toBeTrue();
-    });
-  });
-
   describe('table value formatting', () => {
     it('formatDateForApi transforms Date into yyyy/MM/dd', () => {
       const formatted = component.formatDateForApi(new Date('2026-04-05T00:00:00.000Z'));
@@ -137,15 +89,57 @@ describe('ClientWorkouts', () => {
     });
   });
 
-  describe('documentation: how these simple table tests work', () => {
-    it('focuses on component table logic (rows, pagination, formatters) rather than PrimeNG internals', () => {
-      component.workouts = [workoutRow, { ...workoutRow, id: 2 }];
-      component.rows = 1;
-      component.first = 0;
+  describe('row edit behavior', () => {
+    it('onRowEditInit clones the row before it becomes editable', () => {
+      component.onRowEditInit(workoutRow);
 
-      expect(component.isFirstPage()).toBeTrue();
-      component.next();
-      expect(component.first).toBe(1);
+      expect(component.clonedWorkouts[workoutRow.id]).toEqual(workoutRow);
+    });
+
+    it('onRowEditCancel restores the cloned row and discards the clone', () => {
+      const original = { ...workoutRow };
+      const edited = { ...workoutRow, workoutTitle: 'Changed Title' };
+      component.workouts = [edited];
+      component.clonedWorkouts[workoutRow.id] = original;
+
+      component.onRowEditCancel(edited, 0);
+
+      expect(component.workouts[0].workoutTitle).toBe('Push Day');
+      expect(component.clonedWorkouts[workoutRow.id]).toBeUndefined();
+    });
+
+    it('onRowEditSave sends the editable fields only, not the read-only session counts', () => {
+      component.onRowEditSave({ ...workoutRow });
+
+      expect(workoutServiceSpy.updateWorkout).toHaveBeenCalledWith({
+        id: workoutRow.id,
+        workoutTitle: workoutRow.workoutTitle,
+        sessionDate: workoutRow.sessionDate,
+        exerciseCount: workoutRow.exerciseCount,
+        duration: workoutRow.duration
+      });
+    });
+  });
+
+  describe('progress + avatar helpers', () => {
+    it('getProgressPercentage rounds the current/total session ratio', () => {
+      expect(component.getProgressPercentage(workoutRow)).toBe(25);
+    });
+
+    it('getProgressPercentage returns 0 when totalBlockSessions is missing', () => {
+      expect(component.getProgressPercentage({ ...workoutRow, totalBlockSessions: undefined })).toBe(0);
+    });
+
+    it('getInitials uses the first letter of the client name', () => {
+      expect(component.getInitials('Alex')).toBe('A');
+    });
+
+    it('getAvatarColorClass assigns the same colour to the same starting letter', () => {
+      expect(component.getAvatarColorClass('Amanda')).toBe(component.getAvatarColorClass('Aaron'));
+    });
+
+    it('getAvatarColorClass spreads early vs late alphabet names across different colours', () => {
+      expect(component.getAvatarColorClass('Amanda')).not.toBe(component.getAvatarColorClass('Zoe'));
     });
   });
 });
