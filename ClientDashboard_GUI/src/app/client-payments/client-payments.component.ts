@@ -14,24 +14,21 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TagModule } from 'primeng/tag';
 import { SelectModule } from 'primeng/select';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { PasswordModule } from 'primeng/password';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { Payment } from '../models/payment';
-import { Client } from '../models/client';
 import { AccountService } from '../services/account.service';
-import { ClientWorkouts } from '../client-workouts/client-workouts.component';
 import { ClientService } from '../services/client.service';
 import { ToastService } from '../services/toast.service';
-import { ClientNamePipe } from '../pipes/client-name.pipe';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TrainerService } from '../services/trainer.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-client-payments',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
      Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, TagModule, SelectModule,
-     ToggleButtonModule, PasswordModule, PopoverModule, IconFieldModule, InputIconModule],
+     ToggleButtonModule, PopoverModule, IconFieldModule, InputIconModule, TooltipModule],
   templateUrl: './client-payments.component.html',
   styleUrl: './client-payments.component.css'
 })
@@ -66,8 +63,7 @@ export class ClientPaymentsComponent implements OnInit {
   payments : Payment[] | null = null;
   clonedPayments: { [s: string]: Payment } = {};
 
-  first = 0; 
-  rows = 10;
+  last30DaysOnly: boolean = false;
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
@@ -85,29 +81,13 @@ export class ClientPaymentsComponent implements OnInit {
           this.gatherClientNames();
       }
 
-  next() {
-        this.first = this.first + this.rows;
-    }
+    get displayedPayments(): Payment[] {
+      if (!this.payments) return [];
+      if (!this.last30DaysOnly) return this.payments;
 
-    prev() {
-        this.first = this.first - this.rows;
-    }
-
-    reset() {
-        this.first = 0;
-    }
-
-    pageChange(event: { first: number; rows: number; }) {
-        this.first = event.first;
-        this.rows = event.rows;
-    }
-
-    isLastPage(): boolean {
-        return this.payments ? this.first + this.rows >= this.payments.length : true;
-    }
-
-    isFirstPage(): boolean {
-        return this.payments ? this.first === 0 : true;
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      return this.payments.filter((payment) => new Date(payment.paymentDate) >= cutoff);
     }
 
     onRowEditInit(payment: Payment) {
@@ -144,8 +124,8 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showError('Error removing payment', response.error.message);
         }
       })
-       
-    } 
+
+    }
 
     addNewPayment(selectedClientId: number, paymentAmount: number, numberOfSessions: number, paymentDate : Date, selectedStatus : {name: string, value: boolean} | null){
       // Frontend validation
@@ -161,9 +141,7 @@ export class ClientPaymentsComponent implements OnInit {
         paymentDate: this.formatDateForApi(paymentDate),
         confirmed: selectedStatus?.value ?? false
       }
-      console.log('Payment Information:', paymentInformation);
-      
-      // take in values then pass then into a payment-add-dto 
+
       this.paymentService.addTrainerPayment(paymentInformation).subscribe({
         next: (response) => {
           this.toastService.showSuccess('Success Adding Payment', response.message)
@@ -205,7 +183,7 @@ export class ClientPaymentsComponent implements OnInit {
           this.toastService.showError('Unsuccessful Filtering', response.error.message);
         }
       })
-      
+
     }
 
     resetForm() {
@@ -229,16 +207,14 @@ export class ClientPaymentsComponent implements OnInit {
     }
 
     showDialogForDelete(paymentId: number){
-      // can use payment id to set a payment id variable then use 
       this.deleteDialogVisible = true;
       this.deletePaymentId = paymentId;
-      // within on RowDelete to delete payment with that id
     }
 
     showDialogForAutoPaymentSetting(){
       this.autoPaymentSettingVisible = true;
     }
-    
+
     gatherAllTrainerPayments(){
       this.paymentService.getTrainerPayments().subscribe({
         next: (response) => {
@@ -249,7 +225,7 @@ export class ClientPaymentsComponent implements OnInit {
           }));
         },
         error: (response) => {
-          console.log(response.error.message)
+          this.toastService.showError('Error Loading Payments', response.error.message);
         }
       })
     }
@@ -264,13 +240,6 @@ export class ClientPaymentsComponent implements OnInit {
     });
     }
 
-    gatherStatuses(){
-    this.paymentStatuses = [
-        {label: 'Confirmed', value: true},
-        {label: 'Pending', value: false}
-    ];
-  }
-
   getAutoPaymentSettingStatus(){
     this.trainerService.getAutoPaymentSettingStatus().subscribe({
       next: (response) => {
@@ -281,7 +250,7 @@ export class ClientPaymentsComponent implements OnInit {
 
   setAutoPaymentInfoText(){
     this.autoPaymentInfoText = "Enabling this setting will automatically create a payment, for a given client that finalises their monthly " +
-    "session block. Further setting to a 'Pending' status for you to adjust, confirm or delete"
+    "session block. Further setting to a 'Pending' status for you to adjust, confirm or delete";
   }
 
    getActivities(isConfirmed : boolean) : string {
@@ -294,11 +263,11 @@ export class ClientPaymentsComponent implements OnInit {
 
   formatDateForApi(date: Date | undefined): string {
   if (!date) return '';
-  
+
   const day = date.getDate().toString().padStart(2, '0');
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
-  
+
   return `${year}/${month}/${day}`;
   }
 
@@ -331,4 +300,26 @@ export class ClientPaymentsComponent implements OnInit {
     return true;
   }
 
+  // Six evenly-spread, complementary pastel pairs - same palette/bucketing as the client
+  // roster's and workouts feed's avatars so colours stay consistent app-wide.
+  private readonly avatarColorPalette: string[] = [
+    'bg-primary-fixed text-primary',
+    'bg-secondary-fixed text-secondary',
+    'bg-violet-100 text-violet-700',
+    'bg-amber-100 text-amber-700',
+    'bg-rose-100 text-rose-700',
+    'bg-cyan-100 text-cyan-700'
+  ];
+
+  getAvatarColorClass(clientName: string): string {
+    const letter = (clientName?.charAt(0) ?? 'A').toUpperCase();
+    const letterIndex = Math.max(0, letter.charCodeAt(0) - 'A'.charCodeAt(0));
+    const bucketSize = 26 / this.avatarColorPalette.length;
+    const index = Math.min(Math.floor(letterIndex / bucketSize), this.avatarColorPalette.length - 1);
+    return this.avatarColorPalette[index];
+  }
+
+  getInitials(clientName: string): string {
+    return (clientName?.charAt(0) ?? '').toUpperCase();
+  }
 }

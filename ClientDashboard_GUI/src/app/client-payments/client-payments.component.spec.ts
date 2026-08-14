@@ -100,27 +100,47 @@ describe('ClientPaymentsComponent', () => {
     });
   });
 
-  describe('table pagination and status helpers', () => {
-    it('next/prev/reset update first row offset', () => {
-      component.rows = 10;
-      component.first = 0;
-
-      component.next();
-      expect(component.first).toBe(10);
-
-      component.prev();
-      expect(component.first).toBe(0);
-
-      component.first = 20;
-      component.reset();
-      expect(component.first).toBe(0);
-    });
-
+  describe('status helpers', () => {
     it('returns correct status label and severity values', () => {
       expect(component.getActivityLabel(true)).toBe('Confirmed');
       expect(component.getActivities(true)).toBe('success');
       expect(component.getActivityLabel(false)).toBe('Pending');
       expect(component.getActivities(false)).toBe('info');
+    });
+  });
+
+  describe('last 30 days filter', () => {
+    it('displayedPayments returns every payment when the toggle is off', () => {
+      component.payments = [paymentRow, { ...paymentRow, id: 2, paymentDate: '2020-01-01' }];
+      component.last30DaysOnly = false;
+
+      expect(component.displayedPayments.length).toBe(2);
+    });
+
+    it('displayedPayments only keeps payments from the last 30 days when toggled on', () => {
+      const recent = { ...paymentRow, id: 2, paymentDate: new Date().toISOString() };
+      const old = { ...paymentRow, id: 3, paymentDate: '2020-01-01' };
+      component.payments = [recent, old];
+      component.last30DaysOnly = true;
+
+      const displayed = component.displayedPayments;
+
+      expect(displayed.length).toBe(1);
+      expect(displayed[0].id).toBe(2);
+    });
+  });
+
+  describe('avatar helpers', () => {
+    it('getInitials uses the first letter of the client name', () => {
+      expect(component.getInitials('Alex')).toBe('A');
+    });
+
+    it('getAvatarColorClass assigns the same colour to the same starting letter', () => {
+      expect(component.getAvatarColorClass('Amanda')).toBe(component.getAvatarColorClass('Aaron'));
+    });
+
+    it('getAvatarColorClass spreads early vs late alphabet names across different colours', () => {
+      expect(component.getAvatarColorClass('Amanda')).not.toBe(component.getAvatarColorClass('Zoe'));
     });
   });
 
