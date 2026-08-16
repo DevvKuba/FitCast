@@ -3,5 +3,7 @@ export enum NotificationType {
   ClientBlockCompletionReminder = 2,
   NewClientConfigurationReminder = 3,
   ClientStepsTrackedNotification = 4,
-  RetrievalWorkoutsCountNotification = 5
+  RetrievalWorkoutsCountNotification = 5,
+  PendingPaymentCreatedAlert = 6,
+  QuickAddWorkoutReminder = 7,
 }
