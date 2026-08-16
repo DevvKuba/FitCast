@@ -1,11 +1,14 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 
 namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface INotificationRepository
     {
-        Task<List<Notification>> ReturnLatestUserNotifications(UserBase user);
+        Task<List<NotificationResponseDto>> ReturnAllUserNotifications(UserBase user);
+
+        Task<List<NotificationResponseDto>> ReturnLatestUserNotifications(UserBase user);
 
         void DeleteNotification(Notification notification);
 

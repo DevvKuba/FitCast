@@ -1,15 +1,44 @@
-﻿using ClientDashboard_API.Entities;
+﻿using AutoMapper;
+using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
 {
-    public class NotificationRepository(DataContext context) : INotificationRepository
+    public class NotificationRepository(DataContext context, IMapper mapper) : INotificationRepository
     {
-        public async Task<List<Notification>> ReturnLatestUserNotifications(UserBase user)
+        public async Task<List<NotificationResponseDto>> ReturnAllUserNotifications(UserBase user)
         {
-            var latestNotifications = new List<Notification>();
+            List<Notification> userNotifications = [];
+
+            if(user.Role == UserRole.Trainer)
+            {
+                userNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
+                    .Where(n => n.TrainerId == user.Id && n.Audience == NotificationAudience.Trainer)
+                    .ToListAsync();
+            }
+            else if (user.Role == UserRole.Client)
+            {
+                userNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
+                    .Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client)
+                    .ToListAsync();
+            }
+
+            List<NotificationResponseDto> latestNotificationDtos = [];
+
+            foreach (var notification in userNotifications)
+            {
+                latestNotificationDtos.Add(mapper.Map<NotificationResponseDto>(notification));
+            }
+            return latestNotificationDtos;
+
+        }
+
+        public async Task<List<NotificationResponseDto>> ReturnLatestUserNotifications(UserBase user)
+        {
+            List<Notification> latestNotifications = [];
 
             if(user.Role == UserRole.Trainer)
             {
@@ -23,8 +52,14 @@ namespace ClientDashboard_API.Data
                     .Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client)
                     .Take(10).ToListAsync();
             }
-            
-            return latestNotifications;
+
+            List<NotificationResponseDto> latestNotificationDtos = [];
+
+            foreach(var notification in latestNotifications)
+            {
+                latestNotificationDtos.Add(mapper.Map<NotificationResponseDto>(notification));
+            }
+            return latestNotificationDtos;
         }
 
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough, NotificationAudience audience)
