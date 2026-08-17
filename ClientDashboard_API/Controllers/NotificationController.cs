@@ -74,9 +74,9 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("getNotificationStatus")]
-        public async Task<ActionResult<ApiResponseDto<bool>>> GetUserNotificationStatusAsync([FromQuery] int userId)
+        public async Task<ActionResult<ApiResponseDto<bool>>> GetUserNotificationStatusAsync()
         {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
 
             if (user is null)
             {
@@ -129,9 +129,9 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherLatestUserNotifications")]
-        public async Task<ActionResult<ApiResponseDto<List<NotificationResponseDto>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
+        public async Task<ActionResult<ApiResponseDto<List<NotificationResponseDto>>>> GatherLatestUserNotificationsAsync()
         {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
             
             if(user is null)
             {

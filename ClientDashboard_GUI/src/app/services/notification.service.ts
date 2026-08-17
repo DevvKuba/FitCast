@@ -32,12 +32,12 @@ export class NotificationService {
     return this.http.put(this.baseUrl + 'notification/markNotificationsAsRead', notifications);
   }
 
-  gatherUserNotificationStatus(userId: number) : Observable<ApiResponse<boolean>> {
-    return this.http.get<ApiResponse<boolean>>(this.baseUrl + `notification/getNotificationStatus?userId=${userId}`);
+  gatherUserNotificationStatus() : Observable<ApiResponse<boolean>> {
+    return this.http.get<ApiResponse<boolean>>(this.baseUrl + `notification/getNotificationStatus`);
   }
 
-  gatherLatestUserNotifications(userId: number) : Observable<ApiResponse<Notification[]>>{
-    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications?userId=${userId}`);
+  gatherLatestUserNotifications() : Observable<ApiResponse<Notification[]>>{
+    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications`);
   }
 
   gatherUnreadUserNotificationCount(userId: number) : Observable<ApiResponse<number>>{

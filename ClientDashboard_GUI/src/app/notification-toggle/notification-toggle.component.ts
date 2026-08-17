@@ -50,7 +50,7 @@ export class NotificationToggleComponent implements OnInit {
   }
 
   gatherNotificationStatus() {
-    this.notificationService.gatherUserNotificationStatus(this.currentUserId).subscribe({
+    this.notificationService.gatherUserNotificationStatus().subscribe({
       next: (response) => {
         this.smsNotificationsToggled = response.data ?? false;
       }
@@ -58,7 +58,7 @@ export class NotificationToggleComponent implements OnInit {
   }
 
   gatherLatestNotifications(){
-    this.notificationService.gatherLatestUserNotifications(this.currentUserId).subscribe({
+    this.notificationService.gatherLatestUserNotifications().subscribe({
       next: (response) => {
         this.latestNotifications = response.data ?? [];
       }
