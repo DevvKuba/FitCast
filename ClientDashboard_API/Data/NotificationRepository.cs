@@ -4,62 +4,43 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace ClientDashboard_API.Data
 {
-    public class NotificationRepository(DataContext context, IMapper mapper) : INotificationRepository
+    public class NotificationRepository(DataContext context) : INotificationRepository
     {
         public async Task<List<NotificationResponseDto>> ReturnAllUserNotifications(UserBase user)
         {
-            List<Notification> userNotifications = [];
-
-            if(user.Role == UserRole.Trainer)
-            {
-                userNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
-                    .Where(n => n.TrainerId == user.Id && n.Audience == NotificationAudience.Trainer)
-                    .ToListAsync();
-            }
-            else if (user.Role == UserRole.Client)
-            {
-                userNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
-                    .Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client)
-                    .ToListAsync();
-            }
-
-            List<NotificationResponseDto> latestNotificationDtos = [];
-
-            foreach (var notification in userNotifications)
-            {
-                latestNotificationDtos.Add(mapper.Map<NotificationResponseDto>(notification));
-            }
-            return latestNotificationDtos;
-
+            return await BuildUserNotificationQuery(user).ToListAsync();
         }
 
         public async Task<List<NotificationResponseDto>> ReturnLatestUserNotifications(UserBase user)
         {
-            List<Notification> latestNotifications = [];
+            return await BuildUserNotificationQuery(user).Take(10).ToListAsync();
 
-            if(user.Role == UserRole.Trainer)
-            {
-                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
-                    .Where(n => n.TrainerId == user.Id && n.Audience == NotificationAudience.Trainer)
-                    .Take(10).ToListAsync();
-            }
-            else if(user.Role == UserRole.Client)
-            {
-                latestNotifications = await context.Notification.OrderByDescending(n => n.SentAt)
-                    .Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client)
-                    .Take(10).ToListAsync();
-            }
+        }
 
-            List<NotificationResponseDto> latestNotificationDtos = [];
+        public IQueryable<NotificationResponseDto> BuildUserNotificationQuery(UserBase user)
+        {
+            var query = user.Role == UserRole.Trainer
+                ? context.Notification.Where(n => n.TrainerId == user.Id && n.Audience == NotificationAudience.Trainer)
+                : context.Notification.Where(n => n.ClientId == user.Id && n.Audience == NotificationAudience.Client);
 
-            foreach(var notification in latestNotifications)
-            {
-                latestNotificationDtos.Add(mapper.Map<NotificationResponseDto>(notification));
-            }
-            return latestNotificationDtos;
+            return query.OrderByDescending(n => n.SentAt).Select(n =>
+                new NotificationResponseDto
+                {
+                    Id = n.Id,
+                    TrainerId = n.TrainerId != null ? n.TrainerId : null,
+                    ClientId = n.ClientId != null ? n.ClientId : null,
+                    Message = n.Message,
+                    ReminderType = n.ReminderType,
+                    SentThrough = n.SentThrough,
+                    Audience = n.Audience,
+                    SentAt = n.SentAt,
+                    IsRead = n.RecipientStatuses.Where(s => s.NotificationId == n.Id).First().IsRead
+
+                });
         }
 
         public async Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough, NotificationAudience audience)

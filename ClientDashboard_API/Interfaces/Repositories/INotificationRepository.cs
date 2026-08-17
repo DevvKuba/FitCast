@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<List<NotificationResponseDto>> ReturnLatestUserNotifications(UserBase user);
 
+        IQueryable<NotificationResponseDto> BuildUserNotificationQuery(UserBase user);
+
         void DeleteNotification(Notification notification);
 
         Task AddNotificationAsync(int trainerId, int? clientId, string message, NotificationType reminderType, CommunicationType sentThrough, NotificationAudience audience);

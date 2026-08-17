@@ -129,18 +129,18 @@ namespace ClientDashboard_API.Controllers
 
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherLatestUserNotifications")]
-        public async Task<ActionResult<ApiResponseDto<List<Notification>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
+        public async Task<ActionResult<ApiResponseDto<List<NotificationResponseDto>>>> GatherLatestUserNotificationsAsync([FromQuery] int userId)
         {
             var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
             
             if(user is null)
             {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
+                return NotFound(new ApiResponseDto<List<NotificationResponseDto>> { Data = null, Message = "User was not found, cannot retrieve latest notificaitons", Success = false });
             }
 
             var latestNotifications = await unitOfWork.NotificationRepository.ReturnLatestUserNotifications(user);
 
-            return Ok(new ApiResponseDto<List<Notification>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
+            return Ok(new ApiResponseDto<List<NotificationResponseDto>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
 
         // return set number of new notifications
