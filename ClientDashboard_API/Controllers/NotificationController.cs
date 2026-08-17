@@ -143,6 +143,22 @@ namespace ClientDashboard_API.Controllers
             return Ok(new ApiResponseDto<List<NotificationResponseDto>> { Data = latestNotifications, Message = "Successfully returned the latest notifications", Success = true });
         }
 
+        [Authorize(Roles = "Trainer,Client")]
+        [HttpGet("gatherAllUserNotifications")]
+        public async Task<ActionResult<ApiResponseDto<List<NotificationResponseDto>>>> GatherAllUserNotificationsAsync()
+        {
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
+
+            if(user is null)
+            {
+                return NotFound(new ApiResponseDto<List<NotificationResponseDto>> { Data = null, Message = "User was not found, cannot retrieve notifications", Success = false });
+            }
+
+            var allNotifications = await unitOfWork.NotificationRepository.ReturnAllUserNotifications(user);
+
+            return Ok(new ApiResponseDto<List<NotificationResponseDto>> { Data = allNotifications, Message = "All notifications retrieved successfully", Success = true });
+        }
+
         // return set number of new notifications
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherUnreadUserNotificationCount")]
