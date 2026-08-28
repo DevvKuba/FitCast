@@ -16,17 +16,17 @@
                     [class.text-on-surface-variant]="notification.isRead">
                     {{ notification.sentAt | date:'dd/MM/yyyy, h:mm a' }}
                 </span>
-                <p class="text-body-sm text-on-surface leading-relaxed flex items-start gap-2">
+                <p class="text-body-base font-body-base text-on-surface leading-relaxed flex items-start gap-2">
                     <i class="pi text-on-surface-variant mt-0.5" [ngClass]="getNotificationTypeIcon(notification.reminderType)"></i>
                     <span>{{ notification.message }}</span>
                 </p>
                 <div class="flex items-center gap-1.5 mt-1 pl-6">
-                    <i class="pi text-[11px] text-on-surface-variant" [ngClass]="{
+                    <i class="pi text-label-caps text-on-surface-variant" [ngClass]="{
                         'pi-mobile': notification.sentThrough === communicationType.Sms,
                         'pi-envelope': notification.sentThrough === communicationType.Email,
                         'pi-bell': notification.sentThrough === communicationType.InApp
                     }"></i>
-                    <span class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">{{ getCommunicationType(notification.sentThrough) }}</span>
+                    <span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">{{ getCommunicationType(notification.sentThrough) }}</span>
                 </div>
             </div>
         }
