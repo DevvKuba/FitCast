@@ -163,7 +163,7 @@ export class UserNavbar{
                 if(notificationIds.length > 0){
                     const readStatus: NotificationReadStatusDto = {
                         userId,
-                        NotificationIds: notificationIds
+                        notificationIds: notificationIds
                     };
 
                     this.notificationService.markUserNotificationsAsRead(readStatus).subscribe({
