@@ -1,32 +1,39 @@
-<div class="sms-notification-toggle">
-    <label for="notification-switch">SMS Notifications</label>
+<div class="flex items-center justify-between px-1 pb-4 mb-2 border-b border-border-subtle">
+    <label for="notification-switch" class="text-body-sm font-semibold text-on-surface">SMS Notifications</label>
     <p-toggleswitch inputId="notification-switch" [(ngModel)]="smsNotificationsToggled" (onChange)="onNotificationToggle($event)" />
 </div>
 
-<div class="notifications-list">
+<div class="flex flex-col divide-y divide-border-subtle -mx-1">
     @if(latestNotifications && latestNotifications.length > 0) {
         @for(notification of latestNotifications; track notification.id) {
-            <div class="notification-item">
-                <div class="notification-header">
-                    <span class="notification-date">{{ notification.sentAt | date:'dd/MM/yyyy,  h:mm a' }}</span>
-                </div>
-                <p class="notification-message">{{ notification.message }}</p>
-                <div class="notification-footer">
-                    <span class="notification-method">
-                        <i class="pi" [ngClass]="{
-                            'pi-mobile': notification.sentThrough === communicationType.Sms,
-                            'pi-envelope': notification.sentThrough === communicationType.Email,
-                            'pi-bell': notification.sentThrough === communicationType.InApp
-                        }"></i>
-                        {{ getCommunicationType(notification.sentThrough) }}
-                    </span>
+            <div class="flex flex-col gap-1 px-1 py-4 transition-colors"
+                [class.bg-primary-fixed]="!notification.isRead"
+                [class.rounded-lg]="!notification.isRead"
+                [class.border-l-4]="!notification.isRead"
+                [class.border-l-primary]="!notification.isRead">
+                <span class="text-label-caps font-label-caps uppercase tracking-wider"
+                    [class.text-primary]="!notification.isRead"
+                    [class.text-on-surface-variant]="notification.isRead">
+                    {{ notification.sentAt | date:'dd/MM/yyyy, h:mm a' }}
+                </span>
+                <p class="text-body-sm text-on-surface leading-relaxed flex items-start gap-2">
+                    <i class="pi text-on-surface-variant mt-0.5" [ngClass]="getNotificationTypeIcon(notification.reminderType)"></i>
+                    <span>{{ notification.message }}</span>
+                </p>
+                <div class="flex items-center gap-1.5 mt-1 pl-6">
+                    <i class="pi text-[11px] text-on-surface-variant" [ngClass]="{
+                        'pi-mobile': notification.sentThrough === communicationType.Sms,
+                        'pi-envelope': notification.sentThrough === communicationType.Email,
+                        'pi-bell': notification.sentThrough === communicationType.InApp
+                    }"></i>
+                    <span class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">{{ getCommunicationType(notification.sentThrough) }}</span>
                 </div>
             </div>
         }
     } @else {
-        <div class="no-notifications">
-            <i class="pi pi-inbox" style="font-size: 3rem; color: var(--text-color-secondary);"></i>
-            <p>No notifications yet</p>
+        <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <i class="pi pi-inbox text-4xl text-on-surface-variant"></i>
+            <p class="text-body-sm text-on-surface-variant">No notifications yet</p>
         </div>
     }
 </div>

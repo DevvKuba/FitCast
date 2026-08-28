@@ -1,6 +1,6 @@
 @if(accountService.currentUser()){
 
-    <p-drawer header="Latest Notifications" [(visible)]="notificationVisibility" position="right">
+    <p-drawer header="Latest Notifications" [(visible)]="notificationVisibility" position="right" styleClass="!w-full sm:!w-[400px]">
         <app-notification-toggle [latestNotifications]="latestNotifications"></app-notification-toggle>
     </p-drawer>
 

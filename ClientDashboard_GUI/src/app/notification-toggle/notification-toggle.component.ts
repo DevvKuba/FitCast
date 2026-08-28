@@ -1,5 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
@@ -21,15 +22,11 @@ export class NotificationToggleComponent implements OnInit {
   notificationService = inject(NotificationService);
   toastService = inject(ToastService);
 
-  currentUserId: number = 0;
   smsNotificationsToggled: boolean | undefined;
   communicationType = CommunicationType;
-  notificationType = NotificationType;
 
   ngOnInit(): void {
-    this.currentUserId = this.accountService.currentUser()?.id ?? 0;
     this.gatherNotificationStatus();
-    this.gatherLatestNotifications();
   }
 
   onNotificationToggle(event: {checked: boolean}){
@@ -56,14 +53,6 @@ export class NotificationToggleComponent implements OnInit {
     })
   }
 
-  gatherLatestNotifications(){
-    this.notificationService.gatherLatestUserNotifications().subscribe({
-      next: (response) => {
-        this.latestNotifications = response.data ?? [];
-      }
-    })
-  }
-
   getCommunicationType(type: CommunicationType) : string{
     switch(type) {
       case CommunicationType.Sms:
@@ -74,6 +63,26 @@ export class NotificationToggleComponent implements OnInit {
         return 'In-App';
       default:
         return 'Unknown';
+    }
+  }
+
+  getNotificationTypeIcon(type: NotificationType): string {
+    switch(type) {
+      case NotificationType.TrainerBlockCompletionReminder:
+      case NotificationType.ClientBlockCompletionReminder:
+        return 'pi-calendar-times';
+      case NotificationType.NewClientConfigurationReminder:
+        return 'pi-user-plus';
+      case NotificationType.ClientStepsTrackedNotification:
+        return 'pi-chart-line';
+      case NotificationType.RetrievalWorkoutsCountNotification:
+        return 'pi-history';
+      case NotificationType.PendingPaymentCreatedAlert:
+        return 'pi-credit-card';
+      case NotificationType.QuickAddWorkoutReminder:
+        return 'pi-bolt';
+      default:
+        return 'pi-bell';
     }
   }
 }

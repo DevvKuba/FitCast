@@ -40,6 +40,10 @@ export class NotificationService {
     return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications`);
   }
 
+  gatherAllUserNotifications() : Observable<ApiResponse<Notification[]>>{
+    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherAllUserNotifications`);
+  }
+
   gatherUnreadUserNotificationCount() : Observable<ApiResponse<number>>{
     return this.http.get<ApiResponse<number>>(this.baseUrl + `notification/gatherUnreadUserNotificationCount`);
   }
