@@ -130,7 +130,7 @@ export class ClientWorkouts implements OnInit {
                 this.addDialogVisible = false;
                 this.toastService.showSuccess('Successfully added workout', response.message);
                 this.displayWorkouts();
-                this.notificationService.refreshUnreadCount(this.currentUserId);
+                this.notificationService.refreshUnreadCount();
             },
             error: (response) => {
                 this.toastService.showError('Workout not added', response.error.message);

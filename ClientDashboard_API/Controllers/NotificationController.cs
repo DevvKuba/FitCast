@@ -89,7 +89,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("changeNotificationStatus")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeUserNotificationStatusAsync([FromBody] NotificationSmsStatusDto userInfo)
         {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userInfo.Id);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
 
             if (user is null)
             {
@@ -111,7 +111,7 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("markNotificationsAsRead")]
         public async Task<ActionResult<ApiResponseDto<string>>> ChangeNotificationStatusesToReadAsync([FromBody] NotificationReadStatusDto notifications)
         {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(notifications.UserId);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
 
             if (user is null)
             {
@@ -162,9 +162,9 @@ namespace ClientDashboard_API.Controllers
         // return set number of new notifications
         [Authorize(Roles = "Trainer,Client")]
         [HttpGet("gatherUnreadUserNotificationCount")]
-        public async Task<ActionResult<ApiResponseDto<int?>>> GatherUnreadUserNotificationCountAsync([FromQuery] int userId)
+        public async Task<ActionResult<ApiResponseDto<int?>>> GatherUnreadUserNotificationCountAsync()
         {
-            var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            var user = await unitOfWork.UserRepository.GetUserByIdAsync(currentUserAccessor.GetUserId());
 
             if (user is null)
             {

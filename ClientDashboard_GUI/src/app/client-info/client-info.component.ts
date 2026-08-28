@@ -100,7 +100,7 @@ export class ClientInfoComponent implements OnInit {
           this.clientService.updateClient(newClient).subscribe({
             next: (response) => {
               this.toastService.showSuccess('Success Updating', response.message);
-              this.notificationService.refreshUnreadCount(this.currentUserId);
+              this.notificationService.refreshUnreadCount();
               this.getClients();
             },
             error: (response) => {
@@ -181,7 +181,7 @@ export class ClientInfoComponent implements OnInit {
     this.workoutService.quickAddWorkout(client).subscribe({
       next: (response) => {
         this.getClients();
-         this.notificationService.refreshUnreadCount(this.currentUserId);
+         this.notificationService.refreshUnreadCount();
         this.toastService.showSuccess('Quick Add Complete', response.message);
       },
       error: (response) => {

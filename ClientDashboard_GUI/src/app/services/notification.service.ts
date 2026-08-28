@@ -16,8 +16,8 @@ export class NotificationService {
   unreadNotificationCount = signal<number>(0);
   baseUrl = environment.apiUrl;
 
-  refreshUnreadCount(userId: number) {
-    this.gatherUnreadUserNotificationCount(userId).subscribe({
+  refreshUnreadCount() {
+    this.gatherUnreadUserNotificationCount().subscribe({
       next: (response) => {
         this.unreadNotificationCount.set(response.data ?? 0);
       }
@@ -40,7 +40,7 @@ export class NotificationService {
     return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications`);
   }
 
-  gatherUnreadUserNotificationCount(userId: number) : Observable<ApiResponse<number>>{
-    return this.http.get<ApiResponse<number>>(this.baseUrl + `notification/gatherUnreadUserNotificationCount?userId=${userId}`);
+  gatherUnreadUserNotificationCount() : Observable<ApiResponse<number>>{
+    return this.http.get<ApiResponse<number>>(this.baseUrl + `notification/gatherUnreadUserNotificationCount`);
   }
 }

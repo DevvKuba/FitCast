@@ -128,17 +128,13 @@ namespace ClientDashboard_API.Controllers
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
-            // have a dummy / test method within HevySessionDataService can uses the apiKey to try and get a 200 response 
-
+          
             if (!await hevyDataParser.IsApiKeyValidAsync(providedApiKey))
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"provided api key: {providedApiKey} is not valid.", Success = false });
             }
-
-            // if that's the case use encryption service to encrypt the functioning key
             var encryptedApiKey = encrypter.Encrypt(providedApiKey);
 
-            // store for trainer RetrievalWorkoutApiKey property
             unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
 
             if (!await unitOfWork.Complete())

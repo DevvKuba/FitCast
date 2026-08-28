@@ -42,7 +42,7 @@ export class UserNavbar{
                 this.mobileMenuItems = [];
                 return;
             }
-            this.notificationService.refreshUnreadCount(user.id);
+            this.notificationService.refreshUnreadCount();
 
         });
 
@@ -155,7 +155,7 @@ export class UserNavbar{
         const userId = this.accountService.currentUser()?.id;
         if(!userId) return;
 
-        this.notificationService.gatherLatestUserNotifications(userId).subscribe({
+        this.notificationService.gatherLatestUserNotifications().subscribe({
             next: (response) => {
                 this.latestNotifications = response.data ?? [];
                 const notificationIds = this.latestNotifications.map((notification) => notification.id);
@@ -168,7 +168,7 @@ export class UserNavbar{
 
                     this.notificationService.markUserNotificationsAsRead(readStatus).subscribe({
                         next: () => {
-                            this.notificationService.refreshUnreadCount(userId);
+                            this.notificationService.refreshUnreadCount();
                         }
                     });
                 }

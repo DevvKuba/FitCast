@@ -35,7 +35,6 @@ export class NotificationToggleComponent implements OnInit {
   onNotificationToggle(event: {checked: boolean}){
     this.smsNotificationsToggled = event.checked;
     const statusInfo = {
-      id: this.currentUserId,
       notificationStatus: this.smsNotificationsToggled
     }
 
