@@ -160,6 +160,212 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             Assert.False(_context.Notification.Any());
         }
+
+        [Fact]
+        public async Task TestReturnLatestUserNotifications_CapsAtTenAndOrdersByMostRecentFirst()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var baseTime = DateTime.UtcNow;
+            for (int i = 0; i < 12; i++)
+            {
+                var notification = new Notification
+                {
+                    TrainerId = trainer.Id,
+                    Message = $"Notification {i}",
+                    ReminderType = NotificationType.NewClientConfigurationReminder,
+                    SentThrough = CommunicationType.InApp,
+                    Audience = NotificationAudience.Trainer,
+                    SentAt = baseTime.AddMinutes(-i)
+                };
+                notification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = trainer.Id, IsRead = false });
+                await _context.Notification.AddAsync(notification);
+            }
+            await _unitOfWork.Complete();
+
+            var latest = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+
+            Assert.Equal(10, latest.Count);
+            Assert.Equal("Notification 0", latest.First().Message);
+            Assert.Equal("Notification 9", latest.Last().Message);
+            for (int i = 0; i < latest.Count - 1; i++)
+            {
+                Assert.True(latest[i].SentAt >= latest[i + 1].SentAt);
+            }
+        }
+
+        [Fact]
+        public async Task TestReturnAllUserNotifications_ReturnsAllRecordsWithoutCap()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var baseTime = DateTime.UtcNow;
+            for (int i = 0; i < 12; i++)
+            {
+                var notification = new Notification
+                {
+                    TrainerId = trainer.Id,
+                    Message = $"Notification {i}",
+                    ReminderType = NotificationType.NewClientConfigurationReminder,
+                    SentThrough = CommunicationType.InApp,
+                    Audience = NotificationAudience.Trainer,
+                    SentAt = baseTime.AddMinutes(-i)
+                };
+                notification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = trainer.Id, IsRead = false });
+                await _context.Notification.AddAsync(notification);
+            }
+            await _unitOfWork.Complete();
+
+            var all = await _notificationRepository.ReturnAllUserNotifications(trainer);
+
+            Assert.Equal(12, all.Count);
+            Assert.Equal("Notification 0", all.First().Message);
+        }
+
+        [Fact]
+        public async Task TestBuildUserNotificationQuery_TrainerOnlySeesOwnTrainerAudienceNotifications()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Trainer.AddRangeAsync(trainer, otherTrainer);
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            // Belongs to the trainer and is addressed to them -- should be visible.
+            var ownNotification = new Notification
+            {
+                TrainerId = trainer.Id,
+                Message = "Own",
+                ReminderType = NotificationType.NewClientConfigurationReminder,
+                SentThrough = CommunicationType.InApp,
+                Audience = NotificationAudience.Trainer,
+                SentAt = DateTime.UtcNow
+            };
+            ownNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = trainer.Id, IsRead = false });
+
+            // Belongs to the trainer's own client relationship, but addressed to the client -- should NOT be visible to the trainer.
+            var clientAudienceNotification = new Notification
+            {
+                TrainerId = trainer.Id,
+                ClientId = client.Id,
+                Message = "For client",
+                ReminderType = NotificationType.NewClientConfigurationReminder,
+                SentThrough = CommunicationType.InApp,
+                Audience = NotificationAudience.Client,
+                SentAt = DateTime.UtcNow
+            };
+            clientAudienceNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = client.Id, IsRead = false });
+            clientAudienceNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = trainer.Id, IsRead = false });
+
+            // Belongs to a different trainer entirely -- should NOT be visible.
+            var otherTrainerNotification = new Notification
+            {
+                TrainerId = otherTrainer.Id,
+                Message = "Other trainer's",
+                ReminderType = NotificationType.NewClientConfigurationReminder,
+                SentThrough = CommunicationType.InApp,
+                Audience = NotificationAudience.Trainer,
+                SentAt = DateTime.UtcNow
+            };
+            otherTrainerNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = otherTrainer.Id, IsRead = false });
+
+            await _context.Notification.AddRangeAsync(ownNotification, clientAudienceNotification, otherTrainerNotification);
+            await _unitOfWork.Complete();
+
+            var result = await _notificationRepository.ReturnAllUserNotifications(trainer);
+
+            Assert.Single(result);
+            Assert.Equal("Own", result.Single().Message);
+        }
+
+        [Fact]
+        public async Task TestBuildUserNotificationQuery_ClientOnlySeesOwnClientAudienceNotifications()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Trainer.AddAsync(trainer);
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var clientNotification = new Notification
+            {
+                TrainerId = trainer.Id,
+                ClientId = client.Id,
+                Message = "For client",
+                ReminderType = NotificationType.ClientStepsTrackedNotification,
+                SentThrough = CommunicationType.InApp,
+                Audience = NotificationAudience.Client,
+                SentAt = DateTime.UtcNow
+            };
+            clientNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = client.Id, IsRead = false });
+
+            var trainerNotification = new Notification
+            {
+                TrainerId = trainer.Id,
+                Message = "For trainer",
+                ReminderType = NotificationType.NewClientConfigurationReminder,
+                SentThrough = CommunicationType.InApp,
+                Audience = NotificationAudience.Trainer,
+                SentAt = DateTime.UtcNow
+            };
+            trainerNotification.RecipientStatuses.Add(new NotificationRecipientStatus { UserId = trainer.Id, IsRead = false });
+
+            await _context.Notification.AddRangeAsync(clientNotification, trainerNotification);
+            await _unitOfWork.Complete();
+
+            var result = await _notificationRepository.ReturnAllUserNotifications(client);
+
+            Assert.Single(result);
+            Assert.Equal("For client", result.Single().Message);
+        }
+
+        [Fact]
+        public async Task TestBuildUserNotificationQuery_IsReadReflectsRequestingUsersOwnStatus()
+        {
+            // Regression test: BuildUserNotificationQuery used to resolve IsRead via
+            // RecipientStatuses.First(s => s.NotificationId == n.Id), which had no UserId filter and
+            // could non-deterministically surface the OTHER recipient's read state on a shared notification.
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Trainer.AddAsync(trainer);
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            await _notificationRepository.AddNotificationAsync(
+                trainer.Id,
+                client.Id,
+                "Shared notification",
+                NotificationType.TrainerBlockCompletionReminder,
+                CommunicationType.Sms,
+                NotificationAudience.Trainer
+            );
+            await _unitOfWork.Complete();
+
+            var notification = await _context.Notification.Include(n => n.RecipientStatuses).SingleAsync();
+            var trainerStatus = notification.RecipientStatuses.Single(s => s.UserId == trainer.Id);
+            var clientStatus = notification.RecipientStatuses.Single(s => s.UserId == client.Id);
+
+            // Client has read it, trainer has not -- the trainer's own view must still show unread.
+            clientStatus.IsRead = true;
+            trainerStatus.IsRead = false;
+            await _unitOfWork.Complete();
+
+            var beforeTrainerReads = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+            Assert.False(beforeTrainerReads.Single().IsRead);
+
+            // Flip: trainer has now read it, client has not.
+            trainerStatus.IsRead = true;
+            clientStatus.IsRead = false;
+            await _unitOfWork.Complete();
+
+            var afterTrainerReads = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+            Assert.True(afterTrainerReads.Single().IsRead);
+        }
     }
 }
 
