@@ -38,7 +38,7 @@ namespace ClientDashboard_API.Data
                     SentThrough = n.SentThrough,
                     Audience = n.Audience,
                     SentAt = n.SentAt,
-                    IsRead = n.RecipientStatuses.Where(s => s.NotificationId == n.Id).First().IsRead
+                    IsRead = n.RecipientStatuses.First(s => s.UserId == user.Id).IsRead
 
                 });
         }
