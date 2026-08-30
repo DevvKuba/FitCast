@@ -33,7 +33,7 @@ namespace ClientDashboard_API.Data
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = client.TotalBlockSessions
+                TotalBlockSessions = client.TotalBlockSessions ?? 0
             };
             mapper.Map(updatedData, client);
         }
@@ -65,13 +65,15 @@ namespace ClientDashboard_API.Data
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = client.TotalBlockSessions,
+                TotalBlockSessions = client.TotalBlockSessions ?? 0,
             };
             mapper.Map(updatedData, client);
         }
 
         public void UpdateClientDetailsAsync(Client client, ClientUpdateDto updatedClient)
         {
+            if(updatedClient.FirstName != null) updatedClient.FirstName = updatedClient.FirstName.ToLower();
+
             mapper.Map(updatedClient, client);
         }
 

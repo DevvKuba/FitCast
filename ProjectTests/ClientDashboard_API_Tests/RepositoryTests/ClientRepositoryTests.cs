@@ -165,7 +165,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = 4,
-                TotalBlockSessions = client.TotalBlockSessions
+                TotalBlockSessions = client.TotalBlockSessions.GetValueOrDefault()
             };
 
             _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
@@ -175,14 +175,13 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestUpdateClientDetailsAsync_DoesNotLowercaseTheSuppliedName()
+        public async Task TestUpdateClientDetailsAsync_LowercasesTheSuppliedName()
         {
             // Every other write path that stores a client name lowercases it first
             // (AddNewClientUnderTrainerAsync does clientName.ToLower()), and name-based
             // lookups assume that invariant (CheckIfClientExistsAsync / GetClientByNameWithTrainerAsync
-            // both compare against clientName.ToLower()). UpdateClientDetailsAsync maps the DTO
-            // straight onto the entity via AutoMapper with no such normalisation, so renaming a
-            // client with mixed case here will silently break those lookups afterwards.
+            // both compare against clientName.ToLower()). UpdateClientDetailsAsync now lowercases
+            // the DTO's FirstName before mapping, keeping that invariant intact.
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
@@ -193,13 +192,13 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = "Robert",
                 IsActive = client.IsActive,
                 CurrentBlockSession = client.CurrentBlockSession,
-                TotalBlockSessions = client.TotalBlockSessions
+                TotalBlockSessions = client.TotalBlockSessions.GetValueOrDefault()
             };
 
             _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal("Robert", client.FirstName);
+            Assert.Equal("robert", client.FirstName);
         }
 
         [Fact]
@@ -289,7 +288,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 FirstName = client!.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = client.CurrentBlockSession,
-                TotalBlockSessions = client.TotalBlockSessions,
+                TotalBlockSessions = client.TotalBlockSessions.GetValueOrDefault(),
                 PhoneNumber = "987654321"
             };
 

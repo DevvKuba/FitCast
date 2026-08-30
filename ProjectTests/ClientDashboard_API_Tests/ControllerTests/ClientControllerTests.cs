@@ -395,7 +395,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 FirstName = client.FirstName,
                 IsActive = client.IsActive,
                 CurrentBlockSession = client.CurrentBlockSession,
-                TotalBlockSessions = client.TotalBlockSessions,
+                TotalBlockSessions = client.TotalBlockSessions.GetValueOrDefault(),
                 PhoneNumber = "0987654321"
             };
 
