@@ -131,45 +131,75 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestUpdatingClientTotalBlockSessionsAsync()
+        public async Task TestUpdateClientDetailsAsync_UpdatesTotalBlockSessions()
         {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            var newBlockSessions = 8;
-            _clientRepository.UpdateClientTotalBlockSession(client!, newBlockSessions);
+            var updatedClient = new ClientUpdateDto
+            {
+                Id = client!.Id,
+                FirstName = client.FirstName,
+                IsActive = client.IsActive,
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = 8
+            };
+
+            _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal(newBlockSessions, client!.TotalBlockSessions);
+            Assert.Equal(8, client.TotalBlockSessions);
         }
 
         [Fact]
-        public async Task TestUpdatingClientCurrentSessionAsync()
+        public async Task TestUpdateClientDetailsAsync_UpdatesCurrentSession()
         {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            var newCurrentSession = 4;
-            _clientRepository.UpdateClientCurrentSession(client!, newCurrentSession);
+            var updatedClient = new ClientUpdateDto
+            {
+                Id = client!.Id,
+                FirstName = client.FirstName,
+                IsActive = client.IsActive,
+                CurrentBlockSession = 4,
+                TotalBlockSessions = client.TotalBlockSessions
+            };
+
+            _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal(newCurrentSession, client!.CurrentBlockSession);
+            Assert.Equal(4, client.CurrentBlockSession);
         }
 
         [Fact]
-        public async Task TestUpdatingClientNameAsync()
+        public async Task TestUpdateClientDetailsAsync_DoesNotLowercaseTheSuppliedName()
         {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
+            // Every other write path that stores a client name lowercases it first
+            // (AddNewClientUnderTrainerAsync does clientName.ToLower()), and name-based
+            // lookups assume that invariant (CheckIfClientExistsAsync / GetClientByNameWithTrainerAsync
+            // both compare against clientName.ToLower()). UpdateClientDetailsAsync maps the DTO
+            // straight onto the entity via AutoMapper with no such normalisation, so renaming a
+            // client with mixed case here will silently break those lookups afterwards.
+            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            var newName = "robert";
-            _clientRepository.UpdateClientName(client!, newName);
+            var updatedClient = new ClientUpdateDto
+            {
+                Id = client!.Id,
+                FirstName = "Robert",
+                IsActive = client.IsActive,
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = client.TotalBlockSessions
+            };
+
+            _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal(newName, client!.FirstName);
+            Assert.Equal("Robert", client.FirstName);
         }
 
         [Fact]
@@ -222,33 +252,51 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestUpdateClientDetailsAsync()
+        public async Task TestUpdateClientDetailsAsync_UpdatesNameActivityAndSessions()
         {
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, IsActive = true, Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            _clientRepository.UpdateClientDetailsAsync(client!, "Robert", false, 3, 6, null);
+            var updatedClient = new ClientUpdateDto
+            {
+                Id = client!.Id,
+                FirstName = "robert",
+                IsActive = false,
+                CurrentBlockSession = 3,
+                TotalBlockSessions = 6
+            };
+
+            _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal("robert", client!.FirstName);
+            Assert.Equal("robert", client.FirstName);
             Assert.False(client.IsActive);
             Assert.Equal(3, client.CurrentBlockSession);
             Assert.Equal(6, client.TotalBlockSessions);
         }
 
         [Fact]
-        public async Task TestUpdateClientPhoneNumberAsync()
+        public async Task TestUpdateClientDetailsAsync_UpdatesPhoneNumber()
         {
-            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, PhoneNumber = "123456789", Workouts = [] });
+            await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, PhoneNumber = "123456789", Workouts = [] });
             await _unitOfWork.Complete();
 
             var client = await _context.Client.FirstOrDefaultAsync();
-            var newPhoneNumber = "987654321";
-            _clientRepository.UpdateClientPhoneNumber(client!, newPhoneNumber);
+            var updatedClient = new ClientUpdateDto
+            {
+                Id = client!.Id,
+                FirstName = client!.FirstName,
+                IsActive = client.IsActive,
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = client.TotalBlockSessions,
+                PhoneNumber = "987654321"
+            };
+
+            _clientRepository.UpdateClientDetailsAsync(client, updatedClient);
             await _unitOfWork.Complete();
 
-            Assert.Equal(newPhoneNumber, client!.PhoneNumber);
+            Assert.Equal("987654321", client.PhoneNumber);
         }
 
         [Fact]

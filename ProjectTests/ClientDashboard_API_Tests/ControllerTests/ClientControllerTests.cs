@@ -241,10 +241,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var updatedClient = new Client
+            var updatedClient = new ClientUpdateDto
             {
                 Id = client.Id,
-                Role = UserRole.Client,
                 FirstName = "alice updated",
                 IsActive = false,
                 CurrentBlockSession = 3,
@@ -265,6 +264,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.False(savedClient.IsActive);
             Assert.Equal(3, savedClient.CurrentBlockSession);
             Assert.Equal(10, savedClient.TotalBlockSessions);
+            Assert.Equal("0987654321", savedClient.PhoneNumber);
         }
 
         [Fact]
@@ -287,10 +287,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var updatedClient = new Client
+            var updatedClient = new ClientUpdateDto
             {
                 Id = client.Id,
-                Role = UserRole.Client,
                 FirstName = "alice",
                 IsActive = true,
                 CurrentBlockSession = 8,
@@ -314,10 +313,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
         [Fact]
         public async Task TestChangeClientInformationReturnsNotFoundForNonExistentClientAsync()
         {
-            var updatedClient = new Client
+            var updatedClient = new ClientUpdateDto
             {
                 Id = 999,
-                Role = UserRole.Client,
                 FirstName = "NonExistent",
                 IsActive = true,
                 CurrentBlockSession = 1,
@@ -352,10 +350,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var updatedClient = new Client
+            var updatedClient = new ClientUpdateDto
             {
                 Id = client.Id,
-                Role = UserRole.Client,
                 FirstName = "alice updated",
                 IsActive = true,
                 CurrentBlockSession = 1,
@@ -377,81 +374,41 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
 
         [Fact]
-        public async Task TestChangeClientPhoneNumberUpdatesSuccessfullyAsync()
+        public async Task TestChangeClientInformationUpdatesPhoneNumberSuccessfullyAsync()
         {
+            // The dedicated ChangeClientPhoneNumberAsync endpoint/ClientPhoneNumberUpdateDto were
+            // removed in favour of routing phone number changes through the same consolidated
+            // ChangeClientInformationAsync/ClientUpdateDto path as every other client field.
+            // Not-found/forbidden guard behaviour for that path is already covered by the
+            // ChangeClientInformation tests above, since it's the same code path.
             var trainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
             await _context.Trainer.AddAsync(trainer);
             await _unitOfWork.Complete();
 
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, IsActive = true, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var phoneUpdateDto = new ClientPhoneNumberUpdateDto
+            var updatedClient = new ClientUpdateDto
             {
                 Id = client.Id,
+                FirstName = client.FirstName,
+                IsActive = client.IsActive,
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = client.TotalBlockSessions,
                 PhoneNumber = "0987654321"
             };
 
             AuthenticateAsTrainer(trainer.Id);
-            var result = await _clientController.ChangeClientPhoneNumberAsync(phoneUpdateDto);
+            var result = await _clientController.ChangeClientInformationAsync(updatedClient);
             var okResult = result.Result as OkObjectResult;
             var response = okResult!.Value as ApiResponseDto<string>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal("0987654321", response.Data);
 
             var savedClient = await _context.Client.FindAsync(client.Id);
             Assert.Equal("0987654321", savedClient!.PhoneNumber);
-        }
-
-        [Fact]
-        public async Task TestChangeClientPhoneNumberReturnsNotFoundForNonExistentClientAsync()
-        {
-            var phoneUpdateDto = new ClientPhoneNumberUpdateDto
-            {
-                Id = 999,
-                PhoneNumber = "0987654321"
-            };
-
-            var result = await _clientController.ChangeClientPhoneNumberAsync(phoneUpdateDto);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestChangeClientPhoneNumberReturnsForbiddenForNonOwningTrainerAsync()
-        {
-            var owningTrainer = new Trainer { FirstName = "John", Surname = "Doe", Role = UserRole.Trainer };
-            var otherTrainer = new Trainer { FirstName = "Jane", Surname = "Smith", Role = UserRole.Trainer };
-            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
-            await _unitOfWork.Complete();
-
-            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = owningTrainer.Id, PhoneNumber = "1234567890", CurrentBlockSession = 1, TotalBlockSessions = 8 };
-            await _context.Client.AddAsync(client);
-            await _unitOfWork.Complete();
-
-            var phoneUpdateDto = new ClientPhoneNumberUpdateDto
-            {
-                Id = client.Id,
-                PhoneNumber = "0987654321"
-            };
-
-            AuthenticateAsTrainer(otherTrainer.Id);
-            var result = await _clientController.ChangeClientPhoneNumberAsync(phoneUpdateDto);
-            var forbiddenResult = result.Result as ObjectResult;
-            var response = forbiddenResult!.Value as ApiResponseDto<string>;
-
-            Assert.Equal(StatusCodes.Status403Forbidden, forbiddenResult.StatusCode);
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-
-            var savedClient = await _context.Client.FindAsync(client.Id);
-            Assert.Equal("1234567890", savedClient!.PhoneNumber);
         }
 
 
