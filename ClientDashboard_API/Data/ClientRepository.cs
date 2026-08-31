@@ -74,6 +74,11 @@ namespace ClientDashboard_API.Data
         {
             if(updatedClient.FirstName != null) updatedClient.FirstName = updatedClient.FirstName.ToLower();
 
+            if (updatedClient.PhoneNumber != null) 
+            {
+                updatedClient.PhoneNumber = string.Concat(updatedClient.PhoneNumber.Where(c => !char.IsWhiteSpace(c)));
+            }
+
             mapper.Map(updatedClient, client);
         }
 
