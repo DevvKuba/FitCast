@@ -78,8 +78,8 @@ describe('NotificationsComponent', () => {
       const todayNotification = makeNotification({ id: 1, sentAt: new Date().toISOString() });
       component.allNotifications = [todayNotification];
 
-      expect(component.todayNotifications).toEqual([todayNotification]);
-      expect(component.pastWeekNotifications).toEqual([]);
+      expect(component.todayNotifications()).toEqual([todayNotification]);
+      expect(component.pastWeekNotifications()).toEqual([]);
     });
 
     it('puts a notification from 6 days ago under pastWeekNotifications', () => {
@@ -88,8 +88,8 @@ describe('NotificationsComponent', () => {
       const notification = makeNotification({ id: 2, sentAt: sixDaysAgo.toISOString() });
       component.allNotifications = [notification];
 
-      expect(component.pastWeekNotifications).toEqual([notification]);
-      expect(component.todayNotifications).toEqual([]);
+      expect(component.pastWeekNotifications()).toEqual([notification]);
+      expect(component.todayNotifications()).toEqual([]);
     });
 
     it('excludes a notification from 8 days ago from both sections', () => {
@@ -98,8 +98,8 @@ describe('NotificationsComponent', () => {
       const notification = makeNotification({ id: 3, sentAt: eightDaysAgo.toISOString() });
       component.allNotifications = [notification];
 
-      expect(component.todayNotifications).toEqual([]);
-      expect(component.pastWeekNotifications).toEqual([]);
+      expect(component.todayNotifications()).toEqual([]);
+      expect(component.pastWeekNotifications()).toEqual([]);
     });
   });
 
@@ -112,26 +112,26 @@ describe('NotificationsComponent', () => {
     });
 
     it('returns everything when no filters are set', () => {
-      expect(component.filteredNotifications).toEqual([clientA, clientB]);
+      expect(component.filteredNotifications()).toEqual([clientA, clientB]);
     });
 
     it('filters by selected client', () => {
       component.selectedClient = { id: 7, name: 'alex' };
 
-      expect(component.filteredNotifications).toEqual([clientA]);
+      expect(component.filteredNotifications()).toEqual([clientA]);
     });
 
     it('filters by search text against the message, case-insensitively', () => {
       component.searchText = 'PAYMENT';
 
-      expect(component.filteredNotifications).toEqual([clientB]);
+      expect(component.filteredNotifications()).toEqual([clientB]);
     });
 
     it('composes client and search filters together', () => {
       component.selectedClient = { id: 7, name: 'alex' };
       component.searchText = 'payment';
 
-      expect(component.filteredNotifications).toEqual([]);
+      expect(component.filteredNotifications()).toEqual([]);
     });
   });
 

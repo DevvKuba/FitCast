@@ -1,0 +1,49 @@
+<div class="p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto space-y-6">
+
+    <!-- Page header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <span class="text-label-caps font-label-caps text-primary uppercase tracking-widest mb-2 block">Management</span>
+            <h2 class="text-display-lg font-display-lg text-slate-navy">Alerts</h2>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="bg-white border border-border-subtle rounded-lg p-4 sm:p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <label for="sms-toggle" class="text-body-sm font-semibold text-on-surface">SMS Notifications</label>
+                <p-toggleswitch inputId="sms-toggle" [(ngModel)]="smsNotificationsToggled" (onChange)="onNotificationToggle($event)" />
+            </div>
+            <div class="flex items-center gap-3">
+                <label for="email-toggle" class="text-body-sm font-semibold text-on-surface-variant">Email Alerts</label>
+                <p-toggleswitch inputId="email-toggle" [disabled]="true" pTooltip="Coming soon" tooltipPosition="top" />
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+            @if(isTrainer()){
+                <p-autocomplete
+                    [appendTo]="'body'"
+                    [(ngModel)]="selectedClient"
+                    [dropdown]="true"
+                    [suggestions]="clients"
+                    optionLabel="name"
+                    (onDropdownClick)="gatherClientNames()"
+                    placeholder="Filter by client"
+                    styleClass="w-full sm:w-64" />
+            }
+            <p-iconfield iconPosition="left" styleClass="w-full sm:w-72">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input class="w-full" pInputText type="text" [(ngModel)]="searchText" placeholder="Search notifications" />
+            </p-iconfield>
+        </div>
+    </div>
+
+    <!-- Today section: Step 3 -->
+
+    <!-- Past Week section: Step 4 -->
+
+</div>

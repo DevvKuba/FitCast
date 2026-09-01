@@ -1,4 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+import { TooltipModule } from 'primeng/tooltip';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 import { NotificationService } from '../services/notification.service';
 import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
@@ -10,7 +17,7 @@ import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-notifications',
-  imports: [],
+  imports: [FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
