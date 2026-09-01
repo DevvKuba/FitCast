@@ -1,7 +1,9 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ToggleSwitch } from 'primeng/toggleswitch';
+import { ButtonModule } from 'primeng/button';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
@@ -11,12 +13,13 @@ import { NotificationType } from '../enums/notification-type';
 
 @Component({
   selector: 'app-notification-toggle',
-  imports: [ToggleSwitch, FormsModule, CommonModule],
+  imports: [ToggleSwitch, FormsModule, CommonModule, ButtonModule, RouterLink],
   templateUrl: './notification-toggle.component.html',
   styleUrl: './notification-toggle.component.css'
 })
 export class NotificationToggleComponent implements OnInit {
   @Input() latestNotifications: Notification[] | null = null;
+  @Output() viewAllClicked = new EventEmitter<void>();
 
   accountService = inject(AccountService);
   notificationService = inject(NotificationService);

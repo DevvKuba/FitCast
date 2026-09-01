@@ -179,4 +179,8 @@ export class UserNavbar{
     getBellBadge(): string {
         return this.notificationService.unreadNotificationCount().toString();
     }
+
+    onViewAllNotifications(){
+        this.notificationVisibility = false;
+    }
 }

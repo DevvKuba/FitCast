@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
@@ -42,12 +43,20 @@ describe('NotificationToggleComponent', () => {
 
     toastServiceSpy = jasmine.createSpyObj<ToastService>('ToastService', ['showSuccess', 'showError', 'showNeutral']);
 
+    // RouterLink (used by the "View All Notifications" button) subscribes to router.events
+    // and calls createUrlTree/serializeUrl internally, same as the password-reset page's mock.
+    const routerSpy = jasmine.createSpyObj<Router>('Router', ['navigateByUrl', 'createUrlTree', 'serializeUrl'], { events: of() });
+    routerSpy.createUrlTree.and.returnValue({} as any);
+    routerSpy.serializeUrl.and.returnValue('/notifications');
+
     await TestBed.configureTestingModule({
       imports: [NotificationToggleComponent],
       providers: [
         { provide: NotificationService, useValue: notificationServiceSpy },
         { provide: AccountService, useValue: { currentUser: jasmine.createSpy('currentUser').and.returnValue({ id: 3 }) } },
-        { provide: ToastService, useValue: toastServiceSpy }
+        { provide: ToastService, useValue: toastServiceSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: {} }
       ]
     })
     .compileComponents();
@@ -83,6 +92,16 @@ describe('NotificationToggleComponent', () => {
 
     expect(notificationServiceSpy.toggleUserSMSNotificationStatus).toHaveBeenCalledWith({ notificationStatus: false });
     expect(toastServiceSpy.showSuccess).toHaveBeenCalledWith('Success', 'Updated');
+  });
+
+  it('emits viewAllClicked when the "View All Notifications" button is clicked', () => {
+    const emitSpy = jasmine.createSpy('viewAllClicked');
+    component.viewAllClicked.subscribe(emitSpy);
+
+    const button = (fixture.nativeElement as HTMLElement).querySelector('p-button') as HTMLElement;
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(emitSpy).toHaveBeenCalled();
   });
 
   it('maps each notification type to an icon', () => {

@@ -11,9 +11,11 @@ import { ClientPersonalWorkoutsComponent } from './client-personal-workouts/clie
 import { ClientPersonalPaymentsComponent } from './client-personal-payments/client-personal-payments.component';
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { TrainerAnalyticsComponent } from './trainer-analytics/trainer-analytics.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 export const routes: Routes = [
   {path: '', component: Home},
+  {path: 'notifications', component: NotificationsComponent, canActivate: [authGuard]},
   {path: 'client-info', component: ClientInfoComponent, canActivate: [authGuard]},
   {path: 'client-workouts', component: ClientWorkouts, canActivate: [authGuard]},
   {path: 'client-personal-workouts', component: ClientPersonalWorkoutsComponent, canActivate: [authGuard]},
