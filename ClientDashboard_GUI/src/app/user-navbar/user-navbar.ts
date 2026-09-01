@@ -9,7 +9,7 @@ import { NotificationToggleComponent } from '../notification-toggle/notification
 import { UserRole } from '../enums/user-role';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { NotificationService } from '../services/notification.service';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { NotificationReadStatusDto } from '../models/dtos/notification-read-status-dto';
 
 @Component({
@@ -28,7 +28,7 @@ export class UserNavbar{
     sidebarItems: MenuItem[] = [];
     accountMenuItems: MenuItem[] = [];
     mobileMenuItems: MenuItem[] = [];
-    latestNotifications: Notification[] = [];
+    latestNotifications: NotificationResponseDto[] = [];
     notificationVisibility: boolean = false;
     mobileNavVisible: boolean = false;
 

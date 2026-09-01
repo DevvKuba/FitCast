@@ -6,18 +6,19 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 import { NotificationService } from '../services/notification.service';
 import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { NotificationReadStatusDto } from '../models/dtos/notification-read-status-dto';
 import { NotificationType } from '../enums/notification-type';
 import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-notifications',
-  imports: [FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule],
+  imports: [FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule, ButtonModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -27,7 +28,7 @@ export class NotificationsComponent implements OnInit {
   accountService = inject(AccountService);
   toastService = inject(ToastService);
 
-  allNotifications: Notification[] = [];
+  allNotifications: NotificationResponseDto[] = [];
   clients: { id: number, name: string }[] = [];
   selectedClient: { id: number, name: string } = { id: 0, name: '' };
   searchText: string = '';
@@ -42,7 +43,7 @@ export class NotificationsComponent implements OnInit {
     return this.accountService.currentUser()?.role === UserRole.Trainer;
   }
 
-  filteredNotifications(): Notification[] {
+  filteredNotifications(): NotificationResponseDto[] {
     if (!this.allNotifications) return [];
     let result = this.allNotifications;
 
@@ -58,13 +59,13 @@ export class NotificationsComponent implements OnInit {
     return result;
   }
 
-  todayNotifications(): Notification[] {
+  todayNotifications(): NotificationResponseDto[] {
     const today = new Date();
 
     return this.filteredNotifications().filter((notification) => this.isSameCalendarDay(new Date(notification.sentAt), today));
   }
 
-  pastWeekNotifications(): Notification[] {
+  pastWeekNotifications(): NotificationResponseDto[] {
     const today = new Date();
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7);
@@ -147,8 +148,26 @@ export class NotificationsComponent implements OnInit {
   }
 
   markAllTodayAsRead() {
-    const unreadIds = this.todayNotifications().filter((notification) => !notification.isRead).map((notification) => notification.id);
+    const unreadIds = this.unreadIds(this.todayNotifications());
     this.markAsRead(unreadIds);
+  }
+
+  hasUnread(notifications: NotificationResponseDto[]): boolean {
+    return notifications.some((notification) => !notification.isRead);
+  }
+
+  private unreadIds(notifications: NotificationResponseDto[]): number[] {
+    return notifications.filter((notification) => !notification.isRead).map((notification) => notification.id);
+  }
+
+  getRelativeTime(sentAt: string): string {
+    const diffMinutes = Math.floor((Date.now() - new Date(sentAt).getTime()) / (1000 * 60));
+
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
   }
 
   getNotificationTypeIcon(type: NotificationType): string {

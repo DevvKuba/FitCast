@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { NotificationType } from '../enums/notification-type';
 import { CommunicationType } from '../enums/communication-type';
 import { NotificationAudience } from '../enums/notification-audience';
@@ -17,7 +17,7 @@ describe('NotificationToggleComponent', () => {
   let notificationServiceSpy: jasmine.SpyObj<NotificationService>;
   let toastServiceSpy: jasmine.SpyObj<ToastService>;
 
-  const notifications: Notification[] = [
+  const notifications: NotificationResponseDto[] = [
     {
       id: 1,
       trainerId: 3,

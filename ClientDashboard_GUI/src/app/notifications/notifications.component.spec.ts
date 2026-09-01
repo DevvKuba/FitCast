@@ -4,7 +4,7 @@ import { NotificationService } from '../services/notification.service';
 import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { NotificationType } from '../enums/notification-type';
 import { CommunicationType } from '../enums/communication-type';
 import { NotificationAudience } from '../enums/notification-audience';
@@ -18,7 +18,7 @@ describe('NotificationsComponent', () => {
   let clientServiceSpy: jasmine.SpyObj<ClientService>;
   let toastServiceSpy: jasmine.SpyObj<ToastService>;
 
-  const makeNotification = (overrides: Partial<Notification>): Notification => ({
+  const makeNotification = (overrides: Partial<NotificationResponseDto>): NotificationResponseDto => ({
     id: 1,
     trainerId: 3,
     clientId: 7,
@@ -164,6 +164,46 @@ describe('NotificationsComponent', () => {
       component.markAllTodayAsRead();
 
       expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [2] });
+    });
+  });
+
+  describe('hasUnread', () => {
+    it('returns true when at least one notification is unread', () => {
+      const notifications = [makeNotification({ id: 1, isRead: true }), makeNotification({ id: 2, isRead: false })];
+
+      expect(component.hasUnread(notifications)).toBeTrue();
+    });
+
+    it('returns false when every notification is read', () => {
+      const notifications = [makeNotification({ id: 1, isRead: true }), makeNotification({ id: 2, isRead: true })];
+
+      expect(component.hasUnread(notifications)).toBeFalse();
+    });
+
+    it('returns false for an empty list', () => {
+      expect(component.hasUnread([])).toBeFalse();
+    });
+  });
+
+  describe('getRelativeTime', () => {
+    it('reports notifications sent under a minute ago as "Just now"', () => {
+      expect(component.getRelativeTime(new Date().toISOString())).toBe('Just now');
+    });
+
+    it('reports minutes ago, pluralised correctly', () => {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000);
+
+      expect(component.getRelativeTime(fiveMinutesAgo.toISOString())).toBe('5 minutes ago');
+      expect(component.getRelativeTime(oneMinuteAgo.toISOString())).toBe('1 minute ago');
+    });
+
+    it('reports hours ago, pluralised correctly', () => {
+      const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000);
+      const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000);
+
+      expect(component.getRelativeTime(threeHoursAgo.toISOString())).toBe('3 hours ago');
+      expect(component.getRelativeTime(oneHourAgo.toISOString())).toBe('1 hour ago');
     });
   });
 

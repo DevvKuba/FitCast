@@ -7,7 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { NotificationService } from '../services/notification.service';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { CommunicationType } from '../enums/communication-type';
 import { NotificationType } from '../enums/notification-type';
 
@@ -18,7 +18,7 @@ import { NotificationType } from '../enums/notification-type';
   styleUrl: './notification-toggle.component.css'
 })
 export class NotificationToggleComponent implements OnInit {
-  @Input() latestNotifications: Notification[] | null = null;
+  @Input() latestNotifications: NotificationResponseDto[] | null = null;
   @Output() viewAllClicked = new EventEmitter<void>();
 
   accountService = inject(AccountService);

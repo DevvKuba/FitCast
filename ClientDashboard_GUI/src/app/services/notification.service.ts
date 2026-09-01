@@ -5,7 +5,7 @@ import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { NotificationSmsStatusDto } from '../models/dtos/notification-sms-status-dto';
-import { Notification } from '../models/notification';
+import { NotificationResponseDto } from '../models/dtos/notification-response-dto';
 import { NotificationReadStatusDto } from '../models/dtos/notification-read-status-dto';
 
 @Injectable({
@@ -36,12 +36,12 @@ export class NotificationService {
     return this.http.get<ApiResponse<boolean>>(this.baseUrl + `notification/getNotificationStatus`);
   }
 
-  gatherLatestUserNotifications() : Observable<ApiResponse<Notification[]>>{
-    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherLatestUserNotifications`);
+  gatherLatestUserNotifications() : Observable<ApiResponse<NotificationResponseDto[]>>{
+    return this.http.get<ApiResponse<NotificationResponseDto[]>>(this.baseUrl + `notification/gatherLatestUserNotifications`);
   }
 
-  gatherAllUserNotifications() : Observable<ApiResponse<Notification[]>>{
-    return this.http.get<ApiResponse<Notification[]>>(this.baseUrl + `notification/gatherAllUserNotifications`);
+  gatherAllUserNotifications() : Observable<ApiResponse<NotificationResponseDto[]>>{
+    return this.http.get<ApiResponse<NotificationResponseDto[]>>(this.baseUrl + `notification/gatherAllUserNotifications`);
   }
 
   gatherUnreadUserNotificationCount() : Observable<ApiResponse<number>>{
