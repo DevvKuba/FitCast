@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { TooltipModule } from 'primeng/tooltip';
@@ -7,6 +8,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
 import { NotificationService } from '../services/notification.service';
 import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
@@ -18,7 +20,7 @@ import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-notifications',
-  imports: [FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule, ButtonModule],
+  imports: [CommonModule, FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule, ButtonModule, TableModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -154,6 +156,16 @@ export class NotificationsComponent implements OnInit {
 
   hasUnread(notifications: NotificationResponseDto[]): boolean {
     return notifications.some((notification) => !notification.isRead);
+  }
+
+  readRows(notifications: NotificationResponseDto[]): NotificationResponseDto[] {
+    return notifications.filter((notification) => notification.isRead);
+  }
+
+  onPastWeekSelectionChange(selected: NotificationResponseDto[]) {
+    const previouslyReadIds = new Set(this.readRows(this.pastWeekNotifications()).map((notification) => notification.id));
+    const newlyCheckedIds = selected.filter((notification) => !previouslyReadIds.has(notification.id)).map((notification) => notification.id);
+    this.markAsRead(newlyCheckedIds);
   }
 
   private unreadIds(notifications: NotificationResponseDto[]): number[] {

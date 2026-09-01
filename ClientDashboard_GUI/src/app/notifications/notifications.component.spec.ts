@@ -185,6 +185,40 @@ describe('NotificationsComponent', () => {
     });
   });
 
+  describe('readRows', () => {
+    it('returns only the notifications already marked as read', () => {
+      const read = makeNotification({ id: 1, isRead: true });
+      const unread = makeNotification({ id: 2, isRead: false });
+
+      expect(component.readRows([read, unread])).toEqual([read]);
+    });
+  });
+
+  describe('onPastWeekSelectionChange', () => {
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    it('marks newly-checked rows as read, ignoring rows that were already read', () => {
+      const alreadyRead = makeNotification({ id: 1, isRead: true, sentAt: threeDaysAgo.toISOString() });
+      const newlyChecked = makeNotification({ id: 2, isRead: false, sentAt: threeDaysAgo.toISOString() });
+      component.allNotifications = [alreadyRead, newlyChecked];
+      notificationServiceSpy.markUserNotificationsAsRead.and.returnValue(of({ success: true, message: 'Marked as read' }));
+
+      component.onPastWeekSelectionChange([alreadyRead, newlyChecked]);
+
+      expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [2] });
+    });
+
+    it('does nothing when unchecking an already-read row', () => {
+      const alreadyRead = makeNotification({ id: 1, isRead: true, sentAt: threeDaysAgo.toISOString() });
+      component.allNotifications = [alreadyRead];
+
+      component.onPastWeekSelectionChange([]);
+
+      expect(notificationServiceSpy.markUserNotificationsAsRead).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getRelativeTime', () => {
     it('reports notifications sent under a minute ago as "Just now"', () => {
       expect(component.getRelativeTime(new Date().toISOString())).toBe('Just now');

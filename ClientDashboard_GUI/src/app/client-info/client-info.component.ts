@@ -185,7 +185,7 @@ export class ClientInfoComponent implements OnInit {
         this.toastService.showSuccess('Quick Add Complete', response.message);
       },
       error: (response) => {
-        this.toastService.showSuccess('Quick Add Unsuccessful', response.error);
+        this.toastService.showError('Quick Add Unsuccessful', response.error.message);
       }
     })
   }
