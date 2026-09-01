@@ -42,6 +42,42 @@
         </div>
     </div>
 
+    <div class="bg-white border border-border-subtle rounded-lg p-4 sm:p-6 space-y-4">
+        @if (todayNotifications(); as todayItems) {
+            <div class="flex items-center justify-between">
+                <h3 class="text-headline-sm font-headline-sm text-slate-navy">Today</h3>
+                @if (todayItems.length > 0 && hasUnread(todayItems)) {
+                    <p-button label="Mark all as read" [text]="true" (click)="markAllTodayAsRead()" />
+                }
+            </div>
+
+            @if (todayItems.length > 0) {
+                <div class="flex flex-col divide-y divide-border-subtle">
+                    @for (notification of todayItems; track notification.id) {
+                        <div class="flex items-start justify-between gap-4 py-4 px-1 transition-colors"
+                            [class.bg-primary-fixed]="!notification.isRead"
+                            [class.rounded-lg]="!notification.isRead"
+                            [class.border-l-4]="!notification.isRead"
+                            [class.border-l-primary]="!notification.isRead">
+                            <div class="flex items-start gap-3">
+                                <i class="pi {{ getNotificationTypeIcon(notification.reminderType) }} text-primary mt-1"></i>
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-body-base font-body-base text-on-surface leading-relaxed">{{ notification.message }}</p>
+                                    <span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">{{ getRelativeTime(notification.sentAt) }}</span>
+                                </div>
+                            </div>
+                            <p-button label="Dismiss" [text]="true" severity="secondary" (click)="dismissNotification(notification.id)" />
+                        </div>
+                    }
+                </div>
+            } @else {
+                <div class="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                    <i class="pi pi-inbox text-4xl text-on-surface-variant"></i>
+                    <p class="text-body-sm text-on-surface-variant">No notifications yet</p>
+                </div>
+            }
+        }
+    </div>
 
     <!-- Past Week section: Step 4 -->
 
