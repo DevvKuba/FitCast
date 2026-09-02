@@ -9,6 +9,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { NotificationService } from '../services/notification.service';
 import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
@@ -20,7 +21,7 @@ import { UserRole } from '../enums/user-role';
 
 @Component({
   selector: 'app-notifications',
-  imports: [CommonModule, FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule, ButtonModule, TableModule],
+  imports: [CommonModule, FormsModule, ToggleSwitch, TooltipModule, AutoCompleteModule, IconFieldModule, InputIconModule, InputTextModule, ButtonModule, TableModule, ToggleButtonModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -35,6 +36,7 @@ export class NotificationsComponent implements OnInit {
   selectedClient: { id: number, name: string } = { id: 0, name: '' };
   searchText: string = '';
   smsNotificationsToggled: boolean | undefined;
+  showAllNotifications: boolean = false;
 
   ngOnInit(): void {
     this.gatherAllUserNotifications();
@@ -76,6 +78,10 @@ export class NotificationsComponent implements OnInit {
       const sentAt = new Date(notification.sentAt);
       return sentAt >= cutoff && !this.isSameCalendarDay(sentAt, today);
     });
+  }
+
+  tableNotifications(): NotificationResponseDto[] {
+    return this.showAllNotifications ? this.filteredNotifications() : this.pastWeekNotifications();
   }
 
   private isSameCalendarDay(a: Date, b: Date): boolean {
@@ -156,16 +162,6 @@ export class NotificationsComponent implements OnInit {
 
   hasUnread(notifications: NotificationResponseDto[]): boolean {
     return notifications.some((notification) => !notification.isRead);
-  }
-
-  readRows(notifications: NotificationResponseDto[]): NotificationResponseDto[] {
-    return notifications.filter((notification) => notification.isRead);
-  }
-
-  onPastWeekSelectionChange(selected: NotificationResponseDto[]) {
-    const previouslyReadIds = new Set(this.readRows(this.pastWeekNotifications()).map((notification) => notification.id));
-    const newlyCheckedIds = selected.filter((notification) => !previouslyReadIds.has(notification.id)).map((notification) => notification.id);
-    this.markAsRead(newlyCheckedIds);
   }
 
   private unreadIds(notifications: NotificationResponseDto[]): number[] {

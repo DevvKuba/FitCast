@@ -42,6 +42,7 @@
         </div>
     </div>
 
+    @if (!showAllNotifications) {
     <div class="bg-white border border-border-subtle rounded-lg p-4 sm:p-6 space-y-4">
         @if (todayNotifications(); as todayItems) {
             <div class="flex items-center justify-between">
@@ -78,30 +79,28 @@
             }
         }
     </div>
+    }
 
     <div class="bg-white border border-border-subtle rounded-lg p-4 sm:p-6 space-y-4">
-        @if (pastWeekNotifications(); as pastWeekItems) {
-            <h3 class="text-headline-sm font-headline-sm text-slate-navy">Past Week</h3>
+        @if (tableNotifications(); as tableItems) {
+            <div class="flex items-center justify-between">
+                <h3 class="text-headline-sm font-headline-sm text-slate-navy">{{ showAllNotifications ? 'All Notifications' : 'Past Week' }}</h3>
+                <p-togglebutton [(ngModel)]="showAllNotifications" onLabel="Past Week" offLabel="All Notifications" onIcon="pi pi-calendar" offIcon="pi pi-history" [style]="{ 'font-size': '0.875rem' }" />
+            </div>
 
-            @if (pastWeekItems.length > 0) {
+            @if (tableItems.length > 0) {
                 <p-table
-                    [value]="pastWeekItems"
-                    [selection]="readRows(pastWeekItems)"
-                    (selectionChange)="onPastWeekSelectionChange($event)"
-                    selectionMode="multiple"
-                    dataKey="id"
+                    [value]="tableItems"
                     [paginator]="true"
                     [rows]="10">
                     <ng-template #header>
                         <tr>
-                            <th style="width: 3rem"><p-tableHeaderCheckbox /></th>
                             <th>Notification</th>
                             <th>Sent</th>
                         </tr>
                     </ng-template>
                     <ng-template #body let-notification>
                         <tr>
-                            <td><p-tableCheckbox [value]="notification" /></td>
                             <td>
                                 <div class="flex items-start gap-3">
                                     <i class="pi {{ getNotificationTypeIcon(notification.reminderType) }} text-on-surface-variant mt-1"></i>

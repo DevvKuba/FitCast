@@ -185,37 +185,31 @@ describe('NotificationsComponent', () => {
     });
   });
 
-  describe('readRows', () => {
-    it('returns only the notifications already marked as read', () => {
-      const read = makeNotification({ id: 1, isRead: true });
-      const unread = makeNotification({ id: 2, isRead: false });
+  describe('tableNotifications', () => {
+    it('returns the past-week window when showAllNotifications is off', () => {
+      const todayNotification = makeNotification({ id: 1, sentAt: new Date().toISOString() });
+      component.allNotifications = [todayNotification];
+      component.showAllNotifications = false;
 
-      expect(component.readRows([read, unread])).toEqual([read]);
-    });
-  });
-
-  describe('onPastWeekSelectionChange', () => {
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-    it('marks newly-checked rows as read, ignoring rows that were already read', () => {
-      const alreadyRead = makeNotification({ id: 1, isRead: true, sentAt: threeDaysAgo.toISOString() });
-      const newlyChecked = makeNotification({ id: 2, isRead: false, sentAt: threeDaysAgo.toISOString() });
-      component.allNotifications = [alreadyRead, newlyChecked];
-      notificationServiceSpy.markUserNotificationsAsRead.and.returnValue(of({ success: true, message: 'Marked as read' }));
-
-      component.onPastWeekSelectionChange([alreadyRead, newlyChecked]);
-
-      expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [2] });
+      expect(component.tableNotifications()).toEqual([]);
     });
 
-    it('does nothing when unchecking an already-read row', () => {
-      const alreadyRead = makeNotification({ id: 1, isRead: true, sentAt: threeDaysAgo.toISOString() });
-      component.allNotifications = [alreadyRead];
+    it('returns everything, including today, when showAllNotifications is on', () => {
+      const todayNotification = makeNotification({ id: 1, sentAt: new Date().toISOString() });
+      component.allNotifications = [todayNotification];
+      component.showAllNotifications = true;
 
-      component.onPastWeekSelectionChange([]);
+      expect(component.tableNotifications()).toEqual([todayNotification]);
+    });
 
-      expect(notificationServiceSpy.markUserNotificationsAsRead).not.toHaveBeenCalled();
+    it('still applies the client and search filters when showAllNotifications is on', () => {
+      const clientA = makeNotification({ id: 1, clientId: 7 });
+      const clientB = makeNotification({ id: 2, clientId: 9 });
+      component.allNotifications = [clientA, clientB];
+      component.showAllNotifications = true;
+      component.selectedClient = { id: 7, name: 'alex' };
+
+      expect(component.tableNotifications()).toEqual([clientA]);
     });
   });
 
