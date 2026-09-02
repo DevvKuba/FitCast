@@ -136,7 +136,7 @@ describe('NotificationsComponent', () => {
   });
 
   describe('markTodayNotificationsAsRead', () => {
-    it('marks only the unread notifications from today, then refetches and refreshes the unread count', () => {
+    it('marks only the unread notifications from today, updating them locally without refetching', () => {
       const readToday = makeNotification({ id: 1, isRead: true, sentAt: new Date().toISOString() });
       const unreadToday = makeNotification({ id: 2, isRead: false, sentAt: new Date().toISOString() });
       component.allNotifications = [readToday, unreadToday];
@@ -146,7 +146,8 @@ describe('NotificationsComponent', () => {
 
       expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [2] });
       expect(notificationServiceSpy.refreshUnreadCount).toHaveBeenCalled();
-      expect(notificationServiceSpy.gatherAllUserNotifications).toHaveBeenCalledTimes(1);
+      expect(notificationServiceSpy.gatherAllUserNotifications).not.toHaveBeenCalled();
+      expect(component.allNotifications.find((n) => n.id === 2)?.isRead).toBeTrue();
     });
 
     it('does nothing when every notification from today is already read', () => {

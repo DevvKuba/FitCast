@@ -132,7 +132,10 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  // Today's notifications are considered "seen" the moment they're loaded onto this page
+  // Today's notifications are considered "seen" the moment they're loaded onto this page.
+  // Marks isRead locally rather than refetching, since gatherAllUserNotifications() itself
+  // triggers this method again on success - refetching here would re-mark the same items and
+  // recurse indefinitely.
   markTodayNotificationsAsRead() {
     const ids = this.unreadIds(this.todayNotifications());
     if (ids.length === 0) return;
@@ -145,7 +148,10 @@ export class NotificationsComponent implements OnInit {
     this.notificationService.markUserNotificationsAsRead(readStatus).subscribe({
       next: () => {
         this.notificationService.refreshUnreadCount();
-        this.gatherAllUserNotifications();
+        const idSet = new Set(ids);
+        this.allNotifications = this.allNotifications.map((notification) =>
+          idSet.has(notification.id) ? { ...notification, isRead: true } : notification
+        );
       }
     });
   }
