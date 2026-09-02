@@ -135,53 +135,37 @@ describe('NotificationsComponent', () => {
     });
   });
 
-  describe('markAsRead', () => {
-    it('marks the given ids as read, then refetches notifications and refreshes the unread count', () => {
-      notificationServiceSpy.markUserNotificationsAsRead.and.returnValue(of({ success: true, message: 'Marked as read' }));
-
-      component.markAsRead([1, 2]);
-
-      expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [1, 2] });
-      expect(notificationServiceSpy.refreshUnreadCount).toHaveBeenCalled();
-      expect(notificationServiceSpy.gatherAllUserNotifications).toHaveBeenCalledTimes(1);
-      expect(toastServiceSpy.showSuccess).toHaveBeenCalledWith('Success', 'Marked as read');
-    });
-
-    it('does nothing when given an empty id list', () => {
-      component.markAsRead([]);
-
-      expect(notificationServiceSpy.markUserNotificationsAsRead).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('markAllTodayAsRead', () => {
-    it('marks only the unread notifications from today', () => {
+  describe('markTodayNotificationsAsRead', () => {
+    it('marks only the unread notifications from today, then refetches and refreshes the unread count', () => {
       const readToday = makeNotification({ id: 1, isRead: true, sentAt: new Date().toISOString() });
       const unreadToday = makeNotification({ id: 2, isRead: false, sentAt: new Date().toISOString() });
       component.allNotifications = [readToday, unreadToday];
       notificationServiceSpy.markUserNotificationsAsRead.and.returnValue(of({ success: true, message: 'Marked as read' }));
 
-      component.markAllTodayAsRead();
+      component.markTodayNotificationsAsRead();
 
       expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [2] });
-    });
-  });
-
-  describe('hasUnread', () => {
-    it('returns true when at least one notification is unread', () => {
-      const notifications = [makeNotification({ id: 1, isRead: true }), makeNotification({ id: 2, isRead: false })];
-
-      expect(component.hasUnread(notifications)).toBeTrue();
+      expect(notificationServiceSpy.refreshUnreadCount).toHaveBeenCalled();
+      expect(notificationServiceSpy.gatherAllUserNotifications).toHaveBeenCalledTimes(1);
     });
 
-    it('returns false when every notification is read', () => {
-      const notifications = [makeNotification({ id: 1, isRead: true }), makeNotification({ id: 2, isRead: true })];
+    it('does nothing when every notification from today is already read', () => {
+      const readToday = makeNotification({ id: 1, isRead: true, sentAt: new Date().toISOString() });
+      component.allNotifications = [readToday];
 
-      expect(component.hasUnread(notifications)).toBeFalse();
+      component.markTodayNotificationsAsRead();
+
+      expect(notificationServiceSpy.markUserNotificationsAsRead).not.toHaveBeenCalled();
     });
 
-    it('returns false for an empty list', () => {
-      expect(component.hasUnread([])).toBeFalse();
+    it('is called automatically after notifications load, marking today\'s unread items as seen', () => {
+      const unreadToday = makeNotification({ id: 5, isRead: false, sentAt: new Date().toISOString() });
+      notificationServiceSpy.gatherAllUserNotifications.and.returnValue(of({ success: true, message: 'ok', data: [unreadToday] }));
+      notificationServiceSpy.markUserNotificationsAsRead.and.returnValue(of({ success: true, message: 'Marked as read' }));
+
+      component.ngOnInit();
+
+      expect(notificationServiceSpy.markUserNotificationsAsRead).toHaveBeenCalledWith({ userId: 3, notificationIds: [5] });
     });
   });
 

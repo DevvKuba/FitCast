@@ -80,6 +80,11 @@ export class UserNavbar{
                 routerLink: '/trainer-analytics',
                 icon: 'pi pi-chart-bar'
             },
+            {
+                label: 'Alerts',
+                routerLink: '/notifications',
+                icon: 'pi pi-thumbtack'
+            },
 
         ];
         this.accountMenuItems = [

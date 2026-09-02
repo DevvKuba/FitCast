@@ -92,6 +92,7 @@ export class NotificationsComponent implements OnInit {
     this.notificationService.gatherAllUserNotifications().subscribe({
       next: (response) => {
         this.allNotifications = response.data ?? [];
+        this.markTodayNotificationsAsRead();
       }
     });
   }
@@ -131,7 +132,9 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  markAsRead(ids: number[]) {
+  // Today's notifications are considered "seen" the moment they're loaded onto this page
+  markTodayNotificationsAsRead() {
+    const ids = this.unreadIds(this.todayNotifications());
     if (ids.length === 0) return;
 
     const userId = this.accountService.currentUser()?.id;
@@ -140,28 +143,11 @@ export class NotificationsComponent implements OnInit {
     const readStatus: NotificationReadStatusDto = { userId, notificationIds: ids };
 
     this.notificationService.markUserNotificationsAsRead(readStatus).subscribe({
-      next: (response) => {
-        this.toastService.showSuccess('Success', response.message);
+      next: () => {
         this.notificationService.refreshUnreadCount();
         this.gatherAllUserNotifications();
-      },
-      error: (response) => {
-        this.toastService.showError('Error', response.error.message);
       }
     });
-  }
-
-  dismissNotification(id: number) {
-    this.markAsRead([id]);
-  }
-
-  markAllTodayAsRead() {
-    const unreadIds = this.unreadIds(this.todayNotifications());
-    this.markAsRead(unreadIds);
-  }
-
-  hasUnread(notifications: NotificationResponseDto[]): boolean {
-    return notifications.some((notification) => !notification.isRead);
   }
 
   private unreadIds(notifications: NotificationResponseDto[]): number[] {

@@ -45,12 +45,7 @@
     @if (!showAllNotifications) {
     <div class="bg-white border border-border-subtle rounded-lg p-4 sm:p-6 space-y-4">
         @if (todayNotifications(); as todayItems) {
-            <div class="flex items-center justify-between">
-                <h3 class="text-headline-sm font-headline-sm text-slate-navy">Today</h3>
-                @if (todayItems.length > 0 && hasUnread(todayItems)) {
-                    <p-button label="Mark all as read" [text]="true" (click)="markAllTodayAsRead()" />
-                }
-            </div>
+            <h3 class="text-headline-sm font-headline-sm text-slate-navy">Today</h3>
 
             @if (todayItems.length > 0) {
                 <div class="flex flex-col divide-y divide-border-subtle">
@@ -67,7 +62,6 @@
                                     <span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">{{ getRelativeTime(notification.sentAt) }}</span>
                                 </div>
                             </div>
-                            <p-button label="Dismiss" [text]="true" severity="secondary" (click)="dismissNotification(notification.id)" />
                         </div>
                     }
                 </div>
