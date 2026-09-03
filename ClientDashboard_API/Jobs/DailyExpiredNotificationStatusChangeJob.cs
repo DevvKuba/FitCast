@@ -3,11 +3,11 @@ using Quartz;
 
 namespace ClientDashboard_API.Jobs
 {
-    public class DailyNotificationStatusJob(ILogger<DailyNotificationStatusJob> logger, IUnitOfWork unitOfWork) : IJob
+    public class DailyExpiredNotificationStatusChangeJob(ILogger<DailyExpiredNotificationStatusChangeJob> logger, IUnitOfWork unitOfWork) : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            logger.LogInformation("DailyNotificationStatusJob job STARTED at {StartTime} UTC", DateTime.UtcNow);
+            logger.LogInformation("DailyExpiredNotificationStatusChangeJob job STARTED at {StartTime} UTC", DateTime.UtcNow);
 
             var expiredNotificationIds = await unitOfWork.NotificationRecipientStatusRepository.GetExpiredUnreadNotificationIdsAsync();
 
@@ -21,7 +21,7 @@ namespace ClientDashboard_API.Jobs
 
             await unitOfWork.Complete();
 
-            logger.LogInformation("DailyNotificationStatusJob job FINISHED at {EndTime} UTC. Marked {MarkedCount} expired notifications as read",
+            logger.LogInformation("DailyExpiredNotificationStatusChangeJob job FINISHED at {EndTime} UTC. Marked {MarkedCount} expired notifications as read",
                 DateTime.UtcNow, expiredNotificationIds.Count);
         }
     }

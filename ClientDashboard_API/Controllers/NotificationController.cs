@@ -118,7 +118,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "User was not found, notification statuses were not updated", Success = false });
             }
 
-            await unitOfWork.NotificationRecipientStatusRepository.MarkNotificationsAsReadAsync(user.Id, notifications.NotificationIds);
+            await unitOfWork.NotificationRecipientStatusRepository.MarkUserNotificationsAsReadAsync(user.Id, notifications.NotificationIds);
 
             if (!await unitOfWork.Complete())
             {

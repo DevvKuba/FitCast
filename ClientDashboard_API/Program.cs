@@ -120,6 +120,7 @@ namespace ClientDashboard_API
             var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
             var clientDataJobKey = new JobKey("DailyClientDataGathering");
             var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
+            var expiredNotificationStatusJobKey = new JobKey("DailyExpiredNotificationStatusChangeJob");
 
             builder.Services.AddQuartz(q =>
             {
@@ -153,6 +154,8 @@ namespace ClientDashboard_API
                 q.AddJob<DailyClientDataGathering>(opts => opts.WithIdentity(clientDataJobKey).StoreDurably());
 
                 q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey).StoreDurably());
+
+                q.AddJob<DailyExpiredNotificationStatusChangeJob>(opts => opts.WithIdentity(expiredNotificationStatusJobKey).StoreDurably());
             });
 
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
@@ -227,6 +230,7 @@ namespace ClientDashboard_API
                 dailyJobChainListener.AddJobChainLink(invisiblePaymentCleanupJobKey, deletedClientCleanupJobKey);
                 dailyJobChainListener.AddJobChainLink(deletedClientCleanupJobKey, clientDataJobKey);
                 dailyJobChainListener.AddJobChainLink(clientDataJobKey, trainerRevenueJobKey);
+                dailyJobChainListener.AddJobChainLink(trainerRevenueJobKey, expiredNotificationStatusJobKey);
 
                 scheduler.ListenerManager.AddJobListener(dailyJobChainListener);
             }
