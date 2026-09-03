@@ -5,11 +5,13 @@ namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface INotificationRecipientStatusRepository
     {
-        Task<List<Notification>> GetExpiredUnreadNotificationsAsync();
+        Task<List<int>> GetExpiredUnreadNotificationIdsAsync();
 
         Task<int> GetUnreadUserNotificationCountAsync(UserBase user);
 
-        Task MarkNotificationsAsReadAsync(int userId, List<int> notificationIds);
+        Task MarkNotificationsAsReadAsync(List<int> notificationIds);
+
+        Task MarkUserNotificationsAsReadAsync(int userId, List<int> notificationIds);
 
     }
 }

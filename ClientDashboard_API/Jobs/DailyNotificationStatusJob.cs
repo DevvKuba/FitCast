@@ -7,11 +7,22 @@ namespace ClientDashboard_API.Jobs
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            var expiredNotifications = await unitOfWork.NotificationRecipientStatusRepository.GetExpiredUnreadNotificationsAsync();
+            logger.LogInformation("DailyNotificationStatusJob job STARTED at {StartTime} UTC", DateTime.UtcNow);
 
-            // if there are any change their statusses
+            var expiredNotificationIds = await unitOfWork.NotificationRecipientStatusRepository.GetExpiredUnreadNotificationIdsAsync();
 
-            // save changes + log final
+            if (expiredNotificationIds.Count == 0)
+            {
+                logger.LogInformation("No expired unread notifications found at {Time} UTC", DateTime.UtcNow);
+                return;
+            }
+
+            await unitOfWork.NotificationRecipientStatusRepository.MarkNotificationsAsReadAsync(expiredNotificationIds);
+
+            await unitOfWork.Complete();
+
+            logger.LogInformation("DailyNotificationStatusJob job FINISHED at {EndTime} UTC. Marked {MarkedCount} expired notifications as read",
+                DateTime.UtcNow, expiredNotificationIds.Count);
         }
     }
 }

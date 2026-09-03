@@ -7,22 +7,21 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRecipientStatusRepository(DataContext context) : INotificationRecipientStatusRepository
     {
-        public async Task<List<Notification>> GetExpiredUnreadNotificationsAsync()
+        public async Task<List<int>> GetExpiredUnreadNotificationIdsAsync()
         {
             var unreadExpiredStatuses = await context.NotificationRecipientStatuses
                 .Where(s => !s.IsRead &&
                 s.Notification.SentAt.AddDays(14) <= DateTime.UtcNow)
-                .Include(s => s.Notification)
                 .ToListAsync();
 
-            List<Notification> expiredNotifications = [];
+            List<int> expiredNotificationIds = [];
             
             foreach (var status in unreadExpiredStatuses)
             {
-                expiredNotifications.Add(status.Notification);
+                expiredNotificationIds.Add(status.NotificationId);
             }
-
-            return expiredNotifications;
+            
+            return expiredNotificationIds;
         }
 
         public async Task<int> GetUnreadUserNotificationCountAsync(UserBase user)
@@ -37,7 +36,20 @@ namespace ClientDashboard_API.Data
             return unreadNotificationCount;
         }
 
-        public async Task MarkNotificationsAsReadAsync(int userId, List<int> notificationIds)
+        public async Task MarkNotificationsAsReadAsync(List<int> notificationIds)
+        {
+            var notificationsToUpdate = await context.NotificationRecipientStatuses
+                .Where(n => notificationIds.Contains(n.NotificationId) && !n.IsRead)
+                .ToListAsync();
+
+            foreach (var notification in notificationsToUpdate)
+            {
+                notification.IsRead = true;
+                notification.ReadAt = DateTime.UtcNow;
+            }
+        }
+
+        public async Task MarkUserNotificationsAsReadAsync(int userId, List<int> notificationIds)
         {
             var notificationsToUpdate = await context.NotificationRecipientStatuses
                 .Where(n => n.UserId == userId && notificationIds.Contains(n.NotificationId) && !n.IsRead)
@@ -49,5 +61,6 @@ namespace ClientDashboard_API.Data
                 notification.ReadAt = DateTime.UtcNow;
             }
         }
+
     }
 }
