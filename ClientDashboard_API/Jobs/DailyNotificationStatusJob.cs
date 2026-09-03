@@ -5,9 +5,9 @@ namespace ClientDashboard_API.Jobs
 {
     public class DailyNotificationStatusJob(ILogger<DailyNotificationStatusJob> logger, IUnitOfWork unitOfWork) : IJob
     {
-        public Task Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
-            // gather notifications that are unread & 14 days or older (expired)
+            var expiredNotifications = await unitOfWork.NotificationRecipientStatusRepository.GetExpiredUnreadNotificationsAsync();
 
             // if there are any change their statusses
 

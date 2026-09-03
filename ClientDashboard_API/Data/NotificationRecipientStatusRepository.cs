@@ -7,17 +7,16 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRecipientStatusRepository(DataContext context) : INotificationRecipientStatusRepository
     {
-        public async Task<List<Notification>> GetExpiredUnreadNotificationsWithRecipientStatusesAsync(int userId)
+        public async Task<List<Notification>> GetExpiredUnreadNotificationsAsync()
         {
             var unreadExpiredStatuses = await context.NotificationRecipientStatuses
-                .Where(s => s.UserId == userId &&
-                !s.IsRead &&
+                .Where(s => !s.IsRead &&
                 s.Notification.SentAt.AddDays(14) <= DateTime.UtcNow)
                 .Include(s => s.Notification)
                 .ToListAsync();
 
             List<Notification> expiredNotifications = [];
-
+            
             foreach (var status in unreadExpiredStatuses)
             {
                 expiredNotifications.Add(status.Notification);
