@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Entities
 
         public required int Duration { get; set; }
 
-        public Recurrence Recurrence { get; set; }
+        public SessionRecurrence Recurrence { get; set; }
 
         public Trainer Trainer { get; set; } = null!;
 
