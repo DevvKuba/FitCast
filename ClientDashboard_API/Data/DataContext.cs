@@ -30,6 +30,10 @@ namespace ClientDashboard_API.Data
 
         public DbSet<ClientChurnLabel> ClientChurnLabel { get; set; }
 
+        public DbSet<BookingSeries> BookingSeries { get; set; }
+
+        public DbSet<BookedSessionSlot> BookedSessionsSlot { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -60,6 +64,8 @@ namespace ClientDashboard_API.Data
             builder.Entity<TrainerDailyRevenue>().ToTable("TrainerDailyRevenues");
             builder.Entity<ClientDailyFeature>().ToTable("ClientDailyFeatures");
             builder.Entity<ClientChurnLabel>().ToTable("ClientChurnLabels");
+            builder.Entity<BookingSeries>().ToTable("BookingSeries");
+            builder.Entity<BookedSessionSlot>().ToTable("BookedSessionsSlots");
 
             // explicit identity configuration
             builder.Entity<UserBase>()
@@ -128,6 +134,20 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
+            builder.Entity<Client>()
+                .HasMany<BookingSeries>()
+                .WithOne(b => b.Client)
+                .HasForeignKey(b => b.ClientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
+            builder.Entity<Client>()
+                .HasMany<BookedSessionSlot>()
+                .WithOne(b => b.Client)
+                .HasForeignKey(b => b.ClientId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
             // Trainer relationship
             builder.Entity<Trainer>()
                 .HasMany(e => e.Clients)
@@ -140,6 +160,20 @@ namespace ClientDashboard_API.Data
                 .HasMany<TrainerDailyRevenue>()
                 .WithOne(t => t.Trainer)
                 .HasForeignKey(t => t.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
+            builder.Entity<Trainer>()
+                .HasMany<BookingSeries>()
+                .WithOne(b => b.Trainer)
+                .HasForeignKey(b => b.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(true);
+
+            builder.Entity<Trainer>()
+                .HasMany<BookedSessionSlot>()
+                .WithOne(b => b.Trainer)
+                .HasForeignKey(b => b.TrainerId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
@@ -178,6 +212,15 @@ namespace ClientDashboard_API.Data
                 .WithOne(p => p.Trainer)
                 .HasForeignKey(p => p.TrainerId)
                 .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired(true);
+
+            // Booking Series relationships
+
+            builder.Entity<BookingSeries>()
+                .HasMany<BookedSessionSlot>()
+                .WithOne(bs => bs.BookingSeries)
+                .HasForeignKey(bs => bs.BookingSeriesId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             // token specific relationships
