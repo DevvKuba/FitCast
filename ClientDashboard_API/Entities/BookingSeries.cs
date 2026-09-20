@@ -14,11 +14,13 @@ namespace ClientDashboard_API.Entities
 
         public string? Description { get; set; }
 
+        public required int Duration { get; set; }
+
         public DateOnly StartDate { get; set; }
 
         public TimeOnly StartTime { get; set; }
 
-        public required int Duration { get; set; }
+        public DateOnly MaterializedUntil { get; set; }
 
         public SessionRecurrence Recurrence { get; set; }
 

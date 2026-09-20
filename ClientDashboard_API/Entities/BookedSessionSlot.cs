@@ -6,11 +6,15 @@ namespace ClientDashboard_API.Entities
     {
         public int Id { get; set; }
 
-        public int BookingSeriesId { get; set; }
-
         public int TrainerId { get; set; }
 
         public int ClientId { get; set; }
+
+        public int? BookingSeriesId { get; set; }
+
+        public required string Title { get; set; }
+
+        public string? Description { get; set; }
 
         public DateTime StartDateTime { get; set; }
 

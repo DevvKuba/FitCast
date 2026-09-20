@@ -138,7 +138,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<BookingSeries>()
                 .WithOne(b => b.Client)
                 .HasForeignKey(b => b.ClientId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
             builder.Entity<Client>()
@@ -167,7 +167,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<BookingSeries>()
                 .WithOne(b => b.Trainer)
                 .HasForeignKey(b => b.TrainerId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
             builder.Entity<Trainer>()
@@ -221,7 +221,7 @@ namespace ClientDashboard_API.Data
                 .WithOne(bs => bs.BookingSeries)
                 .HasForeignKey(bs => bs.BookingSeriesId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired(false);
 
             // token specific relationships
 
