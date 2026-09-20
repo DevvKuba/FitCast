@@ -98,6 +98,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         private readonly PasswordResetTokenRepository _passwordResetTokenRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
+        private readonly BookingSeriesRepository _bookingSeriesRepository;
         private readonly UnitOfWork _unitOfWork;
 
         public SessionSyncServiceTests()
@@ -119,7 +120,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
+            _bookingSeriesRepository = new BookingSeriesRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository);
         }
 
         [Fact]
@@ -828,8 +830,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var passwordResetTokenRepository = new PasswordResetTokenRepository(context);
             var clientDailyFeatureRepository = new ClientDailyFeatureRepository(context);
             var trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context, _mapper);
+            var bookingSeriesRepository = new BookingSeriesRepository(context);
 
-            return new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, new NotificationRecipientStatusRepository(context), paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository);
+            return new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, new NotificationRecipientStatusRepository(context), paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository, bookingSeriesRepository);
         }
     }
 }

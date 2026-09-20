@@ -21,6 +21,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
     public class TrainerRevenueMLPredictionServiceTests : IDisposable
     {
         private readonly DataContext _dbContext;
+        private readonly BookingSeriesRepository _bookingSeriesRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly TrainerRevenueMLPredictionService _service;
         private readonly TrainerRevenueMLTrainingService _trainingService;
@@ -76,6 +77,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_dbContext);
 
             // Initialize unit of work with all repositories
+            _bookingSeriesRepository = new BookingSeriesRepository(_dbContext);
             _unitOfWork = new UnitOfWork(
                 _dbContext,
                 _userRepository,
@@ -88,7 +90,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 _emailVerificationTokenRepository,
                 _clientDailyFeatureRepository,
                 _trainerDailyRevenueRepository,
-                _passwordResetTokenRepository);
+                _passwordResetTokenRepository, _bookingSeriesRepository);
 
             // Setup temporary directory for ML models
             var tempRoot = Path.Combine(Path.GetTempPath(), $"TrainerMLPrediction_Tests_{Guid.NewGuid():N}");

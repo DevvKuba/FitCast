@@ -159,6 +159,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly PasswordResetTokenRepository _passwordResetTokenRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
+        private readonly BookingSeriesRepository _bookingSeriesRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly FakeApiKeyEncrypter _fakeEncrypter;
         private readonly FakeSessionDataParser _fakeSessionDataParser;
@@ -187,7 +188,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
+            _bookingSeriesRepository = new BookingSeriesRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository);
 
             _fakeEncrypter = new FakeApiKeyEncrypter();
             _fakeSessionDataParser = new FakeSessionDataParser();

@@ -121,6 +121,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         private readonly PasswordResetTokenRepository _passwordResetTokenRepository;
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
+        private readonly BookingSeriesRepository _bookingSeriesRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly FakeEmailVerificationLinkFactory _linkFactory;
         private readonly FakeFluentEmail _fluentEmail;
@@ -145,7 +146,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository);
+            _bookingSeriesRepository = new BookingSeriesRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository);
 
             _linkFactory = new FakeEmailVerificationLinkFactory();
             _fluentEmail = new FakeFluentEmail();

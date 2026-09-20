@@ -22,6 +22,8 @@
 
         ITrainerDailyRevenueRepository TrainerDailyRevenueRepository { get; }
 
+        IBookingSeriesRepository BookingSeriesRepository { get; }
+
         Task<bool> Complete();
 
         void Clear();
