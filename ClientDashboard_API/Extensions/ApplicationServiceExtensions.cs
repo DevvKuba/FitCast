@@ -91,6 +91,7 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IPasswordResetService, PasswordResetService>();
             services.AddScoped<IPasswordResetLinkFactory, PasswordResetLinkFactory>();
             services.AddScoped<IClientBlockTerminationHelper, ClientBlockTerminationHelper>();
+            services.AddScoped<ITrainerDependencyRemovalHelper, TrainerDependencyRemovalHelper>();
 
             services.AddScoped<IMLModelTrainingService, TrainerRevenueMLTrainingService>();
             services.AddScoped<IMLPredictionService, TrainerRevenueMLPredictionService>();
