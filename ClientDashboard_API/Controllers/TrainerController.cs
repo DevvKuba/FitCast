@@ -24,7 +24,8 @@ namespace ClientDashboard_API.Controllers
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
         ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
         ISessionSyncService syncService,
-        ICurrentUserAccessor currentUserAccessor
+        ICurrentUserAccessor currentUserAccessor,
+        ITrainerDependencyRemovalHelper trainerDependencyRemovalHelper
         ) : BaseAPIController
     {
         /// <summary>
@@ -396,6 +397,25 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s excluded names list", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s successfully deleted '{exclusionDetails.Name}' from their exclusions", Success = true });
+        }
+
+        [HttpDelete("deleteTrainer")]
+        public async Task<ActionResult<ApiResponseDto<bool>>> DeleteTrainerAsync()
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<bool> { Data = false, Message = "Account cannot be found for deletion", Success = false });
+            }
+
+            await trainerDependencyRemovalHelper.RemoveAllTrainerAssociatedDependenciesAsync(trainer);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<bool> { Data = false, Message = $"Problem deleting account", Success = false });
+            }
+            return Ok(new ApiResponseDto<bool> { Data = true, Message = $"Account successfully deleted", Success = true });
         }
 
     }
