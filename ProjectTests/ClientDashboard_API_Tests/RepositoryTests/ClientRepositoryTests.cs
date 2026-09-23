@@ -214,7 +214,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "mark", CurrentBlockSession = 1, TotalBlockSessions = 8, IsActive = false, TrainerId = trainer.Id, Workouts = [] });
             await _unitOfWork.Complete();
 
-            var clients = await _clientRepository.GetAllTrainerClientDataAsync(trainer.Id);
+            var clients = await _clientRepository.GetAllTrainerClientsAsync(trainer.Id);
 
             Assert.Equal(2, clients.Count);
             Assert.Contains(clients, c => c.FirstName == "rob");

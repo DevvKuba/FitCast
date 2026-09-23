@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Data
 {
     public class ClientRepository(DataContext context, IPasswordHasher passwordHasher, IMapper mapper) : IClientRepository
     {
-        public async Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId)
+        public async Task<List<Client>> GetAllTrainerClientsAsync(int trainerId)
         {
             var clients = await context.Client.Where(x => x.TrainerId == trainerId)
                 .OrderByDescending(x => x.IsActive)
@@ -167,5 +167,12 @@ namespace ClientDashboard_API.Data
             context.Client.Remove(client);
         }
 
+        public void RemoveClients(List<Client> clients)
+        {
+            foreach (var c in clients)
+            {
+                context.Client.Remove(c);
+            }
+        }
     }
 }

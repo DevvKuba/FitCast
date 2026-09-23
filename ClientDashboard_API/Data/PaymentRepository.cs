@@ -135,5 +135,13 @@ namespace ClientDashboard_API.Data
         {
             context.Remove(payment);
         }
+
+        public void DeletePayments(List<Payment> payments)
+        {
+            foreach (var p in payments)
+            {
+                context.Payments.Remove(p);
+            }
+        }
     }
 }

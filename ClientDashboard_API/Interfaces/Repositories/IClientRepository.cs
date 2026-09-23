@@ -7,7 +7,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
     public interface IClientRepository
     {
         // think of methods necessary to gather client data, within the ClientDataController
-        Task<List<Client>> GetAllTrainerClientDataAsync(int trainerId);
+        Task<List<Client>> GetAllTrainerClientsAsync(int trainerId);
 
         Task<Client?> GetClientByNameWithTrainerAsync(Trainer trainer, string clientName);
 
@@ -34,6 +34,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
         Task<List<Client>> GetSoftDeletedClientsOlderThanAsync(DateTime cutoffDate);
 
         void RemoveClient(Client client);
+
+        void RemoveClients(List<Client> clients);
 
         void SoftDeleteClientAsync(Client client);
 

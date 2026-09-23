@@ -31,5 +31,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         void DeletePayment(Payment payment);
 
+        void DeletePayments(List<Payment> payments);
+
     }
 }

@@ -26,7 +26,7 @@ namespace ClientDashboard_API.Controllers
         [HttpGet("allTrainerClients")]
         public async Task<ActionResult<ApiResponseDto<List<Client>>>> GetTrainerClientsAsync()
         {
-            var clients = await unitOfWork.ClientRepository.GetAllTrainerClientDataAsync(currentUserAccessor.GetUserId());
+            var clients = await unitOfWork.ClientRepository.GetAllTrainerClientsAsync(currentUserAccessor.GetUserId());
             if (!clients.Any())
             {
                 return Ok(new ApiResponseDto<List<Client>> { Data = [], Message = $"No clients found", Success = true });
