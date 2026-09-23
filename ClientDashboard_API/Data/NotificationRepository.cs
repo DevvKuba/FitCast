@@ -10,15 +10,20 @@ namespace ClientDashboard_API.Data
 {
     public class NotificationRepository(DataContext context) : INotificationRepository
     {
-        public async Task<List<NotificationResponseDto>> ReturnAllUserNotifications(UserBase user)
+        public async Task<List<NotificationResponseDto>> ReturnAllUserNotificationDtosAsync(UserBase user)
         {
             return await BuildUserNotificationQuery(user).ToListAsync();
         }
 
-        public async Task<List<NotificationResponseDto>> ReturnLatestUserNotifications(UserBase user)
+        public async Task<List<NotificationResponseDto>> ReturnLatestUserNotificationDtosAsync(UserBase user)
         {
             return await BuildUserNotificationQuery(user).Take(10).ToListAsync();
 
+        }
+
+        public async Task<List<Notification>> ReturnAllTrainerNotificationsAsync(Trainer trainer)
+        {
+            return await context.Notification.Where(n => n.TrainerId == trainer.Id).ToListAsync();
         }
 
         public IQueryable<NotificationResponseDto> BuildUserNotificationQuery(UserBase user)
@@ -69,6 +74,14 @@ namespace ClientDashboard_API.Data
         public void DeleteNotification(Notification notification)
         {
             context.Notification.Remove(notification);
+        }
+
+        public void DeleteNotifications(List<Notification> notifications)
+        {
+            foreach (var n in notifications)
+            {
+                context.Notification.Remove(n);
+            }
         }
     }
 }

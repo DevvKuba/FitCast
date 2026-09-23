@@ -21,6 +21,8 @@ namespace ClientDashboard_API.Jobs
 
             foreach (Client client in clientsToDelete)
             {
+                await unitOfWork.BookingSeriesRepository.RemoveAllBookingSeriesForUserAsync(client);
+
                 unitOfWork.ClientRepository.RemoveClient(client);
             }
 

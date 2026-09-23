@@ -187,7 +187,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             }
             await _unitOfWork.Complete();
 
-            var latest = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+            var latest = await _notificationRepository.ReturnLatestUserNotificationDtosAsync(trainer);
 
             Assert.Equal(10, latest.Count);
             Assert.Equal("Notification 0", latest.First().Message);
@@ -222,7 +222,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             }
             await _unitOfWork.Complete();
 
-            var all = await _notificationRepository.ReturnAllUserNotifications(trainer);
+            var all = await _notificationRepository.ReturnAllUserNotificationDtosAsync(trainer);
 
             Assert.Equal(12, all.Count);
             Assert.Equal("Notification 0", all.First().Message);
@@ -279,7 +279,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Notification.AddRangeAsync(ownNotification, clientAudienceNotification, otherTrainerNotification);
             await _unitOfWork.Complete();
 
-            var result = await _notificationRepository.ReturnAllUserNotifications(trainer);
+            var result = await _notificationRepository.ReturnAllUserNotificationDtosAsync(trainer);
 
             Assert.Single(result);
             Assert.Equal("Own", result.Single().Message);
@@ -320,7 +320,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Notification.AddRangeAsync(clientNotification, trainerNotification);
             await _unitOfWork.Complete();
 
-            var result = await _notificationRepository.ReturnAllUserNotifications(client);
+            var result = await _notificationRepository.ReturnAllUserNotificationDtosAsync(client);
 
             Assert.Single(result);
             Assert.Equal("For client", result.Single().Message);
@@ -357,7 +357,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             trainerStatus.IsRead = false;
             await _unitOfWork.Complete();
 
-            var beforeTrainerReads = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+            var beforeTrainerReads = await _notificationRepository.ReturnLatestUserNotificationDtosAsync(trainer);
             Assert.False(beforeTrainerReads.Single().IsRead);
 
             // Flip: trainer has now read it, client has not.
@@ -365,7 +365,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             clientStatus.IsRead = false;
             await _unitOfWork.Complete();
 
-            var afterTrainerReads = await _notificationRepository.ReturnLatestUserNotifications(trainer);
+            var afterTrainerReads = await _notificationRepository.ReturnLatestUserNotificationDtosAsync(trainer);
             Assert.True(afterTrainerReads.Single().IsRead);
         }
     }
