@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<List<Payment>> GetAllInvisiblePaymentsAsync();
 
+        Task<List<Payment>> GetAllTrainerPaymentsIncludingInvisibleStatusAsync(Trainer trainer);
+
         void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo);
 
         Task UpdateAllTrainerPaymentsToVisibleStatusAsync(Trainer trainer);

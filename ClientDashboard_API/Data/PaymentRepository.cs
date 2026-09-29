@@ -29,6 +29,23 @@ namespace ClientDashboard_API.Data
             return payments;
         }
 
+        public async Task<List<Payment>> GetAllInvisiblePaymentsAsync()
+        {
+            return await context.Payments
+                .Where(p => p.IsVisible == false)
+                .IgnoreQueryFilters()
+                .ToListAsync();
+        }
+
+        public async Task<List<Payment>> GetAllTrainerPaymentsIncludingInvisibleStatusAsync(Trainer trainer)
+        {
+            var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id)
+                .Where(p => p.IsVisible)
+                .IgnoreQueryFilters()
+                .ToListAsync();
+            return payments;
+        }
+
         public async Task<Payment?> GetPaymentByIdAsync(int id)
         {
             var payment = await context.Payments.Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -53,14 +70,6 @@ namespace ClientDashboard_API.Data
                 .FirstOrDefaultAsync();
 
             return payment;
-        }
-
-        public async Task<List<Payment>> GetAllInvisiblePaymentsAsync()
-        {
-            return await context.Payments
-                .Where(p => p.IsVisible == false)
-                .IgnoreQueryFilters()
-                .ToListAsync();
         }
 
         public void UpdatePaymentDetails(Payment payment, PaymentUpdateRequestDto newPaymentInfo)

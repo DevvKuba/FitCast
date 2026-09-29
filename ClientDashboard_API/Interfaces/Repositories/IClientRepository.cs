@@ -6,8 +6,9 @@ namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface IClientRepository
     {
-        // think of methods necessary to gather client data, within the ClientDataController
         Task<List<Client>> GetAllTrainerClientsAsync(int trainerId);
+
+        Task<List<Client>> GetAllTrainerClientsIncludingSoftDeleteAsync(int trainerId);
 
         Task<Client?> GetClientByNameWithTrainerAsync(Trainer trainer, string clientName);
 

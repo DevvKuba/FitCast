@@ -19,6 +19,15 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
+        public async Task<List<Client>> GetAllTrainerClientsIncludingSoftDeleteAsync(int trainerId)
+        {
+            var clients = await context.Client.Where(x => x.TrainerId == trainerId)
+               .OrderByDescending(x => x.IsActive)
+               .IgnoreQueryFilters()
+               .ToListAsync();
+            return clients;
+        }
+
         public void UpdateAddingClientCurrentSessionAsync(Client client)
         {
             int newCurrentSession = client.CurrentBlockSession + 1;
