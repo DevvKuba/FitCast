@@ -166,6 +166,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly FakeTrainerFullMonthAnalyticsService _fakeTrainerFullMonthAnalyticsService;
         private readonly FakeTrainerCurrentMonthAnalyticsService _fakeTrainerCurrentMonthAnalyticsService;
         private readonly FakeSessionSyncService _fakeSyncService;
+        private readonly TrainerDependencyRemovalHelper _trainerDependencyRemovalHelper;
         private readonly TrainerController _trainerController;
         private readonly FakeHttpContextAccessor _httpContextAccessor;
 
@@ -200,7 +201,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var (_, currentUserAccessor, httpContextAccessor) = TestAuthHelpers.CreateAuthInfrastructure();
             _httpContextAccessor = httpContextAccessor;
 
-            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService, currentUserAccessor);
+            _trainerDependencyRemovalHelper = new TrainerDependencyRemovalHelper(_unitOfWork);
+
+            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService, currentUserAccessor, _trainerDependencyRemovalHelper);
             TestAuthHelpers.AttachHttpContext(_trainerController, _httpContextAccessor);
         }
 
@@ -678,6 +681,91 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             Assert.NotNull(response);
             Assert.False(response.Success);
+        }
+
+        [Fact]
+        public async Task TestDeleteTrainerReturnsNotFoundForUnknownTrainerAsync()
+        {
+            AuthenticateAsTrainer(999);
+            var result = await _trainerController.DeleteTrainerAsync();
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            var response = notFoundResult!.Value as ApiResponseDto<bool>;
+
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            Assert.False(response.Data);
+        }
+
+        [Fact]
+        public async Task TestDeleteTrainerRemovesTrainerAndAllDependenciesAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "alice", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            await _context.Notification.AddAsync(new Notification { TrainerId = trainer.Id, ClientId = client.Id, Message = "n", ReminderType = NotificationType.TrainerBlockCompletionReminder, SentThrough = CommunicationType.InApp, Audience = NotificationAudience.Trainer, SentAt = DateTime.UtcNow });
+            await _context.Payments.AddAsync(new Payment { TrainerId = trainer.Id, ClientId = client.Id, Amount = 120, Currency = "GBP", NumberOfSessions = 4, PaymentDate = DateOnly.FromDateTime(DateTime.UtcNow) });
+            await _unitOfWork.Complete();
+            _unitOfWork.Clear();
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.DeleteTrainerAsync();
+            var okResult = result.Result as OkObjectResult;
+            var response = okResult?.Value as ApiResponseDto<bool>;
+            _unitOfWork.Clear();
+
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.False(await _context.Trainer.IgnoreQueryFilters().AnyAsync(t => t.Id == trainer.Id));
+            Assert.False(await _context.Client.IgnoreQueryFilters().AnyAsync(c => c.TrainerId == trainer.Id));
+            Assert.False(await _context.Notification.AnyAsync(n => n.TrainerId == trainer.Id));
+            Assert.False(await _context.Payments.IgnoreQueryFilters().AnyAsync(p => p.TrainerId == trainer.Id));
+        }
+
+        [Fact]
+        public async Task TestDeleteTrainerSucceedsForTrainerWithNoDependenciesAsync()
+        {
+            // A brand-new trainer with no clients/payments/notifications must still be deletable -
+            // the trainer row itself is the one guaranteed change, so Complete() must have work to do.
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+            _unitOfWork.Clear();
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.DeleteTrainerAsync();
+            var okResult = result.Result as OkObjectResult;
+            var response = okResult?.Value as ApiResponseDto<bool>;
+            _unitOfWork.Clear();
+
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            Assert.False(await _context.Trainer.IgnoreQueryFilters().AnyAsync(t => t.Id == trainer.Id));
+        }
+
+        [Fact]
+        public async Task TestDeleteTrainerOnlyDeletesTheAuthenticatedTrainerAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(trainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            var otherClient = new Client { FirstName = "bob", Role = UserRole.Client, TrainerId = otherTrainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4 };
+            await _context.Client.AddAsync(otherClient);
+            await _unitOfWork.Complete();
+            _unitOfWork.Clear();
+
+            AuthenticateAsTrainer(trainer.Id);
+            await _trainerController.DeleteTrainerAsync();
+            _unitOfWork.Clear();
+
+            Assert.True(await _context.Trainer.AnyAsync(t => t.Id == otherTrainer.Id));
+            Assert.True(await _context.Client.AnyAsync(c => c.Id == otherClient.Id));
         }
     }
 }
