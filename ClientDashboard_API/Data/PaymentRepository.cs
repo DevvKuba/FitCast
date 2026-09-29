@@ -39,8 +39,8 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Payment>> GetAllTrainerPaymentsIncludingInvisibleStatusAsync(Trainer trainer)
         {
-            var payments = await context.Payments.Where(p => p.TrainerId == trainer.Id)
-                .Where(p => p.IsVisible)
+            var payments = await context.Payments
+                .Where(p => p.TrainerId == trainer.Id)
                 .IgnoreQueryFilters()
                 .ToListAsync();
             return payments;

@@ -4,6 +4,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
+using ClientDashboard_API.ML.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
@@ -410,6 +411,8 @@ namespace ClientDashboard_API.Controllers
             }
 
             await trainerDependencyRemovalHelper.RemoveAllTrainerAssociatedDependenciesAsync(trainer);
+
+            unitOfWork.TrainerRepository.DeleteTrainer(trainer);
 
             if (!await unitOfWork.Complete())
             {

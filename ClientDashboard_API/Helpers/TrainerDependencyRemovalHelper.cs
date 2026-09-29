@@ -9,11 +9,13 @@ namespace ClientDashboard_API.Helpers
     {
         public async Task RemoveAllTrainerAssociatedDependenciesAsync(Trainer trainer)
         {
-            var trainerClients = await unitOfWork.ClientRepository.GetAllTrainerClientsAsync(trainer.Id);
+            var trainerClients = await unitOfWork.ClientRepository.GetAllTrainerClientsIncludingSoftDeleteAsync(trainer.Id);
             
             var trainerNotifications = await unitOfWork.NotificationRepository.ReturnAllTrainerNotificationsAsync(trainer);
 
-            var trainerPayments = await unitOfWork.PaymentRepository.GetAllPaymentsForTrainerAsync(trainer);
+            var trainerPayments = await unitOfWork.PaymentRepository.GetAllTrainerPaymentsIncludingInvisibleStatusAsync(trainer);
+
+            await unitOfWork.BookingSeriesRepository.RemoveAllBookingSeriesForUserAsync(trainer);
 
             unitOfWork.ClientRepository.RemoveClients(trainerClients);
             unitOfWork.NotificationRepository.DeleteNotifications(trainerNotifications);
