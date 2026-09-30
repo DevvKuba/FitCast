@@ -22,7 +22,7 @@ namespace ClientDashboard_API.Entities
 
         public SessionStatus Status { get; set; }
 
-        public BookingSeries BookingSeries { get; set; } = null!;
+        public BookingSeries? BookingSeries { get; set; } = null;
 
         public Trainer Trainer { get; set; } = null!;
 
