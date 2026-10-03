@@ -174,7 +174,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<BookedSessionSlot>()
                 .WithOne(b => b.Trainer)
                 .HasForeignKey(b => b.TrainerId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired(true);
 
             // Nofitication relationships
