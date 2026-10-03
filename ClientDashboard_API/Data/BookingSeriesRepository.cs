@@ -7,6 +7,11 @@ namespace ClientDashboard_API.Data
 {
     public class BookingSeriesRepository(DataContext context) : IBookingSeriesRepository
     {
+        public async Task<List<BookingSeries>> GetAllBookingSeriesAsync()
+        {
+            return await context.BookingSeries.ToListAsync();
+        }
+
         public async Task RemoveAllBookingSeriesForUserAsync(UserBase user)
         {
             var seriesToRemove = user.Role == UserRole.Trainer
