@@ -17,6 +17,8 @@ namespace ClientDashboard_API.Helpers
 
             await unitOfWork.BookingSeriesRepository.RemoveAllBookingSeriesForUserAsync(trainer);
 
+            await unitOfWork.BookedSessionSlotRepository.RemoveAllBookedSessionSlotsForUserAsync(trainer);
+
             unitOfWork.ClientRepository.RemoveClients(trainerClients);
             unitOfWork.NotificationRepository.DeleteNotifications(trainerNotifications);
             unitOfWork.PaymentRepository.DeletePayments(trainerPayments);
