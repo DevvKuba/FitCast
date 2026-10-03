@@ -23,47 +23,18 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
     public class LoginServiceTests
     {
-        private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
         private readonly DataContext _context;
-        private readonly UserRepository _userRepository;
-        private readonly ClientRepository _clientRepository;
-        private readonly WorkoutRepository _workoutRepository;
-        private readonly TrainerRepository _trainerRepository;
-        private readonly NotificationRepository _notificationRepository;
-        private readonly PaymentRepository _paymentRepository;
-        private readonly EmailVerificationTokenRepository _emailVerificationTokenRepository;
-        private readonly PasswordResetTokenRepository _passwordResetTokenRepository;
-        private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
-        private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
-        private readonly BookingSeriesRepository _bookingSeriesRepository;
-        private readonly BookedSessionSlotRepository _bookedSessionSlotRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly FakeTokenProvider _tokenProvider;
         private readonly LoginService _loginService;
 
         public LoginServiceTests()
         {
-            _mapper = TestMapperFactory.Create();
-            _passwordHasher = new PasswordHasher();
-
-            var optionsBuilder = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString());
-
-            _context = new DataContext(optionsBuilder.Options);
-            _userRepository = new UserRepository(_context, _passwordHasher);
-            _clientRepository = new ClientRepository(_context, _passwordHasher, _mapper);
-            _workoutRepository = new WorkoutRepository(_context);
-            _trainerRepository = new TrainerRepository(_context, _mapper);
-            _notificationRepository = new NotificationRepository(_context);
-            _paymentRepository = new PaymentRepository(_context, _mapper);
-            _emailVerificationTokenRepository = new EmailVerificationTokenRepository(_context);
-            _passwordResetTokenRepository = new PasswordResetTokenRepository(_context);
-            _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
-            _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
-            _bookingSeriesRepository = new BookingSeriesRepository(_context);
-            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository, _bookedSessionSlotRepository);
+            var testUnitOfWork = new TestUnitOfWork();
+            _passwordHasher = testUnitOfWork.passwordHasher;
+            _context = testUnitOfWork.context;
+            _unitOfWork = testUnitOfWork.unitOfWork;
 
             _tokenProvider = new FakeTokenProvider();
             _loginService = new LoginService(_unitOfWork, _tokenProvider, _passwordHasher);
