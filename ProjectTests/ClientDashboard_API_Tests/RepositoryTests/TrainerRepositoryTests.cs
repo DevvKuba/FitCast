@@ -32,6 +32,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly ClientDailyFeatureRepository _clientDailyFeatureRepository;
         private readonly TrainerDailyRevenueRepository _trainerDailyRevenueRepository;
         private readonly BookingSeriesRepository _bookingSeriesRepository;
+        private readonly BookedSessionSlotRepository _bookedSessionSlotRepository;
         private readonly UnitOfWork _unitOfWork;
 
         public TrainerRepositoryTests()
@@ -54,7 +55,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
             _bookingSeriesRepository = new BookingSeriesRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository);
+            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository, _bookedSessionSlotRepository);
         }
 
         [Fact]

@@ -24,6 +24,8 @@
 
         IBookingSeriesRepository BookingSeriesRepository { get; }
 
+        IBookedSessionSlotRepository BookedSessionSlotRepository { get; }
+
         Task<bool> Complete();
 
         void Clear();

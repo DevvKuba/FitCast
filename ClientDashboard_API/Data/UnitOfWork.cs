@@ -7,7 +7,8 @@ namespace ClientDashboard_API.Data
         INotificationRecipientStatusRepository notificationRecipientStatusRepository,
         IPaymentRepository paymentRepository , IEmailVerificationTokenRepository emailVerificationTokenRepository,
         IClientDailyFeatureRepository clientDailyFeatureRepository, ITrainerDailyRevenueRepository trainerDailyRevenueRepository,
-        IPasswordResetTokenRepository passwordResetTokenRepository, IBookingSeriesRepository bookingSeriesRepository
+        IPasswordResetTokenRepository passwordResetTokenRepository, IBookingSeriesRepository bookingSeriesRepository,
+        IBookedSessionSlotRepository bookedSessionSlotRepository
         ) : IUnitOfWork
     {
         public IUserRepository UserRepository => userRepository;
@@ -32,6 +33,8 @@ namespace ClientDashboard_API.Data
         public ITrainerDailyRevenueRepository TrainerDailyRevenueRepository => trainerDailyRevenueRepository;
 
         public IBookingSeriesRepository BookingSeriesRepository => bookingSeriesRepository;
+
+        public IBookedSessionSlotRepository BookedSessionSlotRepository => bookedSessionSlotRepository;
 
         public void Clear()
         {

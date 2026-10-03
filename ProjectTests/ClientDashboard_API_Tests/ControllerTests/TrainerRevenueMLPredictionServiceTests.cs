@@ -22,6 +22,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
     {
         private readonly DataContext _dbContext;
         private readonly BookingSeriesRepository _bookingSeriesRepository;
+        private readonly BookedSessionSlotRepository _bookedSessionSlotRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly TrainerRevenueMLPredictionService _service;
         private readonly TrainerRevenueMLTrainingService _trainingService;
@@ -78,6 +79,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             // Initialize unit of work with all repositories
             _bookingSeriesRepository = new BookingSeriesRepository(_dbContext);
+            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_dbContext);
             _unitOfWork = new UnitOfWork(
                 _dbContext,
                 _userRepository,
@@ -90,7 +92,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 _emailVerificationTokenRepository,
                 _clientDailyFeatureRepository,
                 _trainerDailyRevenueRepository,
-                _passwordResetTokenRepository, _bookingSeriesRepository);
+                _passwordResetTokenRepository, _bookingSeriesRepository, _bookedSessionSlotRepository);
 
             // Setup temporary directory for ML models
             var tempRoot = Path.Combine(Path.GetTempPath(), $"TrainerMLPrediction_Tests_{Guid.NewGuid():N}");

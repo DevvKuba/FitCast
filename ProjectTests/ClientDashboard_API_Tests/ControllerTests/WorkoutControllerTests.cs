@@ -108,6 +108,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly IAutoPaymentCreationService _fakeAutoPaymentService;
         private readonly ClientBlockTerminationHelper _fakeClientBlockTerminator;
         private readonly BookingSeriesRepository _bookingSeriesRepository;
+        private readonly BookedSessionSlotRepository _bookedSessionSlotRepository;
         private readonly UnitOfWork _unitOfWork;
         private readonly WorkoutController _workoutController;
         private readonly FakeHttpContextAccessor _httpContextAccessor;
@@ -132,7 +133,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _clientDailyFeatureRepository = new ClientDailyFeatureRepository(_context);
             _trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(_context, _mapper);
             _bookingSeriesRepository = new BookingSeriesRepository(_context);
-            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository);
+            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_context);
+            _unitOfWork = new UnitOfWork(_context, _userRepository, _clientRepository, _workoutRepository, _trainerRepository, _notificationRepository, new NotificationRecipientStatusRepository(_context), _paymentRepository, _emailVerificationTokenRepository, _clientDailyFeatureRepository, _trainerDailyRevenueRepository, _passwordResetTokenRepository, _bookingSeriesRepository, _bookedSessionSlotRepository);
 
             _fakeNotificationService = new FakeNotificationService();
             _fakeAutoPaymentService = new FakeAutoPaymentCreationService();
