@@ -2,7 +2,6 @@
 {
     public enum SessionRecurrence
     {
-        OneOff = 0,
         Weekly = 7,
         BiWeekly = 14
     }
