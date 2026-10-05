@@ -4,6 +4,6 @@ namespace ClientDashboard_API.Interfaces.Services
 {
     public interface IBookingMaterializationService
     {
-        Task MaterializationBookingSeries(BookingSeries series);
+        Task MaterializeBookingSeriesAsync(BookingSeries series);
     }
 }
