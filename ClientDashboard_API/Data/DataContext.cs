@@ -83,6 +83,14 @@ namespace ClientDashboard_API.Data
                 .Property(t => t.TimeZoneId)
                 .HasDefaultValue(SupportedTimeZones.Default);
 
+            builder.Entity<BookedSessionSlot>()
+                .Property(s => s.StartDateTime)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            builder.Entity<BookedSessionSlot>()
+                .Property(s => s.EndDateTime)
+                .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
 
             builder.Entity<Trainer>()
                 .Property(t => t.AverageSessionPrice)

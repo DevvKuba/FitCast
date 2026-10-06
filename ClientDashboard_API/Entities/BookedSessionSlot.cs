@@ -16,9 +16,9 @@ namespace ClientDashboard_API.Entities
 
         public string? Description { get; set; }
 
-        public DateTime StartDateTime { get; set; }
+        public DateTime StartDateTime { get; set; } // Converted UTC time
 
-        public DateTime EndDateTime { get; set; }
+        public DateTime EndDateTime { get; set; } // like start date
 
         public SessionStatus Status { get; set; }
 

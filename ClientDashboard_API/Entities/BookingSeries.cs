@@ -16,9 +16,9 @@ namespace ClientDashboard_API.Entities
 
         public required int Duration { get; set; }
 
-        public DateOnly StartDate { get; set; }
+        public DateOnly StartDate { get; set; } // stored as local clock time
 
-        public TimeOnly StartTime { get; set; }
+        public TimeOnly StartTime { get; set; } // ssame as date
 
         public DateOnly MaterializedUntil { get; set; }
 
