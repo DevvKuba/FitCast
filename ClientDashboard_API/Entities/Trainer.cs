@@ -1,8 +1,12 @@
-﻿namespace ClientDashboard_API.Entities
+﻿using ClientDashboard_API.Helpers;
+
+namespace ClientDashboard_API.Entities
 {
     public class Trainer : UserBase
     {
         public string? BusinessName { get; set; }
+
+        public string TimeZoneId { get; set; } = SupportedTimeZones.Default;
 
         public decimal? AverageSessionPrice { get; set; }
 
