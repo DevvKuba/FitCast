@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
+using ClientDashboard_API.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientDashboard_API.Data
@@ -77,6 +78,10 @@ namespace ClientDashboard_API.Data
                 .Property(u => u.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()")
                 .ValueGeneratedOnAdd();
+
+            builder.Entity<Trainer>()
+                .Property(t => t.TimeZoneId)
+                .HasDefaultValue(SupportedTimeZones.Default);
 
 
             builder.Entity<Trainer>()

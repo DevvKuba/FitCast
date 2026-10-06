@@ -38,6 +38,7 @@ namespace ClientDashboard_API.Services
             //    }
 
             // 4. No Complete() here - the caller (controller on create, job nightly) saves once.
+            throw new NotImplementedException();
         }
     }
 }
