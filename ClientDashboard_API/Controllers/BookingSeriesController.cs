@@ -16,6 +16,20 @@ namespace ClientDashboard_API.Controllers
         [HttpPost("createBookingSeries")]
         public async Task<ActionResult<ApiResponseDto<string>>> CreateBookingSeriesAsync([FromBody] BookingSeriesCreateDto bookingSeriesDetails)
         {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer not found", Success = false });
+            }
+
+            await unitOfWork.BookingSeriesRepository.CreateBookingSeriesUnderTrainerAsync(trainer, bookingSeriesDetails);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving booking series: {bookingSeriesDetails.Title}", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = bookingSeriesDetails.Title, Message = $"booking series: {bookingSeriesDetails.Title} successfully created", Success = true });
 
         }
 
@@ -25,7 +39,20 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("updateBookingSeriesStartDate")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateBookingSeriesStartDateAsync([FromQuery] int bookingSeriesId, [FromBody] BookingSeriesStartDateUpdateDto updatedStartDate)
         {
-            throw new NotImplementedException();
+            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetTrainerBookingSeriesByIdAsync(currentUserAccessor.GetUserId(), bookingSeriesId);
+
+            if (bookingSeries is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "booking series not found", Success = false });
+            }
+
+            unitOfWork.BookingSeriesRepository.UpdateBookingSeriesStartDate(bookingSeries, updatedStartDate);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error updating start date for booking series: {bookingSeries.Title}", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = bookingSeries.Title, Message = $"booking series: {bookingSeries.Title} start date updated to {bookingSeries.StartDate}", Success = true });
         }
 
         /// <summary>
@@ -34,7 +61,20 @@ namespace ClientDashboard_API.Controllers
         [HttpDelete("deleteBookingSeries")]
         public async Task<ActionResult<ApiResponseDto<bool>>> DeleteBookingSeriesAsync([FromQuery] int bookingSeriesId)
         {
-            throw new NotImplementedException();
+            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetTrainerBookingSeriesByIdAsync(currentUserAccessor.GetUserId(), bookingSeriesId);
+
+            if (bookingSeries is null)
+            {
+                return NotFound(new ApiResponseDto<bool> { Data = false, Message = "booking series not found", Success = false });
+            }
+
+            unitOfWork.BookingSeriesRepository.DeleteBookingSeries(bookingSeries);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<bool> { Data = false, Message = $"error deleting booking series: {bookingSeries.Title}", Success = false });
+            }
+            return Ok(new ApiResponseDto<bool> { Data = true, Message = $"booking series: {bookingSeries.Title} successfully deleted", Success = true });
         }
     }
 }

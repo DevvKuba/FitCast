@@ -18,6 +18,9 @@ namespace ClientDashboard_API.Helpers
             CreateMap<PaymentUpdateDto, Payment>();
             CreateMap<TrainerDailyRevenueDto, TrainerDailyRevenue>();
             CreateMap<Notification, NotificationResponseDto>();
+            CreateMap<BookingSeriesCreateDto, BookingSeries>();
+            CreateMap<BookingSeries, BookingSeriesCreateDto>();
+            CreateMap<BookingSeriesStartDateUpdateDto, BookingSeries>();
         }
     }
 }
