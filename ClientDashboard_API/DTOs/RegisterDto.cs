@@ -32,5 +32,8 @@ namespace ClientDashboard_API.DTOs
         public int? ClientId { get; set; }
 
         public int? ClientsTrainerId { get; set; }
+
+        // trainer only - IANA id from SupportedTimeZones, clients leave this null
+        public string? TimeZoneId { get; set; }
     }
 }

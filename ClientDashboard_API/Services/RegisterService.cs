@@ -33,6 +33,11 @@ namespace ClientDashboard_API.Services
 
             if (request.Role == Enums.UserRole.Trainer)
             {
+                if (!SupportedTimeZones.IsSupported(request.TimeZoneId))
+                {
+                    return new ApiResponseDto<string> { Data = null, Message = "A supported time zone must be provided", Success = false };
+                }
+
                 var trainer = new Trainer
                 {
                     FirstName = request.FirstName,
@@ -40,7 +45,8 @@ namespace ClientDashboard_API.Services
                     Role = request.Role,
                     Email = request.Email,
                     PhoneNumber = request.PhoneNumber.Replace(" ", ""),
-                    PasswordHash = passwordHasher.Hash(request.Password)
+                    PasswordHash = passwordHasher.Hash(request.Password),
+                    TimeZoneId = request.TimeZoneId!
                 };
 
                 await unitOfWork.TrainerRepository.AddNewTrainerAsync(trainer);
