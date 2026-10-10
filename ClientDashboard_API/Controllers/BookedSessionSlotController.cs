@@ -44,9 +44,29 @@ namespace ClientDashboard_API.Controllers
         /// Trainer method deleting a single booked session slot
         /// </summary>
         [HttpDelete("deleteBookedSessionSlot")]
-        public async Task<ActionResult<ApiResponseDto<bool>>> DeleteBookedSessionSlotAsync([FromQuery] int bookedSessionSlotId)
+        public async Task<ActionResult<ApiResponseDto<string>>> DeleteBookedSessionSlotAsync([FromQuery] int bookedSessionSlotId)
         {
-            
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
+            }
+
+            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetBookedSessionSlotByIdAsync(bookedSessionSlotId);
+
+            if(bookedSessionSlot is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Booked session slot not found", Success = false });
+            }
+
+            unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlot(bookedSessionSlot);
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Error removing booked session slot", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = null, Message = $"Booked session slot removed", Success = true });
         }
     }
 }
