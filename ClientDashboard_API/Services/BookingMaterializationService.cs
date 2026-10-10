@@ -6,7 +6,7 @@ namespace ClientDashboard_API.Services
 {
     public class BookingMaterializationService(IUnitOfWork unitOfWork) : IBookingMaterializationService
     {
-        public Task MaterializeBookingSeriesAsync(BookingSeries series)
+        public Task<BookingSeries> MaterializeBookingSeriesAsync(BookingSeries series)
         {
             // Watermark rule: MaterializedUntil = date of the LAST slot already generated for this series.
 
@@ -43,8 +43,6 @@ namespace ClientDashboard_API.Services
             //        d. series.MaterializedUntil = next;
             //           next = next.AddDays(interval);
             //    }
-
-            // 4. No Complete() here - the caller (controller on create, job nightly) saves once.
             throw new NotImplementedException();
         }
     }

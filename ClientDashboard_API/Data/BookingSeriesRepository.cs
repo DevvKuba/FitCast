@@ -19,6 +19,14 @@ namespace ClientDashboard_API.Data
             return await context.BookingSeries.FirstOrDefaultAsync(b => b.Id == bookingSeriesId && b.TrainerId == trainerId);
         }
 
+        public async Task<BookingSeries?> GetBookingSeriesByIdWithTrainer(int trainerId, int bookingSeriesId)
+        {
+            return await context.BookingSeries
+                .Where(b => b.Id == bookingSeriesId && b.TrainerId == trainerId)
+                .Include(b => b.Trainer)
+                .FirstOrDefaultAsync();
+        }
+
         public void UpdateBookingSeriesStartDate(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate)
         {
             mapper.Map(updatedStartDate, bookingSeries);
@@ -29,12 +37,14 @@ namespace ClientDashboard_API.Data
             context.BookingSeries.Remove(bookingSeries);
         }
 
-        public async Task CreateBookingSeriesUnderTrainerAsync(Trainer trainer, BookingSeriesCreateDto bookingSeriesDetails)
+        public async Task<BookingSeries> CreateBookingSeriesUnderTrainerAsync(Trainer trainer, BookingSeriesCreateDto bookingSeriesDetails)
         {
             var bookingSeries = mapper.Map<BookingSeries>(bookingSeriesDetails);
             bookingSeries.TrainerId = trainer.Id;
 
             await context.AddAsync(bookingSeries);
+
+            return bookingSeries;
         }
 
         public async Task RemoveAllBookingSeriesForUserAsync(UserBase user)
