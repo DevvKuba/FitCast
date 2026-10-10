@@ -41,6 +41,7 @@ namespace ClientDashboard_API.Data
         {
             var bookingSeries = mapper.Map<BookingSeries>(bookingSeriesDetails);
             bookingSeries.TrainerId = trainer.Id;
+            bookingSeries.MaterializedUntil = bookingSeries.StartDate.AddDays(-(int)bookingSeries.Recurrence);
 
             await context.AddAsync(bookingSeries);
 

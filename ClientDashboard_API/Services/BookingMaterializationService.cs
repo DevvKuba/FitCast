@@ -1,4 +1,5 @@
-﻿using ClientDashboard_API.Entities;
+﻿using ClientDashboard_API.DTOs;
+using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
 
@@ -6,44 +7,54 @@ namespace ClientDashboard_API.Services
 {
     public class BookingMaterializationService(IUnitOfWork unitOfWork) : IBookingMaterializationService
     {
-        public Task<BookingSeries> MaterializeBookingSeriesAsync(BookingSeries series)
+        public async Task MaterializeBookingSeriesAsync(BookingSeries series)
         {
-            // Watermark rule: MaterializedUntil = date of the LAST slot already generated for this series.
+            var offset = series.MaterializedUntil.DayNumber - series.StartDate.DayNumber;
+            var interval = (int)series.Recurrence;
 
-            // On series creation (in the controller), set it to StartDate.AddDays(-(int)Recurrence)
-            // so the first step of the loop below lands exactly on StartDate.
+            if (offset < -interval || offset % interval != 0) // checking its the same weekday & at most one step behind materialization
+            {
+                throw new InvalidOperationException($"Booking series {series.Id} watermark is misaligned");
+            }
 
-            // 1. Work in the trainer's local time zone.
-            //    tz         -> get per series.Trainer.TimeZoneId
+            var tz = TimeZoneInfo.FindSystemTimeZoneById(series.Trainer.TimeZoneId);
 
-            //    todayLocal = local date of DateTime.UtcNow in tz
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
 
-            //    targetDate = todayLocal + 90 days (keep 90 as a constant on this service, not in callers)
+            var todayLocal = DateOnly.FromDateTime(nowLocal);
 
-            // 2. interval = (int)series.Recurrence (7 or 14)
-            //    Guard: if interval <= 0, return/throw - a 0 interval would loop forever.
+            var targetDate = todayLocal.AddDays(90);
 
-            // 3. next = series.MaterializedUntil.AddDays(interval)
-            //    while (next <= targetDate)
-            //    {
-            //        a. If next < todayLocal (back-dated series): don't create a slot, just advance.
+            if (interval <= 0) throw new InvalidOperationException("interval set to incorrect value");
 
-            //        b. Build the times in local, then convert:
-            //           localStart = next.ToDateTime(series.StartTime)
+            var next = series.MaterializedUntil.AddDays(interval);
 
-            //           startUtc   = TimeZoneInfo.ConvertTimeToUtc(localStart, tz) -- saved for bookedSessionSlot
-            //           endUtc     = startUtc.AddMinutes(series.Duration) -- saved for bookedSessionSlot
+            while(next <= targetDate)
+            {
+                if (next < todayLocal) continue;
 
-            //        c. Stage a new BookedSessionSlot via the slot repository:
-            //           TrainerId, ClientId, Title, Description copied from series,
-            //           BookingSeries = series (navigation, NOT BookingSeriesId - a new series
-            //           has Id 0 until it's saved), StartDateTime = startUtc,
-            //           EndDateTime = endUtc, Status = SessionStatus.Scheduled
+                var localStart = next.ToDateTime(series.StartTime);
 
-            //        d. series.MaterializedUntil = next;
-            //           next = next.AddDays(interval);
-            //    }
-            throw new NotImplementedException();
+                var startUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
+                var endUtc = startUtc.AddMinutes(series.Duration);
+
+                var newBookedSessionSlot = new MaterializedBookedSessionSlotDto
+                {
+                    TrainerId = series.TrainerId,
+                    BookingSeries = series,
+                    ClientId = series.ClientId,
+                    Title = series.Title,
+                    Description = series.Description,
+                    StartDateTime = startUtc,
+                    EndDateTime = endUtc
+                };
+
+                await unitOfWork.BookedSessionSlotRepository.AddBookedMaterializedSlotsAsync(newBookedSessionSlot);
+
+                series.MaterializedUntil = DateOnly.FromDateTime(localStart);
+
+                next = next.AddDays(interval);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
+using ClientDashboard_API.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,9 @@ namespace ClientDashboard_API.Controllers
         IUnitOfWork unitOfWork,
         IMapper mapper,
         ICurrentUserAccessor currentUserAccessor,
-        IAuthorizationService authorizationService) : BaseAPIController
+        IAuthorizationService authorizationService,
+        IBookingMaterializationService materializationService
+        ) : BaseAPIController
     {
         /// <summary>
         /// Trainer method creating a new booking series, materializing its initial session slots
@@ -42,7 +45,9 @@ namespace ClientDashboard_API.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to create a booking series for this client", Success = false });
             }
 
-            await unitOfWork.BookingSeriesRepository.CreateBookingSeriesUnderTrainerAsync(trainer, bookingSeriesDetails);
+            var unmaterializedSeries = await unitOfWork.BookingSeriesRepository.CreateBookingSeriesUnderTrainerAsync(trainer, bookingSeriesDetails);
+
+            await materializationService.MaterializeBookingSeriesAsync(unmaterializedSeries);
 
             if (!await unitOfWork.Complete())
             {

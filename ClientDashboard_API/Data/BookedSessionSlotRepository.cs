@@ -30,7 +30,13 @@ namespace ClientDashboard_API.Data
             var bookedSessionSlot = mapper.Map<BookedSessionSlot>(bookedSessionSlotDto);
             bookedSessionSlot.TrainerId = trainer.Id;
 
-            await context.AddAsync(bookedSessionSlot);
+            await context.BookedSessionsSlot.AddAsync(bookedSessionSlot);
+        }
+
+        public async Task AddBookedMaterializedSlotsAsync(MaterializedBookedSessionSlotDto sessionSlotDto)
+        {
+            var bookedSessionSlot = mapper.Map<BookedSessionSlot>(sessionSlotDto);
+            await context.BookedSessionsSlot.AddAsync(bookedSessionSlot);
         }
 
         public async Task RemoveAllBookedSessionSlotsForUserAsync(UserBase user)
