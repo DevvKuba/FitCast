@@ -21,6 +21,7 @@ namespace ClientDashboard_API.Helpers
             CreateMap<BookingSeriesCreateDto, BookingSeries>();
             CreateMap<BookingSeries, BookingSeriesCreateDto>();
             CreateMap<BookingSeriesStartDateUpdateDto, BookingSeries>();
+            CreateMap<BookedSessionSlotDto, BookedSessionSlot>();
         }
     }
 }

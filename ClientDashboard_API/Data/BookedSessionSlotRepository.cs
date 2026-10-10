@@ -10,11 +10,25 @@ namespace ClientDashboard_API.Data
     {
         public async Task<BookedSessionSlot?> GetBookedSessionSlotByIdAsync(int sessionId)
         {
-            return await context.BookedSessionsSlot.Where(s => s.Id == sessionId).FirstAsync();
+            return await context.BookedSessionsSlot.Where(s => s.Id == sessionId).FirstOrDefaultAsync();
         }
-        public async Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotAddDto bookedSessionSlotDto)
+        public async Task<List<BookedSessionSlot>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
+        {
+            return await context.BookedSessionsSlot
+                .Where(s => s.TrainerId == trainerId && s.StartDateTime >= rangeStartUtc && s.StartDateTime < rangeEndUtc)
+                .OrderBy(s => s.StartDateTime)
+                .ToListAsync();
+        }
+
+        public void UpdateBookedSessionSlot(BookedSessionSlot bookedSessionSlot, BookedSessionSlotDto updatedBookedSessionSlot)
+        {
+            mapper.Map(updatedBookedSessionSlot, bookedSessionSlot);
+        }
+
+        public async Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotDto bookedSessionSlotDto)
         {
             var bookedSessionSlot = mapper.Map<BookedSessionSlot>(bookedSessionSlotDto);
+            bookedSessionSlot.TrainerId = trainer.Id;
 
             await context.AddAsync(bookedSessionSlot);
         }

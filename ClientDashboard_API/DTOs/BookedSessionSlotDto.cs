@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClientDashboard_API.DTOs
 {
-    public class BookedSessionSlotAddDto
+    public class BookedSessionSlotDto
     {
         [Required(ErrorMessage = "Client ID must be provided")]
         public required int ClientId { get; set; }
