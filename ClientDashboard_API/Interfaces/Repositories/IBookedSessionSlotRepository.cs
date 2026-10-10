@@ -5,7 +5,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
 {
     public interface IBookedSessionSlotRepository
     {
-        Task<BookedSessionSlot?> GetBookedSessionSlotByIdAsync(int sessionId);
+        Task<BookedSessionSlot?> GetTrainerBookedSessionSlotByIdAsync(int trainerId, int sessionId);
         Task<List<BookedSessionSlot>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc);
         void UpdateBookedSessionSlot(BookedSessionSlot bookedSessionSlot, BookedSessionSlotDto updatedBookedSessionSlot);
         Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotDto bookedSessionSlotDto);

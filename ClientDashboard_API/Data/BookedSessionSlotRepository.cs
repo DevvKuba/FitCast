@@ -8,9 +8,9 @@ namespace ClientDashboard_API.Data
 {
     public class BookedSessionSlotRepository(DataContext context, IMapper mapper) : IBookedSessionSlotRepository
     {
-        public async Task<BookedSessionSlot?> GetBookedSessionSlotByIdAsync(int sessionId)
+        public async Task<BookedSessionSlot?> GetTrainerBookedSessionSlotByIdAsync(int trainerId, int sessionId)
         {
-            return await context.BookedSessionsSlot.Where(s => s.Id == sessionId).FirstOrDefaultAsync();
+            return await context.BookedSessionsSlot.FirstOrDefaultAsync(s => s.Id == sessionId && s.TrainerId == trainerId);
         }
         public async Task<List<BookedSessionSlot>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
         {

@@ -45,9 +45,9 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
             }
 
-            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetBookedSessionSlotByIdAsync(bookedSessionSlotId);
+            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, bookedSessionSlotId);
 
-            if (bookedSessionSlot is null || bookedSessionSlot.TrainerId != trainer.Id)
+            if (bookedSessionSlot is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Booked session slot not found", Success = false });
             }
@@ -111,7 +111,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
             }
 
-            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetBookedSessionSlotByIdAsync(bookedSessionSlotId);
+            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, bookedSessionSlotId);
 
             if(bookedSessionSlot is null)
             {
