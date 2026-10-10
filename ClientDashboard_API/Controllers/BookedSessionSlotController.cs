@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Interfaces.Helpers;
@@ -9,7 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize(Roles = "Trainer")]
-    public class BookedSessionSlotController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
+    public class BookedSessionSlotController(
+        IUnitOfWork unitOfWork,
+        IMapper mapper, 
+        ICurrentUserAccessor currentUserAccessor,
+        IAuthorizationService authorizationService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method retrieving their booked session slots from today up to 90 days ahead
@@ -59,6 +64,13 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Client associated to booked session not found", Success = false });
             }
 
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to book sessions for this client", Success = false });
+            }
+
             unitOfWork.BookedSessionSlotRepository.UpdateBookedSessionSlot(bookedSessionSlot, newBookedSessionSlot);
 
             if (!await unitOfWork.Complete())
@@ -88,6 +100,13 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Client associated to booked session not found", Success = false });
             }
 
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to book sessions for this client", Success = false });
+            }
+
             await unitOfWork.BookedSessionSlotRepository.AddBookingSlotForTrainerAsync(trainer, bookedSessionSlotDetails);
 
             if (!await unitOfWork.Complete())
@@ -95,7 +114,6 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Error saving booked session slot for {client.FirstName}", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"Booked session slot at {bookedSessionSlotDetails.StartDateTime} created for {client.FirstName}", Success = true });
-            
         }
 
         /// <summary>

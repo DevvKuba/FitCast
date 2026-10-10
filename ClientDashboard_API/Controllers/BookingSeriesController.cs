@@ -1,4 +1,5 @@
 using AutoMapper;
+using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
@@ -8,7 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientDashboard_API.Controllers
 {
     [Authorize(Roles = "Trainer")]
-    public class BookingSeriesController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserAccessor currentUserAccessor) : BaseAPIController
+    public class BookingSeriesController(
+        IUnitOfWork unitOfWork,
+        IMapper mapper,
+        ICurrentUserAccessor currentUserAccessor,
+        IAuthorizationService authorizationService) : BaseAPIController
     {
         /// <summary>
         /// Trainer method creating a new booking series, materializing its initial session slots
@@ -21,6 +26,20 @@ namespace ClientDashboard_API.Controllers
             if (trainer is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer not found", Success = false });
+            }
+
+            var client = await unitOfWork.ClientRepository.GetClientByIdAsync(bookingSeriesDetails.ClientId);
+
+            if (client is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "client associated to booking series not found", Success = false });
+            }
+
+            var authResult = await authorizationService.AuthorizeAsync(User, client, new ResourceOwnerRequirement());
+
+            if (!authResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to create a booking series for this client", Success = false });
             }
 
             await unitOfWork.BookingSeriesRepository.CreateBookingSeriesUnderTrainerAsync(trainer, bookingSeriesDetails);
