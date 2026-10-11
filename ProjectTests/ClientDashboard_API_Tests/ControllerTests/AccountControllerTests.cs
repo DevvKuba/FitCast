@@ -202,7 +202,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "1234567890",
                 Password = "Password123!",
                 ConfirmPassword = "Password123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             var result = await _accountController.Register(registerDto);
@@ -236,7 +237,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "0987654321",
                 Password = "Password456!",
                 ConfirmPassword = "Password456!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             var result = await _accountController.Register(registerDto);

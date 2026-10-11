@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
 
@@ -9,6 +10,11 @@ namespace ClientDashboard_API.Services
     {
         public async Task MaterializeBookingSeriesAsync(BookingSeries series)
         {
+            if(!Enum.IsDefined(series.Recurrence))
+            {
+                throw new InvalidOperationException("Reocurrance not set to valid value");
+            }
+
             var offset = series.MaterializedUntil.DayNumber - series.StartDate.DayNumber;
             var interval = (int)series.Recurrence;
 

@@ -68,7 +68,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+1234567890",
                 Password = "SecurePassword123!",
                 ConfirmPassword = "SecurePassword123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -105,7 +106,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+1 234 567 8900", // With spaces
                 Password = "Password123!",
                 ConfirmPassword = "Password123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -143,7 +145,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+2222222222",
                 Password = "Password123!",
                 ConfirmPassword = "Password123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -180,7 +183,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+1234567890", // Duplicate phone number
                 Password = "Password123!",
                 ConfirmPassword = "Password123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -413,7 +417,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+5555555555",
                 Password = "MySecurePassword456!",
                 ConfirmPassword = "MySecurePassword456!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -441,7 +446,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 PhoneNumber = "+4444444444",
                 Password = "Password123!",
                 ConfirmPassword = "Password123!",
-                Role = UserRole.Trainer
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             // Act
@@ -453,6 +459,63 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var trainer = await _unitOfWork.TrainerRepository.GetTrainerByEmailAsync(registerDto.Email);
             Assert.NotNull(trainer);
             Assert.False(trainer.EmailVerified); // Should be false initially
+        }
+
+        [Fact]
+        public async Task TestRegisterServiceStoresProvidedTimeZoneForTrainerAsync()
+        {
+            // Arrange
+            var registerDto = new RegisterDto
+            {
+                FirstName = "zone",
+                Surname = "test",
+                Email = "zone.test@example.com",
+                PhoneNumber = "+3333333333",
+                Password = "Password123!",
+                ConfirmPassword = "Password123!",
+                Role = UserRole.Trainer,
+                TimeZoneId = SupportedTimeZones.Warsaw
+            };
+
+            // Act
+            var result = await _registerService.Handle(registerDto);
+
+            // Assert
+            Assert.True(result.Success);
+
+            var trainer = await _unitOfWork.TrainerRepository.GetTrainerByEmailAsync(registerDto.Email);
+            Assert.NotNull(trainer);
+            Assert.Equal(SupportedTimeZones.Warsaw, trainer.TimeZoneId);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("Europe/Prague")]
+        [InlineData("GMT Standard Time")]
+        public async Task TestRegisterServiceRejectsTrainerWithMissingOrUnsupportedTimeZoneAsync(string? timeZoneId)
+        {
+            // Arrange
+            var registerDto = new RegisterDto
+            {
+                FirstName = "nozone",
+                Surname = "test",
+                Email = "nozone.test@example.com",
+                PhoneNumber = "+2222222222",
+                Password = "Password123!",
+                ConfirmPassword = "Password123!",
+                Role = UserRole.Trainer,
+                TimeZoneId = timeZoneId
+            };
+
+            // Act
+            var result = await _registerService.Handle(registerDto);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("A supported time zone must be provided", result.Message);
+            Assert.Null(await _unitOfWork.TrainerRepository.GetTrainerByEmailAsync(registerDto.Email));
+            Assert.Empty(_emailVerificationService.SentEmails);
         }
     }
 }

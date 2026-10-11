@@ -77,8 +77,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _passwordResetTokenRepository = new PasswordResetTokenRepository(_dbContext);
 
             // Initialize unit of work with all repositories
-            _bookingSeriesRepository = new BookingSeriesRepository(_dbContext);
-            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_dbContext);
+            _bookingSeriesRepository = new BookingSeriesRepository(_dbContext, _mapper);
+            _bookedSessionSlotRepository = new BookedSessionSlotRepository(_dbContext, _mapper);
             _unitOfWork = new UnitOfWork(
                 _dbContext,
                 _userRepository,

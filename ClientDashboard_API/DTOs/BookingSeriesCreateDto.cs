@@ -22,7 +22,7 @@ namespace ClientDashboard_API.DTOs
         [Required(ErrorMessage = "You must provide a start time")]
         public required TimeOnly StartTime { get; set; } // trainer's local wall-clock time
 
-        [Required(ErrorMessage = "You must provide a recurrence")]
+        [EnumDataType(typeof(SessionRecurrence), ErrorMessage = "Recurrence must be weekly (7) or bi-weekly (14)")]
         public required SessionRecurrence Recurrence { get; set; }
     }
 }

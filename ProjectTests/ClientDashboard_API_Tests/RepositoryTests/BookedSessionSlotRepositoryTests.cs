@@ -1,5 +1,6 @@
 using AutoMapper;
 using ClientDashboard_API.Data;
+using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
@@ -56,10 +57,10 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             return series;
         }
 
-        private async Task SeedSlotAsync(Trainer trainer, Client client, BookingSeries? series = null)
+        private async Task<BookedSessionSlot> SeedSlotAsync(Trainer trainer, Client client, BookingSeries? series = null, DateTime? startUtc = null)
         {
-            var start = DateTime.UtcNow.Date.AddDays(1).AddHours(18);
-            await _context.BookedSessionsSlot.AddAsync(new BookedSessionSlot
+            var start = startUtc ?? DateTime.UtcNow.Date.AddDays(1).AddHours(18);
+            var slot = new BookedSessionSlot
             {
                 TrainerId = trainer.Id,
                 ClientId = client.Id,
@@ -68,8 +69,184 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 StartDateTime = start,
                 EndDateTime = start.AddHours(1),
                 Status = SessionStatus.Scheduled
+            };
+            await _context.BookedSessionsSlot.AddAsync(slot);
+            await _unitOfWork.Complete();
+            return slot;
+        }
+
+        private static BookedSessionSlotDto SlotDto(int clientId, DateTime startUtc) => new()
+        {
+            ClientId = clientId,
+            Title = "updated session",
+            Description = "updated notes",
+            StartDateTime = startUtc,
+            EndDateTime = startUtc.AddMinutes(45)
+        };
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotByIdAsync_ReturnsTheTrainersOwnSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var slot = await SeedSlotAsync(trainer, await SeedClientAsync(trainer, "alice"));
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, slot.Id);
+
+            Assert.NotNull(result);
+            Assert.Equal(slot.Id, result.Id);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotByIdAsync_ReturnsNullForAnotherTrainersSlot()
+        {
+            var trainer = await SeedTrainerAsync("john");
+            var otherTrainer = await SeedTrainerAsync("jane");
+            var otherSlot = await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"));
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, otherSlot.Id);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotByIdAsync_ReturnsNullWhenSlotDoesNotExist()
+        {
+            var trainer = await SeedTrainerAsync();
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, 999);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotsInRangeAsync_ReturnsOnlySlotsInsideTheRange_OrderedByStart()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var rangeStart = new DateTime(2026, 10, 10, 0, 0, 0, DateTimeKind.Utc);
+            var rangeEnd = rangeStart.AddDays(90);
+
+            var later = await SeedSlotAsync(trainer, alice, startUtc: rangeStart.AddDays(30));
+            var atStart = await SeedSlotAsync(trainer, alice, startUtc: rangeStart);
+            await SeedSlotAsync(trainer, alice, startUtc: rangeStart.AddMinutes(-1));
+            await SeedSlotAsync(trainer, alice, startUtc: rangeEnd);
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, rangeStart, rangeEnd);
+
+            // Start is inclusive, end is exclusive.
+            Assert.Equal([atStart.Id, later.Id], result.Select(s => s.Id));
+        }
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotsInRangeAsync_ExcludesOtherTrainersSlots()
+        {
+            var trainer = await SeedTrainerAsync("john");
+            var otherTrainer = await SeedTrainerAsync("jane");
+            var rangeStart = new DateTime(2026, 10, 10, 0, 0, 0, DateTimeKind.Utc);
+            await SeedSlotAsync(trainer, await SeedClientAsync(trainer, "alice"), startUtc: rangeStart.AddDays(1));
+            await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"), startUtc: rangeStart.AddDays(1));
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, rangeStart, rangeStart.AddDays(90));
+
+            Assert.Single(result);
+            Assert.Equal(trainer.Id, result[0].TrainerId);
+        }
+
+        [Fact]
+        public async Task UpdateBookedSessionSlot_MapsDtoFields_AndKeepsTrainerSeriesAndStatus()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var bob = await SeedClientAsync(trainer, "bob");
+            var series = await SeedSeriesAsync(trainer, alice);
+            var slot = await SeedSlotAsync(trainer, alice, series);
+            var newStart = new DateTime(2026, 11, 1, 10, 0, 0, DateTimeKind.Utc);
+
+            _bookedSessionSlotRepository.UpdateBookedSessionSlot(slot, SlotDto(bob.Id, newStart));
+            await _unitOfWork.Complete();
+
+            var saved = await _context.BookedSessionsSlot.SingleAsync();
+            Assert.Equal(bob.Id, saved.ClientId);
+            Assert.Equal("updated session", saved.Title);
+            Assert.Equal("updated notes", saved.Description);
+            Assert.Equal(newStart, saved.StartDateTime);
+            Assert.Equal(newStart.AddMinutes(45), saved.EndDateTime);
+            // Fields the DTO doesn't carry stay as they were.
+            Assert.Equal(trainer.Id, saved.TrainerId);
+            Assert.Equal(series.Id, saved.BookingSeriesId);
+            Assert.Equal(SessionStatus.Scheduled, saved.Status);
+        }
+
+        [Fact]
+        public async Task AddBookingSlotForTrainerAsync_AssignsTrainerAndCreatesStandaloneSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var start = new DateTime(2026, 11, 1, 10, 0, 0, DateTimeKind.Utc);
+
+            await _bookedSessionSlotRepository.AddBookingSlotForTrainerAsync(trainer, SlotDto(alice.Id, start));
+            await _unitOfWork.Complete();
+
+            var saved = await _context.BookedSessionsSlot.SingleAsync();
+            Assert.Equal(trainer.Id, saved.TrainerId);
+            Assert.Equal(alice.Id, saved.ClientId);
+            Assert.Null(saved.BookingSeriesId);
+            Assert.Equal(SessionStatus.Scheduled, saved.Status);
+            Assert.Equal(start, saved.StartDateTime);
+        }
+
+        [Fact]
+        public async Task AddBookedMaterializedSlotsAsync_LinksSlotToAnUnsavedSeriesThroughTheNavigation()
+        {
+            // A new series has Id 0 until Complete() - the slot must be linked by reference, and the
+            // series must be inserted once, not duplicated by the mapping.
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = new BookingSeries
+            {
+                TrainerId = trainer.Id,
+                ClientId = alice.Id,
+                Title = "weekly session",
+                Duration = 60,
+                StartDate = new DateOnly(2026, 10, 11),
+                StartTime = new TimeOnly(9, 0),
+                Recurrence = SessionRecurrence.Weekly
+            };
+            await _context.BookingSeries.AddAsync(series);
+            var start = new DateTime(2026, 10, 11, 8, 0, 0, DateTimeKind.Utc);
+
+            await _bookedSessionSlotRepository.AddBookedMaterializedSlotsAsync(new MaterializedBookedSessionSlotDto
+            {
+                TrainerId = trainer.Id,
+                ClientId = alice.Id,
+                Title = series.Title,
+                StartDateTime = start,
+                EndDateTime = start.AddHours(1),
+                BookingSeries = series
             });
             await _unitOfWork.Complete();
+
+            var saved = await _context.BookedSessionsSlot.SingleAsync();
+            Assert.Equal(1, await _context.BookingSeries.CountAsync());
+            Assert.NotEqual(0, series.Id);
+            Assert.Equal(series.Id, saved.BookingSeriesId);
+            Assert.Equal(trainer.Id, saved.TrainerId);
+            Assert.Equal(SessionStatus.Scheduled, saved.Status);
+        }
+
+        [Fact]
+        public async Task RemoveBookedSessionSlot_RemovesOnlyThatSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var toRemove = await SeedSlotAsync(trainer, alice);
+            var toKeep = await SeedSlotAsync(trainer, alice);
+
+            _bookedSessionSlotRepository.RemoveBookedSessionSlot(toRemove);
+            await _unitOfWork.Complete();
+
+            Assert.False(await _context.BookedSessionsSlot.AnyAsync(s => s.Id == toRemove.Id));
+            Assert.True(await _context.BookedSessionsSlot.AnyAsync(s => s.Id == toKeep.Id));
         }
 
         [Fact]

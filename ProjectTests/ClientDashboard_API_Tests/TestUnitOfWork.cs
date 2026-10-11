@@ -52,8 +52,8 @@ namespace ClientDashboard_API_Tests
             passwordResetTokenRepository = new PasswordResetTokenRepository(context);
             clientDailyFeatureRepository = new ClientDailyFeatureRepository(context);
             trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context, mapper);
-            bookingSeriesRepository = new BookingSeriesRepository(context);
-            bookedSessionSlotRepository = new BookedSessionSlotRepository(context);
+            bookingSeriesRepository = new BookingSeriesRepository(context, mapper);
+            bookedSessionSlotRepository = new BookedSessionSlotRepository(context, mapper);
             unitOfWork = new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, notificationRecipientStatusRepository, paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository, bookingSeriesRepository, bookedSessionSlotRepository);
         }
     }

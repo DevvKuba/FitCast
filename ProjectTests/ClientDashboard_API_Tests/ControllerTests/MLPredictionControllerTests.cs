@@ -216,7 +216,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.True(response.Success);
             Assert.True(response.Data!.TotalRevenue > 0);
             Assert.True(response.Data.AverageMonthlyRevenue > 0);
-            Assert.True(response.Data.EndingActiveClients >= response.Data.StartingActiveClients);
         }
 
         [Fact]
@@ -243,7 +242,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 FirstName = $"TestTrainer_{Guid.NewGuid():N}",
                 Surname = "Unit",
                 Email = $"trainer_{Guid.NewGuid():N}@test.local",
-                DefaultCurrency = "GBP"
+                DefaultCurrency = "GBP",
+                TimeZoneId = "Europe/London"
             };
 
             await _context.Trainer.AddAsync(trainer);

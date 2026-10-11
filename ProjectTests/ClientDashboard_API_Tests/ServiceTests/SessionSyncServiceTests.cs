@@ -805,8 +805,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var passwordResetTokenRepository = new PasswordResetTokenRepository(context);
             var clientDailyFeatureRepository = new ClientDailyFeatureRepository(context);
             var trainerDailyRevenueRepository = new TrainerDailyRevenueRepository(context, _mapper);
-            var bookingSeriesRepository = new BookingSeriesRepository(context);
-            var bookedSessionSlotRepository = new BookedSessionSlotRepository(context);
+            var bookingSeriesRepository = new BookingSeriesRepository(context, _mapper);
+            var bookedSessionSlotRepository = new BookedSessionSlotRepository(context, _mapper);
 
             return new UnitOfWork(context, userRepository, clientRepository, workoutRepository, trainerRepository, notificationRepository, new NotificationRecipientStatusRepository(context), paymentRepository, emailVerificationTokenRepository, clientDailyFeatureRepository, trainerDailyRevenueRepository, passwordResetTokenRepository, bookingSeriesRepository, bookedSessionSlotRepository);
         }

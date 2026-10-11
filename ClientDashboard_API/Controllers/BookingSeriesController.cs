@@ -72,6 +72,8 @@ namespace ClientDashboard_API.Controllers
 
             unitOfWork.BookingSeriesRepository.UpdateBookingSeriesStartDate(bookingSeries, updatedStartDate);
 
+            // re-materialize slots ??
+
             if (!await unitOfWork.Complete())
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error updating start date for booking series: {bookingSeries.Title}", Success = false });
