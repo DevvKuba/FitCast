@@ -27,9 +27,10 @@ namespace ClientDashboard_API.Data
                 .FirstOrDefaultAsync();
         }
 
-        public void UpdateBookingSeriesStartDate(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate)
+        public void UpdateBookingSeriesStartDateAndResetMaterializedUntil(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate)
         {
             mapper.Map(updatedStartDate, bookingSeries);
+            bookingSeries.MaterializedUntil = bookingSeries.StartDate.AddDays(-(int)bookingSeries.Recurrence);
         }
 
         public void DeleteBookingSeries(BookingSeries bookingSeries)

@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<BookingSeries?> GetBookingSeriesByIdWithTrainer(int trainerId, int bookingSeriesId);
 
-        void UpdateBookingSeriesStartDate(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate);
+        void UpdateBookingSeriesStartDateAndResetMaterializedUntil(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate);
 
         void DeleteBookingSeries(BookingSeries bookingSeries);
 
