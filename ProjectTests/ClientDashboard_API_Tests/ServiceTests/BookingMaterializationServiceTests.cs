@@ -80,21 +80,22 @@ namespace ClientDashboard_API_Tests.ServiceTests
         };
 
         [Theory]
-        [InlineData(SessionRecurrence.Weekly, 13)]   // days 0, 7, ... 84
-        [InlineData(SessionRecurrence.BiWeekly, 7)]  // days 0, 14, ... 84
+        [InlineData(SessionRecurrence.Weekly, 13)]   // days 1, 8, ... 85
+        [InlineData(SessionRecurrence.BiWeekly, 7)]  // days 1, 15, ... 85
         public async Task NewSeries_CreatesASlotEveryIntervalAcrossTheWindow(SessionRecurrence recurrence, int expectedSlots)
         {
+            // Starts tomorrow so the first occurrence is always in the future, whatever time the suite runs.
             var (trainer, client) = await SeedTrainerAndClientAsync();
             var today = TodayIn(trainer.TimeZoneId);
 
-            await CreateAndMaterializeAsync(trainer, client, today, recurrence);
+            await CreateAndMaterializeAsync(trainer, client, today.AddDays(1), recurrence);
 
             var localDates = (await _context.BookedSessionsSlot.OrderBy(s => s.StartDateTime).ToListAsync())
                 .Select(s => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(s.StartDateTime, Zone(trainer.TimeZoneId))))
                 .ToList();
 
             Assert.Equal(expectedSlots, localDates.Count);
-            Assert.Equal(today, localDates[0]);
+            Assert.Equal(today.AddDays(1), localDates[0]);
             Assert.All(localDates.Zip(localDates.Skip(1)), pair => Assert.Equal((int)recurrence, pair.Second.DayNumber - pair.First.DayNumber));
             Assert.True(localDates[^1] <= today.AddDays(WindowDays));
         }
@@ -105,9 +106,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var (trainer, client) = await SeedTrainerAndClientAsync();
             var today = TodayIn(trainer.TimeZoneId);
 
-            var series = await CreateAndMaterializeAsync(trainer, client, today);
+            var series = await CreateAndMaterializeAsync(trainer, client, today.AddDays(1));
 
-            Assert.Equal(today.AddDays(84), series.MaterializedUntil);
+            Assert.Equal(today.AddDays(85), series.MaterializedUntil);
         }
 
         [Fact]

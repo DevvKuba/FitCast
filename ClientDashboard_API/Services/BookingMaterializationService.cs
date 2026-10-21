@@ -3,6 +3,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ClientDashboard_API.Services
 {
@@ -31,17 +32,20 @@ namespace ClientDashboard_API.Services
 
             var targetDate = todayLocal.AddDays(90);
 
-            if (interval <= 0) throw new InvalidOperationException("interval set to incorrect value");
-
             var next = series.MaterializedUntil.AddDays(interval);
 
             while(next <= targetDate)
             {
-                if (next < todayLocal) continue;
-
                 var localStart = next.ToDateTime(series.StartTime);
-
                 var startUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
+
+                if(startUtc < DateTime.UtcNow)
+                {
+                    series.MaterializedUntil = next;
+                    next = next.AddDays(interval);
+                    continue;
+                }
+
                 var endUtc = startUtc.AddMinutes(series.Duration);
 
                 var newBookedSessionSlot = new MaterializedBookedSessionSlotDto
@@ -57,8 +61,7 @@ namespace ClientDashboard_API.Services
 
                 await unitOfWork.BookedSessionSlotRepository.AddBookedMaterializedSlotsAsync(newBookedSessionSlot);
 
-                series.MaterializedUntil = DateOnly.FromDateTime(localStart);
-
+                series.MaterializedUntil = next;
                 next = next.AddDays(interval);
             }
         }

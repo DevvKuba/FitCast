@@ -235,6 +235,61 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task RemoveBookedSessionSlotsAtCutOffDateAsync_RemovesScheduledSeriesSlotsFromTheCutOff()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
+            var cutOff = new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+            var beforeCutOff = await SeedSlotAsync(trainer, alice, series, cutOff.AddDays(-1));
+            var atCutOff = await SeedSlotAsync(trainer, alice, series, cutOff);
+            var afterCutOff = await SeedSlotAsync(trainer, alice, series, cutOff.AddDays(7));
+
+            await _bookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(series.Id, cutOff);
+            await _unitOfWork.Complete();
+
+            // Cut-off is inclusive.
+            Assert.Equal([beforeCutOff.Id], await _context.BookedSessionsSlot.Select(s => s.Id).ToListAsync());
+        }
+
+        [Theory]
+        [InlineData(SessionStatus.Completed)]
+        [InlineData(SessionStatus.Cancelled)]
+        public async Task RemoveBookedSessionSlotsAtCutOffDateAsync_KeepsSlotsThatAreNoLongerScheduled(SessionStatus status)
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
+            var cutOff = new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+            var slot = await SeedSlotAsync(trainer, alice, series, cutOff.AddDays(7));
+            slot.Status = status;
+            await _unitOfWork.Complete();
+
+            await _bookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(series.Id, cutOff);
+            await _unitOfWork.Complete();
+
+            Assert.True(await _context.BookedSessionsSlot.AnyAsync(s => s.Id == slot.Id));
+        }
+
+        [Fact]
+        public async Task RemoveBookedSessionSlotsAtCutOffDateAsync_LeavesOtherSeriesAndStandaloneSlots()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
+            var otherSeries = await SeedSeriesAsync(trainer, alice);
+            var cutOff = new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc);
+            await SeedSlotAsync(trainer, alice, series, cutOff.AddDays(1));
+            var otherSeriesSlot = await SeedSlotAsync(trainer, alice, otherSeries, cutOff.AddDays(1));
+            var standaloneSlot = await SeedSlotAsync(trainer, alice, startUtc: cutOff.AddDays(1));
+
+            await _bookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(series.Id, cutOff);
+            await _unitOfWork.Complete();
+
+            Assert.Equal([otherSeriesSlot.Id, standaloneSlot.Id], await _context.BookedSessionsSlot.OrderBy(s => s.Id).Select(s => s.Id).ToListAsync());
+        }
+
+        [Fact]
         public async Task RemoveBookedSessionSlot_RemovesOnlyThatSlot()
         {
             var trainer = await SeedTrainerAsync();

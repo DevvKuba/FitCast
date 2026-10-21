@@ -63,16 +63,23 @@ namespace ClientDashboard_API.Controllers
         [HttpPut("updateBookingSeriesStartDate")]
         public async Task<ActionResult<ApiResponseDto<string>>> UpdateBookingSeriesStartDateAsync([FromQuery] int bookingSeriesId, [FromBody] BookingSeriesStartDateUpdateDto updatedStartDate)
         {
-            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetTrainerBookingSeriesByIdAsync(currentUserAccessor.GetUserId(), bookingSeriesId);
+            // trainer included - slot times are converted using the trainer's TimeZoneId
+            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetBookingSeriesByIdWithTrainer(currentUserAccessor.GetUserId(), bookingSeriesId);
 
             if (bookingSeries is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "booking series not found", Success = false });
             }
 
-            unitOfWork.BookingSeriesRepository.UpdateBookingSeriesStartDate(bookingSeries, updatedStartDate);
+            unitOfWork.BookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(bookingSeries, updatedStartDate);
 
-            // re-materialize slots ??
+            var tz = TimeZoneInfo.FindSystemTimeZoneById(bookingSeries.Trainer.TimeZoneId);
+            var cutOffUtc = TimeZoneInfo.ConvertTimeToUtc(updatedStartDate.StartDate.ToDateTime(TimeOnly.MinValue), tz);
+            if (cutOffUtc < DateTime.UtcNow) cutOffUtc = DateTime.UtcNow;
+
+            await unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(bookingSeries.Id, cutOffUtc);
+
+            await materializationService.MaterializeBookingSeriesAsync(bookingSeries);
 
             if (!await unitOfWork.Complete())
             {

@@ -192,23 +192,37 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task UpdateBookingSeriesStartDate_ChangesOnlyTheStartDate()
+        public async Task UpdateBookingSeriesStartDateAndResetMaterializedUntil_ChangesStartDateAndTimeOnly()
         {
             var trainer = await SeedTrainerAsync();
             var series = await SeedSeriesAsync(trainer, await SeedClientAsync(trainer, "alice"));
-            var originalWatermark = series.MaterializedUntil;
             var newStartDate = series.StartDate.AddDays(14);
 
-            _bookingSeriesRepository.UpdateBookingSeriesStartDate(series, new BookingSeriesStartDateUpdateDto { StartDate = newStartDate });
+            _bookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(series, new BookingSeriesStartDateUpdateDto { StartDate = newStartDate, StartTime = new TimeOnly(10, 30) });
             await _unitOfWork.Complete();
 
             var saved = await _context.BookingSeries.SingleAsync();
             Assert.Equal(newStartDate, saved.StartDate);
+            Assert.Equal(new TimeOnly(10, 30), saved.StartTime);
             Assert.Equal("weekly session", saved.Title);
             Assert.Equal(60, saved.Duration);
-            Assert.Equal(new TimeOnly(18, 0), saved.StartTime);
             Assert.Equal(SessionRecurrence.Weekly, saved.Recurrence);
-            Assert.Equal(originalWatermark, saved.MaterializedUntil);
+        }
+
+        [Theory]
+        [InlineData(SessionRecurrence.Weekly, 7)]
+        [InlineData(SessionRecurrence.BiWeekly, 14)]
+        public async Task UpdateBookingSeriesStartDateAndResetMaterializedUntil_ReseedsWatermarkOneIntervalBeforeTheNewStart(SessionRecurrence recurrence, int interval)
+        {
+            // Same seed rule as creation, so re-materialization's first step lands exactly on the new StartDate.
+            var trainer = await SeedTrainerAsync();
+            var series = await SeedSeriesAsync(trainer, await SeedClientAsync(trainer, "alice"));
+            series.Recurrence = recurrence;
+            var newStartDate = series.StartDate.AddDays(3);
+
+            _bookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(series, new BookingSeriesStartDateUpdateDto { StartDate = newStartDate, StartTime = new TimeOnly(10, 30) });
+
+            Assert.Equal(newStartDate.AddDays(-interval), series.MaterializedUntil);
         }
 
         [Fact]
