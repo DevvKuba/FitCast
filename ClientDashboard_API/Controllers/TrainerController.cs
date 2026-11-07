@@ -97,28 +97,6 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Trainer method allowing assignment of a new phone number
-        /// </summary>
-        [HttpPut("updateTrainerPhoneNumber")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdatePhoneNumberAsync([FromQuery] string phoneNumber)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            await unitOfWork.TrainerRepository.UpdateTrainerPhoneNumberAsync(trainer.Id, phoneNumber);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new phone number", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s phone number updated to: {trainer.PhoneNumber}", Success = true });
-        }
-
-        /// <summary>
         /// Trainer method allowing assignment of a new Workout Retrieval Api Key
         /// </summary>
         [HttpPut("updateTrainerApiKey")]
