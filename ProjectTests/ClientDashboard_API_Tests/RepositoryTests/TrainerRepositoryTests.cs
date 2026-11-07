@@ -405,7 +405,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 PhoneNumber = "1234567890",
                 BusinessName = "New Business",
                 DefaultCurrency = "�",
-                AverageSessionPrice = 50.00m
+                AverageSessionPrice = 50.00m,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             _trainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updateDto);

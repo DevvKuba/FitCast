@@ -15,6 +15,12 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         private readonly BookedSessionSlotRepository _bookedSessionSlotRepository;
         private readonly UnitOfWork _unitOfWork;
 
+        // Time zone change tests use fixed winter dates, when London is UTC+0 and New York is UTC-5,
+        // and pass an explicit fromUtc so results don't depend on when the suite runs.
+        private static readonly TimeZoneInfo London = TimeZoneInfo.FindSystemTimeZoneById(SupportedTimeZones.London);
+        private static readonly TimeZoneInfo NewYork = TimeZoneInfo.FindSystemTimeZoneById(SupportedTimeZones.NewYork);
+        private static readonly DateTime ShiftFromUtc = new(2027, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         public BookedSessionSlotRepositoryTests()
         {
             var testUnitOfWork = new TestUnitOfWork();
@@ -387,6 +393,114 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             Assert.True(_unitOfWork.HasChanges());
             Assert.Equal(1, await _context.BookedSessionsSlot.CountAsync(s => s.TrainerId == trainer.Id));
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_KeepsLocalClockTimeAndDuration()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var slot = await SeedSlotAsync(trainer, client, startUtc: new DateTime(2027, 1, 13, 9, 0, 0, DateTimeKind.Utc)); // 09:00 London
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+            await _unitOfWork.Complete();
+
+            Assert.Equal(new DateTime(2027, 1, 13, 14, 0, 0, DateTimeKind.Utc), slot.StartDateTime); // 09:00 New York
+            Assert.Equal(new DateTime(2027, 1, 13, 15, 0, 0, DateTimeKind.Utc), slot.EndDateTime);
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_ShiftsSeriesAndStandaloneSlots()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, client);
+            var seriesSlot = await SeedSlotAsync(trainer, client, series, new DateTime(2027, 1, 13, 18, 0, 0, DateTimeKind.Utc));
+            var standaloneSlot = await SeedSlotAsync(trainer, client, startUtc: new DateTime(2027, 1, 14, 7, 0, 0, DateTimeKind.Utc));
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+            await _unitOfWork.Complete();
+
+            Assert.Equal(new DateTime(2027, 1, 13, 23, 0, 0, DateTimeKind.Utc), seriesSlot.StartDateTime);
+            Assert.Equal(new DateTime(2027, 1, 14, 12, 0, 0, DateTimeKind.Utc), standaloneSlot.StartDateTime);
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_LeavesCompletedAndCancelledSlotsUntouched()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var originalStart = new DateTime(2027, 1, 13, 9, 0, 0, DateTimeKind.Utc);
+            var completedSlot = await SeedSlotAsync(trainer, client, startUtc: originalStart);
+            var cancelledSlot = await SeedSlotAsync(trainer, client, startUtc: originalStart.AddDays(1));
+            completedSlot.Status = SessionStatus.Completed;
+            cancelledSlot.Status = SessionStatus.Cancelled;
+            await _unitOfWork.Complete();
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+
+            Assert.Equal(originalStart, completedSlot.StartDateTime);
+            Assert.Equal(originalStart.AddDays(1), cancelledSlot.StartDateTime);
+            Assert.False(_unitOfWork.HasChanges());
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_LeavesSlotsBeforeFromUtcUntouched()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var pastStart = ShiftFromUtc.AddDays(-7).AddHours(9);
+            var pastSlot = await SeedSlotAsync(trainer, client, startUtc: pastStart);
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+
+            Assert.Equal(pastStart, pastSlot.StartDateTime);
+            Assert.False(_unitOfWork.HasChanges());
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_LeavesOtherTrainersSlotsUntouched()
+        {
+            var trainer = await SeedTrainerAsync();
+            var otherTrainer = await SeedTrainerAsync("mike");
+            var otherStart = new DateTime(2027, 1, 13, 9, 0, 0, DateTimeKind.Utc);
+            var otherSlot = await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"), startUtc: otherStart);
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+
+            Assert.Equal(otherStart, otherSlot.StartDateTime);
+            Assert.False(_unitOfWork.HasChanges());
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_MovesTimeInNewZonesClockChangeGapForwardAnHour()
+        {
+            // New York springs forward 02:00 -> 03:00 on 14 March 2027, while London is still UTC+0,
+            // so a 02:30 London session has no matching 02:30 in New York that day
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var slot = await SeedSlotAsync(trainer, client, startUtc: new DateTime(2027, 3, 14, 2, 30, 0, DateTimeKind.Utc));
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+            await _unitOfWork.Complete();
+
+            Assert.Equal(new DateTime(2027, 3, 14, 7, 30, 0, DateTimeKind.Utc), slot.StartDateTime); // 03:30 New York (UTC-4)
+            Assert.Equal(TimeSpan.FromHours(1), slot.EndDateTime - slot.StartDateTime);
+        }
+
+        [Fact]
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_OnlyStagesChangesUntilComplete()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var originalStart = new DateTime(2027, 1, 13, 9, 0, 0, DateTimeKind.Utc);
+            var slot = await SeedSlotAsync(trainer, client, startUtc: originalStart);
+
+            await _bookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, London, NewYork, ShiftFromUtc);
+
+            Assert.True(_unitOfWork.HasChanges());
+            var persistedStart = await _context.BookedSessionsSlot.AsNoTracking().Where(s => s.Id == slot.Id).Select(s => s.StartDateTime).SingleAsync();
+            Assert.Equal(originalStart, persistedStart);
         }
     }
 }

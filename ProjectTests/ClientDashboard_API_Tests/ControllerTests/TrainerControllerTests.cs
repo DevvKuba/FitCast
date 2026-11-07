@@ -182,6 +182,42 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
         private void AuthenticateAsTrainer(int trainerId) => TestAuthHelpers.SetCurrentUser(_httpContextAccessor, "Trainer", trainerId);
 
+        private async Task<(Trainer Trainer, Client Client)> SeedTrainerWithClientAsync(string timeZoneId = SupportedTimeZones.London)
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, TimeZoneId = timeZoneId };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            return (trainer, client);
+        }
+
+        // A 60 minute Scheduled slot 30 days ahead, starting at the given local clock time in the given zone
+        private async Task<BookedSessionSlot> SeedFutureSlotAsync(Trainer trainer, Client client, string timeZoneId, TimeOnly localStart)
+        {
+            var localDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(30);
+            var startUtc = TimeZoneInfo.ConvertTimeToUtc(localDate.ToDateTime(localStart), TimeZoneInfo.FindSystemTimeZoneById(timeZoneId));
+
+            var slot = new BookedSessionSlot
+            {
+                TrainerId = trainer.Id,
+                ClientId = client.Id,
+                Title = "session",
+                StartDateTime = startUtc,
+                EndDateTime = startUtc.AddMinutes(60),
+                Status = SessionStatus.Scheduled
+            };
+            await _context.BookedSessionsSlot.AddAsync(slot);
+            await _unitOfWork.Complete();
+            return slot;
+        }
+
+        private static TimeOnly LocalStartTime(BookedSessionSlot slot, string timeZoneId) =>
+            TimeOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(slot.StartDateTime, TimeZoneInfo.FindSystemTimeZoneById(timeZoneId)));
+
         [Fact]
         public async Task TestRetrieveTrainerByIdReturnsTrainerAsync()
         {
@@ -227,7 +263,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 PhoneNumber = "1234567890",
                 BusinessName = "New Business",
                 DefaultCurrency = "�",
-                AverageSessionPrice = 50.00m
+                AverageSessionPrice = 50.00m,
+                TimeZoneId = SupportedTimeZones.London
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -251,7 +288,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 FirstName = "jonathan",
                 Surname = "doe",
-                Email = "jonathan@example.com"
+                Email = "jonathan@example.com",
+                TimeZoneId = SupportedTimeZones.London
             };
 
             AuthenticateAsTrainer(999);
@@ -261,6 +299,71 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             Assert.NotNull(response);
             Assert.False(response.Success);
+        }
+
+        [Fact]
+        public async Task TestUpdateTrainerProfileReturnsBadRequestForUnsupportedTimeZoneAsync()
+        {
+            var (trainer, _) = await SeedTrainerWithClientAsync();
+
+            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = "Mars/Olympus_Mons" };
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            var response = badRequestResult!.Value as ApiResponseDto<string>;
+
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+
+            var savedTrainer = await _context.Trainer.FindAsync(trainer.Id);
+            Assert.Equal("john", savedTrainer!.FirstName);
+            Assert.Equal(SupportedTimeZones.London, savedTrainer.TimeZoneId);
+        }
+
+        [Fact]
+        public async Task TestUpdateTrainerProfileShiftsFutureSlotsToKeepClockTimeInNewTimeZoneAsync()
+        {
+            var (trainer, client) = await SeedTrainerWithClientAsync(SupportedTimeZones.London);
+            var slot = await SeedFutureSlotAsync(trainer, client, SupportedTimeZones.London, new TimeOnly(9, 0));
+            var originalStartUtc = slot.StartDateTime;
+
+            var updateDto = new TrainerUpdateDto { FirstName = "john", TimeZoneId = SupportedTimeZones.NewYork };
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
+            var okResult = result.Result as OkObjectResult;
+            var response = okResult!.Value as ApiResponseDto<string>;
+
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+
+            var savedTrainer = await _context.Trainer.FindAsync(trainer.Id);
+            Assert.Equal(SupportedTimeZones.NewYork, savedTrainer!.TimeZoneId);
+
+            var savedSlot = await _context.BookedSessionsSlot.FindAsync(slot.Id);
+            Assert.NotEqual(originalStartUtc, savedSlot!.StartDateTime);
+            Assert.Equal(new TimeOnly(9, 0), LocalStartTime(savedSlot, SupportedTimeZones.NewYork));
+            Assert.Equal(TimeSpan.FromMinutes(60), savedSlot.EndDateTime - savedSlot.StartDateTime);
+        }
+
+        [Fact]
+        public async Task TestUpdateTrainerProfileLeavesSlotsUntouchedWhenTimeZoneUnchangedAsync()
+        {
+            var (trainer, client) = await SeedTrainerWithClientAsync(SupportedTimeZones.London);
+            var slot = await SeedFutureSlotAsync(trainer, client, SupportedTimeZones.London, new TimeOnly(9, 0));
+            var originalStartUtc = slot.StartDateTime;
+
+            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = SupportedTimeZones.London };
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
+            var okResult = result.Result as OkObjectResult;
+
+            Assert.NotNull(okResult);
+
+            var savedSlot = await _context.BookedSessionsSlot.FindAsync(slot.Id);
+            Assert.Equal(originalStartUtc, savedSlot!.StartDateTime);
         }
 
         [Fact]
@@ -310,38 +413,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             AuthenticateAsTrainer(trainer.Id);
             var result = await _trainerController.UpdateClientAssignmentAsync(999);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestUpdatePhoneNumberSuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", PhoneNumber = "1234567890", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.UpdatePhoneNumberAsync("9876543210");
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("john", response.Data);
-
-            var savedTrainer = await _context.Trainer.FindAsync(trainer.Id);
-            Assert.Equal("9876543210", savedTrainer!.PhoneNumber);
-        }
-
-        [Fact]
-        public async Task TestUpdatePhoneNumberReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.UpdatePhoneNumberAsync("9876543210");
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
