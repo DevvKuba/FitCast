@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace ClientDashboard_API.Services
 {
-    public class BookingMaterializationService(IUnitOfWork unitOfWork) : IBookingMaterializationService
+    public class BookingMaterializationService(IUnitOfWork unitOfWork, TimeProvider timeProvider) : IBookingMaterializationService
     {
         public async Task MaterializeBookingSeriesAsync(BookingSeries series)
         {
@@ -26,7 +26,9 @@ namespace ClientDashboard_API.Services
 
             var tz = TimeZoneInfo.FindSystemTimeZoneById(series.Trainer.TimeZoneId);
 
-            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+            var nowUtc = timeProvider.GetUtcNow().UtcDateTime;
+
+            var nowLocal = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, tz);
 
             var todayLocal = DateOnly.FromDateTime(nowLocal);
 
@@ -39,7 +41,7 @@ namespace ClientDashboard_API.Services
                 var localStart = next.ToDateTime(series.StartTime);
                 var startUtc = TimeZoneInfo.ConvertTimeToUtc(localStart, tz);
 
-                if(startUtc < DateTime.UtcNow)
+                if(startUtc < nowUtc)
                 {
                     series.MaterializedUntil = next;
                     next = next.AddDays(interval);

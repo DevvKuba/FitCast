@@ -23,7 +23,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             _context = testUnitOfWork.context;
             _unitOfWork = testUnitOfWork.unitOfWork;
             _bookingSeriesRepository = testUnitOfWork.bookingSeriesRepository;
-            _materializationService = new BookingMaterializationService(_unitOfWork);
+            _materializationService = new BookingMaterializationService(_unitOfWork, TimeProvider.System);
         }
 
         private static TimeZoneInfo Zone(string timeZoneId) => TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
@@ -47,7 +47,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
         // Same path as the create endpoint: repository create (seeds the watermark) -> service -> one Complete().
         private async Task<BookingSeries> CreateAndMaterializeAsync(Trainer trainer, Client client, DateOnly startDate,
-            SessionRecurrence recurrence = SessionRecurrence.Weekly, TimeOnly? startTime = null)
+            SessionRecurrence recurrence = SessionRecurrence.Weekly, TimeOnly? startTime = null,
+            BookingMaterializationService? materializationService = null)
         {
             var series = await _bookingSeriesRepository.CreateBookingSeriesUnderTrainerAsync(trainer, new BookingSeriesCreateDto
             {
@@ -60,7 +61,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
                 Recurrence = recurrence
             });
 
-            await _materializationService.MaterializeBookingSeriesAsync(series);
+            await (materializationService ?? _materializationService).MaterializeBookingSeriesAsync(series);
             await _unitOfWork.Complete();
             return series;
         }
@@ -74,7 +75,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Title = "weekly session",
             Duration = 60,
             StartDate = startDate,
-            StartTime = new TimeOnly(9, 0),
+            StartTime = new TimeOnly(23, 59),
             MaterializedUntil = materializedUntil,
             Recurrence = recurrence
         };
@@ -249,20 +250,44 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal("Reocurrance not set to valid value", exception.Message);
         }
 
-        [Fact(Skip = "Hangs: 'if (next < todayLocal) continue;' skips the 'next = next.AddDays(interval)' step, so a back-dated series never advances. Unskip once fixed.")]
+        // Back-dated series start two weeks before a pinned "today", with the 09:00 session either still ahead or already started.
+        // The watermark walks today - 14, today - 7, today; the start-time check decides whether today's 09:00 still gets a slot.
+        private static readonly DateOnly PinnedToday = new(2026, 11, 4);
+
+        private BookingMaterializationService ServiceAtLocalTime(string timeZoneId, TimeOnly localNow) =>
+            new(_unitOfWork, new FixedTimeProvider(TimeZoneInfo.ConvertTimeToUtc(PinnedToday.ToDateTime(localNow), Zone(timeZoneId))));
+
+        private async Task<List<DateOnly>> SlotLocalDatesAsync(string timeZoneId) =>
+            (await _context.BookedSessionsSlot.ToListAsync())
+                .Select(s => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(s.StartDateTime, Zone(timeZoneId))))
+                .Order()
+                .ToList();
+
+        [Fact]
         public async Task BackDatedSeries_SkipsPastDatesAndStartsFromToday()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
-            var today = TodayIn(trainer.TimeZoneId);
 
-            await CreateAndMaterializeAsync(trainer, client, today.AddDays(-14));
+            await CreateAndMaterializeAsync(trainer, client, PinnedToday.AddDays(-14),
+                materializationService: ServiceAtLocalTime(trainer.TimeZoneId, new TimeOnly(8, 0)));
 
-            var localDates = (await _context.BookedSessionsSlot.ToListAsync())
-                .Select(s => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(s.StartDateTime, Zone(trainer.TimeZoneId))))
-                .ToList();
-            Assert.NotEmpty(localDates);
-            Assert.All(localDates, date => Assert.True(date >= today));
-            Assert.Contains(today, localDates);
+            var localDates = await SlotLocalDatesAsync(trainer.TimeZoneId);
+            Assert.Equal(PinnedToday, localDates.First());
+            Assert.All(localDates, date => Assert.True(date >= PinnedToday));
+        }
+
+        [Fact]
+        public async Task BackDatedSeries_SkipsTodayWhenStartTimeHasPassed()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync();
+
+            var series = await CreateAndMaterializeAsync(trainer, client, PinnedToday.AddDays(-14),
+                materializationService: ServiceAtLocalTime(trainer.TimeZoneId, new TimeOnly(14, 30)));
+
+            var localDates = await SlotLocalDatesAsync(trainer.TimeZoneId);
+            Assert.DoesNotContain(PinnedToday, localDates);
+            Assert.Equal(PinnedToday.AddDays(7), localDates.First());
+            Assert.True(series.MaterializedUntil >= PinnedToday.AddDays(7)); // skipped dates still advance the watermark
         }
     }
 }

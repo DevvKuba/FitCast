@@ -34,7 +34,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 testUnitOfWork.mapper,
                 currentUserAccessor,
                 authorizationService,
-                new BookingMaterializationService(_unitOfWork));
+                new BookingMaterializationService(_unitOfWork, TimeProvider.System));
             TestAuthHelpers.AttachHttpContext(_bookingSeriesController, _httpContextAccessor);
         }
 
@@ -455,7 +455,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             await _bookingSeriesController.UpdateBookingSeriesStartDateAsync(series.Id, new BookingSeriesStartDateUpdateDto { StartDate = series.StartDate.AddDays(3), StartTime = new TimeOnly(9, 0) });
 
-            var nightlyRun = await Record.ExceptionAsync(() => new BookingMaterializationService(_unitOfWork).MaterializeBookingSeriesAsync(series));
+            var nightlyRun = await Record.ExceptionAsync(() => new BookingMaterializationService(_unitOfWork, TimeProvider.System).MaterializeBookingSeriesAsync(series));
             Assert.Null(nightlyRun);
         }
     }
