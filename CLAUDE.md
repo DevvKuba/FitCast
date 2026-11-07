@@ -1,3 +1,21 @@
+## Working arrangement
+
+Current priority: finish the remaining logic and ship the FitCast beta as quickly as possible.
+Architecture changes come later, and only when I ask for input on them.
+
+- Claude writes backend (ASP.NET Core API) and frontend (Angular) code from my descriptions.
+- Follow the patterns already used in the codebase. Before writing, look at how comparable
+  controllers, services, repositories, DTOs, tests and Angular components are structured,
+  and match them.
+- Use conventional, readable C# and TypeScript that I can easily revisit, extend and debug.
+  Avoid newer or unusual syntax and notation when a familiar form does the same job.
+- Don't introduce new dependencies, external services or architectural patterns without asking.
+- Making changes and running the test suite to verify them is fine.
+- Don't change tests alongside feature work unless I ask. Point out which tests will break instead.
+- I make all git commits myself. Don't commit, push or open PRs, and don't offer to.
+
+## Explanations
+
 When explaining code, bugs, or technical decisions, format for fast scanning, not dense prose:
 
 - Keep paragraphs to 2-3 sentences max. If an explanation needs more, break it into 
