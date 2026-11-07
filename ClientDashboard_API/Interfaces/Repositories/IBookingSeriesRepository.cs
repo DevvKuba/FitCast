@@ -9,6 +9,10 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<BookingSeries?> GetTrainerBookingSeriesByIdAsync(int trainerId, int bookingSeriesId);
 
+        Task<List<BookingSeriesDto>> GetTrainerBookingSeriesDtosAsync(int trainerId);
+
+        Task<BookingSeriesDto?> GetTrainerBookingSeriesDtoByIdAsync(int trainerId, int bookingSeriesId);
+
         Task<BookingSeries?> GetBookingSeriesByIdWithTrainer(int trainerId, int bookingSeriesId);
 
         void UpdateBookingSeriesStartDateAndResetMaterializedUntil(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate);

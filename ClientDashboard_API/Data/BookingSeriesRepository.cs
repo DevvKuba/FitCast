@@ -19,6 +19,19 @@ namespace ClientDashboard_API.Data
             return await context.BookingSeries.FirstOrDefaultAsync(b => b.Id == bookingSeriesId && b.TrainerId == trainerId);
         }
 
+        public async Task<List<BookingSeriesDto>> GetTrainerBookingSeriesDtosAsync(int trainerId)
+        {
+            return await BuildTrainerBookingSeriesQuery(trainerId)
+                .OrderBy(b => b.ClientName)
+                .ThenBy(b => b.Title)
+                .ToListAsync();
+        }
+
+        public async Task<BookingSeriesDto?> GetTrainerBookingSeriesDtoByIdAsync(int trainerId, int bookingSeriesId)
+        {
+            return await BuildTrainerBookingSeriesQuery(trainerId).FirstOrDefaultAsync(b => b.Id == bookingSeriesId);
+        }
+
         public async Task<BookingSeries?> GetBookingSeriesByIdWithTrainer(int trainerId, int bookingSeriesId)
         {
             return await context.BookingSeries
@@ -56,6 +69,24 @@ namespace ClientDashboard_API.Data
                 : await context.BookingSeries.Where(b => b.ClientId == user.Id).ToListAsync();
 
             context.BookingSeries.RemoveRange(seriesToRemove);
+        }
+
+        private IQueryable<BookingSeriesDto> BuildTrainerBookingSeriesQuery(int trainerId)
+        {
+            return context.BookingSeries
+                .Where(b => b.TrainerId == trainerId)
+                .Select(b => new BookingSeriesDto
+                {
+                    Id = b.Id,
+                    ClientId = b.ClientId,
+                    ClientName = b.Client.FirstName,
+                    Title = b.Title,
+                    Description = b.Description,
+                    Duration = b.Duration,
+                    StartDate = b.StartDate,
+                    StartTime = b.StartTime,
+                    Recurrence = b.Recurrence
+                });
         }
     }
 }

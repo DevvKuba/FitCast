@@ -19,6 +19,33 @@ namespace ClientDashboard_API.Controllers
         ) : BaseAPIController
     {
         /// <summary>
+        /// Trainer method retrieving all of their booking series
+        /// </summary>
+        [HttpGet("getTrainerBookingSeries")]
+        public async Task<ActionResult<ApiResponseDto<List<BookingSeriesDto>>>> GetTrainerBookingSeriesAsync()
+        {
+            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetTrainerBookingSeriesDtosAsync(currentUserAccessor.GetUserId());
+
+            return Ok(new ApiResponseDto<List<BookingSeriesDto>> { Data = bookingSeries, Message = $"{bookingSeries.Count} booking series retrieved", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method retrieving a single booking series, e.g. when a series slot is selected on the calendar
+        /// </summary>
+        [HttpGet("getBookingSeriesById")]
+        public async Task<ActionResult<ApiResponseDto<BookingSeriesDto>>> GetBookingSeriesByIdAsync([FromQuery] int bookingSeriesId)
+        {
+            var bookingSeries = await unitOfWork.BookingSeriesRepository.GetTrainerBookingSeriesDtoByIdAsync(currentUserAccessor.GetUserId(), bookingSeriesId);
+
+            if (bookingSeries is null)
+            {
+                return NotFound(new ApiResponseDto<BookingSeriesDto> { Data = null, Message = "booking series not found", Success = false });
+            }
+
+            return Ok(new ApiResponseDto<BookingSeriesDto> { Data = bookingSeries, Message = $"booking series: {bookingSeries.Title} retrieved", Success = true });
+        }
+
+        /// <summary>
         /// Trainer method creating a new booking series, materializing its initial session slots
         /// </summary>
         [HttpPost("createBookingSeries")]
