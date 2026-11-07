@@ -51,6 +51,32 @@ namespace ClientDashboard_API.Data
             context.BookedSessionsSlot.RemoveRange(slotsToRemove);
         }
 
+        public async Task UpdateFutureScheduledSlotsToTimeZoneAsync(int trainerId, TimeZoneInfo oldZone, TimeZoneInfo newZone, DateTime fromUtc)
+        {
+            var slotsToShift = await context.BookedSessionsSlot
+                .Where(s => s.TrainerId == trainerId &&
+                s.StartDateTime >= fromUtc &&
+                s.Status == SessionStatus.Scheduled)
+                .ToListAsync();
+
+            foreach (var slot in slotsToShift)
+            {
+                var duration = slot.EndDateTime - slot.StartDateTime;
+
+                // keep the trainer's clock time: read it in the old zone, then place it in the new zone
+                var localStart = TimeZoneInfo.ConvertTimeFromUtc(slot.StartDateTime, oldZone);
+                localStart = DateTime.SpecifyKind(localStart, DateTimeKind.Unspecified);
+
+                if (newZone.IsInvalidTime(localStart)) // falls in the new zone's spring-forward gap
+                {
+                    localStart = localStart.AddHours(1);
+                }
+
+                slot.StartDateTime = TimeZoneInfo.ConvertTimeToUtc(localStart, newZone);
+                slot.EndDateTime = slot.StartDateTime.Add(duration);
+            }
+        }
+
         public async Task RemoveAllBookedSessionSlotsForUserAsync(UserBase user)
         {
             var slotsToRemove = user.Role == Enums.UserRole.Trainer ?
