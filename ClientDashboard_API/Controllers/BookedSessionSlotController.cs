@@ -16,25 +16,40 @@ namespace ClientDashboard_API.Controllers
         ICurrentUserAccessor currentUserAccessor,
         IAuthorizationService authorizationService) : BaseAPIController
     {
+        private const int MaxRangeDays = 42; // a 6 week month grid
+
         /// <summary>
-        /// Trainer method retrieving their booked session slots from today up to 90 days ahead
+        /// Trainer method retrieving their booked session slots starting within the given UTC window (the calendar's visible range)
         /// </summary>
         [HttpGet("getTrainerBookedSessionSlots")]
-        public async Task<ActionResult<ApiResponseDto<List<BookedSessionSlot>>>> GetBookingSessionSlotsForTrainerAsync()
+        public async Task<ActionResult<ApiResponseDto<List<BookedSessionSlotViewDto>>>> GetBookingSessionSlotsForTrainerAsync([FromQuery] DateTime fromUtc, [FromQuery] DateTime toUtc)
         {
+            // a trailing Z binds as UTC, without one the server would have to guess the zone
+            if (fromUtc.Kind != DateTimeKind.Utc || toUtc.Kind != DateTimeKind.Utc)
+            {
+                return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = "Range must be provided in UTC", Success = false });
+            }
+
+            if (toUtc <= fromUtc)
+            {
+                return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = "End of range must be after the start", Success = false });
+            }
+
+            if ((toUtc - fromUtc).TotalDays > MaxRangeDays)
+            {
+                return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = $"Range cannot be longer than {MaxRangeDays} days", Success = false });
+            }
+
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
 
             if (trainer is null)
             {
-                return NotFound(new ApiResponseDto<List<BookedSessionSlot>> { Data = null, Message = "Trainer not found", Success = false });
+                return NotFound(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = "Trainer not found", Success = false });
             }
 
-            var rangeStartUtc = DateTime.UtcNow.Date;
-            var rangeEndUtc = rangeStartUtc.AddDays(90);
+            var bookedSessionSlots = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, fromUtc, toUtc);
 
-            var bookedSessionSlots = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, rangeStartUtc, rangeEndUtc);
-
-            return Ok(new ApiResponseDto<List<BookedSessionSlot>> { Data = bookedSessionSlots, Message = $"{bookedSessionSlots.Count} booked session slots retrieved for {trainer.FirstName}", Success = true });
+            return Ok(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = bookedSessionSlots, Message = $"{bookedSessionSlots.Count} booked session slots retrieved for {trainer.FirstName}", Success = true });
         }
 
         /// <summary>

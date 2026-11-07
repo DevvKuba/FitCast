@@ -13,11 +13,23 @@ namespace ClientDashboard_API.Data
         {
             return await context.BookedSessionsSlot.FirstOrDefaultAsync(s => s.Id == sessionId && s.TrainerId == trainerId);
         }
-        public async Task<List<BookedSessionSlot>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
+        public async Task<List<BookedSessionSlotViewDto>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
         {
             return await context.BookedSessionsSlot
                 .Where(s => s.TrainerId == trainerId && s.StartDateTime >= rangeStartUtc && s.StartDateTime < rangeEndUtc)
                 .OrderBy(s => s.StartDateTime)
+                .Select(s => new BookedSessionSlotViewDto
+                {
+                    Id = s.Id,
+                    ClientId = s.ClientId,
+                    ClientName = s.Client.FirstName,
+                    BookingSeriesId = s.BookingSeriesId,
+                    Title = s.Title,
+                    Description = s.Description,
+                    StartDateTime = s.StartDateTime,
+                    EndDateTime = s.EndDateTime,
+                    Status = s.Status
+                })
                 .ToListAsync();
         }
 
