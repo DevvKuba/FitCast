@@ -85,10 +85,11 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Trainer method changing the start date of an existing booking series
+        /// Trainer method updating an existing booking series' details and start date/time.
+        /// Changes take effect from the new start date: future Scheduled slots from then on are removed and re-materialized
         /// </summary>
-        [HttpPut("updateBookingSeriesStartDate")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateBookingSeriesStartDateAsync([FromQuery] int bookingSeriesId, [FromBody] BookingSeriesStartDateUpdateDto updatedStartDate)
+        [HttpPut("updateBookingSeries")]
+        public async Task<ActionResult<ApiResponseDto<string>>> UpdateBookingSeriesAsync([FromQuery] int bookingSeriesId, [FromBody] BookingSeriesUpdateDto updatedBookingSeries)
         {
             // trainer included - slot times are converted using the trainer's TimeZoneId
             var bookingSeries = await unitOfWork.BookingSeriesRepository.GetBookingSeriesByIdWithTrainer(currentUserAccessor.GetUserId(), bookingSeriesId);
@@ -98,10 +99,10 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "booking series not found", Success = false });
             }
 
-            unitOfWork.BookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(bookingSeries, updatedStartDate);
+            unitOfWork.BookingSeriesRepository.UpdateBookingSeriesAndResetMaterializedUntil(bookingSeries, updatedBookingSeries);
 
             var tz = TimeZoneInfo.FindSystemTimeZoneById(bookingSeries.Trainer.TimeZoneId);
-            var cutOffUtc = TimeZoneInfo.ConvertTimeToUtc(updatedStartDate.StartDate.ToDateTime(TimeOnly.MinValue), tz);
+            var cutOffUtc = TimeZoneInfo.ConvertTimeToUtc(updatedBookingSeries.StartDate.ToDateTime(TimeOnly.MinValue), tz);
             if (cutOffUtc < DateTime.UtcNow) cutOffUtc = DateTime.UtcNow;
 
             await unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(bookingSeries.Id, cutOffUtc);
@@ -110,9 +111,9 @@ namespace ClientDashboard_API.Controllers
 
             if (!await unitOfWork.Complete())
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error updating start date for booking series: {bookingSeries.Title}", Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error updating booking series: {bookingSeries.Title}", Success = false });
             }
-            return Ok(new ApiResponseDto<string> { Data = bookingSeries.Title, Message = $"booking series: {bookingSeries.Title} start date updated to {bookingSeries.StartDate}", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = bookingSeries.Title, Message = $"booking series: {bookingSeries.Title} successfully updated", Success = true });
         }
 
         /// <summary>

@@ -9,6 +9,8 @@ Architecture changes come later, and only when I ask for input on them.
   and match them.
 - Use conventional, readable C# and TypeScript that I can easily revisit, extend and debug.
   Avoid newer or unusual syntax and notation when a familiar form does the same job.
+- Put private helper methods (query builders, test seed/setup helpers, etc.) at the bottom of
+  the class, after the public methods and tests, so the main logic reads first.
 - Don't introduce new dependencies, external services or architectural patterns without asking.
 - Making changes and running the test suite to verify them is fine.
 - Don't change tests alongside feature work unless I ask. Point out which tests will break instead.

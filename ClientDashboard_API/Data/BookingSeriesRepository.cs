@@ -40,9 +40,9 @@ namespace ClientDashboard_API.Data
                 .FirstOrDefaultAsync();
         }
 
-        public void UpdateBookingSeriesStartDateAndResetMaterializedUntil(BookingSeries bookingSeries, BookingSeriesStartDateUpdateDto updatedStartDate)
+        public void UpdateBookingSeriesAndResetMaterializedUntil(BookingSeries bookingSeries, BookingSeriesUpdateDto updatedBookingSeries)
         {
-            mapper.Map(updatedStartDate, bookingSeries);
+            mapper.Map(updatedBookingSeries, bookingSeries);
             bookingSeries.MaterializedUntil = bookingSeries.StartDate.AddDays(-(int)bookingSeries.Recurrence);
         }
 

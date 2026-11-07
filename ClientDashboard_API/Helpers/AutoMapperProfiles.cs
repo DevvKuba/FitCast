@@ -20,7 +20,7 @@ namespace ClientDashboard_API.Helpers
             CreateMap<Notification, NotificationResponseDto>();
             CreateMap<BookingSeriesCreateDto, BookingSeries>();
             CreateMap<BookingSeries, BookingSeriesCreateDto>();
-            CreateMap<BookingSeriesStartDateUpdateDto, BookingSeries>();
+            CreateMap<BookingSeriesUpdateDto, BookingSeries>();
             CreateMap<BookedSessionSlotDto, BookedSessionSlot>();
             CreateMap<MaterializedBookedSessionSlotDto, BookedSessionSlot>();
         }
