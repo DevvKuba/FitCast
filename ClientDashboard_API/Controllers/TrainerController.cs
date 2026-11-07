@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
@@ -58,7 +59,24 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<Trainer> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
+            if (!SupportedTimeZones.IsSupported(updatedTrainerProfile.TimeZoneId))
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "A supported time zone must be provided", Success = false });
+            }
+
+            // captured before mapping, as the mapper overwrites the trainer's TimeZoneId
+            var previousTimeZoneId = trainer.TimeZoneId;
+
             unitOfWork.TrainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updatedTrainerProfile);
+
+            if (previousTimeZoneId != updatedTrainerProfile.TimeZoneId)
+            {
+                // series store local clock time so need no change, already booked slots are UTC and are shifted to keep their clock time
+                var oldZone = TimeZoneInfo.FindSystemTimeZoneById(previousTimeZoneId);
+                var newZone = TimeZoneInfo.FindSystemTimeZoneById(updatedTrainerProfile.TimeZoneId);
+
+                await unitOfWork.BookedSessionSlotRepository.UpdateFutureScheduledSlotsToTimeZoneAsync(trainer.Id, oldZone, newZone, DateTime.UtcNow);
+            }
 
             if (!await unitOfWork.Complete())
             {

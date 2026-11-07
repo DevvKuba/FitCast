@@ -15,5 +15,7 @@
         public string? DefaultCurrency { get; set; }
 
         public decimal? AverageSessionPrice { get; set; }
+
+        public required string TimeZoneId { get; set; }
     }
 }
