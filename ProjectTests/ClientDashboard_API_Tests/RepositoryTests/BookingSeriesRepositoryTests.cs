@@ -192,27 +192,30 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task UpdateBookingSeriesStartDateAndResetMaterializedUntil_ChangesStartDateAndTimeOnly()
+        public async Task UpdateBookingSeriesAndResetMaterializedUntil_MapsEditableFields_AndKeepsClientAndRecurrence()
         {
             var trainer = await SeedTrainerAsync();
-            var series = await SeedSeriesAsync(trainer, await SeedClientAsync(trainer, "alice"));
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
             var newStartDate = series.StartDate.AddDays(14);
 
-            _bookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(series, new BookingSeriesStartDateUpdateDto { StartDate = newStartDate, StartTime = new TimeOnly(10, 30) });
+            _bookingSeriesRepository.UpdateBookingSeriesAndResetMaterializedUntil(series, UpdateDto(newStartDate, new TimeOnly(10, 30), "evening session", "new notes", 45));
             await _unitOfWork.Complete();
 
             var saved = await _context.BookingSeries.SingleAsync();
             Assert.Equal(newStartDate, saved.StartDate);
             Assert.Equal(new TimeOnly(10, 30), saved.StartTime);
-            Assert.Equal("weekly session", saved.Title);
-            Assert.Equal(60, saved.Duration);
+            Assert.Equal("evening session", saved.Title);
+            Assert.Equal("new notes", saved.Description);
+            Assert.Equal(45, saved.Duration);
+            Assert.Equal(alice.Id, saved.ClientId);
             Assert.Equal(SessionRecurrence.Weekly, saved.Recurrence);
         }
 
         [Theory]
         [InlineData(SessionRecurrence.Weekly, 7)]
         [InlineData(SessionRecurrence.BiWeekly, 14)]
-        public async Task UpdateBookingSeriesStartDateAndResetMaterializedUntil_ReseedsWatermarkOneIntervalBeforeTheNewStart(SessionRecurrence recurrence, int interval)
+        public async Task UpdateBookingSeriesAndResetMaterializedUntil_ReseedsWatermarkOneIntervalBeforeTheNewStart(SessionRecurrence recurrence, int interval)
         {
             // Same seed rule as creation, so re-materialization's first step lands exactly on the new StartDate.
             var trainer = await SeedTrainerAsync();
@@ -220,7 +223,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             series.Recurrence = recurrence;
             var newStartDate = series.StartDate.AddDays(3);
 
-            _bookingSeriesRepository.UpdateBookingSeriesStartDateAndResetMaterializedUntil(series, new BookingSeriesStartDateUpdateDto { StartDate = newStartDate, StartTime = new TimeOnly(10, 30) });
+            _bookingSeriesRepository.UpdateBookingSeriesAndResetMaterializedUntil(series, UpdateDto(newStartDate, new TimeOnly(10, 30)));
 
             Assert.Equal(newStartDate.AddDays(-interval), series.MaterializedUntil);
         }
@@ -308,5 +311,75 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.True(_unitOfWork.HasChanges());
             Assert.Equal(1, await _context.BookingSeries.CountAsync(b => b.TrainerId == trainer.Id));
         }
+
+        [Fact]
+        public async Task GetTrainerBookingSeriesDtosAsync_ReturnsOnlyTheTrainersSeries_OrderedByClientThenTitle()
+        {
+            var trainer = await SeedTrainerAsync("john");
+            var otherTrainer = await SeedTrainerAsync("jane");
+            var bob = await SeedClientAsync(trainer, "bob");
+            var alice = await SeedClientAsync(trainer, "alice");
+            await SeedSeriesAsync(trainer, bob, "morning session");
+            await SeedSeriesAsync(trainer, alice, "weekend session");
+            await SeedSeriesAsync(trainer, alice, "evening session");
+            await SeedSeriesAsync(otherTrainer, await SeedClientAsync(otherTrainer, "carl"), "other trainers session");
+
+            var result = await _bookingSeriesRepository.GetTrainerBookingSeriesDtosAsync(trainer.Id);
+
+            Assert.Equal(["alice", "alice", "bob"], result.Select(b => b.ClientName));
+            Assert.Equal(["evening session", "weekend session", "morning session"], result.Select(b => b.Title));
+        }
+
+        [Fact]
+        public async Task GetTrainerBookingSeriesDtosAsync_ReturnsEmptyListWhenTrainerHasNoSeries()
+        {
+            var trainer = await SeedTrainerAsync();
+
+            var result = await _bookingSeriesRepository.GetTrainerBookingSeriesDtosAsync(trainer.Id);
+
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookingSeriesDtoByIdAsync_MapsEverySeriesField()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
+
+            var result = await _bookingSeriesRepository.GetTrainerBookingSeriesDtoByIdAsync(trainer.Id, series.Id);
+
+            Assert.NotNull(result);
+            Assert.Equal(series.Id, result.Id);
+            Assert.Equal(alice.Id, result.ClientId);
+            Assert.Equal("alice", result.ClientName);
+            Assert.Equal(series.Title, result.Title);
+            Assert.Equal(series.Description, result.Description);
+            Assert.Equal(series.Duration, result.Duration);
+            Assert.Equal(series.StartDate, result.StartDate);
+            Assert.Equal(series.StartTime, result.StartTime);
+            Assert.Equal(series.Recurrence, result.Recurrence);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookingSeriesDtoByIdAsync_ReturnsNullForAnotherTrainersSeries()
+        {
+            var trainer = await SeedTrainerAsync("john");
+            var otherTrainer = await SeedTrainerAsync("jane");
+            var otherSeries = await SeedSeriesAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"));
+
+            var result = await _bookingSeriesRepository.GetTrainerBookingSeriesDtoByIdAsync(trainer.Id, otherSeries.Id);
+
+            Assert.Null(result);
+        }
+
+        private static BookingSeriesUpdateDto UpdateDto(DateOnly startDate, TimeOnly startTime, string title = "weekly session", string? description = null, int duration = 60) => new()
+        {
+            Title = title,
+            Description = description,
+            Duration = duration,
+            StartDate = startDate,
+            StartTime = startTime
+        };
     }
 }

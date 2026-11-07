@@ -154,8 +154,30 @@ namespace ClientDashboard_API_Tests.RepositoryTests
 
             var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, rangeStart, rangeStart.AddDays(90));
 
-            Assert.Single(result);
-            Assert.Equal(trainer.Id, result[0].TrainerId);
+            var single = Assert.Single(result);
+            Assert.Equal("alice", single.ClientName);
+        }
+
+        [Fact]
+        public async Task GetTrainerBookedSessionSlotsInRangeAsync_MapsEverySlotFieldIncludingClientName()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var series = await SeedSeriesAsync(trainer, alice);
+            var rangeStart = new DateTime(2026, 10, 10, 0, 0, 0, DateTimeKind.Utc);
+            var slot = await SeedSlotAsync(trainer, alice, series, rangeStart.AddDays(1));
+
+            var result = await _bookedSessionSlotRepository.GetTrainerBookedSessionSlotsInRangeAsync(trainer.Id, rangeStart, rangeStart.AddDays(7));
+
+            var dto = Assert.Single(result);
+            Assert.Equal(slot.Id, dto.Id);
+            Assert.Equal(alice.Id, dto.ClientId);
+            Assert.Equal("alice", dto.ClientName);
+            Assert.Equal(series.Id, dto.BookingSeriesId);
+            Assert.Equal(slot.Title, dto.Title);
+            Assert.Equal(slot.StartDateTime, dto.StartDateTime);
+            Assert.Equal(slot.EndDateTime, dto.EndDateTime);
+            Assert.Equal(SessionStatus.Scheduled, dto.Status);
         }
 
         [Fact]

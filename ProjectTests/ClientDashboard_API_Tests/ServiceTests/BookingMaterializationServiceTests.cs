@@ -12,6 +12,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
     {
         private const int WindowDays = 90;
 
+        // Fixed "today" for the clock-pinned back-dated series tests
+        private static readonly DateOnly PinnedToday = new(2026, 11, 4);
+
         private readonly DataContext _context;
         private readonly UnitOfWork _unitOfWork;
         private readonly BookingSeriesRepository _bookingSeriesRepository;
@@ -250,19 +253,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal("Reocurrance not set to valid value", exception.Message);
         }
 
-        // Back-dated series start two weeks before a pinned "today", with the 09:00 session either still ahead or already started.
+        // Back-dated series start two weeks before PinnedToday, with the 09:00 session either still ahead or already started.
         // The watermark walks today - 14, today - 7, today; the start-time check decides whether today's 09:00 still gets a slot.
-        private static readonly DateOnly PinnedToday = new(2026, 11, 4);
-
-        private BookingMaterializationService ServiceAtLocalTime(string timeZoneId, TimeOnly localNow) =>
-            new(_unitOfWork, new FixedTimeProvider(TimeZoneInfo.ConvertTimeToUtc(PinnedToday.ToDateTime(localNow), Zone(timeZoneId))));
-
-        private async Task<List<DateOnly>> SlotLocalDatesAsync(string timeZoneId) =>
-            (await _context.BookedSessionsSlot.ToListAsync())
-                .Select(s => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(s.StartDateTime, Zone(timeZoneId))))
-                .Order()
-                .ToList();
-
         [Fact]
         public async Task BackDatedSeries_SkipsPastDatesAndStartsFromToday()
         {
@@ -289,5 +281,14 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(PinnedToday.AddDays(7), localDates.First());
             Assert.True(series.MaterializedUntil >= PinnedToday.AddDays(7)); // skipped dates still advance the watermark
         }
+
+        private BookingMaterializationService ServiceAtLocalTime(string timeZoneId, TimeOnly localNow) =>
+            new(_unitOfWork, new FixedTimeProvider(TimeZoneInfo.ConvertTimeToUtc(PinnedToday.ToDateTime(localNow), Zone(timeZoneId))));
+
+        private async Task<List<DateOnly>> SlotLocalDatesAsync(string timeZoneId) =>
+            (await _context.BookedSessionsSlot.ToListAsync())
+                .Select(s => DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(s.StartDateTime, Zone(timeZoneId))))
+                .Order()
+                .ToList();
     }
 }
