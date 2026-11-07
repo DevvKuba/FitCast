@@ -81,34 +81,106 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsOnlyTheTrainersSlotsWithinTheNext90Days()
+        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsOnlyTheTrainersSlotsWithinTheRequestedWindow()
         {
             var trainer = await SeedTrainerAsync("john");
             var otherTrainer = await SeedTrainerAsync("jane");
             var alice = await SeedClientAsync(trainer);
-            var today = DateTime.UtcNow.Date;
+            var fromUtc = new DateTime(2026, 11, 9, 0, 0, 0, DateTimeKind.Utc);
+            var toUtc = fromUtc.AddDays(7);
 
-            var earlierToday = await SeedSlotAsync(trainer, alice, today.AddMinutes(1));
-            var nextWeek = await SeedSlotAsync(trainer, alice, today.AddDays(7));
-            await SeedSlotAsync(trainer, alice, today.AddDays(-1));
-            await SeedSlotAsync(trainer, alice, today.AddDays(90));
-            await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"), today.AddDays(2));
+            var monday = await SeedSlotAsync(trainer, alice, fromUtc.AddHours(9));
+            var sunday = await SeedSlotAsync(trainer, alice, fromUtc.AddDays(6).AddHours(9));
+            await SeedSlotAsync(trainer, alice, fromUtc.AddDays(-1).AddHours(9)); // previous week
+            await SeedSlotAsync(trainer, alice, toUtc.AddHours(9)); // next week
+            await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"), fromUtc.AddDays(2));
             AuthenticateAsTrainer(trainer.Id);
 
-            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync();
-            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlot>>;
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, toUtc);
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlotViewDto>>;
 
             Assert.NotNull(response);
             Assert.True(response.Success);
-            Assert.Equal([earlierToday.Id, nextWeek.Id], response.Data!.Select(s => s.Id));
+            Assert.Equal([monday.Id, sunday.Id], response.Data!.Select(s => s.Id));
+            Assert.All(response.Data!, s => Assert.Equal("alice", s.ClientName));
+        }
+
+        [Fact]
+        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsPastSlotsWhenTheWindowIsInThePast()
+        {
+            // The calendar can page back to earlier weeks, so the window isn't limited to today onwards.
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer);
+            var lastWeekFromUtc = DateTime.UtcNow.Date.AddDays(-7);
+            var pastSlot = await SeedSlotAsync(trainer, alice, lastWeekFromUtc.AddDays(1).AddHours(9));
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(lastWeekFromUtc, lastWeekFromUtc.AddDays(7));
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlotViewDto>>;
+
+            Assert.Equal(pastSlot.Id, Assert.Single(response!.Data!).Id);
+        }
+
+        [Fact]
+        public async Task GetBookingSessionSlotsForTrainerAsync_AllowsTheMaximum42DayWindow()
+        {
+            var trainer = await SeedTrainerAsync();
+            AuthenticateAsTrainer(trainer.Id);
+            var fromUtc = new DateTime(2026, 11, 2, 0, 0, 0, DateTimeKind.Utc);
+
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, fromUtc.AddDays(42));
+
+            Assert.IsType<OkObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsBadRequestWhenWindowIsLongerThan42Days()
+        {
+            var trainer = await SeedTrainerAsync();
+            AuthenticateAsTrainer(trainer.Id);
+            var fromUtc = new DateTime(2026, 11, 2, 0, 0, 0, DateTimeKind.Utc);
+
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, fromUtc.AddDays(42).AddMinutes(1));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsBadRequestWhenEndIsNotAfterStart(int daysAfterStart)
+        {
+            var trainer = await SeedTrainerAsync();
+            AuthenticateAsTrainer(trainer.Id);
+            var fromUtc = new DateTime(2026, 11, 9, 0, 0, 0, DateTimeKind.Utc);
+
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, fromUtc.AddDays(daysAfterStart));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+        }
+
+        [Theory]
+        [InlineData(DateTimeKind.Unspecified)]
+        [InlineData(DateTimeKind.Local)]
+        public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsBadRequestWhenRangeIsNotUtc(DateTimeKind kind)
+        {
+            // A time without a trailing Z doesn't bind as UTC, so the server can't know which zone it was meant in.
+            var trainer = await SeedTrainerAsync();
+            AuthenticateAsTrainer(trainer.Id);
+            var fromUtc = new DateTime(2026, 11, 9, 0, 0, 0, kind);
+
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, fromUtc.AddDays(7));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
         }
 
         [Fact]
         public async Task GetBookingSessionSlotsForTrainerAsync_ReturnsNotFoundWhenTrainerDoesNotExist()
         {
             AuthenticateAsTrainer(999);
+            var fromUtc = new DateTime(2026, 11, 9, 0, 0, 0, DateTimeKind.Utc);
 
-            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync();
+            var result = await _bookedSessionSlotController.GetBookingSessionSlotsForTrainerAsync(fromUtc, fromUtc.AddDays(7));
 
             Assert.IsType<NotFoundObjectResult>(result.Result);
         }
