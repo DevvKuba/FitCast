@@ -82,6 +82,20 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task GetAllBookingSeriesAsync_LoadsEachSeriesTrainer()
+        {
+            var trainer = await SeedTrainerAsync();
+            await SeedSeriesAsync(trainer, await SeedClientAsync(trainer, "alice"));
+            _context.ChangeTracker.Clear(); // otherwise EF fills in Trainer from the tracked seed, with or without the Include
+
+            var allSeries = await _bookingSeriesRepository.GetAllBookingSeriesAsync();
+
+            var series = Assert.Single(allSeries);
+            Assert.NotNull(series.Trainer);
+            Assert.Equal(trainer.Id, series.Trainer.Id);
+        }
+
+        [Fact]
         public async Task GetTrainerBookingSeriesByIdAsync_ReturnsTheTrainersOwnSeries()
         {
             var trainer = await SeedTrainerAsync();
