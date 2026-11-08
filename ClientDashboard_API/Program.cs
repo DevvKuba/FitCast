@@ -113,7 +113,8 @@ namespace ClientDashboard_API
             // Job keys are declared here (rather than inline inside AddQuartz) so the same
             // JobKey instances can be reused below to wire up the JobChainingJobListener once
             // the scheduler exists. Chain order: WorkoutSync -> InvalidTokenCleanup ->
-            // InvisiblePaymentCleanup -> DeletedClientCleanup -> ClientDataGathering -> TrainerRevenueGathering
+            // InvisiblePaymentCleanup -> DeletedClientCleanup -> ClientDataGathering -> TrainerRevenueGathering ->
+            // ExpiredNotificationStatusChange -> BookingMaterialization
             var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
             var invalidTokenCleanupJobKey = new JobKey("DailyInvalidTokenCleanup");
             var invisiblePaymentCleanupJobKey = new JobKey("DailyInvisiblePaymentCleanup");
@@ -121,6 +122,7 @@ namespace ClientDashboard_API
             var clientDataJobKey = new JobKey("DailyClientDataGathering");
             var trainerRevenueJobKey = new JobKey("DailyTrainerRevenueGathering");
             var expiredNotificationStatusJobKey = new JobKey("DailyExpiredNotificationStatusChangeJob");
+            var bookingMaterializationJobKey = new JobKey("DailyMaterializationJob");
 
             builder.Services.AddQuartz(q =>
             {
@@ -156,6 +158,8 @@ namespace ClientDashboard_API
                 q.AddJob<DailyTrainerRevenueGathering>(opts => opts.WithIdentity(trainerRevenueJobKey).StoreDurably());
 
                 q.AddJob<DailyExpiredNotificationStatusChangeJob>(opts => opts.WithIdentity(expiredNotificationStatusJobKey).StoreDurably());
+
+                q.AddJob<DailyMaterializationJob>(opts => opts.WithIdentity(bookingMaterializationJobKey).StoreDurably());
             });
 
             builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
@@ -231,6 +235,7 @@ namespace ClientDashboard_API
                 dailyJobChainListener.AddJobChainLink(deletedClientCleanupJobKey, clientDataJobKey);
                 dailyJobChainListener.AddJobChainLink(clientDataJobKey, trainerRevenueJobKey);
                 dailyJobChainListener.AddJobChainLink(trainerRevenueJobKey, expiredNotificationStatusJobKey);
+                dailyJobChainListener.AddJobChainLink(expiredNotificationStatusJobKey, bookingMaterializationJobKey);
 
                 scheduler.ListenerManager.AddJobListener(dailyJobChainListener);
             }

@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Data
     {
         public async Task<List<BookingSeries>> GetAllBookingSeriesAsync()
         {
-            return await context.BookingSeries.ToListAsync();
+            return await context.BookingSeries.Include(s => s.Trainer).ToListAsync();
         }
 
         public async Task<BookingSeries?> GetTrainerBookingSeriesByIdAsync(int trainerId, int bookingSeriesId)
