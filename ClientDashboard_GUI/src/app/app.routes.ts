@@ -12,10 +12,12 @@ import { ClientPersonalPaymentsComponent } from './client-personal-payments/clie
 import { PasswordResetComponent } from './password-reset/password-reset.component';
 import { TrainerAnalyticsComponent } from './trainer-analytics/trainer-analytics.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { CalendarComponent } from './calendar/calendar.component';
 
 export const routes: Routes = [
   {path: '', component: Home},
   {path: 'notifications', component: NotificationsComponent, canActivate: [authGuard]},
+  {path: 'calendar', component: CalendarComponent, canActivate: [authGuard]},
   {path: 'client-info', component: ClientInfoComponent, canActivate: [authGuard]},
   {path: 'client-workouts', component: ClientWorkouts, canActivate: [authGuard]},
   {path: 'client-personal-workouts', component: ClientPersonalWorkoutsComponent, canActivate: [authGuard]},

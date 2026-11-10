@@ -61,6 +61,11 @@ export class UserNavbar{
         if(role == UserRole.Trainer){
             this.sidebarItems = [
             {
+                label: 'Calendar',
+                routerLink: '/calendar',
+                icon: 'pi pi-calendar'
+            },
+            {
                 label: 'Client Info',
                 routerLink: '/client-info',
                 icon: 'pi pi-users'

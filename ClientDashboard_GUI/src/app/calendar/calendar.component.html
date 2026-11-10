@@ -1,0 +1,134 @@
+<!-- same outer width and padding as the other pages; the height fits the viewport so only the grid scrolls -->
+<div class="flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 max-w-[1440px] mx-auto gap-4">
+
+	<!-- Header: month and week totals on the left, week navigation and actions on the right -->
+	<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+		<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+			<h2 class="text-headline-md font-headline-md text-slate-navy">{{ monthLabel }}</h2>
+			<div class="flex items-center divide-x divide-border-subtle">
+				<div class="pr-4 flex items-baseline gap-2">
+					<span class="text-[11px] uppercase font-bold text-slate-400">Bookings</span>
+					<span class="text-sm font-bold text-slate-navy">{{ bookingsCount }}</span>
+				</div>
+				<div class="pl-4 flex items-baseline gap-2">
+					<span class="text-[11px] uppercase font-bold text-slate-400">Coached</span>
+					<span class="text-sm font-bold text-slate-navy">{{ coachedHours }} hrs</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex flex-wrap items-center gap-3">
+			<div class="flex items-center bg-white border border-border-subtle rounded p-0.5">
+				<button type="button" class="px-3 py-1.5 text-xs font-semibold text-slate-700 rounded hover:bg-slate-100" (click)="goToToday()">Today</button>
+				<span class="h-4 w-px bg-border-subtle"></span>
+				<button type="button" class="px-2 py-1.5 text-slate-600 rounded hover:bg-slate-100" (click)="goToPreviousWeek()" aria-label="Previous week">
+					<i class="pi pi-chevron-left text-xs"></i>
+				</button>
+				<span class="h-4 w-px bg-border-subtle"></span>
+				<button type="button" class="px-2 py-1.5 text-slate-600 rounded hover:bg-slate-100" (click)="goToNextWeek()" aria-label="Next week">
+					<i class="pi pi-chevron-right text-xs"></i>
+				</button>
+			</div>
+
+			<span class="flex items-center gap-2 px-3 py-2 bg-white border border-border-subtle rounded text-xs font-semibold text-slate-800">
+				<i class="pi pi-calendar text-xs text-slate-500"></i>
+				{{ weekRangeLabel }}
+			</span>
+
+			<!-- wired up in the session dialog and booking series chunks -->
+			<button type="button" class="h-10 px-3.5 rounded border border-slate-navy bg-white text-slate-navy text-sm font-semibold hover:bg-slate-50 flex items-center gap-2">
+				<i class="pi pi-replay text-xs"></i>
+				Booking Series
+			</button>
+			<button type="button" class="h-10 px-4 rounded bg-action-royal hover:bg-blue-700 text-white text-sm font-semibold">
+				New Session
+			</button>
+		</div>
+	</div>
+
+	<!-- Week grid -->
+	<div class="flex-1 min-h-0 flex flex-col bg-white border border-border-subtle rounded-lg overflow-hidden">
+
+		<!-- Day headers -->
+		<div class="grid grid-cols-[64px_repeat(7,1fr)] border-b border-border-subtle">
+			<div class="flex items-end justify-end pr-2 pb-2 text-[10px] font-bold uppercase text-slate-400">{{ browserOffsetLabel }}</div>
+			@for (day of days; track day.date.getTime()) {
+				<div class="px-2 py-2 border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/40' : day.isWeekend ? 'bg-slate-50/50' : '' }}">
+					<div class="text-[11px] font-bold uppercase tracking-wider"
+						[class.text-action-royal]="day.isToday"
+						[class.text-slate-500]="!day.isToday">{{ formatWeekday(day.date) }}</div>
+					@if (day.isToday) {
+						<span class="inline-block mt-0.5 px-2 rounded-full bg-action-royal text-white text-xs font-semibold">{{ day.date.getDate() }} • Today</span>
+					} @else {
+						<div class="text-sm font-semibold text-slate-800">{{ day.date.getDate() }}</div>
+					}
+				</div>
+			}
+		</div>
+
+		<!-- Scrollable 24 hour body -->
+		<div #gridScroll class="flex-1 min-h-0 overflow-y-auto">
+			<div class="grid grid-cols-[64px_repeat(7,1fr)] relative" [style.height.px]="hours.length * hourHeight">
+
+				<!-- Hour labels -->
+				<div>
+					@for (hour of hours; track hour) {
+						<div class="pr-2 text-right text-[11px] text-slate-400" [style.height.px]="hourHeight">
+							@if (hour > 0) {
+								<span class="relative -top-2">{{ formatHour(hour) }}</span>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Day columns -->
+				@for (day of days; track day.date.getTime(); let dayIndex = $index) {
+					<div class="relative border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/20' : day.isWeekend ? 'bg-slate-50/30' : '' }}">
+
+						<!-- hour guide lines -->
+						@for (hour of hours; track hour) {
+							<div class="border-b border-slate-100" [style.height.px]="hourHeight"></div>
+						}
+
+						<!-- sessions -->
+						@for (session of sessionsByDay[dayIndex]; track session.slot.id) {
+							<div class="absolute rounded border border-l-4 px-1.5 py-1 overflow-hidden cursor-pointer z-10 {{ session.colours.block }}"
+								[style.top.px]="session.top"
+								[style.height.px]="session.height"
+								[style.left]="'calc(' + session.left + '% + 2px)'"
+								[style.width]="'calc(' + session.width + '% - 4px)'">
+								@if (session.height < 40) {
+									<div class="truncate text-[10px] leading-tight">
+										<span class="font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</span>
+										<span class="text-slate-600"> • {{ session.slot.title }} </span>
+										<span class="font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }}</span>
+									</div>
+								} @else {
+									<div class="truncate text-xs font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</div>
+									<div class="truncate text-[10px] text-slate-600">{{ session.slot.title }}</div>
+									<div class="truncate text-[9px] font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</div>
+								}
+							</div>
+						}
+
+						<!-- current time -->
+						@if (day.isToday) {
+							<div class="absolute left-0 right-0 z-20 flex items-center pointer-events-none" [style.top.px]="currentTimeTop">
+								<span class="w-2.5 h-2.5 -ml-1 rounded-full bg-error-rose ring-2 ring-white"></span>
+								<span class="flex-1 h-[2px] bg-error-rose"></span>
+							</div>
+						}
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+
+	<!-- Only shown when the device is in a different zone to the trainer's schedule zone -->
+	@if (showTimeZoneNote) {
+		<p class="flex items-center gap-2 text-xs text-on-surface-variant">
+			<i class="pi pi-info-circle text-xs"></i>
+			Times shown in {{ browserTimeZoneId }} (this device). Your schedule zone is {{ trainerTimeZoneId }}.
+		</p>
+	}
+</div>
