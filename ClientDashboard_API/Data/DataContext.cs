@@ -233,7 +233,7 @@ namespace ClientDashboard_API.Data
                 .HasMany<BookedSessionSlot>()
                 .WithOne(bs => bs.BookingSeries)
                 .HasForeignKey(bs => bs.BookingSeriesId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
             // token specific relationships

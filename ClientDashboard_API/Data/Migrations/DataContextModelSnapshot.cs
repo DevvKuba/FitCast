@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -571,7 +571,7 @@ namespace ClientDashboard_API.Data.Migrations
                     b.HasOne("ClientDashboard_API.Entities.BookingSeries", "BookingSeries")
                         .WithMany()
                         .HasForeignKey("BookingSeriesId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("ClientDashboard_API.Entities.Client", "Client")
                         .WithMany()
