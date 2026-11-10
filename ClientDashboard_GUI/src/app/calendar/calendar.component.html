@@ -41,22 +41,23 @@
 				{{ weekRangeLabel }}
 			</span>
 
-			<!-- wired up in the session dialog and booking series chunks -->
+			<!-- wired up in the booking series chunk -->
 			<button type="button" class="h-10 px-3.5 rounded border border-slate-navy bg-white text-slate-navy text-sm font-semibold hover:bg-slate-50 flex items-center gap-2">
 				<i class="pi pi-replay text-xs"></i>
 				Booking Series
 			</button>
-			<button type="button" class="h-10 px-4 rounded bg-action-royal hover:bg-blue-700 text-white text-sm font-semibold">
+			<button type="button" class="h-10 px-4 rounded bg-action-royal hover:bg-blue-700 text-white text-sm font-semibold" (click)="openNewSession()">
 				New Session
 			</button>
 		</div>
 	</div>
 
-	<!-- Week grid -->
-	<div class="flex-1 min-h-0 flex flex-col bg-white border border-border-subtle rounded-lg overflow-hidden">
+	<!-- Week grid. The day headers live inside the scroll area (sticky at the top) so they share
+	     the same width as the columns below, including the space taken by the scrollbar -->
+	<div #gridScroll class="flex-1 min-h-0 overflow-y-auto bg-white border border-border-subtle rounded-lg">
 
 		<!-- Day headers -->
-		<div class="grid grid-cols-[64px_repeat(7,1fr)] border-b border-border-subtle">
+		<div class="sticky top-0 z-30 bg-white grid grid-cols-[64px_repeat(7,1fr)] border-b border-border-subtle">
 			<div class="flex items-end justify-end pr-2 pb-2 text-[10px] font-bold uppercase text-slate-400">{{ browserOffsetLabel }}</div>
 			@for (day of days; track day.date.getTime()) {
 				<div class="px-2 py-2 border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/40' : day.isWeekend ? 'bg-slate-50/50' : '' }}">
@@ -72,61 +73,62 @@
 			}
 		</div>
 
-		<!-- Scrollable 24 hour body -->
-		<div #gridScroll class="flex-1 min-h-0 overflow-y-auto">
-			<div class="grid grid-cols-[64px_repeat(7,1fr)] relative" [style.height.px]="hours.length * hourHeight">
+		<!-- 24 hour body -->
+		<div class="grid grid-cols-[64px_repeat(7,1fr)] relative" [style.height.px]="hours.length * hourHeight">
 
-				<!-- Hour labels -->
-				<div>
-					@for (hour of hours; track hour) {
-						<div class="pr-2 text-right text-[11px] text-slate-400" [style.height.px]="hourHeight">
-							@if (hour > 0) {
-								<span class="relative -top-2">{{ formatHour(hour) }}</span>
-							}
-						</div>
-					}
-				</div>
-
-				<!-- Day columns -->
-				@for (day of days; track day.date.getTime(); let dayIndex = $index) {
-					<div class="relative border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/20' : day.isWeekend ? 'bg-slate-50/30' : '' }}">
-
-						<!-- hour guide lines -->
-						@for (hour of hours; track hour) {
-							<div class="border-b border-slate-100" [style.height.px]="hourHeight"></div>
-						}
-
-						<!-- sessions -->
-						@for (session of sessionsByDay[dayIndex]; track session.slot.id) {
-							<div class="absolute rounded border border-l-4 px-1.5 py-1 overflow-hidden cursor-pointer z-10 {{ session.colours.block }}"
-								[style.top.px]="session.top"
-								[style.height.px]="session.height"
-								[style.left]="'calc(' + session.left + '% + 2px)'"
-								[style.width]="'calc(' + session.width + '% - 4px)'">
-								@if (session.height < 40) {
-									<div class="truncate text-[10px] leading-tight">
-										<span class="font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</span>
-										<span class="text-slate-600"> • {{ session.slot.title }} </span>
-										<span class="font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }}</span>
-									</div>
-								} @else {
-									<div class="truncate text-xs font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</div>
-									<div class="truncate text-[10px] text-slate-600">{{ session.slot.title }}</div>
-									<div class="truncate text-[9px] font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</div>
-								}
-							</div>
-						}
-
-						<!-- current time -->
-						@if (day.isToday) {
-							<div class="absolute left-0 right-0 z-20 flex items-center pointer-events-none" [style.top.px]="currentTimeTop">
-								<span class="w-2.5 h-2.5 -ml-1 rounded-full bg-error-rose ring-2 ring-white"></span>
-								<span class="flex-1 h-[2px] bg-error-rose"></span>
-							</div>
+			<!-- Hour labels -->
+			<div>
+				@for (hour of hours; track hour) {
+					<div class="pr-2 text-right text-[11px] text-slate-400" [style.height.px]="hourHeight">
+						@if (hour > 0) {
+							<span class="relative -top-2">{{ formatHour(hour) }}</span>
 						}
 					</div>
 				}
 			</div>
+
+			<!-- Day columns -->
+			@for (day of days; track day.date.getTime(); let dayIndex = $index) {
+				<!-- clicking empty space opens New Session prefilled with the clicked half hour -->
+				<div class="relative border-l border-border-subtle cursor-pointer {{ day.isToday ? 'bg-blue-50/20' : day.isWeekend ? 'bg-slate-50/30' : '' }}"
+					(click)="openNewSessionAt(day, $event)">
+
+					<!-- hour guide lines -->
+					@for (hour of hours; track hour) {
+						<div class="border-b border-slate-100" [style.height.px]="hourHeight"></div>
+					}
+
+					<!-- sessions -->
+					@for (session of sessionsByDay[dayIndex]; track session.slot.id) {
+						<div class="absolute rounded border border-l-4 px-1.5 py-1 overflow-hidden cursor-pointer z-10 {{ session.colours.block }}"
+							[style.top.px]="session.top"
+							[style.height.px]="session.height"
+							[style.left]="'calc(' + session.left + '% + 2px)'"
+							[style.width]="'calc(' + session.width + '% - 4px)'"
+							(click)="openSessionDetails(session, $event)">
+							@if (session.height < 40) {
+								<div class="truncate text-[10px] leading-tight">
+									<span class="font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</span>
+									<span class="text-slate-600"> • {{ session.slot.title }} </span>
+									<span class="font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }}</span>
+								</div>
+							} @else {
+								<div class="truncate text-xs font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</div>
+								<div class="truncate text-[10px] text-slate-600">{{ session.slot.title }}</div>
+								<div class="truncate text-[9px] font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</div>
+							}
+						</div>
+					}
+
+					<!-- current time -->
+					@if (day.isToday) {
+						<div class="absolute left-0 right-0 z-20 flex items-center pointer-events-none" [style.top.px]="currentTimeTop">
+							<span class="w-2.5 h-2.5 -ml-1 rounded-full bg-error-rose ring-2 ring-white"></span>
+							<span class="flex-1 h-[2px] bg-error-rose"></span>
+						</div>
+					}
+				</div>
+			}
 		</div>
 	</div>
 
@@ -138,3 +140,103 @@
 		</p>
 	}
 </div>
+
+<!-- Session details -->
+<p-dialog header="Session Details" [modal]="true" [(visible)]="detailsDialogVisible" [style]="{ width: '28rem' }" [dismissableMask]="true">
+	@if (selectedSession) {
+		<div class="flex flex-col gap-4">
+			<div>
+				<h3 class="text-lg font-semibold text-slate-navy">{{ selectedSession.slot.title }}</h3>
+				<p class="text-body-sm text-on-surface-variant">{{ selectedSession.slot.clientName }}</p>
+			</div>
+
+			<div class="grid grid-cols-[6rem_1fr] gap-y-2 text-body-sm">
+				<span class="text-label-caps font-label-caps text-slate-400 uppercase">Date</span>
+				<span class="text-slate-800">{{ formatLongDate(selectedSession.start) }}</span>
+
+				<span class="text-label-caps font-label-caps text-slate-400 uppercase">Time</span>
+				<span class="text-slate-800">{{ formatTime(selectedSession.start) }} – {{ formatTime(selectedSession.end) }} ({{ selectedSession.durationMinutes }} min)</span>
+
+				@if (selectedSession.slot.description) {
+					<span class="text-label-caps font-label-caps text-slate-400 uppercase">Notes</span>
+					<span class="text-slate-800 whitespace-pre-line">{{ selectedSession.slot.description }}</span>
+				}
+			</div>
+
+			@if (selectedSession.slot.bookingSeriesId) {
+				<p class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
+					<i class="pi pi-replay text-xs"></i>
+					Part of a recurring series. Editing or deleting here only changes this session.
+				</p>
+			}
+		</div>
+	}
+
+	<div class="flex justify-between items-center mt-6">
+		<p-button label="Delete" severity="danger" [text]="true" (click)="openDeleteConfirmation()" />
+		<div class="flex gap-2">
+			<p-button label="Close" severity="secondary" (click)="detailsDialogVisible = false" />
+			<p-button label="Edit" (click)="openEditSession()" />
+		</div>
+	</div>
+</p-dialog>
+
+<!-- Delete confirmation -->
+<p-dialog header="Delete Session" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
+	@if (selectedSession) {
+		<p class="text-body-sm text-on-surface-variant mb-6">
+			Are you sure you want to delete <span class="font-semibold text-slate-navy">{{ selectedSession.slot.title }}</span>
+			with {{ selectedSession.slot.clientName }} on {{ formatLongDate(selectedSession.start) }}?
+		</p>
+	}
+	<div class="flex justify-end gap-2">
+		<p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
+		<p-button label="Delete" severity="danger" [loading]="isSaving" (click)="deleteSession()" />
+	</div>
+</p-dialog>
+
+<!-- New / edit session -->
+<p-dialog [header]="sessionDialogMode === 'create' ? 'New Session' : 'Edit Session'" [modal]="true" [(visible)]="sessionDialogVisible" [style]="{ width: '28rem' }">
+	<div class="flex flex-col gap-4">
+		<div class="flex flex-col gap-1">
+			<label for="sessionClient" class="text-sm font-semibold text-slate-700">Client</label>
+			<p-select inputId="sessionClient" [appendTo]="'body'" [(ngModel)]="formClientId" [options]="clients"
+				optionLabel="name" optionValue="id" [filter]="true" filterBy="name" placeholder="Select client" styleClass="w-full" />
+		</div>
+
+		<div class="flex flex-col gap-1">
+			<label for="sessionTitle" class="text-sm font-semibold text-slate-700">Title</label>
+			<input pInputText id="sessionTitle" class="w-full" [(ngModel)]="formTitle" placeholder="e.g. Strength Session" />
+		</div>
+
+		<div class="flex flex-col gap-1">
+			<label for="sessionDescription" class="text-sm font-semibold text-slate-700">Description <span class="font-normal text-slate-400">(optional)</span></label>
+			<textarea pTextarea id="sessionDescription" class="w-full" rows="3" [(ngModel)]="formDescription"></textarea>
+		</div>
+
+		<div class="flex flex-col gap-1">
+			<label for="sessionDate" class="text-sm font-semibold text-slate-700">Date</label>
+			<p-datepicker inputId="sessionDate" [appendTo]="'body'" [(ngModel)]="formDate" dateFormat="dd/mm/yy" styleClass="w-full" />
+		</div>
+
+		<div class="grid grid-cols-2 gap-3">
+			<div class="flex flex-col gap-1">
+				<label for="sessionStart" class="text-sm font-semibold text-slate-700">Start time</label>
+				<p-datepicker inputId="sessionStart" [appendTo]="'body'" [(ngModel)]="formStartTime" [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+			</div>
+			<div class="flex flex-col gap-1">
+				<label for="sessionEnd" class="text-sm font-semibold text-slate-700">End time</label>
+				<p-datepicker inputId="sessionEnd" [appendTo]="'body'" [(ngModel)]="formEndTime" [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+			</div>
+		</div>
+
+		@if (sessionDialogMode === 'edit' && selectedSession?.slot?.bookingSeriesId) {
+			<p class="text-xs text-on-surface-variant">Changes apply to this session only, not the rest of its series.</p>
+		}
+	</div>
+
+	<div class="flex justify-end gap-2 mt-6">
+		<p-button label="Cancel" severity="secondary" (click)="sessionDialogVisible = false" />
+		<p-button [label]="sessionDialogMode === 'create' ? 'Create' : 'Save'" [loading]="isSaving" (click)="saveSession()" />
+	</div>
+</p-dialog>

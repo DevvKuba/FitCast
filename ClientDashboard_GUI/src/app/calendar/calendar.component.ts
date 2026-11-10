@@ -1,14 +1,30 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { DatePicker } from 'primeng/datepicker';
+import { Dialog } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { BookingService } from '../services/booking.service';
 import { TrainerService } from '../services/trainer.service';
 import { ToastService } from '../services/toast.service';
+import { ClientService } from '../services/client.service';
+import { AccountService } from '../services/account.service';
 import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
+import { BookedSessionSlotDto } from '../models/dtos/booked-session-slot-dto';
 
 // Grid measurements - one hour row is 56px tall, as in the Stitch design
 const HOUR_HEIGHT = 56;
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
 const FIRST_VISIBLE_HOUR = 6; // the grid opens scrolled to 06:00
 const MIN_BLOCK_HEIGHT = 18;
+
+// Clicking an empty slot snaps to the half hour and prefills a one hour session
+const CLICK_SNAP_MINUTES = 30;
+const DEFAULT_SESSION_MINUTES = 60;
+
+type SessionDialogMode = 'create' | 'edit';
 
 interface CalendarDay {
   date: Date;
@@ -37,7 +53,7 @@ interface CalendarSession {
 
 @Component({
   selector: 'app-calendar',
-  imports: [],
+  imports: [FormsModule, ButtonModule, DatePicker, Dialog, InputTextModule, SelectModule, TextareaModule],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -47,6 +63,8 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   bookingService = inject(BookingService);
   trainerService = inject(TrainerService);
   toastService = inject(ToastService);
+  clientService = inject(ClientService);
+  accountService = inject(AccountService);
 
   hours = HOURS;
   hourHeight = HOUR_HEIGHT;
@@ -65,17 +83,39 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   now = new Date();
   private clockTimer?: ReturnType<typeof setInterval>;
 
+  clients: { id: number, name: string }[] = [];
+
+  // ---- Dialog state ----
+  selectedSession: CalendarSession | null = null;
+  detailsDialogVisible = false;
+  deleteDialogVisible = false;
+  sessionDialogVisible = false;
+  sessionDialogMode: SessionDialogMode = 'create';
+  isSaving = false;
+
+  // new / edit session form - date and times are in the browser's zone
+  formClientId: number | null = null;
+  formTitle = '';
+  formDescription = '';
+  formDate: Date | null = null;
+  formStartTime: Date | null = null;
+  formEndTime: Date | null = null;
+
   ngOnInit(): void {
     this.loadWeek();
     this.retrieveTrainerTimeZone();
+    this.retrieveClients();
 
     // keeps the current-time line moving
     this.clockTimer = setInterval(() => this.now = new Date(), 60 * 1000);
   }
 
   ngAfterViewInit(): void {
-    // a little above 06:00 so its hour label isn't clipped by the top of the grid
-    this.gridScroll.nativeElement.scrollTop = FIRST_VISIBLE_HOUR * HOUR_HEIGHT - 12;
+    // run after the first layout pass, otherwise the scroll area has no height yet and the scroll is ignored.
+    // a little above 06:00 so its hour label isn't hidden under the day headers
+    setTimeout(() => {
+      this.gridScroll.nativeElement.scrollTop = FIRST_VISIBLE_HOUR * HOUR_HEIGHT - 12;
+    });
   }
 
   ngOnDestroy(): void {
@@ -122,6 +162,114 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.trainerService.retrieveTrainerById().subscribe({
       next: (response) => {
         this.trainerTimeZoneId = response.data?.timeZoneId ?? '';
+      }
+    });
+  }
+
+  retrieveClients(): void {
+    const trainerId = this.accountService.currentUser()?.id;
+    if (!trainerId) {
+      return;
+    }
+
+    this.clientService.gatherClientNames(trainerId).subscribe({
+      next: (clients) => {
+        this.clients = clients;
+      }
+    });
+  }
+
+  // ---- Session details & delete ----
+
+  openSessionDetails(session: CalendarSession, event: MouseEvent): void {
+    event.stopPropagation(); // don't also trigger the empty-slot click on the day column
+    this.selectedSession = session;
+    this.detailsDialogVisible = true;
+  }
+
+  openDeleteConfirmation(): void {
+    this.detailsDialogVisible = false;
+    this.deleteDialogVisible = true;
+  }
+
+  deleteSession(): void {
+    if (!this.selectedSession) {
+      return;
+    }
+
+    this.isSaving = true;
+    this.bookingService.deleteBookedSessionSlot(this.selectedSession.slot.id).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess('Session Deleted', response.message);
+        this.deleteDialogVisible = false;
+        this.isSaving = false;
+        this.loadWeek();
+      },
+      error: (response) => {
+        this.toastService.showError('Error Deleting Session', response.error?.message ?? 'The session could not be deleted');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  // ---- New & edit session ----
+
+  // Header button: today, starting at the next half hour
+  openNewSession(): void {
+    const now = new Date();
+    const minutesFromMidnight = Math.ceil((now.getHours() * 60 + now.getMinutes()) / CLICK_SNAP_MINUTES) * CLICK_SNAP_MINUTES;
+    this.openCreateDialog(this.startOfDay(now), minutesFromMidnight);
+  }
+
+  // Empty-slot click: prefills the clicked half hour. Nothing is sent until the trainer presses Create.
+  openNewSessionAt(day: CalendarDay, event: MouseEvent): void {
+    const column = event.currentTarget as HTMLElement;
+    const clickY = event.clientY - column.getBoundingClientRect().top;
+    const clickedMinutes = clickY / HOUR_HEIGHT * 60;
+    const minutesFromMidnight = Math.floor(clickedMinutes / CLICK_SNAP_MINUTES) * CLICK_SNAP_MINUTES;
+
+    this.openCreateDialog(day.date, minutesFromMidnight);
+  }
+
+  openEditSession(): void {
+    if (!this.selectedSession) {
+      return;
+    }
+
+    const session = this.selectedSession;
+    this.sessionDialogMode = 'edit';
+    this.formClientId = session.slot.clientId;
+    this.formTitle = session.slot.title;
+    this.formDescription = session.slot.description ?? '';
+    this.formDate = this.startOfDay(session.start);
+    this.formStartTime = new Date(session.start);
+    this.formEndTime = new Date(session.end);
+
+    this.detailsDialogVisible = false;
+    this.sessionDialogVisible = true;
+  }
+
+  saveSession(): void {
+    const sessionSlot = this.buildSessionSlotFromForm();
+    if (!sessionSlot) {
+      return;
+    }
+
+    this.isSaving = true;
+    const request = this.sessionDialogMode === 'create'
+      ? this.bookingService.addBookedSessionSlot(sessionSlot)
+      : this.bookingService.updateBookedSessionSlot(this.selectedSession!.slot.id, sessionSlot);
+
+    request.subscribe({
+      next: (response) => {
+        this.toastService.showSuccess(this.sessionDialogMode === 'create' ? 'Session Created' : 'Session Updated', response.message);
+        this.sessionDialogVisible = false;
+        this.isSaving = false;
+        this.loadWeek();
+      },
+      error: (response) => {
+        this.toastService.showError('Error Saving Session', response.error?.message ?? 'The session could not be saved');
+        this.isSaving = false;
       }
     });
   }
@@ -184,6 +332,62 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   formatHour(hour: number): string {
     return `${hour.toString().padStart(2, '0')}:00`;
+  }
+
+  // e.g. "Tuesday 10 November 2026"
+  formatLongDate(date: Date): string {
+    return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  // ---- Session form helpers ----
+
+  private openCreateDialog(date: Date, startMinutes: number): void {
+    // keep the prefilled end on the same day - a session can't run past midnight from the form
+    const endMinutes = Math.min(startMinutes + DEFAULT_SESSION_MINUTES, 24 * 60 - 1);
+
+    this.sessionDialogMode = 'create';
+    this.selectedSession = null;
+    this.formClientId = null;
+    this.formTitle = '';
+    this.formDescription = '';
+    this.formDate = this.startOfDay(date);
+    this.formStartTime = this.atMinutes(date, startMinutes);
+    this.formEndTime = this.atMinutes(date, endMinutes);
+
+    this.sessionDialogVisible = true;
+  }
+
+  // Validates the form and turns the local date and times into the UTC body the API expects.
+  // Returns null (after showing a toast) when something is missing or the times are the wrong way round.
+  private buildSessionSlotFromForm(): BookedSessionSlotDto | null {
+    if (!this.formClientId) {
+      this.toastService.showError('Validation Error', 'A client must be selected');
+      return null;
+    }
+    if (!this.formTitle || this.formTitle.trim() === '') {
+      this.toastService.showError('Validation Error', 'A title is required');
+      return null;
+    }
+    if (!this.formDate || !this.formStartTime || !this.formEndTime) {
+      this.toastService.showError('Validation Error', 'A date, start time and end time are required');
+      return null;
+    }
+
+    const start = this.combineDateAndTime(this.formDate, this.formStartTime);
+    const end = this.combineDateAndTime(this.formDate, this.formEndTime);
+
+    if (end <= start) {
+      this.toastService.showError('Validation Error', 'Session end time must be after the start time');
+      return null;
+    }
+
+    return {
+      clientId: this.formClientId,
+      title: this.formTitle.trim(),
+      description: this.formDescription.trim() === '' ? undefined : this.formDescription.trim(),
+      startDateTime: start.toISOString(), // toISOString always gives UTC with a trailing "Z"
+      endDateTime: end.toISOString()
+    };
   }
 
   // ---- Session layout ----
@@ -321,6 +525,19 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   // Built from year/month/day so clock changes never shift the result off midnight
   private addDays(date: Date, days: number): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+  }
+
+  private startOfDay(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  private atMinutes(date: Date, minutesFromMidnight: number): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), Math.floor(minutesFromMidnight / 60), minutesFromMidnight % 60);
+  }
+
+  // The date picker gives the day and the time pickers give the clock time - this joins them in the browser's zone
+  private combineDateAndTime(date: Date, time: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), time.getHours(), time.getMinutes());
   }
 
   private isSameDay(a: Date, b: Date): boolean {
