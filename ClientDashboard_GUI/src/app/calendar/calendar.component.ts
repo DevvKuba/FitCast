@@ -6,6 +6,12 @@ import { Dialog } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DrawerModule } from 'primeng/drawer';
+import { BookingSeriesPanelComponent } from '../booking-series-panel/booking-series-panel.component';
+import { SessionRecurrence } from '../enums/session-recurrence';
+import { BookingSeriesCreateDto } from '../models/dtos/booking-series-create-dto';
+import { toDateOnlyString, toTimeOnlyString } from '../helpers/date-only-helpers';
 import { BookingService } from '../services/booking.service';
 import { TrainerService } from '../services/trainer.service';
 import { ToastService } from '../services/toast.service';
@@ -26,6 +32,7 @@ const CLICK_SNAP_MINUTES = 30;
 const DEFAULT_SESSION_MINUTES = 60;
 
 type SessionDialogMode = 'create' | 'edit';
+type SessionKind = 'one-off' | 'recurring';
 
 interface CalendarDay {
   date: Date;
@@ -54,7 +61,8 @@ interface CalendarSession {
 
 @Component({
   selector: 'app-calendar',
-  imports: [FormsModule, ButtonModule, DatePicker, Dialog, InputTextModule, SelectModule, TextareaModule],
+  imports: [FormsModule, ButtonModule, DatePicker, Dialog, InputTextModule, SelectModule, TextareaModule,
+    SelectButtonModule, DrawerModule, BookingSeriesPanelComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -93,6 +101,22 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   sessionDialogVisible = false;
   sessionDialogMode: SessionDialogMode = 'create';
   isSaving = false;
+
+  // booking series drawer - manageSeriesId opens a series' edit dialog as soon as the drawer loads
+  seriesDrawerVisible = false;
+  manageSeriesId: number | null = null;
+
+  // one-off sessions are sent as a single slot, recurring ones create a booking series
+  sessionKind: SessionKind = 'one-off';
+  sessionKindOptions = [
+    { label: 'One-off', value: 'one-off' },
+    { label: 'Recurring', value: 'recurring' }
+  ];
+  formRecurrence: SessionRecurrence = SessionRecurrence.Weekly;
+  recurrenceOptions = [
+    { label: 'Weekly', value: SessionRecurrence.Weekly },
+    { label: 'Every 2 weeks', value: SessionRecurrence.BiWeekly }
+  ];
 
   // new / edit session form - date and times are in the browser's zone
   formClientId: number | null = null;
@@ -250,7 +274,19 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sessionDialogVisible = true;
   }
 
+  // From the drawer's New button: the same dialog, switched to Recurring
+  openNewSeries(): void {
+    this.seriesDrawerVisible = false;
+    this.openNewSession();
+    this.sessionKind = 'recurring';
+  }
+
   saveSession(): void {
+    if (this.sessionDialogMode === 'create' && this.sessionKind === 'recurring') {
+      this.saveSeries();
+      return;
+    }
+
     const sessionSlot = this.buildSessionSlotFromForm();
     if (!sessionSlot) {
       return;
@@ -273,6 +309,50 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isSaving = false;
       }
     });
+  }
+
+  saveSeries(): void {
+    const bookingSeries = this.buildSeriesFromForm();
+    if (!bookingSeries) {
+      return;
+    }
+
+    this.isSaving = true;
+    this.bookingService.createBookingSeries(bookingSeries).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess('Booking Series Created', response.message);
+        this.sessionDialogVisible = false;
+        this.isSaving = false;
+        this.loadWeek();
+      },
+      error: (response) => {
+        this.toastService.showError('Error Creating Booking Series', response.error?.message ?? 'The booking series could not be created');
+        this.isSaving = false;
+      }
+    });
+  }
+
+  // ---- Booking series drawer ----
+
+  openSeriesDrawer(): void {
+    this.manageSeriesId = null;
+    this.seriesDrawerVisible = true;
+  }
+
+  // "Manage series" link in the session details: opens the drawer straight on that series' edit dialog
+  openManageSeries(): void {
+    if (!this.selectedSession?.slot.bookingSeriesId) {
+      return;
+    }
+
+    this.manageSeriesId = this.selectedSession.slot.bookingSeriesId;
+    this.detailsDialogVisible = false;
+    this.seriesDrawerVisible = true;
+  }
+
+  // A series was edited or deleted in the drawer, so its sessions on the grid have changed
+  onSeriesChanged(): void {
+    this.loadWeek();
   }
 
   // ---- Template helpers ----
@@ -347,6 +427,8 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     const endMinutes = Math.min(startMinutes + DEFAULT_SESSION_MINUTES, 24 * 60 - 1);
 
     this.sessionDialogMode = 'create';
+    this.sessionKind = 'one-off';
+    this.formRecurrence = SessionRecurrence.Weekly;
     this.selectedSession = null;
     this.formClientId = null;
     this.formTitle = '';
@@ -358,9 +440,44 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sessionDialogVisible = true;
   }
 
-  // Validates the form and turns the local date and times into the UTC body the API expects.
-  // Returns null (after showing a toast) when something is missing or the times are the wrong way round.
+  // One-off session: the local date and times become the UTC body the API expects
   private buildSessionSlotFromForm(): BookedSessionSlotDto | null {
+    const times = this.validateForm();
+    if (!times) {
+      return null;
+    }
+
+    return {
+      clientId: this.formClientId!,
+      title: this.formTitle.trim(),
+      description: this.formDescription.trim() === '' ? undefined : this.formDescription.trim(),
+      startDateTime: times.start.toISOString(), // toISOString always gives UTC with a trailing "Z"
+      endDateTime: times.end.toISOString()
+    };
+  }
+
+  // Recurring session: the series keeps the trainer's local date and clock time, and the duration
+  // comes from the start and end times
+  private buildSeriesFromForm(): BookingSeriesCreateDto | null {
+    const times = this.validateForm();
+    if (!times) {
+      return null;
+    }
+
+    return {
+      clientId: this.formClientId!,
+      title: this.formTitle.trim(),
+      description: this.formDescription.trim() === '' ? undefined : this.formDescription.trim(),
+      duration: Math.round((times.end.getTime() - times.start.getTime()) / 60000),
+      startDate: toDateOnlyString(times.start),
+      startTime: toTimeOnlyString(times.start),
+      recurrence: this.formRecurrence
+    };
+  }
+
+  // Checks the fields both session kinds share. Returns the combined start and end,
+  // or null (after showing a toast) when something is missing or the times are the wrong way round.
+  private validateForm(): { start: Date, end: Date } | null {
     if (!this.formClientId) {
       this.toastService.showError('Validation Error', 'A client must be selected');
       return null;
@@ -382,13 +499,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       return null;
     }
 
-    return {
-      clientId: this.formClientId,
-      title: this.formTitle.trim(),
-      description: this.formDescription.trim() === '' ? undefined : this.formDescription.trim(),
-      startDateTime: start.toISOString(), // toISOString always gives UTC with a trailing "Z"
-      endDateTime: end.toISOString()
-    };
+    return { start: start, end: end };
   }
 
   // ---- Session layout ----

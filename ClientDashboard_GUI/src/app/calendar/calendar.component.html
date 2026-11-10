@@ -40,8 +40,7 @@
 				{{ weekRangeLabel }}
 			</span>
 
-			<!-- wired up in the booking series chunk -->
-			<button type="button" class="h-11 px-5 rounded-lg border border-slate-navy bg-white text-slate-navy text-sm font-bold hover:bg-slate-50 flex items-center gap-2 transition-all">
+			<button type="button" class="h-11 px-5 rounded-lg border border-slate-navy bg-white text-slate-navy text-sm font-bold hover:bg-slate-50 flex items-center gap-2 transition-all" (click)="openSeriesDrawer()">
 				<i class="pi pi-replay text-sm"></i>
 				Booking Series
 			</button>
@@ -151,6 +150,16 @@
 	}
 </div>
 
+<!-- Booking series drawer. The panel is only created while the drawer is open, so it reloads the series every time -->
+<p-drawer header="Booking Series" [(visible)]="seriesDrawerVisible" position="right" styleClass="!w-full sm:!w-[480px]">
+	@if (seriesDrawerVisible) {
+		<app-booking-series-panel
+			[initialEditSeriesId]="manageSeriesId"
+			(seriesChanged)="onSeriesChanged()"
+			(newSeriesRequested)="openNewSeries()" />
+	}
+</p-drawer>
+
 <!-- Session details -->
 <p-dialog header="Session Details" [modal]="true" [(visible)]="detailsDialogVisible" [style]="{ width: '28rem' }" [dismissableMask]="true">
 	@if (selectedSession) {
@@ -174,10 +183,13 @@
 			</div>
 
 			@if (selectedSession.slot.bookingSeriesId) {
-				<p class="flex items-center gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
-					<i class="pi pi-replay text-xs"></i>
-					Part of a recurring series. Editing or deleting here only changes this session.
-				</p>
+				<div class="flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
+					<i class="pi pi-replay text-xs mt-0.5"></i>
+					<span>
+						Part of a recurring series. Editing or deleting here only changes this session.
+						<button type="button" class="font-semibold text-primary hover:underline" (click)="openManageSeries()">Manage series</button>
+					</span>
+				</div>
 			}
 		</div>
 	}
@@ -208,6 +220,11 @@
 <!-- New / edit session -->
 <p-dialog [header]="sessionDialogMode === 'create' ? 'New Session' : 'Edit Session'" [modal]="true" [(visible)]="sessionDialogVisible" [style]="{ width: '28rem' }">
 	<div class="flex flex-col gap-4">
+		<!-- only when creating: an existing one-off can't be turned into a series -->
+		@if (sessionDialogMode === 'create') {
+			<p-selectbutton [options]="sessionKindOptions" optionLabel="label" optionValue="value" [(ngModel)]="sessionKind" [allowEmpty]="false" styleClass="w-full" />
+		}
+
 		<div class="flex flex-col gap-1">
 			<label for="sessionClient" class="text-sm font-semibold text-slate-700">Client</label>
 			<p-select inputId="sessionClient" [appendTo]="'body'" [(ngModel)]="formClientId" [options]="clients"
@@ -225,7 +242,7 @@
 		</div>
 
 		<div class="flex flex-col gap-1">
-			<label for="sessionDate" class="text-sm font-semibold text-slate-700">Date</label>
+			<label for="sessionDate" class="text-sm font-semibold text-slate-700">{{ sessionKind === 'recurring' && sessionDialogMode === 'create' ? 'Start date' : 'Date' }}</label>
 			<p-datepicker inputId="sessionDate" [appendTo]="'body'" [(ngModel)]="formDate" dateFormat="dd/mm/yy" styleClass="w-full" />
 		</div>
 
@@ -239,6 +256,20 @@
 				<p-datepicker inputId="sessionEnd" [appendTo]="'body'" [(ngModel)]="formEndTime" [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
 			</div>
 		</div>
+
+		@if (sessionDialogMode === 'create' && sessionKind === 'recurring') {
+			<div class="flex flex-col gap-1">
+				<label for="sessionRecurrence" class="text-sm font-semibold text-slate-700">Repeats</label>
+				<p-select inputId="sessionRecurrence" [appendTo]="'body'" [(ngModel)]="formRecurrence" [options]="recurrenceOptions"
+					optionLabel="label" optionValue="value" styleClass="w-full" />
+			</div>
+			<p class="text-xs text-on-surface-variant">
+				Sessions are created up to 90 days ahead and continue until the series is deleted.
+				@if (showTimeZoneNote) {
+					The start time is treated as {{ trainerTimeZoneId }} time, your schedule zone.
+				}
+			</p>
+		}
 
 		@if (sessionDialogMode === 'edit' && selectedSession?.slot?.bookingSeriesId) {
 			<p class="text-xs text-on-surface-variant">Changes apply to this session only, not the rest of its series.</p>
