@@ -128,7 +128,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteBookingSeriesAsync_RemovesTheSeriesAndItsSlots()
+        public async Task DeleteBookingSeriesAsync_RemovesTheSeriesAndItsUpcomingSlots()
         {
             var trainer = await SeedTrainerAsync();
             var client = await SeedClientAsync(trainer);
@@ -143,6 +143,38 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.True(response.Data);
             Assert.False(await _context.BookingSeries.AnyAsync());
             Assert.False(await _context.BookedSessionsSlot.AnyAsync());
+        }
+
+        [Fact]
+        public async Task DeleteBookingSeriesAsync_KeepsPastSlotsAsOneOffSessions()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer);
+            var series = await CreateSeriesThroughEndpointAsync(trainer, client);
+            var pastSlot = await AddSeriesSlotAsync(series, DateTime.UtcNow.AddDays(-7));
+
+            await _bookingSeriesController.DeleteBookingSeriesAsync(series.Id);
+
+            // SetNull on the relationship: the past slot survives, unlinked from the deleted series
+            var remainingSlot = await _context.BookedSessionsSlot.SingleAsync();
+            Assert.Equal(pastSlot.Id, remainingSlot.Id);
+            Assert.Null(remainingSlot.BookingSeriesId);
+            Assert.False(await _context.BookingSeries.AnyAsync());
+        }
+
+        [Fact]
+        public async Task DeleteBookingSeriesAsync_KeepsUpcomingSlotsThatAreNoLongerScheduled()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer);
+            var series = await CreateSeriesThroughEndpointAsync(trainer, client);
+            var completedSlot = await AddSeriesSlotAsync(series, DateTime.UtcNow.AddDays(2), SessionStatus.Completed);
+
+            await _bookingSeriesController.DeleteBookingSeriesAsync(series.Id);
+
+            var remainingSlot = await _context.BookedSessionsSlot.SingleAsync();
+            Assert.Equal(completedSlot.Id, remainingSlot.Id);
+            Assert.Null(remainingSlot.BookingSeriesId);
         }
 
         [Fact]
@@ -587,6 +619,24 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
         private async Task<List<BookedSessionSlot>> SeriesSlotsAsync(BookingSeries series) =>
             await _context.BookedSessionsSlot.Where(s => s.BookingSeriesId == series.Id).OrderBy(s => s.StartDateTime).ToListAsync();
+
+        // Adds a slot to a series directly, for times or statuses the materialization service never produces (past dates, completed sessions)
+        private async Task<BookedSessionSlot> AddSeriesSlotAsync(BookingSeries series, DateTime startUtc, SessionStatus status = SessionStatus.Scheduled)
+        {
+            var slot = new BookedSessionSlot
+            {
+                TrainerId = series.TrainerId,
+                ClientId = series.ClientId,
+                BookingSeriesId = series.Id,
+                Title = series.Title,
+                StartDateTime = startUtc,
+                EndDateTime = startUtc.AddMinutes(series.Duration),
+                Status = status
+            };
+            await _context.BookedSessionsSlot.AddAsync(slot);
+            await _unitOfWork.Complete();
+            return slot;
+        }
 
         private static BookingSeriesCreateDto CreateDto(int clientId, string timeZoneId = SupportedTimeZones.London) => new()
         {

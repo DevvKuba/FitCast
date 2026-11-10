@@ -117,7 +117,8 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Trainer method deleting a booking series, along with its materialized session slots
+        /// Trainer method deleting a booking series. Its upcoming scheduled slots are removed,
+        /// while past slots are kept as one-off sessions so the trainer's history stays intact
         /// </summary>
         [HttpDelete("deleteBookingSeries")]
         public async Task<ActionResult<ApiResponseDto<bool>>> DeleteBookingSeriesAsync([FromQuery] int bookingSeriesId)
@@ -128,6 +129,8 @@ namespace ClientDashboard_API.Controllers
             {
                 return NotFound(new ApiResponseDto<bool> { Data = false, Message = "booking series not found", Success = false });
             }
+
+            await unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlotsAtCutOffDateAsync(bookingSeries.Id, DateTime.UtcNow);
 
             unitOfWork.BookingSeriesRepository.DeleteBookingSeries(bookingSeries);
 
