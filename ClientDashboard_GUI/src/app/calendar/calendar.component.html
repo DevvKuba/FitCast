@@ -12,62 +12,62 @@
 		<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
 			<h3 class="text-headline-md font-headline-md text-slate-navy">{{ monthLabel }}</h3>
 			<div class="flex items-center divide-x divide-border-subtle">
-				<div class="pr-4 flex items-baseline gap-2">
-					<span class="text-[11px] uppercase font-bold text-slate-400">Bookings</span>
-					<span class="text-sm font-bold text-slate-navy">{{ bookingsCount }}</span>
+				<div class="pr-5 flex items-baseline gap-2">
+					<span class="text-label-caps font-label-caps uppercase text-on-surface-variant">Bookings</span>
+					<span class="text-xl font-bold text-slate-navy">{{ bookingsCount }}</span>
 				</div>
-				<div class="pl-4 flex items-baseline gap-2">
-					<span class="text-[11px] uppercase font-bold text-slate-400">Coached</span>
-					<span class="text-sm font-bold text-slate-navy">{{ coachedHours }} hrs</span>
+				<div class="pl-5 flex items-baseline gap-2">
+					<span class="text-label-caps font-label-caps uppercase text-on-surface-variant">Coached</span>
+					<span class="text-xl font-bold text-slate-navy">{{ coachedHours }} <span class="text-sm font-semibold text-on-surface-variant">hrs</span></span>
 				</div>
 			</div>
 		</div>
 
+		<!-- sized like the Trainer Analytics month toggle: 44px tall, rounded-lg, 13px bold text -->
 		<div class="flex flex-wrap items-center gap-3">
-			<div class="flex items-center bg-white border border-border-subtle rounded p-0.5">
-				<button type="button" class="px-3 py-1.5 text-xs font-semibold text-slate-700 rounded hover:bg-slate-100" (click)="goToToday()">Today</button>
-				<span class="h-4 w-px bg-border-subtle"></span>
-				<button type="button" class="px-2 py-1.5 text-slate-600 rounded hover:bg-slate-100" (click)="goToPreviousWeek()" aria-label="Previous week">
-					<i class="pi pi-chevron-left text-xs"></i>
+			<div class="flex items-center h-11 bg-surface-container rounded-lg p-1">
+				<button type="button" class="h-full px-4 rounded-md text-table-header font-bold text-on-surface-variant hover:bg-white hover:text-primary transition-all" (click)="goToToday()">Today</button>
+				<button type="button" class="h-full px-3 rounded-md text-on-surface-variant hover:bg-white hover:text-primary transition-all" (click)="goToPreviousWeek()" aria-label="Previous week">
+					<i class="pi pi-chevron-left text-sm"></i>
 				</button>
-				<span class="h-4 w-px bg-border-subtle"></span>
-				<button type="button" class="px-2 py-1.5 text-slate-600 rounded hover:bg-slate-100" (click)="goToNextWeek()" aria-label="Next week">
-					<i class="pi pi-chevron-right text-xs"></i>
+				<button type="button" class="h-full px-3 rounded-md text-on-surface-variant hover:bg-white hover:text-primary transition-all" (click)="goToNextWeek()" aria-label="Next week">
+					<i class="pi pi-chevron-right text-sm"></i>
 				</button>
 			</div>
 
-			<span class="flex items-center gap-2 px-3 py-2 bg-white border border-border-subtle rounded text-xs font-semibold text-slate-800">
-				<i class="pi pi-calendar text-xs text-slate-500"></i>
+			<span class="flex items-center gap-2 h-11 px-4 bg-white border border-border-subtle rounded-lg text-table-header font-bold text-slate-navy">
+				<i class="pi pi-calendar text-sm text-on-surface-variant"></i>
 				{{ weekRangeLabel }}
 			</span>
 
 			<!-- wired up in the booking series chunk -->
-			<button type="button" class="h-10 px-3.5 rounded border border-slate-navy bg-white text-slate-navy text-sm font-semibold hover:bg-slate-50 flex items-center gap-2">
-				<i class="pi pi-replay text-xs"></i>
+			<button type="button" class="h-11 px-5 rounded-lg border border-slate-navy bg-white text-slate-navy text-sm font-bold hover:bg-slate-50 flex items-center gap-2 transition-all">
+				<i class="pi pi-replay text-sm"></i>
 				Booking Series
 			</button>
-			<button type="button" class="h-10 px-4 rounded bg-action-royal hover:bg-blue-700 text-white text-sm font-semibold" (click)="openNewSession()">
+			<button type="button" class="h-11 px-6 rounded-lg bg-action-royal hover:bg-blue-700 text-white text-[15px] font-bold transition-all" (click)="openNewSession()">
 				New Session
 			</button>
 		</div>
 	</div>
 
 	<!-- Week grid. The day headers live inside the scroll area (sticky at the top) so they share
-	     the same width as the columns below, including the space taken by the scrollbar -->
-	<div #gridScroll class="flex-1 min-h-0 overflow-y-auto bg-white border border-border-subtle rounded-lg">
+	     the same width as the columns below, including the space taken by the scrollbar.
+	     On short screens (laptops) the grid keeps at least 600px of height and the page scrolls instead -->
+	<div #gridScroll class="flex-1 min-h-[600px] overflow-y-auto bg-white border border-border-subtle rounded-lg">
 
 		<!-- Day headers -->
 		<div class="sticky top-0 z-30 bg-white grid grid-cols-[64px_repeat(7,1fr)] border-b border-border-subtle">
-			<div class="flex items-end justify-end pr-2 pb-2 text-[10px] font-bold uppercase text-slate-400">{{ browserOffsetLabel }}</div>
+			<div class="flex items-end justify-end pr-2 pb-2 text-[11px] font-bold uppercase text-slate-400">{{ browserOffsetLabel }}</div>
 			@for (day of days; track day.date.getTime()) {
-				<div class="px-2 py-2 border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/40' : day.isWeekend ? 'bg-slate-50/50' : '' }}">
-					<div class="text-[11px] font-bold uppercase tracking-wider"
+				<div class="px-3 py-2.5 border-l border-border-subtle {{ day.isToday ? 'bg-blue-50/40' : day.isWeekend ? 'bg-slate-50/50' : '' }}">
+					<div class="text-xs font-bold uppercase tracking-wider"
 						[class.text-action-royal]="day.isToday"
 						[class.text-slate-500]="!day.isToday">{{ formatWeekday(day.date) }}</div>
 					@if (day.isToday) {
-						<span class="inline-block mt-0.5 px-2 rounded-full bg-action-royal text-white text-xs font-semibold">{{ day.date.getDate() }} • Today</span>
+						<span class="inline-block mt-0.5 px-2.5 rounded-full bg-action-royal text-white text-sm font-semibold">{{ day.date.getDate() }} • Today</span>
 					} @else {
-						<div class="text-sm font-semibold text-slate-800">{{ day.date.getDate() }}</div>
+						<div class="text-base font-semibold text-slate-800">{{ day.date.getDate() }}</div>
 					}
 				</div>
 			}
@@ -79,7 +79,7 @@
 			<!-- Hour labels -->
 			<div>
 				@for (hour of hours; track hour) {
-					<div class="pr-2 text-right text-[11px] text-slate-400" [style.height.px]="hourHeight">
+					<div class="pr-2 text-right text-xs text-slate-400" [style.height.px]="hourHeight">
 						@if (hour > 0) {
 							<span class="relative -top-2">{{ formatHour(hour) }}</span>
 						}
@@ -100,22 +100,32 @@
 
 					<!-- sessions -->
 					@for (session of sessionsByDay[dayIndex]; track session.slot.id) {
-						<div class="absolute rounded border border-l-4 px-1.5 py-1 overflow-hidden cursor-pointer z-10 {{ session.colours.block }}"
+						<div class="absolute rounded border border-l-4 px-2 py-1 overflow-hidden cursor-pointer z-10 {{ session.colours.block }}"
 							[style.top.px]="session.top"
 							[style.height.px]="session.height"
 							[style.left]="'calc(' + session.left + '% + 2px)'"
 							[style.width]="'calc(' + session.width + '% - 4px)'"
 							(click)="openSessionDetails(session, $event)">
-							@if (session.height < 40) {
-								<div class="truncate text-[10px] leading-tight">
+							<!-- the amount of detail shown depends on how tall the block is -->
+							@if (session.height < 44) {
+								<!-- ~30 min: one line -->
+								<div class="truncate text-xs leading-tight">
 									<span class="font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</span>
 									<span class="text-slate-600"> • {{ session.slot.title }} </span>
 									<span class="font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }}</span>
 								</div>
+							} @else if (session.height < 70) {
+								<!-- ~45 min: two lines -->
+								<div class="truncate text-sm font-bold leading-tight {{ session.colours.name }}">{{ session.slot.clientName }}</div>
+								<div class="truncate text-xs leading-tight mt-0.5">
+									<span class="font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</span>
+									<span class="text-slate-600"> • {{ session.slot.title }}</span>
+								</div>
 							} @else {
-								<div class="truncate text-xs font-bold {{ session.colours.name }}">{{ session.slot.clientName }}</div>
-								<div class="truncate text-[10px] text-slate-600">{{ session.slot.title }}</div>
-								<div class="truncate text-[9px] font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</div>
+								<!-- 60 min and longer: name, title and time on their own lines -->
+								<div class="truncate text-sm font-bold leading-tight {{ session.colours.name }}">{{ session.slot.clientName }}</div>
+								<div class="truncate text-xs text-slate-600 mt-0.5">{{ session.slot.title }}</div>
+								<div class="truncate text-xs font-semibold {{ session.colours.time }}">{{ formatTime(session.start) }} – {{ formatTime(session.end) }}</div>
 							}
 						</div>
 					}

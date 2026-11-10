@@ -14,8 +14,9 @@ import { AccountService } from '../services/account.service';
 import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
 import { BookedSessionSlotDto } from '../models/dtos/booked-session-slot-dto';
 
-// Grid measurements - one hour row is 56px tall, as in the Stitch design
-const HOUR_HEIGHT = 56;
+// Grid measurements - one hour row is 60px tall: a 30 min session still fits a readable line of text,
+// and the 600px minimum grid shows roughly 06:00 to 15:00 before scrolling
+const HOUR_HEIGHT = 60;
 const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
 const FIRST_VISIBLE_HOUR = 6; // the grid opens scrolled to 06:00
 const MIN_BLOCK_HEIGHT = 18;
