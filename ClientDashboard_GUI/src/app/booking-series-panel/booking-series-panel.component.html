@@ -1,0 +1,111 @@
+<div class="flex flex-col gap-4">
+
+	<!-- Search and New -->
+	<div class="flex items-center gap-2">
+		<p-iconfield iconPosition="left" styleClass="flex-1">
+			<p-inputicon styleClass="pi pi-search" />
+			<input pInputText type="text" class="w-full" [(ngModel)]="searchText" placeholder="Search client or title" />
+		</p-iconfield>
+		<p-button label="New" icon="pi pi-plus" severity="secondary" [outlined]="true" (click)="requestNewSeries()" />
+	</div>
+
+	@if (isLoading) {
+		<p class="text-body-sm text-on-surface-variant">Loading booking series...</p>
+	} @else if (allSeries.length === 0) {
+		<!-- Empty state -->
+		<div class="flex flex-col items-center text-center gap-3 border border-dashed border-border-subtle rounded-lg px-6 py-10">
+			<i class="pi pi-replay text-2xl text-slate-400"></i>
+			<div>
+				<p class="font-semibold text-slate-navy">No recurring sessions yet</p>
+				<p class="text-body-sm text-on-surface-variant">Create a series to book a client in every week or every two weeks.</p>
+			</div>
+			<p-button label="New series" icon="pi pi-plus" (click)="requestNewSeries()" />
+		</div>
+	} @else if (groupedSeries.length === 0) {
+		<p class="text-body-sm text-on-surface-variant">No series match "{{ searchText }}".</p>
+	} @else {
+		<!-- Series grouped by client -->
+		@for (group of groupedSeries; track group.clientName) {
+			<div class="flex flex-col gap-2">
+				<span class="text-label-caps font-label-caps uppercase text-on-surface-variant">{{ group.clientName }}</span>
+				@for (series of group.series; track series.id) {
+					<div class="flex items-center justify-between gap-3 bg-white border border-border-subtle rounded-lg px-4 py-3 hover:bg-slate-50 transition-colors">
+						<div class="min-w-0">
+							<p class="truncate font-semibold text-slate-navy">{{ series.title }}</p>
+							<p class="truncate text-body-sm text-on-surface-variant">{{ formatSchedule(series) }}</p>
+						</div>
+						<div class="flex items-center shrink-0">
+							<p-button icon="pi pi-pencil" severity="secondary" [text]="true" [rounded]="true" ariaLabel="Edit series" (click)="openEdit(series)" />
+							<p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" ariaLabel="Delete series" (click)="openDelete(series)" />
+						</div>
+					</div>
+				}
+			</div>
+		}
+	}
+</div>
+
+<!-- Edit series - opens on top of the drawer -->
+<p-dialog header="Edit Series" [modal]="true" [(visible)]="editDialogVisible" [style]="{ width: '28rem' }" [appendTo]="'body'">
+	@if (selectedSeries) {
+		<div class="flex flex-col gap-4">
+			<!-- client and recurrence can't be changed on an existing series -->
+			<div class="grid grid-cols-[6rem_1fr] gap-y-2 text-body-sm bg-surface-container-low rounded px-3 py-2">
+				<span class="text-label-caps font-label-caps text-slate-400 uppercase">Client</span>
+				<span class="text-slate-800">{{ selectedSeries.clientName }}</span>
+				<span class="text-label-caps font-label-caps text-slate-400 uppercase">Repeats</span>
+				<span class="text-slate-800">{{ formatRecurrence(selectedSeries) }}</span>
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label for="seriesTitle" class="text-sm font-semibold text-slate-700">Title</label>
+				<input pInputText id="seriesTitle" class="w-full" [(ngModel)]="formTitle" />
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label for="seriesDescription" class="text-sm font-semibold text-slate-700">Description <span class="font-normal text-slate-400">(optional)</span></label>
+				<textarea pTextarea id="seriesDescription" class="w-full" rows="3" [(ngModel)]="formDescription"></textarea>
+			</div>
+
+			<div class="flex flex-col gap-1">
+				<label for="seriesStartDate" class="text-sm font-semibold text-slate-700">Start date</label>
+				<p-datepicker inputId="seriesStartDate" [appendTo]="'body'" [(ngModel)]="formStartDate" dateFormat="dd/mm/yy" styleClass="w-full" />
+			</div>
+
+			<div class="grid grid-cols-2 gap-3">
+				<div class="flex flex-col gap-1">
+					<label for="seriesStart" class="text-sm font-semibold text-slate-700">Start time</label>
+					<p-datepicker inputId="seriesStart" [appendTo]="'body'" [(ngModel)]="formStartTime" [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+				</div>
+				<div class="flex flex-col gap-1">
+					<label for="seriesEnd" class="text-sm font-semibold text-slate-700">End time</label>
+					<p-datepicker inputId="seriesEnd" [appendTo]="'body'" [(ngModel)]="formEndTime" [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+				</div>
+			</div>
+
+			<p class="flex items-start gap-2 text-xs text-on-surface-variant">
+				<i class="pi pi-info-circle text-xs mt-0.5"></i>
+				Upcoming scheduled sessions will be replaced from the new start date. Past sessions aren't changed.
+			</p>
+		</div>
+	}
+
+	<div class="flex justify-end gap-2 mt-6">
+		<p-button label="Cancel" severity="secondary" (click)="editDialogVisible = false" />
+		<p-button label="Save changes" [loading]="isSaving" (click)="saveEdit()" />
+	</div>
+</p-dialog>
+
+<!-- Delete series -->
+<p-dialog header="Delete Series" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }" [appendTo]="'body'">
+	@if (selectedSeries) {
+		<p class="text-body-sm text-on-surface-variant mb-6">
+			Delete <span class="font-semibold text-slate-navy">{{ selectedSeries.title }}</span> with {{ selectedSeries.clientName }}?
+			Its upcoming sessions will be removed. Past sessions stay on your calendar.
+		</p>
+	}
+	<div class="flex justify-end gap-2">
+		<p-button label="Cancel" severity="secondary" (click)="deleteDialogVisible = false" />
+		<p-button label="Delete" severity="danger" [loading]="isSaving" (click)="deleteSeries()" />
+	</div>
+</p-dialog>
