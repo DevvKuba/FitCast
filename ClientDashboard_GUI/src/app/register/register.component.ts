@@ -14,11 +14,13 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { TagModule } from 'primeng/tag';
 import { Dialog } from 'primeng/dialog';
 import { UserRole } from '../enums/user-role';
+import { SelectModule } from 'primeng/select';
+import { getDefaultTimeZoneId, getTimeZoneOptions, TimeZoneOption } from '../helpers/supported-time-zones';
 
 @Component({
   selector: 'app-register',
   imports: [InputTextModule, PasswordModule, IftaLabelModule, FormsModule, Dialog,
-     ButtonModule, RouterLink, InputMask, SelectButtonModule, TagModule],
+     ButtonModule, RouterLink, InputMask, SelectButtonModule, TagModule, SelectModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -40,6 +42,9 @@ export class RegisterComponent {
   password: string = "";
   confirmPassword: string = "";
   userType: string = "";
+  timeZoneId: string = getDefaultTimeZoneId();
+
+  timeZoneOptions: TimeZoneOption[] = getTimeZoneOptions();
 
   userTypeOptions = [
     { label: 'Trainer', value: 'trainer' },
@@ -66,6 +71,11 @@ export class RegisterComponent {
       return;
     }
 
+    if(userRole == UserRole.Trainer && !this.timeZoneId){
+      this.toastService.showError('Validation Error', 'You must select a time zone');
+      return;
+    }
+
     const registerInfo: RegisterDto = {
       firstName : firstName,
       surname: surname,
@@ -75,7 +85,8 @@ export class RegisterComponent {
       clientId : clientId || null,
       clientsTrainerId : clientsTrainerId || null,
       password: password,
-      confirmPassword: confirmPassword
+      confirmPassword: confirmPassword,
+      timeZoneId: userRole == UserRole.Trainer ? this.timeZoneId : null // clients don't have a schedule zone
     }
     this.accountService.register(registerInfo).subscribe({
       next: (response : ApiResponse<string>) => {

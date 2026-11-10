@@ -6,4 +6,5 @@ interface TrainerUpdateDto {
   businessName?: string;
   defaultCurrency?: string;
   averageSessionPrice?: number;
+  timeZoneId: string;
 }

@@ -10,4 +10,5 @@ export interface RegisterDto {
   confirmPassword: string;
   clientId: number | null;
   clientsTrainerId: number | null;
+  timeZoneId: string | null; // trainers only
 }

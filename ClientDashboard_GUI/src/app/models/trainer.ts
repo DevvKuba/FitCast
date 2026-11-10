@@ -9,6 +9,7 @@ export interface Trainer extends UserBase {
   autoWorkoutRetrieval: boolean,
   AutoPaymentSetting: boolean,
   defaultCurrency?: string,
+  timeZoneId: string,
   excludedNames: string[],
   clients: Client[];
 }

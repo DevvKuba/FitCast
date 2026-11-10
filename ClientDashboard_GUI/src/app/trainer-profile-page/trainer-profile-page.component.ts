@@ -14,6 +14,7 @@ import { TrainerService } from '../services/trainer.service';
 import { defaultIfEmpty } from 'rxjs';
 import { ToastService } from '../services/toast.service';
 import { SpinnerComponent } from '../spinner/spinner.component';
+import { getDefaultTimeZoneId, getTimeZoneOptions, TimeZoneOption } from '../helpers/supported-time-zones';
 
 interface Currency {
   name: string;
@@ -57,6 +58,8 @@ export class TrainerProfilePageComponent implements OnInit {
     { name: 'Australian Dollar (AUD)', code: 'AUD' }
   ];
 
+  timeZoneOptions: TimeZoneOption[] = getTimeZoneOptions();
+
   ngOnInit(): void {
     this.profileForm = this.formBuilder.group({
       firstName: ['', Validators.required],
@@ -65,7 +68,8 @@ export class TrainerProfilePageComponent implements OnInit {
       phoneNumber: [''],
       businessName: [''],
       defaultCurrency: ['GBP'],
-      averageSessionPrice: [0]
+      averageSessionPrice: [0],
+      timeZoneId: [getDefaultTimeZoneId(), Validators.required] // replaced by the saved zone once the profile loads
     });
 
     this.loadTrainerProfile();

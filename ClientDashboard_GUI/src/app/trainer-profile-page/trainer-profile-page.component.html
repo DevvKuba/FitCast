@@ -59,6 +59,22 @@
                 </div>
                 
                 <div class="field-group">
+                    <label for="timeZoneId">Time Zone</label>
+                    <p-dropdown
+                        id="timeZoneId"
+                        formControlName="timeZoneId"
+                        name="timeZoneId"
+                        [options]="timeZoneOptions"
+                        optionLabel="label"
+                        optionValue="value"
+                        [filter]="true"
+                        filterBy="label"
+                        placeholder="Select time zone">
+                    </p-dropdown>
+                    <small>Changing this keeps upcoming sessions at the same clock time in your new time zone.</small>
+                </div>
+
+                <div class="field-group">
                     <label for="averageSessionPrice">Average Session Price</label>
                     <p-inputNumber 
                         id="averageSessionPrice"
