@@ -35,14 +35,16 @@
 				</button>
 			</div>
 
-			<span class="flex items-center gap-2 h-11 px-4 bg-white border border-border-subtle rounded-lg text-table-header font-bold text-slate-navy">
+			<!-- fixed width (fits the longest label, e.g. "29 Dec 2026 – 4 Jan 2027") so the week arrows
+			     never move as the label changes length -->
+			<span class="flex items-center justify-center gap-2 h-11 w-[15rem] px-4 bg-white border border-border-subtle rounded-lg text-table-header font-bold text-slate-navy">
 				<i class="pi pi-calendar text-sm text-on-surface-variant"></i>
 				{{ weekRangeLabel }}
 			</span>
 
 			<button type="button" class="h-11 px-5 rounded-lg border border-slate-navy bg-white text-slate-navy text-sm font-bold hover:bg-slate-50 flex items-center gap-2 transition-all" (click)="openSeriesDrawer()">
 				<i class="pi pi-replay text-sm"></i>
-				Booking Series
+				Recurring Sessions
 			</button>
 			<button type="button" class="h-11 px-6 rounded-lg bg-action-royal hover:bg-blue-700 text-white text-[15px] font-bold transition-all" (click)="openNewSession()">
 				New Session
@@ -151,7 +153,7 @@
 </div>
 
 <!-- Booking series drawer. The panel is only created while the drawer is open, so it reloads the series every time -->
-<p-drawer header="Booking Series" [(visible)]="seriesDrawerVisible" position="right" styleClass="!w-full sm:!w-[480px]">
+<p-drawer header="Recurring Sessions" [(visible)]="seriesDrawerVisible" position="right" styleClass="!w-full sm:!w-[480px]">
 	@if (seriesDrawerVisible) {
 		<app-booking-series-panel
 			[initialEditSeriesId]="manageSeriesId"
@@ -186,8 +188,8 @@
 				<div class="flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
 					<i class="pi pi-replay text-xs mt-0.5"></i>
 					<span>
-						Part of a recurring series. Editing or deleting here only changes this session.
-						<button type="button" class="font-semibold text-primary hover:underline" (click)="openManageSeries()">Manage series</button>
+						Part of a recurring session. Editing or deleting here only changes this one date.
+						<button type="button" class="font-semibold text-primary hover:underline" (click)="openManageSeries()">Manage recurring session</button>
 					</span>
 				</div>
 			}
@@ -264,7 +266,7 @@
 					optionLabel="label" optionValue="value" styleClass="w-full" />
 			</div>
 			<p class="text-xs text-on-surface-variant">
-				Sessions are created up to 90 days ahead and continue until the series is deleted.
+				Sessions are created up to 90 days ahead and continue until the recurring session is deleted.
 				@if (showTimeZoneNote) {
 					The start time is treated as {{ trainerTimeZoneId }} time, your schedule zone.
 				}
@@ -272,7 +274,7 @@
 		}
 
 		@if (sessionDialogMode === 'edit' && selectedSession?.slot?.bookingSeriesId) {
-			<p class="text-xs text-on-surface-variant">Changes apply to this session only, not the rest of its series.</p>
+			<p class="text-xs text-on-surface-variant">Changes apply to this session only, not the other dates it repeats on.</p>
 		}
 	</div>
 

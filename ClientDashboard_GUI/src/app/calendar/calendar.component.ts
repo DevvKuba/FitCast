@@ -320,13 +320,13 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isSaving = true;
     this.bookingService.createBookingSeries(bookingSeries).subscribe({
       next: (response) => {
-        this.toastService.showSuccess('Booking Series Created', response.message);
+        this.toastService.showSuccess('Recurring Session Created', response.message);
         this.sessionDialogVisible = false;
         this.isSaving = false;
         this.loadWeek();
       },
       error: (response) => {
-        this.toastService.showError('Error Creating Booking Series', response.error?.message ?? 'The booking series could not be created');
+        this.toastService.showError('Error Creating Recurring Session', response.error?.message ?? 'The recurring session could not be created');
         this.isSaving = false;
       }
     });

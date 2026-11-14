@@ -67,7 +67,7 @@ export class BookingSeriesPanelComponent implements OnInit {
         this.openInitialEditSeries();
       },
       error: (response) => {
-        this.toastService.showError('Error Loading Booking Series', response.error?.message ?? 'Booking series could not be loaded');
+        this.toastService.showError('Error Loading Recurring Sessions', response.error?.message ?? 'Recurring sessions could not be loaded');
         this.isLoading = false;
       }
     });
@@ -135,14 +135,14 @@ export class BookingSeriesPanelComponent implements OnInit {
     this.isSaving = true;
     this.bookingService.updateBookingSeries(this.selectedSeries.id, updatedSeries).subscribe({
       next: (response) => {
-        this.toastService.showSuccess('Booking Series Updated', response.message);
+        this.toastService.showSuccess('Recurring Session Updated', response.message);
         this.editDialogVisible = false;
         this.isSaving = false;
         this.loadSeries();
         this.seriesChanged.emit();
       },
       error: (response) => {
-        this.toastService.showError('Error Updating Booking Series', response.error?.message ?? 'The booking series could not be updated');
+        this.toastService.showError('Error Updating Recurring Session', response.error?.message ?? 'The recurring session could not be updated');
         this.isSaving = false;
       }
     });
@@ -163,14 +163,14 @@ export class BookingSeriesPanelComponent implements OnInit {
     this.isSaving = true;
     this.bookingService.deleteBookingSeries(this.selectedSeries.id).subscribe({
       next: (response) => {
-        this.toastService.showSuccess('Booking Series Deleted', response.message);
+        this.toastService.showSuccess('Recurring Session Deleted', response.message);
         this.deleteDialogVisible = false;
         this.isSaving = false;
         this.loadSeries();
         this.seriesChanged.emit();
       },
       error: (response) => {
-        this.toastService.showError('Error Deleting Booking Series', response.error?.message ?? 'The booking series could not be deleted');
+        this.toastService.showError('Error Deleting Recurring Session', response.error?.message ?? 'The recurring session could not be deleted');
         this.isSaving = false;
       }
     });
@@ -189,7 +189,7 @@ export class BookingSeriesPanelComponent implements OnInit {
     if (series) {
       this.openEdit(series);
     } else {
-      this.toastService.showError('Booking Series Not Found', 'This session\'s series no longer exists');
+      this.toastService.showError('Recurring Session Not Found', 'This recurring session no longer exists');
     }
   }
 

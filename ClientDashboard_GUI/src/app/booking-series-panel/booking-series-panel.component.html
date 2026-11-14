@@ -10,19 +10,19 @@
 	</div>
 
 	@if (isLoading) {
-		<p class="text-body-sm text-on-surface-variant">Loading booking series...</p>
+		<p class="text-body-sm text-on-surface-variant">Loading recurring sessions...</p>
 	} @else if (allSeries.length === 0) {
 		<!-- Empty state -->
 		<div class="flex flex-col items-center text-center gap-3 border border-dashed border-border-subtle rounded-lg px-6 py-10">
 			<i class="pi pi-replay text-2xl text-slate-400"></i>
 			<div>
 				<p class="font-semibold text-slate-navy">No recurring sessions yet</p>
-				<p class="text-body-sm text-on-surface-variant">Create a series to book a client in every week or every two weeks.</p>
+				<p class="text-body-sm text-on-surface-variant">Create a recurring session to book a client in every week or every two weeks.</p>
 			</div>
-			<p-button label="New series" icon="pi pi-plus" (click)="requestNewSeries()" />
+			<p-button label="New recurring session" icon="pi pi-plus" (click)="requestNewSeries()" />
 		</div>
 	} @else if (groupedSeries.length === 0) {
-		<p class="text-body-sm text-on-surface-variant">No series match "{{ searchText }}".</p>
+		<p class="text-body-sm text-on-surface-variant">No recurring sessions match "{{ searchText }}".</p>
 	} @else {
 		<!-- Series grouped by client -->
 		@for (group of groupedSeries; track group.clientName) {
@@ -35,8 +35,8 @@
 							<p class="truncate text-body-sm text-on-surface-variant">{{ formatSchedule(series) }}</p>
 						</div>
 						<div class="flex items-center shrink-0">
-							<p-button icon="pi pi-pencil" severity="secondary" [text]="true" [rounded]="true" ariaLabel="Edit series" (click)="openEdit(series)" />
-							<p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" ariaLabel="Delete series" (click)="openDelete(series)" />
+							<p-button icon="pi pi-pencil" severity="secondary" [text]="true" [rounded]="true" ariaLabel="Edit recurring session" (click)="openEdit(series)" />
+							<p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" ariaLabel="Delete recurring session" (click)="openDelete(series)" />
 						</div>
 					</div>
 				}
@@ -46,7 +46,7 @@
 </div>
 
 <!-- Edit series - opens on top of the drawer -->
-<p-dialog header="Edit Series" [modal]="true" [(visible)]="editDialogVisible" [style]="{ width: '28rem' }" [appendTo]="'body'">
+<p-dialog header="Edit Recurring Session" [modal]="true" [(visible)]="editDialogVisible" [style]="{ width: '28rem' }" [appendTo]="'body'">
 	@if (selectedSeries) {
 		<div class="flex flex-col gap-4">
 			<!-- client and recurrence can't be changed on an existing series -->
@@ -97,7 +97,7 @@
 </p-dialog>
 
 <!-- Delete series -->
-<p-dialog header="Delete Series" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }" [appendTo]="'body'">
+<p-dialog header="Delete Recurring Session" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }" [appendTo]="'body'">
 	@if (selectedSeries) {
 		<p class="text-body-sm text-on-surface-variant mb-6">
 			Delete <span class="font-semibold text-slate-navy">{{ selectedSeries.title }}</span> with {{ selectedSeries.clientName }}?
