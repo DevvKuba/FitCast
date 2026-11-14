@@ -83,6 +83,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   trainerTimeZoneId = '';
 
   weekStart: Date = this.getMondayOf(new Date());
+  weekPickerVisible = false;
   days: CalendarDay[] = [];
   sessionsByDay: CalendarSession[][] = [];
 
@@ -162,6 +163,19 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   goToToday(): void {
     this.weekStart = this.getMondayOf(new Date());
     this.loadWeek();
+  }
+
+  // Week picker: any day picked loads the Monday-Sunday week it falls in
+  goToWeekOf(date: Date): void {
+    this.weekPickerVisible = false;
+    this.weekStart = this.getMondayOf(date);
+    this.loadWeek();
+  }
+
+  // The week picker's day template passes { day, month (0-based), year }
+  isInVisibleWeek(date: { day: number, month: number, year: number }): boolean {
+    const day = new Date(date.year, date.month, date.day);
+    return day >= this.weekStart && day < this.addDays(this.weekStart, 7);
   }
 
   // ---- Data loading ----

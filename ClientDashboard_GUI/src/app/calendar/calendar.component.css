@@ -1,0 +1,18 @@
+/* Week picker - PrimeNG's DatePicker only picks single days, so these rules make it read as a week picker.
+   ::ng-deep is needed to reach the DatePicker's own table cells. */
+
+/* the week currently on screen */
+:host ::ng-deep .week-picker td:has(.in-visible-week) > span {
+  background-color: var(--color-primary-fixed);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* hovering anywhere in a row highlights the whole week it would load */
+:host ::ng-deep .week-picker tbody tr:hover td > span {
+  background-color: var(--color-surface-container);
+}
+
+:host ::ng-deep .week-picker tbody tr:hover td:has(.in-visible-week) > span {
+  background-color: var(--color-primary-fixed);
+}

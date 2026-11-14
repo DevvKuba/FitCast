@@ -35,12 +35,33 @@
 				</button>
 			</div>
 
-			<!-- fixed width (fits the longest label, e.g. "29 Dec 2026 – 4 Jan 2027") so the week arrows
+			<!-- Week picker: the date pill opens a month calendar, and clicking any day loads the week it's in.
+			     Fixed width (fits the longest label, e.g. "29 Dec 2026 – 4 Jan 2027") so the week arrows
 			     never move as the label changes length -->
-			<span class="flex items-center justify-center gap-2 h-11 w-[15rem] px-4 bg-white border border-border-subtle rounded-lg text-table-header font-bold text-slate-navy">
-				<i class="pi pi-calendar text-sm text-on-surface-variant"></i>
-				{{ weekRangeLabel }}
-			</span>
+			<div class="relative">
+				<button type="button" class="flex items-center justify-center gap-2 h-11 w-[15rem] px-4 bg-white border border-border-subtle rounded-lg text-table-header font-bold text-slate-navy hover:bg-slate-50 transition-all"
+					(click)="weekPickerVisible = !weekPickerVisible" aria-label="Pick a week">
+					<i class="pi pi-calendar text-sm text-on-surface-variant"></i>
+					{{ weekRangeLabel }}
+					<i class="pi pi-chevron-down text-[10px] text-on-surface-variant"></i>
+				</button>
+
+				@if (weekPickerVisible) {
+					<!-- invisible backdrop: clicking anywhere outside the picker closes it -->
+					<div class="fixed inset-0 z-40" (click)="weekPickerVisible = false"></div>
+
+					<div class="absolute right-0 top-full mt-2 z-50 bg-white border border-border-subtle rounded-lg shadow-lg">
+						<p-datepicker [inline]="true" [defaultDate]="weekStart" [firstDayOfWeek]="1"
+							[showOtherMonths]="true" [selectOtherMonths]="true"
+							styleClass="week-picker" (onSelect)="goToWeekOf($event)">
+							<ng-template #date let-date>
+								<!-- marks the days of the week on screen, so CSS can tint that whole row -->
+								<span [class.in-visible-week]="isInVisibleWeek(date)">{{ date.day }}</span>
+							</ng-template>
+						</p-datepicker>
+					</div>
+				}
+			</div>
 
 			<button type="button" class="h-11 px-5 rounded-lg border border-slate-navy bg-white text-slate-navy text-sm font-bold hover:bg-slate-50 flex items-center gap-2 transition-all" (click)="openSeriesDrawer()">
 				<i class="pi pi-replay text-sm"></i>
