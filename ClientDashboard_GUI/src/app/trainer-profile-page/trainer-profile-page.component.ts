@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { FieldsetModule } from 'primeng/fieldset';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DropdownModule } from 'primeng/dropdown';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Trainer } from '../models/trainer';
@@ -32,6 +33,7 @@ interface Currency {
     FieldsetModule,
     InputNumberModule,
     DropdownModule,
+    ToggleSwitch,
     ToastModule,
     ReactiveFormsModule,
     SpinnerComponent
@@ -69,7 +71,8 @@ export class TrainerProfilePageComponent implements OnInit {
       businessName: [''],
       defaultCurrency: ['GBP'],
       averageSessionPrice: [0],
-      timeZoneId: [getDefaultTimeZoneId(), Validators.required] // replaced by the saved zone once the profile loads
+      timeZoneId: [getDefaultTimeZoneId(), Validators.required], // replaced by the saved zone once the profile loads
+      calendarSyncEnabled: [true]
     });
 
     this.loadTrainerProfile();

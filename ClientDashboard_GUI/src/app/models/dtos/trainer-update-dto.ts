@@ -7,4 +7,5 @@ interface TrainerUpdateDto {
   defaultCurrency?: string;
   averageSessionPrice?: number;
   timeZoneId: string;
+  calendarSyncEnabled: boolean;
 }
