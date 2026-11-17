@@ -2,6 +2,7 @@ using AutoMapper;
 using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -17,6 +18,7 @@ namespace ClientDashboard_API.Controllers
         IAuthorizationService authorizationService) : BaseAPIController
     {
         private const int MaxRangeDays = 42; // a 6 week month grid
+        private const string SyncedSlotMessage = "This session has been logged as a workout, manage it from Client Workouts";
 
         /// <summary>
         /// Trainer method retrieving their booked session slots starting within the given UTC window (the calendar's visible range)
@@ -70,6 +72,11 @@ namespace ClientDashboard_API.Controllers
             if (bookedSessionSlot is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Booked session slot not found", Success = false });
+            }
+
+            if (bookedSessionSlot.Status == SessionStatus.Synced)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(newBookedSessionSlot.ClientId);
@@ -151,6 +158,11 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "Booked session slot not found", Success = false });
             }
 
+            if (bookedSessionSlot.Status == SessionStatus.Synced)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
+            }
+
             unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlot(bookedSessionSlot);
 
             if (!await unitOfWork.Complete())
@@ -158,6 +170,68 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Error removing booked session slot", Success = false });
             }
             return Ok(new ApiResponseDto<string> { Data = null, Message = $"Booked session slot removed", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method cancelling a booked session slot, or restoring a cancelled one back to scheduled
+        /// </summary>
+        [HttpPut("setBookedSessionSlotCancelled")]
+        public async Task<ActionResult<ApiResponseDto<string>>> SetBookedSessionSlotCancelledAsync([FromQuery] int bookedSessionSlotId, [FromQuery] bool cancelled)
+        {
+            var bookedSessionSlot = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(currentUserAccessor.GetUserId(), bookedSessionSlotId);
+
+            if (bookedSessionSlot is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Booked session slot not found", Success = false });
+            }
+
+            if (bookedSessionSlot.Status == SessionStatus.Synced)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
+            }
+
+            if (cancelled)
+            {
+                bookedSessionSlot.Status = SessionStatus.Cancelled;
+            }
+            else if (bookedSessionSlot.Status == SessionStatus.Cancelled)
+            {
+                bookedSessionSlot.Status = SessionStatus.Scheduled;
+            }
+
+            if (!await unitOfWork.Complete())
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Error updating the session's cancellation", Success = false });
+            }
+            return Ok(new ApiResponseDto<string> { Data = null, Message = cancelled ? "Session cancelled" : "Session restored", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method listing a client's non-cancelled sessions on a date in the trainer's time zone,
+        /// so adding a workout by hand can warn about a session that will already be synced
+        /// </summary>
+        [HttpGet("getClientSessionsOnDate")]
+        public async Task<ActionResult<ApiResponseDto<List<BookedSessionSlotViewDto>>>> GetClientSessionsOnDateAsync([FromQuery] int clientId, [FromQuery] DateOnly date)
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = "Trainer not found", Success = false });
+            }
+
+            if (!trainer.CalendarSyncEnabled)
+            {
+                return Ok(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = [], Message = "Calendar sync is off", Success = true });
+            }
+
+            var tz = TimeZoneInfo.FindSystemTimeZoneById(trainer.TimeZoneId);
+            var dayStartUtc = TimeZoneInfo.ConvertTimeToUtc(date.ToDateTime(TimeOnly.MinValue), tz);
+            var dayEndUtc = TimeZoneInfo.ConvertTimeToUtc(date.AddDays(1).ToDateTime(TimeOnly.MinValue), tz);
+
+            var sessions = await unitOfWork.BookedSessionSlotRepository.GetClientActiveSlotsInRangeAsync(trainer.Id, clientId, dayStartUtc, dayEndUtc);
+
+            return Ok(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = sessions, Message = $"{sessions.Count} sessions found", Success = true });
         }
     }
 }

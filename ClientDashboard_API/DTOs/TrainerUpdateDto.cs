@@ -17,5 +17,7 @@
         public decimal? AverageSessionPrice { get; set; }
 
         public required string TimeZoneId { get; set; }
+
+        public required bool CalendarSyncEnabled { get; set; }
     }
 }

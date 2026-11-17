@@ -2,6 +2,7 @@
 using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
 using ClientDashboard_API.Interfaces.Helpers;
@@ -212,6 +213,16 @@ namespace ClientDashboard_API.Controllers
             if (workout.Client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"client doesn't exist", Success = false });
+            }
+
+            if (workout.BookedSessionSlotId is not null)
+            {
+                // cancelled rather than reset to scheduled, so the nightly sync never counts it again
+                var syncedSlot = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(currentUserAccessor.GetUserId(), workout.BookedSessionSlotId.Value);
+                if (syncedSlot is not null)
+                {
+                    syncedSlot.Status = SessionStatus.Cancelled;
+                }
             }
 
             unitOfWork.WorkoutRepository.RemoveWorkout(workout);

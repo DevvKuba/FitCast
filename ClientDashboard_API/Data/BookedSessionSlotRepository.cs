@@ -25,22 +25,19 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<BookedSessionSlotViewDto>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
         {
-            return await context.BookedSessionsSlot
-                .Where(s => s.TrainerId == trainerId && s.StartDateTime >= rangeStartUtc && s.StartDateTime < rangeEndUtc)
-                .OrderBy(s => s.StartDateTime)
-                .Select(s => new BookedSessionSlotViewDto
-                {
-                    Id = s.Id,
-                    ClientId = s.ClientId,
-                    ClientName = s.Client.FirstName,
-                    BookingSeriesId = s.BookingSeriesId,
-                    Title = s.Title,
-                    Description = s.Description,
-                    StartDateTime = s.StartDateTime,
-                    EndDateTime = s.EndDateTime,
-                    Status = s.Status
-                })
-                .ToListAsync();
+            var slots = context.BookedSessionsSlot
+                .Where(s => s.TrainerId == trainerId && s.StartDateTime >= rangeStartUtc && s.StartDateTime < rangeEndUtc);
+
+            return await BuildSlotViewQuery(slots).ToListAsync();
+        }
+
+        public async Task<List<BookedSessionSlotViewDto>> GetClientActiveSlotsInRangeAsync(int trainerId, int clientId, DateTime rangeStartUtc, DateTime rangeEndUtc)
+        {
+            var slots = context.BookedSessionsSlot
+                .Where(s => s.TrainerId == trainerId && s.ClientId == clientId && s.Status != SessionStatus.Cancelled
+                    && s.StartDateTime >= rangeStartUtc && s.StartDateTime < rangeEndUtc);
+
+            return await BuildSlotViewQuery(slots).ToListAsync();
         }
 
         public void UpdateBookedSessionSlot(BookedSessionSlot bookedSessionSlot, BookedSessionSlotDto updatedBookedSessionSlot)
@@ -123,5 +120,22 @@ namespace ClientDashboard_API.Data
             context.Remove(sessionSlot);
         }
 
+        private static IQueryable<BookedSessionSlotViewDto> BuildSlotViewQuery(IQueryable<BookedSessionSlot> slots)
+        {
+            return slots
+                .OrderBy(s => s.StartDateTime)
+                .Select(s => new BookedSessionSlotViewDto
+                {
+                    Id = s.Id,
+                    ClientId = s.ClientId,
+                    ClientName = s.Client.FirstName,
+                    BookingSeriesId = s.BookingSeriesId,
+                    Title = s.Title,
+                    Description = s.Description,
+                    StartDateTime = s.StartDateTime,
+                    EndDateTime = s.EndDateTime,
+                    Status = s.Status
+                });
+        }
     }
 }
