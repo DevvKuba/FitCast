@@ -486,9 +486,6 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExerciseCount")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("SessionDate")
                         .HasColumnType("date");
 
@@ -524,9 +521,6 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<int?>("TrainerId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Weight")
-                        .HasColumnType("float");
-
                     b.HasIndex("TrainerId");
 
                     b.ToTable("Clients", (string)null);
@@ -555,18 +549,11 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("bit");
 
-                    b.PrimitiveCollection<string>("ExcludedNames")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("Europe/London");
-
-                    b.Property<string>("WorkoutRetrievalApiKey")
-                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("Trainers", (string)null);
                 });
