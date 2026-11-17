@@ -30,10 +30,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client = new Client { Role = UserRole.Client, FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
-            var exerciseCount = 8;
             var duration = 60; // 60 minutes
 
-            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
+            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, duration);
             await _unitOfWork.Complete();
 
             var databaseWorkout = await _context.Workouts.FirstOrDefaultAsync();
@@ -41,7 +40,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             Assert.True(_context.Workouts.Any(x => x.Equals(databaseWorkout)));
             Assert.Equal(databaseWorkout!.WorkoutTitle, workoutTitle);
             Assert.Equal(databaseWorkout!.SessionDate, workoutDate);
-            Assert.Equal(databaseWorkout!.ExerciseCount, exerciseCount);
+            Assert.Equal(databaseWorkout!.Duration, duration);
         }
 
         [Fact]
@@ -50,10 +49,9 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var client = new Client { Role = UserRole.Client, FirstName = "Rob", CurrentBlockSession = 1, TotalBlockSessions = 4, Workouts = [] };
             var workoutTitle = "test session";
             var workoutDate = DateOnly.Parse("19/06/2025");
-            var exerciseCount = 8;
             var duration = 60; // 60 minutes
 
-            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
+            await _workoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, duration);
             await _unitOfWork.Complete();
 
             var databaseWorkout = await _context.Workouts.FirstOrDefaultAsync();
@@ -415,18 +413,16 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 ClientName = "rob",
                 WorkoutTitle = "old title",
                 SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 5,
                 Duration = 45
             };
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
 
-            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 10, 60);
+            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 60);
             await _unitOfWork.Complete();
 
             Assert.Equal("new title", workout.WorkoutTitle);
             Assert.Equal(DateOnly.Parse("20/06/2024"), workout.SessionDate);
-            Assert.Equal(10, workout.ExerciseCount);
             Assert.Equal(60, workout.Duration);
         }
 

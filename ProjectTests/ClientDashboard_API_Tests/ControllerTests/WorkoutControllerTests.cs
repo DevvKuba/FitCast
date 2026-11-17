@@ -27,7 +27,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
         }
 
-        public Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount, DateTime date)
+        public Task<ApiResponseDto<string>> SendTrainerDailySessionSyncNoticeAsync(Trainer trainer, int syncedCount, DateTime date)
         {
             return Task.FromResult(new ApiResponseDto<string>
             {
@@ -37,15 +37,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             });
         }
 
-        public Task<ApiResponseDto<string>> SendTrainerNewClientConfigurationReminderAsync(Trainer trainer, Client client, DateTime date)
-        {
-            return Task.FromResult(new ApiResponseDto<string>
-            {
-                Data = "",
-                Message = $"Success sending message to trainer with id: {trainer.Id}",
-                Success = true
-            });
-        }
 
         public Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId)
         {
@@ -226,73 +217,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestSuccessfullyAddingNewClientWorkoutAutoAsync()
-        {
-            var clientName = "rob";
-            var workoutTitle = "workout 1";
-            var workoutDate = DateOnly.Parse("19/06/2025");
-            var exerciseCount = 10;
-            var duration = 60;
-
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = clientName, TrainerId = trainer.Id, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _workoutController.AddNewAutoClientWorkoutAsync(clientName, workoutTitle, workoutDate, exerciseCount, duration);
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(clientName, response.Data);
-
-            var clientWorkout = await _context.Workouts.FirstOrDefaultAsync();
-            Assert.NotNull(clientWorkout);
-            Assert.Equal(workoutTitle, clientWorkout.WorkoutTitle);
-
-            var client = await _context.Client.FirstOrDefaultAsync();
-            Assert.Equal(1, client!.CurrentBlockSession);
-        }
-
-        [Fact]
-        public async Task TestAddNewAutoClientWorkoutReturnsNotFoundWhenTrainerDoesNotExistAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _workoutController.AddNewAutoClientWorkoutAsync("nonexistent", "workout", DateOnly.Parse("19/06/2025"), 10, 60);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestAddNewAutoClientWorkoutReturnsNotFoundWhenClientDoesNotBelongToCallerAsync()
-        {
-            var owningTrainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            var otherTrainer = new Trainer { FirstName = "jane", Surname = "smith", Role = UserRole.Trainer };
-            await _context.Trainer.AddRangeAsync(owningTrainer, otherTrainer);
-            await _unitOfWork.Complete();
-
-            await _context.Client.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", TrainerId = owningTrainer.Id, CurrentBlockSession = 0, TotalBlockSessions = 4, Workouts = [] });
-            await _unitOfWork.Complete();
-
-            // Query-scoped lookup: a client belonging to a different trainer is indistinguishable from a
-            // nonexistent one, by design (see Choosing Between Query-Scoping and Load-Then-Authorize).
-            AuthenticateAsTrainer(otherTrainer.Id);
-            var result = await _workoutController.AddNewAutoClientWorkoutAsync("rob", "workout", DateOnly.Parse("19/06/2025"), 10, 60);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
         public async Task TestSuccessfullyAddingNewClientWorkoutManualAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
@@ -309,7 +233,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 ClientId = client.Id,
                 SessionDate = "19/06/2025",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -335,7 +258,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "nonexistent",
                 ClientId = 999,
                 SessionDate = "19/06/2025",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -365,7 +287,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 ClientId = client.Id,
                 SessionDate = "19/06/2025",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -399,7 +320,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 WorkoutTitle = "old title",
                 SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 5,
                 Duration = 45
             };
             await _context.Workouts.AddAsync(workout);
@@ -410,7 +330,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = workout.Id,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -425,7 +344,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var savedWorkout = await _context.Workouts.FindAsync(workout.Id);
             Assert.Equal("new title", savedWorkout!.WorkoutTitle);
             Assert.Equal(DateOnly.Parse("20/06/2024"), savedWorkout.SessionDate);
-            Assert.Equal(10, savedWorkout.ExerciseCount);
             Assert.Equal(60, savedWorkout.Duration);
         }
 
@@ -437,7 +355,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = 999,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -467,7 +384,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 WorkoutTitle = "old title",
                 SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 5,
                 Duration = 45
             };
             await _context.Workouts.AddAsync(workout);
@@ -478,7 +394,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = workout.Id,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                ExerciseCount = 10,
                 Duration = 60
             };
 
@@ -512,7 +427,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 WorkoutTitle = "workout 1",
                 SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 10,
                 Duration = 60
             };
             await _context.Workouts.AddAsync(workout);
@@ -560,7 +474,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 WorkoutTitle = "workout 1",
                 SessionDate = DateOnly.Parse("19/06/2024"),
-                ExerciseCount = 10,
                 Duration = 60
             };
             await _context.Workouts.AddAsync(workout);
@@ -577,6 +490,35 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var survivingWorkout = await _context.Workouts.FindAsync(workout.Id);
             Assert.NotNull(survivingWorkout);
+        }
+
+        [Fact]
+        public async Task TestDeleteSyncedWorkoutCancelsItsSessionSlotAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { Role = UserRole.Client, FirstName = "rob", TrainerId = trainer.Id, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var start = new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc);
+            var slot = new BookedSessionSlot { TrainerId = trainer.Id, ClientId = client.Id, Title = "session", StartDateTime = start, EndDateTime = start.AddHours(1), Status = SessionStatus.Synced };
+            await _context.BookedSessionsSlot.AddAsync(slot);
+            await _unitOfWork.Complete();
+
+            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "session", SessionDate = new DateOnly(2026, 11, 10), Duration = 60, BookedSessionSlotId = slot.Id };
+            await _context.Workouts.AddAsync(workout);
+            await _unitOfWork.Complete();
+
+            AuthenticateAsTrainer(trainer.Id);
+            var result = await _workoutController.DeleteWorkoutAsync(workout.Id);
+
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.False(await _context.Workouts.AnyAsync());
+            Assert.Equal(SessionStatus.Cancelled, (await _context.BookedSessionsSlot.SingleAsync()).Status);
+            Assert.Equal(1, (await _context.Client.SingleAsync()).CurrentBlockSession);
         }
     }
 }

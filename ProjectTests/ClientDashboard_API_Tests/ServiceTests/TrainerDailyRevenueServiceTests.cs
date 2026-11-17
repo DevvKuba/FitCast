@@ -62,8 +62,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Each client trains exactly once today. A client cannot have two workouts on the
             // same date (system invariant), so today always contributes one session per client.
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Today", today, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Today", today, 6, 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Today", today, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Today", today, 50);
 
             // Add earlier-this-month sessions on distinct days strictly before today, so we never
             // place two workouts for the same client on the same day. When today is the 1st there
@@ -78,7 +78,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             foreach (var earlierDay in earlierDays)
             {
-                await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Earlier", earlierDay, 4, 40);
+                await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Earlier", earlierDay, 40);
             }
             await _unitOfWork.Complete();
 
@@ -165,7 +165,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "charlie - Workout", today, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "charlie - Workout", today, 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -272,12 +272,12 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var targetDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-5));
 
             // Add workouts on target date
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Workout", targetDate, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "henry - Workout", targetDate, 6, 50);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Another", targetDate, 4, 40);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Workout", targetDate, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "henry - Workout", targetDate, 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Another", targetDate, 40);
 
             // Add workouts on different date (should not be counted)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Different Day", targetDate.AddDays(1), 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "grace - Different Day", targetDate.AddDays(1), 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -349,13 +349,13 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var endDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-5));
 
             // Workouts within range
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 1", startDate, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 2", startDate.AddDays(2), 6, 50);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 3", endDate, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 1", startDate, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 2", startDate.AddDays(2), 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Workout 3", endDate, 45);
 
             // Workouts outside range (should not be counted)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Before", startDate.AddDays(-1), 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - After", endDate.AddDays(1), 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - Before", startDate.AddDays(-1), 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "julia - After", endDate.AddDays(1), 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -394,8 +394,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var targetDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // Add workouts on single date
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "kevin - Workout 1", targetDate, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "kevin - Workout 2", targetDate, 6, 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "kevin - Workout 1", targetDate, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "kevin - Workout 2", targetDate, 50);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -529,12 +529,12 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var endDate = new DateOnly(2025, 6, 20);
 
             // Three sessions within [startOfMonth, endDate] on distinct days
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 1", startOfMonth, 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 2", new DateOnly(2025, 6, 6), 6, 50);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 3", endDate, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 1", startOfMonth, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 2", new DateOnly(2025, 6, 6), 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Workout 3", endDate, 45);
 
             // Session from the previous month (outside the range, should not be counted)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Last Month", new DateOnly(2025, 5, 31), 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "uma - Last Month", new DateOnly(2025, 5, 31), 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -646,7 +646,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "wendy - Morning", today, 5, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "wendy - Morning", today, 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -670,7 +670,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             };
             await _context.Client.AddAsync(client2);
             await _unitOfWork.Complete();
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "xavier - Evening", today, 4, 40);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "xavier - Evening", today, 40);
             await _unitOfWork.Complete();
 
             var trainerReloaded = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);

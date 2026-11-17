@@ -91,9 +91,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             }
         }
 
-        public Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount, DateTime date)
+        public Task<ApiResponseDto<string>> SendTrainerDailySessionSyncNoticeAsync(Trainer trainer, int syncedCount, DateTime date)
         {
-            SentNotifications.Add((trainer.Id, 0, "AutoWorkoutCollection"));
+            SentNotifications.Add((trainer.Id, 0, "DailySessionSync"));
 
             if (ShouldSucceed)
             {
@@ -115,29 +115,6 @@ namespace ClientDashboard_API_Tests.ServiceTests
             }
         }
 
-        public Task<ApiResponseDto<string>> SendTrainerNewClientConfigurationReminderAsync(Trainer trainer, Client client, DateTime date)
-        {
-            SentNotifications.Add((trainer.Id, 0, "NewClientConfiguration"));
-
-            if (ShouldSucceed)
-            {
-                return Task.FromResult(new ApiResponseDto<string>
-                {
-                    Data = "Success",
-                    Message = "Auto workout collection notice sent successfully",
-                    Success = true
-                });
-            }
-            else
-            {
-                return Task.FromResult(new ApiResponseDto<string>
-                {
-                    Data = null,
-                    Message = FailureMessage,
-                    Success = false
-                });
-            }
-        }
 
         public Task<ApiResponseDto<string>> SendQuickAddTrainerReminderAsync(Trainer trainer, Client client, DateTime date)
         {

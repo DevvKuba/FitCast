@@ -53,8 +53,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Add some recent workouts (last 7 days)
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "alice - Workout 1", today.AddDays(-2), 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "alice - Workout 2", today.AddDays(-5), 6, 50);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "alice - Workout 1", today.AddDays(-2), 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "alice - Workout 2", today.AddDays(-5), 50);
             await _unitOfWork.Complete();
 
             // Add a payment
@@ -146,7 +146,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             // Add workout but no payment
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "charlie - Workout", today.AddDays(-1), 4, 40);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "charlie - Workout", today.AddDays(-1), 40);
             await _unitOfWork.Complete();
 
             // Act
@@ -225,11 +225,11 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // Add workouts spread across different time periods
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 1", today.AddDays(-3), 5, 45);  // Last 7 days
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 2", today.AddDays(-6), 6, 50);  // Last 7 days
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 3", today.AddDays(-15), 7, 55); // Last 28 days (not in last 7)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 4", today.AddDays(-25), 5, 40); // Last 28 days (not in last 7)
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 5", today.AddDays(-35), 6, 50); // Outside 28 days
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 1", today.AddDays(-3), 45);  // Last 7 days
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 2", today.AddDays(-6), 50);  // Last 7 days
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 3", today.AddDays(-15), 55); // Last 28 days (not in last 7)
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 4", today.AddDays(-25), 40); // Last 28 days (not in last 7)
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "frank - Workout 5", today.AddDays(-35), 50); // Outside 28 days
             await _unitOfWork.Complete();
 
             // Act
@@ -272,9 +272,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // Add workouts with specific dates
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 1", today.AddDays(-10), 5, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 2", today.AddDays(-4), 6, 50); // Most recent
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 3", today.AddDays(-20), 7, 55);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 1", today.AddDays(-10), 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 2", today.AddDays(-4), 50); // Most recent
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "grace - Workout 3", today.AddDays(-20), 55);
             await _unitOfWork.Complete();
 
             // Act
@@ -396,9 +396,9 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // Add workouts with varying durations
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 1", today.AddDays(-5), 5, 30);  // 30 minutes
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 2", today.AddDays(-10), 6, 60); // 60 minutes
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 3", today.AddDays(-15), 4, 45); // 45 minutes
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 1", today.AddDays(-5), 30);  // 30 minutes
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 2", today.AddDays(-10), 60); // 60 minutes
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "jack - Workout 3", today.AddDays(-15), 45); // 45 minutes
             await _unitOfWork.Complete();
 
             // Act

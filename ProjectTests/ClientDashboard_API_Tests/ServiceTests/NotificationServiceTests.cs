@@ -401,10 +401,10 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
         #endregion
 
-        #region SendTrainerAutoWorkoutCollectionNoticeAsync Tests
+        #region SendTrainerDailySessionSyncNoticeAsync Tests
 
         [Fact]
-        public async Task TestSendTrainerAutoWorkoutCollectionNoticeSendsInAppNotificationSuccessfullyAsync()
+        public async Task TestSendTrainerDailySessionSyncNoticeSendsInAppNotificationSuccessfullyAsync()
         {
             var trainer = new Trainer
             {
@@ -417,7 +417,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var date = DateTime.UtcNow;
-            var result = await _notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, 5, date);
+            var result = await _notificationService.SendTrainerDailySessionSyncNoticeAsync(trainer, 5, date);
 
             Assert.NotNull(result);
             Assert.True(result.Success);
@@ -425,12 +425,12 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var notifications = await _context.Notification.ToListAsync();
             Assert.Single(notifications);
             Assert.Equal(CommunicationType.InApp, notifications[0].SentThrough);
-            Assert.Equal(NotificationType.AutoRetrievalWorkoutsCountNotification, notifications[0].ReminderType);
+            Assert.Equal(NotificationType.DailySessionSyncNotification, notifications[0].ReminderType);
             Assert.Null(notifications[0].ClientId);
         }
 
         [Fact]
-        public async Task TestSendTrainerAutoWorkoutCollectionNoticeSendsSMSWhenEnabledAsync()
+        public async Task TestSendTrainerDailySessionSyncNoticeSendsSMSWhenEnabledAsync()
         {
             var trainer = new Trainer
             {
@@ -444,7 +444,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var date = DateTime.UtcNow;
-            var result = await _notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, 10, date);
+            var result = await _notificationService.SendTrainerDailySessionSyncNoticeAsync(trainer, 10, date);
 
             Assert.NotNull(result);
             Assert.True(result.Success);
@@ -456,7 +456,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public async Task TestSendTrainerAutoWorkoutCollectionNoticeHandlesZeroWorkoutsAsync()
+        public async Task TestSendTrainerDailySessionSyncNoticeHandlesZeroSessionsAsync()
         {
             var trainer = new Trainer
             {
@@ -469,7 +469,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var date = DateTime.UtcNow;
-            var result = await _notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, 0, date);
+            var result = await _notificationService.SendTrainerDailySessionSyncNoticeAsync(trainer, 0, date);
 
             Assert.NotNull(result);
             Assert.True(result.Success);
@@ -545,7 +545,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public async Task TestWorkoutCollectionMessageContainsWorkoutCountAsync()
+        public async Task TestDailySessionSyncMessageContainsSessionCountAsync()
         {
             var trainer = new Trainer
             {
@@ -558,7 +558,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _unitOfWork.Complete();
 
             var date = DateTime.UtcNow;
-            await _notificationService.SendTrainerAutoWorkoutCollectionNoticeAsync(trainer, 15, date);
+            await _notificationService.SendTrainerDailySessionSyncNoticeAsync(trainer, 15, date);
 
             var notification = await _context.Notification.FirstOrDefaultAsync();
             Assert.NotNull(notification);

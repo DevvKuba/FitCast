@@ -418,6 +418,43 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
+        public async Task RemoveAllBookedSessionSlotsForUserAsync_KeepsSyncedWorkoutsAndClearsTheirLink()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var slot = await SeedSlotAsync(trainer, client);
+            await _context.Workouts.AddAsync(new Workout { ClientId = client.Id, ClientName = "alice", WorkoutTitle = "session", Duration = 60, BookedSessionSlotId = slot.Id });
+            await _unitOfWork.Complete();
+
+            await _bookedSessionSlotRepository.RemoveAllBookedSessionSlotsForUserAsync(trainer);
+            await _unitOfWork.Complete();
+
+            Assert.False(await _context.BookedSessionsSlot.AnyAsync());
+            var workout = await _context.Workouts.SingleAsync();
+            Assert.Null(workout.BookedSessionSlotId);
+        }
+
+        [Fact]
+        public async Task GetTrainerFinishedScheduledSlotsAsync_ReturnsOnlyFinishedScheduledSlotsOldestFirstWithClientAndTrainer()
+        {
+            var nowUtc = new DateTime(2026, 11, 10, 12, 0, 0, DateTimeKind.Utc);
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer, "alice");
+            var later = await SeedSlotAsync(trainer, client, startUtc: nowUtc.AddHours(-2));
+            var earlier = await SeedSlotAsync(trainer, client, startUtc: nowUtc.AddDays(-1));
+            await SeedSlotAsync(trainer, client, startUtc: nowUtc.AddMinutes(-30)); // still running
+            var cancelled = await SeedSlotAsync(trainer, client, startUtc: nowUtc.AddHours(-5));
+            cancelled.Status = SessionStatus.Cancelled;
+            await _unitOfWork.Complete();
+            _context.ChangeTracker.Clear();
+
+            var slots = await _bookedSessionSlotRepository.GetTrainerFinishedScheduledSlotsAsync(trainer.Id, nowUtc);
+
+            Assert.Equal([earlier.Id, later.Id], slots.Select(s => s.Id).ToList());
+            Assert.All(slots, s => Assert.NotNull(s.Client.Trainer));
+        }
+
+        [Fact]
         public async Task UpdateFutureScheduledSlotsToTimeZoneAsync_KeepsLocalClockTimeAndDuration()
         {
             var trainer = await SeedTrainerAsync();

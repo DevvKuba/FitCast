@@ -241,55 +241,37 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageReturnsCorrectMessageForZeroWorkouts()
-        {
-            // Arrange
-            var date = new DateTime(2025, 3, 15, 14, 30, 0);
-
-            // Act
-            var message = NotificationMessageHelper.GetWorkoutCollectionMessage(0, date);
-
-            // Assert
-            Assert.Contains("No new workouts retrieved from Hevy", message);
-            Assert.Contains("Friday", message); // March 14, 2025 (date - 1 day) is FRIDAY
-            Assert.Contains("14th", message);
-            Assert.Contains("2:30 PM", message);
-        }
-
-        [Fact]
-        public void TestGetWorkoutCollectionMessageReturnsCorrectMessageForOneWorkout()
+        public void TestGetDailySessionSyncMessageReturnsCorrectMessageForOneSession()
         {
             // Arrange
             var date = new DateTime(2025, 3, 10, 9, 15, 0);
 
             // Act
-            var message = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date);
+            var message = NotificationMessageHelper.GetDailySessionSyncMessage(1, date);
 
             // Assert
-            Assert.Contains("1 new workout retrieved from Hevy", message);
+            Assert.Contains("1 completed session from Sunday the 9th was logged as a workout", message);
             Assert.Contains("Sunday", message); // March 9, 2025 (date - 1 day)
             Assert.Contains("9th", message);
-            Assert.Contains("9:15 AM", message);
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageReturnsCorrectMessageForMultipleWorkouts()
+        public void TestGetDailySessionSyncMessageReturnsCorrectMessageForMultipleSessions()
         {
             // Arrange
             var date = new DateTime(2025, 3, 22, 18, 45, 0);
 
             // Act
-            var message = NotificationMessageHelper.GetWorkoutCollectionMessage(5, date);
+            var message = NotificationMessageHelper.GetDailySessionSyncMessage(5, date);
 
             // Assert
-            Assert.Contains("5 new workouts retrieved from Hevy", message);
+            Assert.Contains("5 completed sessions from Friday the 21st were logged as workouts", message);
             Assert.Contains("Friday", message); // March 21, 2025 (date - 1 day)
             Assert.Contains("21st", message);
-            Assert.Contains("6:45 PM", message);
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageFormatsOrdinalDaysCorrectly()
+        public void TestGetDailySessionSyncMessageFormatsOrdinalDaysCorrectly()
         {
             // Ordinal reflects the PREVIOUS day (date - 1), so each date is the day after the suffix under test
             var date1 = new DateTime(2025, 1, 2, 12, 0, 0);   // previous day: 1st
@@ -301,14 +283,14 @@ namespace ClientDashboard_API_Tests.ServiceTests
             var date23 = new DateTime(2025, 1, 24, 12, 0, 0); // previous day: 23rd
             var date31 = new DateTime(2025, 4, 1, 12, 0, 0);  // previous day: March 31st (boundary)
 
-            var message1 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date1);
-            var message2 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date2);
-            var message3 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date3);
-            var message4 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date4);
-            var message21 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date21);
-            var message22 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date22);
-            var message23 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date23);
-            var message31 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date31);
+            var message1 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date1);
+            var message2 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date2);
+            var message3 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date3);
+            var message4 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date4);
+            var message21 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date21);
+            var message22 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date22);
+            var message23 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date23);
+            var message31 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date31);
 
             Assert.Contains("1st", message1);
             Assert.Contains("2nd", message2);
@@ -321,52 +303,32 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageHandlesLargeWorkoutCount()
+        public void TestGetDailySessionSyncMessageHandlesLargeSessionCount()
         {
             // Arrange
             var date = new DateTime(2025, 12, 25, 15, 30, 0);
 
             // Act
-            var message = NotificationMessageHelper.GetWorkoutCollectionMessage(100, date);
+            var message = NotificationMessageHelper.GetDailySessionSyncMessage(100, date);
 
             // Assert
-            Assert.Contains("100 new workouts retrieved from Hevy", message);
+            Assert.Contains("100 completed sessions", message);
             Assert.Contains("Wednesday", message); // December 24, 2025 (date - 1 day)
             Assert.Contains("24th", message);       // previous day's ordinal
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageSubtractsOneDayCorrectly()
+        public void TestGetDailySessionSyncMessageSubtractsOneDayCorrectly()
         {
             // Arrange - Test that date.AddDays(-1) is used correctly across a month boundary
             var date = new DateTime(2025, 4, 1, 10, 0, 0); // April 1st
 
             // Act
-            var message = NotificationMessageHelper.GetWorkoutCollectionMessage(3, date);
+            var message = NotificationMessageHelper.GetDailySessionSyncMessage(3, date);
 
             // Assert
             Assert.Contains("Monday", message); // March 31, 2025 (date - 1 day)
             Assert.Contains("31st", message);   // previous day's ordinal, not the original date
-        }
-
-        [Fact]
-        public void TestGetWorkoutCollectionMessageFormats12HourTimeCorrectly()
-        {
-            // Test AM and PM formatting
-            var dateAM = new DateTime(2025, 6, 15, 8, 30, 0);
-            var datePM = new DateTime(2025, 6, 15, 20, 45, 0);
-            var dateNoon = new DateTime(2025, 6, 15, 12, 0, 0);
-            var dateMidnight = new DateTime(2025, 6, 15, 0, 0, 0);
-
-            var messageAM = NotificationMessageHelper.GetWorkoutCollectionMessage(1, dateAM);
-            var messagePM = NotificationMessageHelper.GetWorkoutCollectionMessage(1, datePM);
-            var messageNoon = NotificationMessageHelper.GetWorkoutCollectionMessage(1, dateNoon);
-            var messageMidnight = NotificationMessageHelper.GetWorkoutCollectionMessage(1, dateMidnight);
-
-            Assert.Contains("8:30 AM", messageAM);
-            Assert.Contains("8:45 PM", messagePM);
-            Assert.Contains("12:00 PM", messageNoon);
-            Assert.Contains("12:00 AM", messageMidnight);
         }
 
         [Fact]
@@ -431,16 +393,16 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
-        public void TestGetWorkoutCollectionMessageHandlesEdgeCaseDaysOfMonth()
+        public void TestGetDailySessionSyncMessageHandlesEdgeCaseDaysOfMonth()
         {
             // Test days 11-19 which all use "th"
             var date11 = new DateTime(2025, 5, 11, 12, 0, 0);
             var date12 = new DateTime(2025, 5, 12, 12, 0, 0);
             var date13 = new DateTime(2025, 5, 13, 12, 0, 0);
 
-            var message11 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date11);
-            var message12 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date12);
-            var message13 = NotificationMessageHelper.GetWorkoutCollectionMessage(1, date13);
+            var message11 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date11);
+            var message12 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date12);
+            var message13 = NotificationMessageHelper.GetDailySessionSyncMessage(1, date13);
 
             Assert.Contains("10th", message11);
             Assert.Contains("11th", message12);

@@ -54,18 +54,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestCheckingIfExistingClientExistsAsync()
-        {
-            await _clientRepository.AddNewClientUnderTrainerAsync(clientName: "Rob", blockSessions: 8, phoneNumber: null, trainerId: null);
-            await _unitOfWork.Complete();
-            var clientName = "rob";
-
-            bool clientPresent = await _clientRepository.CheckIfClientExistsAsync(clientName);
-
-            Assert.True(clientPresent);
-        }
-
-        [Fact]
         public async Task TestUpdateAddingClientCurrentSessionAsync()
         {
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });
@@ -153,7 +141,7 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         {
             // Every other write path that stores a client name lowercases it first
             // (AddNewClientUnderTrainerAsync does clientName.ToLower()), and name-based
-            // lookups assume that invariant (CheckIfClientExistsAsync / GetClientByNameWithTrainerAsync
+            // lookups assume that invariant (GetClientByNameWithTrainerAsync
             // both compare against clientName.ToLower()). UpdateClientDetailsAsync now lowercases
             // the DTO's FirstName before mapping, keeping that invariant intact.
             await _context.AddAsync(new Client { Role = UserRole.Client, FirstName = "rob", IsActive = true, CurrentBlockSession = 2, TotalBlockSessions = 4, Workouts = [] });

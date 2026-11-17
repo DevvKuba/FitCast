@@ -321,5 +321,149 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.IsType<NotFoundObjectResult>(result.Result);
             Assert.True(await _context.BookedSessionsSlot.AnyAsync(s => s.Id == otherSlot.Id));
         }
+
+        [Fact]
+        public async Task DeleteBookedSessionSlotAsync_ReturnsBadRequestForASyncedSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var slot = await SeedSlotWithStatusAsync(trainer, await SeedClientAsync(trainer), SessionStatus.Synced);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.DeleteBookedSessionSlotAsync(slot.Id);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.True(await _context.BookedSessionsSlot.AnyAsync(s => s.Id == slot.Id));
+        }
+
+        [Fact]
+        public async Task UpdateBookingSessionSlotForTrainerAsync_ReturnsBadRequestForASyncedSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer);
+            var slot = await SeedSlotWithStatusAsync(trainer, client, SessionStatus.Synced);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.UpdateBookingSessionSlotForTrainerAsync(slot.Id, SlotDto(client.Id, "renamed"));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal("ad-hoc session", (await _context.BookedSessionsSlot.SingleAsync()).Title);
+        }
+
+        [Theory]
+        [InlineData(SessionStatus.Scheduled)]
+        [InlineData(SessionStatus.Completed)]
+        public async Task SetBookedSessionSlotCancelledAsync_CancelsTheSlot(SessionStatus startingStatus)
+        {
+            var trainer = await SeedTrainerAsync();
+            var slot = await SeedSlotWithStatusAsync(trainer, await SeedClientAsync(trainer), startingStatus);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.SetBookedSessionSlotCancelledAsync(slot.Id, cancelled: true);
+
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(SessionStatus.Cancelled, (await _context.BookedSessionsSlot.SingleAsync()).Status);
+        }
+
+        [Fact]
+        public async Task SetBookedSessionSlotCancelledAsync_RestoresACancelledSlotToScheduled()
+        {
+            var trainer = await SeedTrainerAsync();
+            var slot = await SeedSlotWithStatusAsync(trainer, await SeedClientAsync(trainer), SessionStatus.Cancelled);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.SetBookedSessionSlotCancelledAsync(slot.Id, cancelled: false);
+
+            Assert.IsType<OkObjectResult>(result.Result);
+            Assert.Equal(SessionStatus.Scheduled, (await _context.BookedSessionsSlot.SingleAsync()).Status);
+        }
+
+        [Fact]
+        public async Task SetBookedSessionSlotCancelledAsync_ReturnsBadRequestForASyncedSlot()
+        {
+            var trainer = await SeedTrainerAsync();
+            var slot = await SeedSlotWithStatusAsync(trainer, await SeedClientAsync(trainer), SessionStatus.Synced);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.SetBookedSessionSlotCancelledAsync(slot.Id, cancelled: true);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal(SessionStatus.Synced, (await _context.BookedSessionsSlot.SingleAsync()).Status);
+        }
+
+        [Fact]
+        public async Task SetBookedSessionSlotCancelledAsync_ReturnsNotFoundForAnotherTrainersSlot()
+        {
+            var trainer = await SeedTrainerAsync("john");
+            var otherTrainer = await SeedTrainerAsync("jane");
+            var otherSlot = await SeedSlotAsync(otherTrainer, await SeedClientAsync(otherTrainer, "bob"));
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.SetBookedSessionSlotCancelledAsync(otherSlot.Id, cancelled: true);
+
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+            Assert.Equal(SessionStatus.Scheduled, (await _context.BookedSessionsSlot.SingleAsync()).Status);
+        }
+
+        [Fact]
+        public async Task GetClientSessionsOnDateAsync_ReturnsTheClientsNonCancelledSessionsOnThatDate()
+        {
+            var trainer = await SeedTrainerAsync();
+            var alice = await SeedClientAsync(trainer, "alice");
+            var bob = await SeedClientAsync(trainer, "bob");
+            var date = new DateOnly(2026, 11, 10);
+
+            var morning = await SeedSlotAsync(trainer, alice, new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc));
+            await SeedSlotWithStatusAsync(trainer, alice, SessionStatus.Cancelled, new DateTime(2026, 11, 10, 14, 0, 0, DateTimeKind.Utc));
+            await SeedSlotAsync(trainer, alice, new DateTime(2026, 11, 11, 9, 0, 0, DateTimeKind.Utc));
+            await SeedSlotAsync(trainer, bob, new DateTime(2026, 11, 10, 11, 0, 0, DateTimeKind.Utc));
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.GetClientSessionsOnDateAsync(alice.Id, date);
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlotViewDto>>;
+
+            var session = Assert.Single(response!.Data!);
+            Assert.Equal(morning.Id, session.Id);
+        }
+
+        [Fact]
+        public async Task GetClientSessionsOnDateAsync_UsesTheTrainersTimeZoneForTheDay()
+        {
+            // London is UTC+1 in July: 23:30 UTC on the 9th is 00:30 on the 10th, and 23:30 UTC on the 10th is the 11th
+            var trainer = await SeedTrainerAsync();
+            var client = await SeedClientAsync(trainer);
+            var justAfterMidnight = await SeedSlotAsync(trainer, client, new DateTime(2026, 7, 9, 23, 30, 0, DateTimeKind.Utc));
+            await SeedSlotAsync(trainer, client, new DateTime(2026, 7, 10, 23, 30, 0, DateTimeKind.Utc));
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.GetClientSessionsOnDateAsync(client.Id, new DateOnly(2026, 7, 10));
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlotViewDto>>;
+
+            var session = Assert.Single(response!.Data!);
+            Assert.Equal(justAfterMidnight.Id, session.Id);
+        }
+
+        [Fact]
+        public async Task GetClientSessionsOnDateAsync_ReturnsNothingWhenCalendarSyncIsOff()
+        {
+            var trainer = await SeedTrainerAsync();
+            trainer.CalendarSyncEnabled = false;
+            await _unitOfWork.Complete();
+            var client = await SeedClientAsync(trainer);
+            await SeedSlotAsync(trainer, client, new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc));
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _bookedSessionSlotController.GetClientSessionsOnDateAsync(client.Id, new DateOnly(2026, 11, 10));
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<BookedSessionSlotViewDto>>;
+
+            Assert.Empty(response!.Data!);
+        }
+
+        private async Task<BookedSessionSlot> SeedSlotWithStatusAsync(Trainer trainer, Client client, SessionStatus status, DateTime? startUtc = null)
+        {
+            var slot = await SeedSlotAsync(trainer, client, startUtc);
+            slot.Status = status;
+            await _unitOfWork.Complete();
+            return slot;
+        }
     }
 }

@@ -228,40 +228,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestGetTrainersWithAutoRetrievalAsync()
-        {
-            await _context.Trainer.AddAsync(new Trainer 
-            { 
-                FirstName = "john", 
-                Surname = "doe", 
-                Role = UserRole.Trainer,
-                AutoWorkoutRetrieval = true
-            });
-            await _context.Trainer.AddAsync(new Trainer 
-            { 
-                FirstName = "jane", 
-                Surname = "smith", 
-                Role = UserRole.Trainer,
-                AutoWorkoutRetrieval = false
-            });
-            await _context.Trainer.AddAsync(new Trainer 
-            { 
-                FirstName = "bob", 
-                Surname = "jones", 
-                Role = UserRole.Trainer,
-                AutoWorkoutRetrieval = true
-            });
-            await _unitOfWork.Complete();
-
-            var trainers = await _trainerRepository.GetTrainersWithAutoRetrievalAsync();
-
-            Assert.Equal(2, trainers.Count);
-            Assert.All(trainers, t => Assert.True(t.AutoWorkoutRetrieval));
-            Assert.Contains(trainers, t => t.FirstName == "john");
-            Assert.Contains(trainers, t => t.FirstName == "bob");
-        }
-
-        [Fact]
         public async Task TestGetTrainerClientsWithWorkoutsAsync()
         {
             var trainer = new Trainer 
@@ -406,7 +372,8 @@ namespace ClientDashboard_API_Tests.RepositoryTests
                 BusinessName = "New Business",
                 DefaultCurrency = "�",
                 AverageSessionPrice = 50.00m,
-                TimeZoneId = SupportedTimeZones.London
+                TimeZoneId = SupportedTimeZones.London,
+                CalendarSyncEnabled = true
             };
 
             _trainerRepository.UpdateTrainerProfileDetailsAsync(trainer, updateDto);
@@ -442,25 +409,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public async Task TestUpdateTrainerAutoRetrievalAsync()
-        {
-            var trainer = new Trainer 
-            { 
-                FirstName = "john", 
-                Surname = "doe", 
-                Role = UserRole.Trainer,
-                AutoWorkoutRetrieval = false
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _trainerRepository.UpdateTrainerAutoRetrievalAsync(trainer, true);
-            await _unitOfWork.Complete();
-
-            Assert.True(trainer.AutoWorkoutRetrieval);
-        }
-
-        [Fact]
         public async Task TestUpdateTrainerPaymentSettingAsync()
         {
             var trainer = new Trainer 
@@ -477,26 +425,6 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _unitOfWork.Complete();
 
             Assert.True(trainer.AutoPaymentSetting);
-        }
-
-        [Fact]
-        public async Task TestUpdateTrainerApiKeyAsync()
-        {
-            var trainer = new Trainer 
-            { 
-                FirstName = "john", 
-                Surname = "doe", 
-                Role = UserRole.Trainer,
-                WorkoutRetrievalApiKey = null
-            };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            var newApiKey = "test-api-key-12345";
-            _trainerRepository.UpdateTrainerApiKeyAsync(trainer, newApiKey);
-            await _unitOfWork.Complete();
-
-            Assert.Equal(newApiKey, trainer.WorkoutRetrievalApiKey);
         }
 
         [Fact]

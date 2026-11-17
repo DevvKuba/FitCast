@@ -15,89 +15,6 @@ using Microsoft.EntityFrameworkCore;
 namespace ClientDashboard_API_Tests.ControllerTests
 {
     // Fake implementations for testing
-    public class FakeApiKeyEncrypter : IApiKeyEncryter
-    {
-        public string Encrypt(string plainText)
-        {
-            return $"encrypted_{plainText}";
-        }
-
-        public string Decrypt(string cipherText)
-        {
-            return cipherText.Replace("encrypted_", "");
-        }
-    }
-
-    public class FakeSessionDataParser : ISessionDataParser
-    {
-        private bool _isValid;
-
-        public FakeSessionDataParser(bool isValid = true)
-        {
-            _isValid = isValid;
-        }
-
-        public void SetValidationResult(bool isValid)
-        {
-            _isValid = isValid;
-        }
-
-        public Task<bool> IsApiKeyValidAsync(string apiKey)
-        {
-            return Task.FromResult(_isValid);
-        }
-
-        public Task<List<WorkoutAddDto>> FetchClientSessionsAsync(string apiKey)
-        {
-            return Task.FromResult(new List<WorkoutAddDto>());
-        }
-
-        public Task<List<WorkoutSummaryDto>> CallApiForTrainerAsync(Trainer trainer)
-        {
-            return Task.FromResult(new List<WorkoutSummaryDto>());
-        }
-
-        public Task<List<WorkoutSummaryDto>> RetrieveWorkouts(HttpResponseMessage response)
-        {
-            return Task.FromResult(new List<WorkoutSummaryDto>());
-        }
-
-        public int CalculateDurationInMinutes(string startTime, string endTime)
-        {
-            if (string.IsNullOrEmpty(startTime) || string.IsNullOrEmpty(endTime))
-            {
-                return 0;
-            }
-
-            var startDateTime = DateTime.Parse(startTime);
-            var endDateTime = DateTime.Parse(endTime);
-
-            int duration = (int)(endDateTime - startDateTime).TotalMinutes;
-
-            return duration;
-        }
-    }
-
-    public class FakeSessionSyncService : ISessionSyncService
-    {
-        private int _sessionCount;
-
-        public FakeSessionSyncService(int sessionCount = 0)
-        {
-            _sessionCount = sessionCount;
-        }
-
-        public void SetSessionCount(int count)
-        {
-            _sessionCount = count;
-        }
-
-        public Task<int> SyncSessionsAsync(Trainer trainer)
-        {
-            return Task.FromResult(_sessionCount);
-        }
-    }
-
     public class FakeTrainerFullMonthAnalyticsService : ITrainerFullMonthAnalyticsService
     {
         public ClientMetricsDto GetClientMetrics(List<TrainerDailyRevenue> revenueRecords)
@@ -149,11 +66,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly UnitOfWork _unitOfWork;
-        private readonly FakeApiKeyEncrypter _fakeEncrypter;
-        private readonly FakeSessionDataParser _fakeSessionDataParser;
         private readonly FakeTrainerFullMonthAnalyticsService _fakeTrainerFullMonthAnalyticsService;
         private readonly FakeTrainerCurrentMonthAnalyticsService _fakeTrainerCurrentMonthAnalyticsService;
-        private readonly FakeSessionSyncService _fakeSyncService;
         private readonly TrainerDependencyRemovalHelper _trainerDependencyRemovalHelper;
         private readonly TrainerController _trainerController;
         private readonly FakeHttpContextAccessor _httpContextAccessor;
@@ -165,18 +79,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
             _context = testUnitOfWork.context;
             _unitOfWork = testUnitOfWork.unitOfWork;
 
-            _fakeEncrypter = new FakeApiKeyEncrypter();
-            _fakeSessionDataParser = new FakeSessionDataParser();
             _fakeTrainerFullMonthAnalyticsService = new FakeTrainerFullMonthAnalyticsService();
             _fakeTrainerCurrentMonthAnalyticsService = new FakeTrainerCurrentMonthAnalyticsService();
-            _fakeSyncService = new FakeSessionSyncService();
 
             var (_, currentUserAccessor, httpContextAccessor) = TestAuthHelpers.CreateAuthInfrastructure();
             _httpContextAccessor = httpContextAccessor;
 
             _trainerDependencyRemovalHelper = new TrainerDependencyRemovalHelper(_unitOfWork);
 
-            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeEncrypter, _fakeSessionDataParser, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, _fakeSyncService, currentUserAccessor, _trainerDependencyRemovalHelper);
+            _trainerController = new TrainerController(_unitOfWork, _mapper, _fakeTrainerFullMonthAnalyticsService, _fakeTrainerCurrentMonthAnalyticsService, currentUserAccessor, _trainerDependencyRemovalHelper);
             TestAuthHelpers.AttachHttpContext(_trainerController, _httpContextAccessor);
         }
 
@@ -264,7 +175,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 BusinessName = "New Business",
                 DefaultCurrency = "�",
                 AverageSessionPrice = 50.00m,
-                TimeZoneId = SupportedTimeZones.London
+                TimeZoneId = SupportedTimeZones.London,
+                CalendarSyncEnabled = true
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -289,7 +201,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 FirstName = "jonathan",
                 Surname = "doe",
                 Email = "jonathan@example.com",
-                TimeZoneId = SupportedTimeZones.London
+                TimeZoneId = SupportedTimeZones.London,
+                CalendarSyncEnabled = true
             };
 
             AuthenticateAsTrainer(999);
@@ -306,7 +219,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             var (trainer, _) = await SeedTrainerWithClientAsync();
 
-            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = "Mars/Olympus_Mons" };
+            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = "Mars/Olympus_Mons", CalendarSyncEnabled = true };
 
             AuthenticateAsTrainer(trainer.Id);
             var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
@@ -328,7 +241,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var slot = await SeedFutureSlotAsync(trainer, client, SupportedTimeZones.London, new TimeOnly(9, 0));
             var originalStartUtc = slot.StartDateTime;
 
-            var updateDto = new TrainerUpdateDto { FirstName = "john", TimeZoneId = SupportedTimeZones.NewYork };
+            var updateDto = new TrainerUpdateDto { FirstName = "john", TimeZoneId = SupportedTimeZones.NewYork, CalendarSyncEnabled = true };
 
             AuthenticateAsTrainer(trainer.Id);
             var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
@@ -354,7 +267,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var slot = await SeedFutureSlotAsync(trainer, client, SupportedTimeZones.London, new TimeOnly(9, 0));
             var originalStartUtc = slot.StartDateTime;
 
-            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = SupportedTimeZones.London };
+            var updateDto = new TrainerUpdateDto { FirstName = "jonathan", TimeZoneId = SupportedTimeZones.London, CalendarSyncEnabled = true };
 
             AuthenticateAsTrainer(trainer.Id);
             var result = await _trainerController.UpdateTrainerProfileAsync(updateDto);
@@ -421,111 +334,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUpdateWorkoutRetrievalApiKeySuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSessionDataParser.SetValidationResult(true);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("test-api-key");
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("john", response.Data);
-
-            var savedTrainer = await _context.Trainer.FindAsync(trainer.Id);
-            Assert.Equal("encrypted_test-api-key", savedTrainer!.WorkoutRetrievalApiKey);
-        }
-
-        [Fact]
-        public async Task TestUpdateWorkoutRetrievalApiKeyReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("test-api-key");
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestUpdateWorkoutRetrievalApiKeyReturnsBadRequestForInvalidKeyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSessionDataParser.SetValidationResult(false);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.UpdateWorkoutRetrievalApiKeyAsync("invalid-key");
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            var response = badRequestResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestUpdateTrainerRetrievalDetailsSuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoWorkoutRetrieval = false };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSessionDataParser.SetValidationResult(true);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("test-api-key", true);
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("john", response.Data);
-
-            var savedTrainer = await _context.Trainer.FindAsync(trainer.Id);
-            Assert.Equal("encrypted_test-api-key", savedTrainer!.WorkoutRetrievalApiKey);
-            Assert.True(savedTrainer.AutoWorkoutRetrieval);
-        }
-
-        [Fact]
-        public async Task TestUpdateTrainerRetrievalDetailsReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("test-api-key", true);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestUpdateTrainerRetrievalDetailsReturnsBadRequestForInvalidKeyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSessionDataParser.SetValidationResult(false);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.UpdateTrainerRetrievalDetailsAsync("invalid-key", true);
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            var response = badRequestResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
         public async Task TestUpdateTrainerPaymentSettingSuccessfullyAsync()
         {
             var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoPaymentSetting = false, AverageSessionPrice = 40, DefaultCurrency = "�" };
@@ -550,147 +358,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
         {
             AuthenticateAsTrainer(999);
             var result = await _trainerController.UpdateTrainerPaymentSettingAsync(true);
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGatherAndUpdateHevyClientWorkoutsSuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSyncService.SetSessionCount(5);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(5, response.Data);
-        }
-
-        [Fact]
-        public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsZeroWhenNoSessionsAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            _fakeSyncService.SetSessionCount(0);
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal(0, response.Data);
-        }
-
-        [Fact]
-        public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGatherAndUpdateHevyClientWorkoutsReturnsBadRequestWhenNoApiKeyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = null };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GatherAndUpdateHevyClientWorkoutsAsync();
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            var response = badRequestResult!.Value as ApiResponseDto<int>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-            Assert.Equal(0, response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetWorkoutRetrievalApiKeySuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = "encrypted_test-key" };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.Equal("test-key", response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetWorkoutRetrievalApiKeyReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
-            var notFoundResult = result.Result as NotFoundObjectResult;
-            var response = notFoundResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGetWorkoutRetrievalApiKeyReturnsBadRequestWhenNoApiKeyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, WorkoutRetrievalApiKey = null };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GetWorkoutRetrievalApiKeyAsync();
-            var badRequestResult = result.Result as BadRequestObjectResult;
-            var response = badRequestResult!.Value as ApiResponseDto<string>;
-
-            Assert.NotNull(response);
-            Assert.False(response.Success);
-        }
-
-        [Fact]
-        public async Task TestGetAutoRetrievalStatusSuccessfullyAsync()
-        {
-            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AutoWorkoutRetrieval = true };
-            await _context.Trainer.AddAsync(trainer);
-            await _unitOfWork.Complete();
-
-            AuthenticateAsTrainer(trainer.Id);
-            var result = await _trainerController.GetAutoRetrievalStatusAsync();
-            var okResult = result.Result as OkObjectResult;
-            var response = okResult!.Value as ApiResponseDto<bool>;
-
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.True(response.Data);
-        }
-
-        [Fact]
-        public async Task TestGetAutoRetrievalStatusReturnsNotFoundAsync()
-        {
-            AuthenticateAsTrainer(999);
-            var result = await _trainerController.GetAutoRetrievalStatusAsync();
             var notFoundResult = result.Result as NotFoundObjectResult;
             var response = notFoundResult!.Value as ApiResponseDto<string>;
 
