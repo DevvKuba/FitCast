@@ -470,6 +470,9 @@ namespace ClientDashboard_API.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("BookedSessionSlotId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
@@ -497,6 +500,8 @@ namespace ClientDashboard_API.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookedSessionSlotId");
 
                     b.HasIndex("ClientId");
 
@@ -534,15 +539,15 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<bool>("AutoPaymentSetting")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("AutoWorkoutRetrieval")
-                        .HasColumnType("bit");
-
                     b.Property<decimal?>("AverageSessionPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("BusinessName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("CalendarSyncEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("DefaultCurrency")
                         .HasColumnType("nvarchar(max)");
@@ -722,10 +727,16 @@ namespace ClientDashboard_API.Data.Migrations
 
             modelBuilder.Entity("ClientDashboard_API.Entities.Workout", b =>
                 {
+                    b.HasOne("ClientDashboard_API.Entities.BookedSessionSlot", "BookedSessionSlot")
+                        .WithMany()
+                        .HasForeignKey("BookedSessionSlotId");
+
                     b.HasOne("ClientDashboard_API.Entities.Client", "Client")
                         .WithMany("Workouts")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("BookedSessionSlot");
 
                     b.Navigation("Client");
                 });
