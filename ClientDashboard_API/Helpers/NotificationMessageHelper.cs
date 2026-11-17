@@ -34,16 +34,15 @@ namespace ClientDashboard_API.Helpers
             throw new ArgumentException($"No message template found for notification type: {notificationType}");
         }
 
-        public static string GetWorkoutCollectionMessage(int workoutCount, DateTime date)
+        public static string GetDailySessionSyncMessage(int syncedCount, DateTime date)
         {
             var formattedDate = $"{date.AddDays(-1).ToString("dddd", System.Globalization.CultureInfo.InvariantCulture)}" +
-                $" the {GetOrdinalDay(date.AddDays(-1).Day)} at {date.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture)}";
+                $" the {GetOrdinalDay(date.AddDays(-1).Day)}";
 
-            return workoutCount switch
+            return syncedCount switch
             {
-                0 => $"No new workouts retrieved from Hevy on {formattedDate}",
-                1 => $"1 new workout retrieved from Hevy on {formattedDate}",
-                _ => $"{workoutCount} new workouts retrieved from Hevy on {formattedDate}"
+                1 => $"1 completed session from {formattedDate} was logged as a workout",
+                _ => $"{syncedCount} completed sessions from {formattedDate} were logged as workouts"
             };
         }
         private static string GetOrdinalDay(int day)

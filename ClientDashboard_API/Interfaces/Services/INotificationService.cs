@@ -11,7 +11,7 @@ namespace ClientDashboard_API.Interfaces.Services
 
         Task<ApiResponseDto<string>> SendTrainerPendingPaymentAlertAsync(int trainerId, int clientId);
 
-        Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount, DateTime date);
+        Task<ApiResponseDto<string>> SendTrainerDailySessionSyncNoticeAsync(Trainer trainer, int syncedCount, DateTime date);
 
         Task<ApiResponseDto<string>> SendTrainerNewClientConfigurationReminderAsync(Trainer trainer, Client client, DateTime date);
 

@@ -34,6 +34,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? exerciseCount, int? duration);
 
+        Task AddSyncedWorkoutAsync(Client client, BookedSessionSlot sessionSlot, DateOnly sessionDate);
+
         void RemoveWorkout(Workout workout);
 
     }

@@ -13,6 +13,16 @@ namespace ClientDashboard_API.Data
         {
             return await context.BookedSessionsSlot.FirstOrDefaultAsync(s => s.Id == sessionId && s.TrainerId == trainerId);
         }
+        public async Task<List<BookedSessionSlot>> GetTrainerFinishedScheduledSlotsAsync(int trainerId, DateTime nowUtc)
+        {
+            return await context.BookedSessionsSlot
+                .Include(s => s.Client)
+                    .ThenInclude(c => c.Trainer)
+                .Where(s => s.TrainerId == trainerId && s.Status == SessionStatus.Scheduled && s.EndDateTime <= nowUtc)
+                .OrderBy(s => s.StartDateTime)
+                .ToListAsync();
+        }
+
         public async Task<List<BookedSessionSlotViewDto>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc)
         {
             return await context.BookedSessionsSlot
@@ -95,8 +105,6 @@ namespace ClientDashboard_API.Data
                 await context.BookedSessionsSlot.Where(s => s.TrainerId == user.Id).ToListAsync() :
                 await context.BookedSessionsSlot.Where(s => s.ClientId == user.Id).ToListAsync();
 
-            // synced workouts point at their slot, and the database won't clear that link on its own,
-            // so clear it here before the slots go - the workouts themselves are kept
             var slotIds = slotsToRemove.Select(s => s.Id).ToList();
             var linkedWorkouts = await context.Workouts
                 .Where(w => w.BookedSessionSlotId != null && slotIds.Contains(w.BookedSessionSlotId.Value))

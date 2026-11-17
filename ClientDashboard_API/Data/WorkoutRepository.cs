@@ -164,6 +164,21 @@ namespace ClientDashboard_API.Data
             });
         }
 
+        public async Task AddSyncedWorkoutAsync(Client client, BookedSessionSlot sessionSlot, DateOnly sessionDate)
+        {
+            await context.Workouts.AddAsync(new Workout
+            {
+                ClientId = client.Id,
+                ClientName = client.FirstName,
+                WorkoutTitle = sessionSlot.Title,
+                SessionDate = sessionDate,
+                CurrentBlockSession = client.CurrentBlockSession,
+                TotalBlockSessions = client.TotalBlockSessions,
+                Duration = (int)(sessionSlot.EndDateTime - sessionSlot.StartDateTime).TotalMinutes,
+                BookedSessionSlotId = sessionSlot.Id
+            });
+        }
+
         public void RemoveWorkout(Workout workout)
         {
             context.Workouts.Remove(workout);

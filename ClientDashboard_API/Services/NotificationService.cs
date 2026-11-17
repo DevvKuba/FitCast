@@ -134,15 +134,15 @@ namespace ClientDashboard_API.Services
             return new ApiResponseDto<string> { Data = null, Message = $"Saving notification message: {notificationMessage} was successful", Success = true };
         }
 
-        public async Task<ApiResponseDto<string>> SendTrainerAutoWorkoutCollectionNoticeAsync(Trainer trainer, int workoutCount, DateTime date)
+        public async Task<ApiResponseDto<string>> SendTrainerDailySessionSyncNoticeAsync(Trainer trainer, int syncedCount, DateTime date)
         {
             var SENDER_PHONE_NUMBER = Environment.GetEnvironmentVariable("SENDER_PHONE_NUMBER");
 
-            var reminderType = Enums.NotificationType.AutoRetrievalWorkoutsCountNotification;
+            var reminderType = Enums.NotificationType.DailySessionSyncNotification;
 
             Enums.CommunicationType communicationType;
 
-            var notificationMessage = NotificationMessageHelper.GetWorkoutCollectionMessage(workoutCount, date);
+            var notificationMessage = NotificationMessageHelper.GetDailySessionSyncMessage(syncedCount, date);
 
             if (trainer.NotificationsEnabled && trainer.PhoneNumber is not null)
             {
