@@ -64,7 +64,7 @@ namespace ClientDashboard_API.Data
 
         public async Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync()
         {
-            var trainers = await context.Trainer.Where(x => x.AutoWorkoutRetrieval == true).ToListAsync();
+            var trainers = await context.Trainer.Where(x => x.CalendarSyncEnabled == true).ToListAsync();
             return trainers;
         }
 
@@ -105,7 +105,7 @@ namespace ClientDashboard_API.Data
 
         public void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled)
         {
-            trainer.AutoWorkoutRetrieval = enabled;
+            trainer.CalendarSyncEnabled = enabled;
         }
 
         public void UpdateTrainerPaymentSettingAsync(Trainer trainer, bool enabled)

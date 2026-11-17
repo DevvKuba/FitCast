@@ -95,6 +95,18 @@ namespace ClientDashboard_API.Data
                 await context.BookedSessionsSlot.Where(s => s.TrainerId == user.Id).ToListAsync() :
                 await context.BookedSessionsSlot.Where(s => s.ClientId == user.Id).ToListAsync();
 
+            // synced workouts point at their slot, and the database won't clear that link on its own,
+            // so clear it here before the slots go - the workouts themselves are kept
+            var slotIds = slotsToRemove.Select(s => s.Id).ToList();
+            var linkedWorkouts = await context.Workouts
+                .Where(w => w.BookedSessionSlotId != null && slotIds.Contains(w.BookedSessionSlotId.Value))
+                .ToListAsync();
+
+            foreach (var workout in linkedWorkouts)
+            {
+                workout.BookedSessionSlotId = null;
+            }
+
             context.BookedSessionsSlot.RemoveRange(slotsToRemove);
         }
 

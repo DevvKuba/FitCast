@@ -236,6 +236,13 @@ namespace ClientDashboard_API.Data
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
+            builder.Entity<Workout>()
+                .HasOne(w => w.BookedSessionSlot)
+                .WithMany()
+                .HasForeignKey(w => w.BookedSessionSlotId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .IsRequired(false);
+
             // token specific relationships
 
             builder.Entity<EmailVerificationToken>()

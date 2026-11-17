@@ -6,7 +6,7 @@ export interface Trainer extends UserBase {
   averageSessionPrice?: number,
   workoutRetrievalApiKey?: string,
   emailVerified: boolean,
-  autoWorkoutRetrieval: boolean,
+  calendarSyncEnabled: boolean,
   AutoPaymentSetting: boolean,
   defaultCurrency?: string,
   timeZoneId: string,

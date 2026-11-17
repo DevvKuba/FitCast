@@ -266,7 +266,7 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            return Ok(new ApiResponseDto<bool> { Data = trainer.AutoWorkoutRetrieval, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
+            return Ok(new ApiResponseDto<bool> { Data = trainer.CalendarSyncEnabled, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
         }
 
         //summary>

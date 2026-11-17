@@ -14,7 +14,8 @@ namespace ClientDashboard_API.Entities
 
         public bool EmailVerified { get; set; } = false;
 
-        public bool AutoWorkoutRetrieval { get; set; } = false;
+        // when on, the nightly session sync turns finished calendar sessions into workouts and counts them
+        public bool CalendarSyncEnabled { get; set; } = true;
 
         public bool AutoPaymentSetting { get; set; } = false;
 
