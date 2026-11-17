@@ -40,7 +40,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         void SoftDeleteClientAsync(Client client);
 
-        Task<bool> CheckIfClientExistsAsync(string clientName);
 
 
     }

@@ -36,15 +36,7 @@ namespace ClientDashboard_API.Data
                 newCurrentSession = 1;
             }
 
-            var updatedData = new ClientUpdateDto
-            {
-                Id = client.Id,
-                FirstName = client.FirstName,
-                IsActive = client.IsActive,
-                CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = client.TotalBlockSessions ?? 0
-            };
-            mapper.Map(updatedData, client);
+            client.CurrentBlockSession = newCurrentSession;
         }
 
         public void UpdateClientDetailsUponRegisterationAsync(Trainer trainer, Client client, RegisterDto clientDetails)
@@ -68,15 +60,7 @@ namespace ClientDashboard_API.Data
 
             }
 
-            var updatedData = new ClientUpdateDto
-            {
-                Id = client.Id,
-                FirstName = client.FirstName,
-                IsActive = client.IsActive,
-                CurrentBlockSession = newCurrentSession,
-                TotalBlockSessions = client.TotalBlockSessions ?? 0,
-            };
-            mapper.Map(updatedData, client);
+            client.CurrentBlockSession = newCurrentSession;
         }
 
         public void UpdateClientDetailsAsync(Client client, ClientUpdateDto updatedClient)
@@ -125,10 +109,6 @@ namespace ClientDashboard_API.Data
             return client;
         }
 
-        public async Task<bool> CheckIfClientExistsAsync(string clientName)
-        {
-            return await context.Client.AnyAsync(record => record.FirstName == clientName.ToLower());
-        }
 
         public void UnassignTrainerAsync(Client client)
         {

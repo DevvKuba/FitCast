@@ -21,8 +21,6 @@ namespace ClientDashboard_API.Controllers
     public class TrainerController(
         IUnitOfWork unitOfWork,
         IMapper mapper,
-        IApiKeyEncryter encrypter,
-        ISessionDataParser hevyDataParser,
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
         ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
         ICurrentUserAccessor currentUserAccessor,
@@ -114,66 +112,6 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Trainer method allowing assignment of a new Workout Retrieval Api Key
-        /// </summary>
-        [HttpPut("updateTrainerApiKey")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateWorkoutRetrievalApiKeyAsync([FromQuery] string providedApiKey)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-          
-            if (!await hevyDataParser.IsApiKeyValidAsync(providedApiKey))
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"provided api key: {providedApiKey} is not valid.", Success = false });
-            }
-            var encryptedApiKey = encrypter.Encrypt(providedApiKey);
-
-            unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key successfully set up", Success = true });
-        }
-
-        /// <summary>
-        /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
-        /// </summary>
-        [HttpPut("updateTrainerRetrievalDetails")]
-        public async Task<ActionResult<ApiResponseDto<string>>> UpdateTrainerRetrievalDetailsAsync([FromQuery] string providedApiKey, [FromQuery] bool enabled)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            if (!await hevyDataParser.IsApiKeyValidAsync(providedApiKey))
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"provided api key: {providedApiKey} is not valid.", Success = false });
-            }
-
-            var encryptedApiKey = encrypter.Encrypt(providedApiKey);
-
-            unitOfWork.TrainerRepository.UpdateTrainerApiKeyAsync(trainer, encryptedApiKey);
-            unitOfWork.TrainerRepository.UpdateTrainerAutoRetrievalAsync(trainer, enabled);
-
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s new api key and auto retrieval status", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s api key and auto retrieval status successfully set up", Success = true });
-
-        }
-
-        /// <summary>
         /// Trainer method updating a Workout Retrieval Api Key, along with the toggle status of AutoRetrival
         /// </summary>
         [HttpPut("updateTrainerPaymentSetting")]
@@ -199,46 +137,6 @@ namespace ClientDashboard_API.Controllers
             }
             return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s payment setting status successfully set up", Success = true });
 
-        }
-
-
-        //summary>
-        /// Trainer method to retrieve a trainer's Hevy Api Key
-        /// </summary>
-        [HttpGet("getHevyApiKey")]
-        public async Task<ActionResult<ApiResponseDto<string>>> GetWorkoutRetrievalApiKeyAsync()
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            var encryptedApiKey = trainer.WorkoutRetrievalApiKey;
-
-            if (encryptedApiKey is null)
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"trainer: {trainer.FirstName} does not have an api key set", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<string> { Data = encrypter.Decrypt(trainer.WorkoutRetrievalApiKey!), Message = $"trainer: {trainer.FirstName}'s api key decrypted and returned successfully", Success = true });
-        }
-
-        //summary>
-        /// Trainer method to retrieve a trainer's Auto Retrieval status
-        /// </summary>
-        [HttpGet("getAutoRetrievalWorkoutStatus")]
-        public async Task<ActionResult<ApiResponseDto<bool>>> GetAutoRetrievalStatusAsync()
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<bool> { Data = trainer.CalendarSyncEnabled, Message = $"trainer: {trainer.FirstName}'s auto retrieval status enquired successfully", Success = true });
         }
 
         //summary>
@@ -308,64 +206,6 @@ namespace ClientDashboard_API.Controllers
             var monthAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
 
             return Ok(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
-        }
-
-        [HttpGet("getAllExcludedNames")]
-        public async Task<ActionResult<ApiResponseDto<List<string>>>> GetExcludedNamesAsync()
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<List<string>> { Data = trainer.ExcludedNames, Message = $"Correctly retrived the excluded names list for: {trainer.FirstName}", Success = true });
-        }
-
-
-        [HttpPost("addExcludedName")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            unitOfWork.TrainerRepository.AddNewExcludedNameAsync(trainer, exclusionDetails.Name);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s excluded names list", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s successfully added '{exclusionDetails.Name}' to their exclusions", Success = true });
-
-        }
-
-        [HttpPut("deleteExcludedName")]
-        public async Task<ActionResult<ApiResponseDto<string>>> DeleteExcludedNameAsync([FromBody] ExcludeNameDto exclusionDetails)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "trainer does not exist", Success = false });
-            }
-
-            if (!trainer.ExcludedNames.Contains(exclusionDetails.Name))
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"You do not have the name: {exclusionDetails.Name} within your exclusion list", Success = false });
-            }
-
-            unitOfWork.TrainerRepository.DeleteExcludedNameAsync(trainer, exclusionDetails.Name);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"error saving {trainer.FirstName}'s excluded names list", Success = false });
-            }
-            return Ok(new ApiResponseDto<string> { Data = trainer.FirstName, Message = $"trainer: {trainer.FirstName}'s successfully deleted '{exclusionDetails.Name}' from their exclusions", Success = true });
         }
 
         [HttpDelete("deleteTrainer")]

@@ -18,8 +18,6 @@ namespace ClientDashboard_API.DTOs
         [Required(ErrorMessage = "Must provide a session date")]
         public required string SessionDate { get; set; }
 
-        public int ExerciseCount { get; set; }
-
         public int Duration { get; set; }
     }
 }

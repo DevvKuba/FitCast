@@ -74,38 +74,7 @@ namespace ClientDashboard_API.Controllers
         }
 
         /// <summary>
-        /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
-        /// </summary>
-        [Authorize(Roles = "Trainer")]
-        [HttpPost("Auto/NewWorkout")]
-        public async Task<ActionResult<ApiResponseDto<string>>> AddNewAutoClientWorkoutAsync(string clientName, string workoutTitle, DateOnly workoutDate, int exerciseCount, int duration)
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
-            }
-
-            var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
-            if (client is null)
-            {
-                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"Client: {clientName} not found", Success = false });
-            }
-
-            unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workoutTitle, workoutDate, exerciseCount, duration);
-
-            if (!await unitOfWork.Complete())
-            {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Adding client unsuccessful", Success = false });
-            }
-
-            return Ok(new ApiResponseDto<string> { Data = clientName, Message = $"Workout added for client: {clientName}", Success = true });
-
-        }
-
-        /// <summary>
-        /// Workout request for adding a workout for a specific client, utilised within SessionSyncService
+        /// Workout request for manually adding a workout for a specific client
         /// </summary>
         [Authorize(Roles = "Trainer")]
         [HttpPost("Manual/NewWorkout")]
@@ -128,7 +97,7 @@ namespace ClientDashboard_API.Controllers
             if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.ExerciseCount, newWorkout.Duration);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.Duration);
 
             if (!await unitOfWork.Complete())
             {
@@ -172,7 +141,7 @@ namespace ClientDashboard_API.Controllers
             if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 8, 60);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 60);
 
             if (!await unitOfWork.Complete())
             {
@@ -209,7 +178,7 @@ namespace ClientDashboard_API.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to update this workout", Success = false });
             }
 
-            unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, DateOnly.Parse(newWorkoutInfo.SessionDate), newWorkoutInfo.ExerciseCount, newWorkoutInfo.Duration);
+            unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, DateOnly.Parse(newWorkoutInfo.SessionDate), newWorkoutInfo.Duration);
 
             if (!await unitOfWork.Complete())
             {

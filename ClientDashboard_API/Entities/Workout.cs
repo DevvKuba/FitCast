@@ -13,8 +13,6 @@
 
         public int? TotalBlockSessions { get; set; }
 
-        public int ExerciseCount { get; set; }
-
         public int Duration { get; set; }
 
         // set when the nightly session sync created this workout from a calendar slot; null for manually added workouts

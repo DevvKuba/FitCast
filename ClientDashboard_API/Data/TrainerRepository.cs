@@ -62,12 +62,6 @@ namespace ClientDashboard_API.Data
             return clients;
         }
 
-        public async Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync()
-        {
-            var trainers = await context.Trainer.Where(x => x.CalendarSyncEnabled == true).ToListAsync();
-            return trainers;
-        }
-
         public async Task<List<Client>> GetTrainerClientsWithWorkoutsAsync(Trainer trainer)
         {
             var clientList = await context.Client
@@ -103,19 +97,9 @@ namespace ClientDashboard_API.Data
             trainer!.PhoneNumber = phoneNumber;
         }
 
-        public void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled)
-        {
-            trainer.CalendarSyncEnabled = enabled;
-        }
-
         public void UpdateTrainerPaymentSettingAsync(Trainer trainer, bool enabled)
         {
             trainer.AutoPaymentSetting = enabled;
-        }
-
-        public void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey)
-        {
-            trainer.WorkoutRetrievalApiKey = apiKey;
         }
 
         public async Task AddNewTrainerAsync(Trainer trainer)
@@ -123,19 +107,9 @@ namespace ClientDashboard_API.Data
             await context.Trainer.AddAsync(trainer);
         }
 
-        public void AddNewExcludedNameAsync(Trainer trainer, string name)
-        {
-            trainer.ExcludedNames.Add(name.ToLower());
-        }
-
         public void DeleteTrainer(Trainer trainer)
         {
             context.Trainer.Remove(trainer);
-        }
-
-        public void DeleteExcludedNameAsync(Trainer trainer, string name)
-        {
-            trainer.ExcludedNames.Remove(name);
         }
 
         public async Task<bool> DoesEmailExistAsync(string email)

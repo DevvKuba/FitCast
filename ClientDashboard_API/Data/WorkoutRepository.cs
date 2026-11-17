@@ -131,11 +131,10 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int exerciseCount, int duration)
+        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
             existingWorkout.SessionDate = sessionDate;
-            existingWorkout.ExerciseCount = exerciseCount;
             existingWorkout.Duration = duration;
 
         }
@@ -149,7 +148,7 @@ namespace ClientDashboard_API.Data
         }
 
 
-        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? exerciseCount, int? duration)
+        public async Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? duration)
         {
             await context.Workouts.AddAsync(new Workout
             {
@@ -159,7 +158,6 @@ namespace ClientDashboard_API.Data
                 SessionDate = workoutDate,
                 CurrentBlockSession = client.CurrentBlockSession,
                 TotalBlockSessions = client.TotalBlockSessions,
-                ExerciseCount = exerciseCount ?? 0,
                 Duration = duration ?? 0,
             });
         }

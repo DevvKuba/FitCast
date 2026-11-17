@@ -20,8 +20,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<Trainer?> GetTrainerByIdAsync(int id);
 
-        Task<List<Trainer>> GetTrainersWithAutoRetrievalAsync();
-
         Task<List<Client>> GetTrainerClientsWithWorkoutsAsync(Trainer trainer);
 
         Task<List<Client>> GetTrainerActiveClientsAsync(Trainer trainer);
@@ -30,21 +28,13 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task UpdateTrainerPhoneNumberAsync(int trainerId, string phoneNumber);
 
-        void UpdateTrainerAutoRetrievalAsync(Trainer trainer, bool enabled);
-
         void UpdateTrainerPaymentSettingAsync(Trainer trainer, bool enabled);
-
-        void UpdateTrainerApiKeyAsync(Trainer trainer, string apiKey);
 
         void AssignClient(Trainer trainer, Client client);
 
         Task AddNewTrainerAsync(Trainer trainer);
 
-        void AddNewExcludedNameAsync(Trainer trainer, string name);
-
         void DeleteTrainer(Trainer trainer);
-
-        void DeleteExcludedNameAsync(Trainer trainer, string name);
 
         Task<bool> DoesEmailExistAsync(string email);
 
