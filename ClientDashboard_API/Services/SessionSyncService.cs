@@ -1,69 +1,47 @@
 ﻿using ClientDashboard_API.Entities;
+using ClientDashboard_API.Enums;
+using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
-using ClientDashboard_API.Interfaces.Helpers;
-using System.Diagnostics.Eventing.Reader;
 
 namespace ClientDashboard_API.Services
 {
-    public class SessionSyncService(IUnitOfWork unitOfWork, INotificationService notificationService, ISessionDataParser hevyParser, IClientBlockTerminationHelper clientBlockTerminator) : ISessionSyncService
+    public class SessionSyncService(IUnitOfWork unitOfWork, IClientBlockTerminationHelper clientBlockTerminator, TimeProvider timeProvider) : ISessionSyncService
     {
         public async Task<int> SyncSessionsAsync(Trainer trainer)
         {
-            // finds the trainer get object
-            var dailyWorkouts = await hevyParser.CallApiForTrainerAsync(trainer);
-            int duplicateOrExcludedCount = 0;
-            // look through workouts and do identical functionality compared to above methods
-            // just calling different messageService methods NOT pipeline ones
+            var nowUtc = timeProvider.GetUtcNow().UtcDateTime;
+            var finishedSlots = await unitOfWork.BookedSessionSlotRepository.GetTrainerFinishedScheduledSlotsAsync(trainer.Id, nowUtc);
 
-            foreach (var workout in dailyWorkouts)
+            if (!trainer.CalendarSyncEnabled)
             {
-                string clientName = workout.Title.Split(' ')[0];
-
-                if (!trainer.ExcludedNames.Contains(clientName.ToLower()))
+                foreach (var slot in finishedSlots)
                 {
-                    // this client name will always be retrived during syncing
-                    var client = await unitOfWork.ClientRepository.GetClientByNameWithTrainerAsync(trainer, clientName);
-
-                    if (await unitOfWork.ClientRepository.CheckIfClientExistsAsync(clientName))
-                    {
-                        var existingWorkout = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client!.Id, workout.SessionDate);
-                        // if workout is not a duplicate / not yet added
-                        if (existingWorkout == null)
-                        {
-                            unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-                            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
-                            await unitOfWork.Complete();
-
-                            if (client.CurrentBlockSession == client.TotalBlockSessions)
-                            {
-                                await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
-                            }
-                        }
-                        else
-                        {
-                            duplicateOrExcludedCount++;
-                        }
-                    }
-
-                    else
-                    {
-                        var newClient = await unitOfWork.ClientRepository.AddNewClientUnderTrainerAsync(clientName, null, null, trainer.Id);
-                        await notificationService.SendTrainerNewClientConfigurationReminderAsync(trainer, newClient!, DateTime.UtcNow);
-                        await unitOfWork.Complete();
-
-
-                        unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(newClient!);
-                        await unitOfWork.WorkoutRepository.AddWorkoutAsync(newClient!, workout.Title, workout.SessionDate, workout.ExerciseCount, workout.Duration);
-                        await unitOfWork.Complete();
-                    }
+                    slot.Status = SessionStatus.Completed;
                 }
-                else
+                await unitOfWork.Complete();
+                return 0;
+            }
+
+            var tz = TimeZoneInfo.FindSystemTimeZoneById(trainer.TimeZoneId);
+
+            foreach (var slot in finishedSlots)
+            {
+                var client = slot.Client;
+                var sessionDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(slot.StartDateTime, tz));
+
+                unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
+                await unitOfWork.WorkoutRepository.AddSyncedWorkoutAsync(client, slot, sessionDate);
+                slot.Status = SessionStatus.Synced;
+                await unitOfWork.Complete();
+
+                if (client.CurrentBlockSession == client.TotalBlockSessions)
                 {
-                    duplicateOrExcludedCount++;
+                    await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
                 }
             }
-            return dailyWorkouts.Count() - duplicateOrExcludedCount;
+
+            return finishedSlots.Count;
         }
     }
 }

@@ -112,10 +112,10 @@ namespace ClientDashboard_API
           
             // Job keys are declared here (rather than inline inside AddQuartz) so the same
             // JobKey instances can be reused below to wire up the JobChainingJobListener once
-            // the scheduler exists. Chain order: WorkoutSync -> InvalidTokenCleanup ->
+            // the scheduler exists. Chain order: SessionSync -> InvalidTokenCleanup ->
             // InvisiblePaymentCleanup -> DeletedClientCleanup -> ClientDataGathering -> TrainerRevenueGathering ->
             // ExpiredNotificationStatusChange -> BookingMaterialization
-            var workoutSyncJobKey = new JobKey("DailyWorkoutSyncJob");
+            var sessionSyncJobKey = new JobKey("DailySessionSyncJob");
             var invalidTokenCleanupJobKey = new JobKey("DailyInvalidTokenCleanup");
             var invisiblePaymentCleanupJobKey = new JobKey("DailyInvisiblePaymentCleanup");
             var deletedClientCleanupJobKey = new JobKey("DailyDeletedClientCleanup");
@@ -129,13 +129,13 @@ namespace ClientDashboard_API
                 var timezone = TimeZoneInfo.Utc;
 
                 // registering job for DI container
-                q.AddJob<DailyTrainerWorkoutRetrieval>(opts => opts.WithIdentity(workoutSyncJobKey));
+                q.AddJob<DailySessionSyncJob>(opts => opts.WithIdentity(sessionSyncJobKey));
 
                 // only the first job in the chain has a cron trigger - every job after it
                 // is started by the JobChainingJobListener once the previous one finishes
                 q.AddTrigger(opts => opts
-                .ForJob(workoutSyncJobKey)
-                .WithIdentity("DailyWorkoutSyncJob-trigger")
+                .ForJob(sessionSyncJobKey)
+                .WithIdentity("DailySessionSyncJob-trigger")
                 .WithCronSchedule("0 0 0 * * ?", x => x
                 .InTimeZone(timezone)
                 .WithMisfireHandlingInstructionFireAndProceed())
@@ -143,7 +143,7 @@ namespace ClientDashboard_API
                 );
 
 
-                // chain-triggered by DailyWorkoutSyncJob completing - no trigger of its own.
+                // chain-triggered by DailySessionSyncJob completing - no trigger of its own.
                 // StoreDurably() is required here: Quartz normally drops triggerless jobs as
                 // orphaned, so a job that's only ever started via TriggerJob (as the chain
                 // listener does) has to opt out of that by declaring itself durable.
@@ -229,7 +229,7 @@ namespace ClientDashboard_API
                 // threw - these five jobs are independent cleanup/gathering processes, not a
                 // fail-fast pipeline, so that's the desired behaviour here, not an oversight.
                 var dailyJobChainListener = new JobChainingJobListener("DailyJobChain");
-                dailyJobChainListener.AddJobChainLink(workoutSyncJobKey, invalidTokenCleanupJobKey);
+                dailyJobChainListener.AddJobChainLink(sessionSyncJobKey, invalidTokenCleanupJobKey);
                 dailyJobChainListener.AddJobChainLink(invalidTokenCleanupJobKey, invisiblePaymentCleanupJobKey);
                 dailyJobChainListener.AddJobChainLink(invisiblePaymentCleanupJobKey, deletedClientCleanupJobKey);
                 dailyJobChainListener.AddJobChainLink(deletedClientCleanupJobKey, clientDataJobKey);

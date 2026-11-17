@@ -25,7 +25,6 @@ namespace ClientDashboard_API.Controllers
         ISessionDataParser hevyDataParser,
         ITrainerFullMonthAnalyticsService fullMonthAnalyticsService,
         ITrainerCurrentMonthAnalyticsService currentMonthAnalyticsService,
-        ISessionSyncService syncService,
         ICurrentUserAccessor currentUserAccessor,
         ITrainerDependencyRemovalHelper trainerDependencyRemovalHelper
         ) : BaseAPIController
@@ -202,33 +201,6 @@ namespace ClientDashboard_API.Controllers
 
         }
 
-
-        //summary>
-        /// Trainer method to collect daily client workout's from Hevy Workout Tracker
-        /// </summary>
-        [HttpPut("getDailyHevyWorkouts")]
-        public async Task<ActionResult<ApiResponseDto<int>>> GatherAndUpdateHevyClientWorkoutsAsync()
-        {
-            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
-
-            if (trainer is null)
-            {
-                return NotFound(new ApiResponseDto<int> { Data = 0, Message = "trainer does not exist", Success = false });
-            }
-
-            if (trainer.WorkoutRetrievalApiKey is null)
-            {
-                return BadRequest(new ApiResponseDto<int> { Data = 0, Message = "trainer does not have an assigned api key ", Success = false });
-            }
-
-            var collectedSessions = await syncService.SyncSessionsAsync(trainer);
-
-            if (collectedSessions == 0)
-            {
-                return Ok(new ApiResponseDto<int> { Data = 0, Message = "No Hevy Workouts were collected", Success = true });
-            }
-            return Ok(new ApiResponseDto<int> { Data = collectedSessions, Message = $"{collectedSessions} Hevy workouts successfully retrieved", Success = true });
-        }
 
         //summary>
         /// Trainer method to retrieve a trainer's Hevy Api Key
