@@ -14,9 +14,6 @@
   "Jwt_Audience": "your-audience",
   "Jwt_ExpirationInMinutes": "120",
   "Jwt_Secret": "generate-a-secure-jwt-secret-key-minimum-32-chars",
-  "ApiKeyEncrypter": {
-    "Key": "generate-base64-encryption-key-using-powershell-command"
-  },
   "FrontendUrl": "http://localhost:4200/",
   "Email": {
     "SenderEmail": "your-email@example.com",

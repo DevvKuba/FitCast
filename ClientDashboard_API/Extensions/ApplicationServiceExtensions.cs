@@ -78,7 +78,6 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped(typeof(ITokenRepository<>), typeof(TokenRepository<>));
 
             services.AddScoped<IVerifyEmail, VerifyEmail>();
-            services.AddScoped<ISessionDataParser, HevySessionDataService>();
             services.AddScoped<ISessionSyncService, SessionSyncService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IMessageService, TwillioMessageService>();
@@ -105,7 +104,6 @@ namespace ClientDashboard_API.Extensions
             services.AddScoped<IAuthorizationHandler, ClientOwnershipHandler>();
             services.AddScoped<IAuthorizationHandler, PaymentOwnershipHandler>();
             services.AddScoped<IAuthorizationHandler, WorkoutOwnershipHandler>();
-            services.AddSingleton<IApiKeyEncryter, ApiKeyEncrypter>();
             services.AddSingleton<ITokenProvider, TokenProvider>();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
