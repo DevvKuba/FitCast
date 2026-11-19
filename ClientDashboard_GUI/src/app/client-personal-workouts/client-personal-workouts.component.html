@@ -42,9 +42,6 @@
                 <th pSortableColumn="duration" style="width:12%; text-align: center;">
                     Duration <p-sortIcon field="duration" />
                 </th>
-                 <th pSortableColumn="exerciseCount" style="width:10%; text-align: center;">
-                    Exercises <p-sortIcon field="exerciseCount" />
-                </th>
             </tr>
         </ng-template>
         <ng-template #body let-workout let-editing="editing" let-ri="rowIndex">
@@ -84,18 +81,6 @@
                     </ng-template>
                     <ng-template #output>
                         {{workout.duration + ' mins'}}
-                    </ng-template>
-                </p-cellEditor>
-              </td>
-                <td class="workout-td">
-                <p-cellEditor>
-                    <ng-template #input>
-                        <input class="exercise-count-input"
-                            pInputText type="number"
-                            [(ngModel)]= "workout.exerciseCount" />
-                    </ng-template>
-                    <ng-template #output>
-                        {{workout.exerciseCount}}
                     </ng-template>
                 </p-cellEditor>
               </td>

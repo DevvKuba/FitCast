@@ -6,7 +6,6 @@ export interface Client extends UserBase {
   currentBlockSession: number,
   totalBlockSessions: number,
   dailySteps?: number,
-  weight?: number,
   trainerId? : number,
   workouts: Workout[],
 }

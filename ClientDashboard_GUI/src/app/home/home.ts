@@ -30,7 +30,6 @@ interface SampleWorkout {
   clientName: string;
   clientInitials: string;
   avatarBg: string;
-  exerciseCount: number;
   durationMinutes: number;
 }
 
@@ -90,9 +89,9 @@ export class Home implements OnInit {
     ];
 
     this.sampleWorkouts = [
-      { workoutTitle: 'Full Body Power', clientName: 'Bob Smith', clientInitials: 'BS', avatarBg: 'bg-primary', exerciseCount: 12, durationMinutes: 45 },
-      { workoutTitle: 'Upper Body Routine', clientName: 'Lewis Hamilton', clientInitials: 'LH', avatarBg: 'bg-secondary', exerciseCount: 8, durationMinutes: 30 },
-      { workoutTitle: 'Lower Body', clientName: 'Bella C.', clientInitials: 'BC', avatarBg: 'bg-tertiary-container', exerciseCount: 10, durationMinutes: 40 }
+      { workoutTitle: 'Full Body Power', clientName: 'Bob Smith', clientInitials: 'BS', avatarBg: 'bg-primary', durationMinutes: 45 },
+      { workoutTitle: 'Upper Body Routine', clientName: 'Lewis Hamilton', clientInitials: 'LH', avatarBg: 'bg-secondary', durationMinutes: 30 },
+      { workoutTitle: 'Lower Body', clientName: 'Bella C.', clientInitials: 'BC', avatarBg: 'bg-tertiary-container', durationMinutes: 40 }
     ];
 
     this.samplePayments = [
