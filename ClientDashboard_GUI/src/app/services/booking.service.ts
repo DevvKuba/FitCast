@@ -34,6 +34,10 @@ export class BookingService {
     return this.http.delete<ApiResponse<string>>(this.baseUrl + `bookedSessionSlot/deleteBookedSessionSlot?bookedSessionSlotId=${bookedSessionSlotId}`);
   }
 
+  setBookedSessionSlotCancelled(bookedSessionSlotId: number, cancelled: boolean) : Observable<ApiResponse<string>> {
+    return this.http.put<ApiResponse<string>>(this.baseUrl + `bookedSessionSlot/setBookedSessionSlotCancelled?bookedSessionSlotId=${bookedSessionSlotId}&cancelled=${cancelled}`, null);
+  }
+
   // ---- Booking series ----
 
   getTrainerBookingSeries() : Observable<ApiResponse<BookingSeriesDto[]>> {

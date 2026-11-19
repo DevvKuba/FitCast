@@ -19,6 +19,7 @@ import { ClientService } from '../services/client.service';
 import { AccountService } from '../services/account.service';
 import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
 import { BookedSessionSlotDto } from '../models/dtos/booked-session-slot-dto';
+import { SessionStatus } from '../enums/session-status';
 
 // Grid measurements - one hour row is 60px tall: a 30 min session still fits a readable line of text,
 // and the 600px minimum grid shows roughly 06:00 to 15:00 before scrolling
@@ -226,6 +227,28 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.detailsDialogVisible = true;
   }
 
+  // Cancels a scheduled or completed session, or restores a cancelled one to scheduled
+  toggleSessionCancelled(): void {
+    if (!this.selectedSession) {
+      return;
+    }
+
+    const cancelling = !this.isCancelled(this.selectedSession);
+    this.isSaving = true;
+    this.bookingService.setBookedSessionSlotCancelled(this.selectedSession.slot.id, cancelling).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess(cancelling ? 'Session Cancelled' : 'Session Restored', response.message);
+        this.detailsDialogVisible = false;
+        this.isSaving = false;
+        this.loadWeek();
+      },
+      error: (response) => {
+        this.toastService.showError('Error Updating Session', response.error?.message ?? 'The session could not be updated');
+        this.isSaving = false;
+      }
+    });
+  }
+
   openDeleteConfirmation(): void {
     this.detailsDialogVisible = false;
     this.deleteDialogVisible = true;
@@ -425,6 +448,14 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 
+  isCancelled(session: CalendarSession): boolean {
+    return session.slot.status === SessionStatus.Cancelled;
+  }
+
+  isSynced(session: CalendarSession): boolean {
+    return session.slot.status === SessionStatus.Synced;
+  }
+
   formatHour(hour: number): string {
     return `${hour.toString().padStart(2, '0')}:00`;
   }
@@ -520,6 +551,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private placeSessions(slots: BookedSessionSlotViewDto[]): void {
     this.sessionsByDay = [[], [], [], [], [], [], []];
+    let bookingsCount = 0;
     let totalMinutes = 0;
 
     for (const slot of slots) {
@@ -528,7 +560,10 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
       const dayIndex = this.getDayIndex(start);
 
-      totalMinutes += durationMinutes;
+      if (slot.status !== SessionStatus.Cancelled) {
+        bookingsCount++;
+        totalMinutes += durationMinutes;
+      }
 
       if (dayIndex < 0 || dayIndex > 6) {
         continue;
@@ -541,7 +576,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.layOutOverlaps(daySessions);
     }
 
-    this.bookingsCount = slots.length;
+    this.bookingsCount = bookingsCount;
     this.coachedHours = Math.round(totalMinutes / 6) / 10; // hours to one decimal place
   }
 
@@ -562,7 +597,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       height: height,
       left: 0,
       width: 100,
-      colours: this.getDurationColours(durationMinutes)
+      colours: this.getSessionColours(slot, durationMinutes)
     };
   }
 
@@ -609,8 +644,11 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Nearest standard length: under 45 min = 30 min colour, 45-74 = 60 min colour, 75+ = 90 min colour
-  private getDurationColours(durationMinutes: number): DurationColours {
+  // Cancelled sessions are greyed out; otherwise the nearest standard length: under 45 min = 30 min colour, 45-74 = 60 min colour, 75+ = 90 min colour
+  private getSessionColours(slot: BookedSessionSlotViewDto, durationMinutes: number): DurationColours {
+    if (slot.status === SessionStatus.Cancelled) {
+      return { block: 'bg-slate-50 border-slate-200 border-l-slate-300 line-through', name: 'text-slate-500', time: 'text-slate-400' };
+    }
     if (durationMinutes < 45) {
       return { block: 'bg-blue-50 border-blue-200 border-l-action-royal', name: 'text-blue-950', time: 'text-action-royal' };
     }

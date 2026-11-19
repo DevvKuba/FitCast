@@ -128,6 +128,9 @@
 							[style.left]="'calc(' + session.left + '% + 2px)'"
 							[style.width]="'calc(' + session.width + '% - 4px)'"
 							(click)="openSessionDetails(session, $event)">
+							@if (isSynced(session)) {
+								<i class="pi pi-sync absolute top-1 right-1.5 text-[10px] {{ session.colours.time }}" title="Logged as a workout"></i>
+							}
 							<!-- the amount of detail shown depends on how tall the block is -->
 							@if (session.height < 44) {
 								<!-- ~30 min: one line -->
@@ -205,7 +208,19 @@
 				}
 			</div>
 
-			@if (selectedSession.slot.bookingSeriesId) {
+			@if (isSynced(selectedSession)) {
+				<div class="flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
+					<i class="pi pi-sync text-xs mt-0.5"></i>
+					<span>Logged as a workout. Manage it from Client Workouts.</span>
+				</div>
+			} @else if (isCancelled(selectedSession)) {
+				<div class="flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
+					<i class="pi pi-ban text-xs mt-0.5"></i>
+					<span>Cancelled. This session won't be counted towards the client's sessions.</span>
+				</div>
+			}
+
+			@if (selectedSession.slot.bookingSeriesId && !isSynced(selectedSession)) {
 				<div class="flex items-start gap-2 text-xs text-on-surface-variant bg-surface-container-low rounded px-3 py-2">
 					<i class="pi pi-replay text-xs mt-0.5"></i>
 					<span>
@@ -217,13 +232,21 @@
 		</div>
 	}
 
-	<div class="flex justify-between items-center mt-6">
-		<p-button label="Delete" severity="danger" [text]="true" (click)="openDeleteConfirmation()" />
-		<div class="flex gap-2">
+	@if (selectedSession && isSynced(selectedSession)) {
+		<div class="flex justify-end mt-6">
 			<p-button label="Close" severity="secondary" (click)="detailsDialogVisible = false" />
-			<p-button label="Edit" (click)="openEditSession()" />
 		</div>
-	</div>
+	} @else {
+		<div class="flex justify-between items-center mt-6">
+			<p-button label="Delete" severity="danger" [text]="true" (click)="openDeleteConfirmation()" />
+			<div class="flex gap-2">
+				<p-button label="Close" severity="secondary" (click)="detailsDialogVisible = false" />
+				<p-button [label]="selectedSession && isCancelled(selectedSession) ? 'Restore' : 'Cancel Session'" severity="secondary" [outlined]="true"
+					[loading]="isSaving" (click)="toggleSessionCancelled()" />
+				<p-button label="Edit" (click)="openEditSession()" />
+			</div>
+		</div>
+	}
 </p-dialog>
 
 <!-- Delete confirmation -->
