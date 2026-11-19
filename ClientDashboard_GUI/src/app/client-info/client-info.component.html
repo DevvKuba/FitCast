@@ -49,6 +49,24 @@
     </div>
   </p-popover>
 
+  <p-dialog header="Session Already Booked" [modal]="true" [(visible)]="bookedSessionConfirmVisible" [style]="{ width: '28rem' }">
+    <p class="text-body-sm text-on-surface-variant mb-3">
+      {{ pendingQuickAddClient?.firstName }} already has a calendar session today, which will be logged as a workout automatically:
+    </p>
+    <ul class="mb-4 flex flex-col gap-1">
+      @for (session of bookedSessionsToday; track session.id) {
+        <li class="text-body-sm text-slate-navy">
+          <span class="font-semibold">{{ session.title }}</span>, {{ formatSessionTime(session.startDateTime) }} – {{ formatSessionTime(session.endDateTime) }}
+        </li>
+      }
+    </ul>
+    <p class="text-body-sm text-on-surface-variant mb-6">Quick add a workout as well?</p>
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="bookedSessionConfirmVisible = false" />
+      <p-button label="Add Anyway" (click)="confirmQuickAddDespiteBooking()" />
+    </div>
+  </p-dialog>
+
   <!-- Delete Dialog -->
   <p-dialog header="Delete Client" [modal]="true" [(visible)]="deleteDialogVisible" [style]="{ width: '25rem' }">
     <div class="delete-message">

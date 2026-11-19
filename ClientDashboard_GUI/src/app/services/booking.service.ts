@@ -34,6 +34,11 @@ export class BookingService {
     return this.http.delete<ApiResponse<string>>(this.baseUrl + `bookedSessionSlot/deleteBookedSessionSlot?bookedSessionSlotId=${bookedSessionSlotId}`);
   }
 
+  // date is the trainer's local date, "yyyy-MM-dd". Returns nothing when the trainer has calendar sync off
+  getClientSessionsOnDate(clientId: number, date: string) : Observable<ApiResponse<BookedSessionSlotViewDto[]>> {
+    return this.http.get<ApiResponse<BookedSessionSlotViewDto[]>>(this.baseUrl + `bookedSessionSlot/getClientSessionsOnDate?clientId=${clientId}&date=${date}`);
+  }
+
   setBookedSessionSlotCancelled(bookedSessionSlotId: number, cancelled: boolean) : Observable<ApiResponse<string>> {
     return this.http.put<ApiResponse<string>>(this.baseUrl + `bookedSessionSlot/setBookedSessionSlotCancelled?bookedSessionSlotId=${bookedSessionSlotId}&cancelled=${cancelled}`, null);
   }

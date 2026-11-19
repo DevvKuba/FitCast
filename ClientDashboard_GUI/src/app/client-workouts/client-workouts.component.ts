@@ -19,6 +19,10 @@ import { ToastService } from '../services/toast.service';
 import { NotificationService } from '../services/notification.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { BookingService } from '../services/booking.service';
+import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
+import { WorkoutAddDto } from '../models/dtos/workout-add-dto';
+import { toDateOnlyString } from '../helpers/date-only-helpers';
 
 @Component({
   selector: 'app-client-workouts',
@@ -37,7 +41,6 @@ export class ClientWorkouts implements OnInit {
     workoutTitle: string = "";
     sessionDate: Date = new Date();
     workoutDuration: number = 60;
-    exerciseCount: number = 8;
     currentUserId: number = 0;
 
     clients: { id: number, name: string }[] = [];
@@ -46,11 +49,16 @@ export class ClientWorkouts implements OnInit {
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
 
+    bookedSessionConfirmVisible: boolean = false;
+    bookedSessionsOnDate: BookedSessionSlotViewDto[] = [];
+    pendingWorkout: WorkoutAddDto | null = null;
+
     private workoutService = inject(WorkoutService);
     private accountService = inject(AccountService);
     private clientService = inject(ClientService);
     private notificationService = inject(NotificationService);
     private toastService = inject(ToastService);
+    private bookingService = inject(BookingService);
 
     ngOnInit() {
         this.currentUserId = this.accountService.currentUser()?.id ?? 0;
@@ -68,14 +76,13 @@ export class ClientWorkouts implements OnInit {
 
     onRowEditSave(newWorkout: Workout) {
         if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null
-            && newWorkout.exerciseCount > 0 && newWorkout.id !== null) {
+            && newWorkout.duration > 0 && newWorkout.id !== null) {
             delete this.clonedWorkouts[newWorkout.id as number];
 
             const updatedInfo = {
                 id: newWorkout.id,
                 workoutTitle: newWorkout.workoutTitle,
                 sessionDate: newWorkout.sessionDate,
-                exerciseCount: newWorkout.exerciseCount,
                 duration: newWorkout.duration
             }
             this.workoutService.updateWorkout(updatedInfo).subscribe({
@@ -111,20 +118,47 @@ export class ClientWorkouts implements OnInit {
         })
     }
 
-    addNewWorkout(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, exerciseCount: number | null, duration: number | null) {
-        if (!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, exerciseCount, duration)) {
+    // Before adding, checks whether the client already has a calendar session that day, which the nightly sync will log anyway
+    addNewWorkout(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, duration: number | null) {
+        if (!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, duration)) {
             return;
         }
 
-        const newWorkout = {
+        const newWorkout: WorkoutAddDto = {
             workoutTitle: workoutTitle,
             clientName: selectedClient.name,
             clientId: selectedClient.id,
             sessionDate: this.formatDateForApi(sessionDate),
-            exerciseCount: exerciseCount ?? 0,
             duration: duration ?? 0
         }
 
+        this.bookingService.getClientSessionsOnDate(selectedClient.id, toDateOnlyString(sessionDate!)).subscribe({
+            next: (response) => {
+                const bookedSessions = response.data ?? [];
+
+                if (bookedSessions.length === 0) {
+                    this.submitNewWorkout(newWorkout);
+                    return;
+                }
+
+                this.pendingWorkout = newWorkout;
+                this.bookedSessionsOnDate = bookedSessions;
+                this.bookedSessionConfirmVisible = true;
+            },
+            error: (response) => {
+                this.toastService.showError('Workout not added', response.error?.message ?? 'Could not check the client\'s booked sessions');
+            }
+        });
+    }
+
+    confirmAddWorkoutDespiteBooking() {
+        this.bookedSessionConfirmVisible = false;
+        if (this.pendingWorkout) {
+            this.submitNewWorkout(this.pendingWorkout);
+        }
+    }
+
+    submitNewWorkout(newWorkout: WorkoutAddDto) {
         this.workoutService.addWorkout(newWorkout).subscribe({
             next: (response) => {
                 this.addDialogVisible = false;
@@ -160,6 +194,10 @@ export class ClientWorkouts implements OnInit {
         this.deleteWorkoutTitle = workoutTitle;
     }
 
+    formatSessionTime(utcDateTime: string): string {
+        return new Date(utcDateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
     formatDateForApi(date: Date | undefined): string {
         if (!date) return '';
 
@@ -178,7 +216,7 @@ export class ClientWorkouts implements OnInit {
         });
     }
 
-    validateWorkoutAddFields(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, exerciseCount: number | null, duration: number | null): boolean {
+    validateWorkoutAddFields(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, duration: number | null): boolean {
         if (!selectedClient.id || !selectedClient.name || selectedClient.name.trim() === '') {
             this.toastService.showError('Error adding workout', 'Must select a valid client');
             return false;
@@ -191,11 +229,6 @@ export class ClientWorkouts implements OnInit {
 
         if (!sessionDate) {
             this.toastService.showError('Error adding workout', 'Must provide a session date');
-            return false;
-        }
-
-        if (!exerciseCount || exerciseCount === null || exerciseCount <= 0) {
-            this.toastService.showError('Error adding workout', 'Must provide a valid exercise count');
             return false;
         }
 

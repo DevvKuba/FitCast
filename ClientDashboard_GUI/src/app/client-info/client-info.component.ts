@@ -24,6 +24,9 @@ import { WorkoutService } from '../services/workout.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ClientUpdateDto } from '../models/dtos/client-update-dto';
+import { BookingService } from '../services/booking.service';
+import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
+import { toDateOnlyString } from '../helpers/date-only-helpers';
 
 @Component({
   selector: 'app-client-info',
@@ -50,8 +53,12 @@ export class ClientInfoComponent implements OnInit {
   private toastService = inject(ToastService);
   private accountService = inject(AccountService);
   private notificationService = inject(NotificationService);
+  private bookingService = inject(BookingService);
 
   clients: Client[] | null = null;
+  bookedSessionConfirmVisible: boolean = false;
+  bookedSessionsToday: BookedSessionSlotViewDto[] = [];
+  pendingQuickAddClient: Client | null = null;
   activityStatuses!: SelectItem[];
   clonedClients: { [s: string]: Client } = {};
   currentUserId: number = 0;
@@ -177,7 +184,39 @@ export class ClientInfoComponent implements OnInit {
     this.addDialogVisible = true;
   }
 
+  // Checks today's calendar first - a booked session will already be logged by the nightly sync
   onQuickAddForClient(client: Client) {
+    this.bookingService.getClientSessionsOnDate(client.id, toDateOnlyString(new Date())).subscribe({
+      next: (response) => {
+        const bookedSessions = response.data ?? [];
+
+        if (bookedSessions.length === 0) {
+          this.submitQuickAdd(client);
+          return;
+        }
+
+        this.pendingQuickAddClient = client;
+        this.bookedSessionsToday = bookedSessions;
+        this.bookedSessionConfirmVisible = true;
+      },
+      error: (response) => {
+        this.toastService.showError('Quick Add Unsuccessful', response.error?.message ?? 'Could not check the client\'s booked sessions');
+      }
+    });
+  }
+
+  confirmQuickAddDespiteBooking() {
+    this.bookedSessionConfirmVisible = false;
+    if (this.pendingQuickAddClient) {
+      this.submitQuickAdd(this.pendingQuickAddClient);
+    }
+  }
+
+  formatSessionTime(utcDateTime: string): string {
+    return new Date(utcDateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  submitQuickAdd(client: Client) {
     this.workoutService.quickAddWorkout(client).subscribe({
       next: (response) => {
         this.getClients();
