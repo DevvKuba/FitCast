@@ -137,12 +137,15 @@ namespace ClientDashboard_API.Controllers
 
             }
 
-            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, DateOnly.FromDateTime(DateTime.UtcNow));
+            var trainerZone = TimeZoneInfo.FindSystemTimeZoneById(client.Trainer.TimeZoneId);
+            var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, trainerZone));
+
+            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, today);
 
             if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", DateOnly.FromDateTime(DateTime.UtcNow), 60);
+            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", today, 60);
 
             if (!await unitOfWork.Complete())
             {
