@@ -179,7 +179,7 @@ export class NotificationsComponent implements OnInit {
         return 'pi-user-plus';
       case NotificationType.ClientStepsTrackedNotification:
         return 'pi-chart-line';
-      case NotificationType.RetrievalWorkoutsCountNotification:
+      case NotificationType.DailySessionSyncNotification:
         return 'pi-history';
       case NotificationType.PendingPaymentCreatedAlert:
         return 'pi-credit-card';
