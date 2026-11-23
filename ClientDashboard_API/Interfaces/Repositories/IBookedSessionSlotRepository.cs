@@ -10,6 +10,7 @@ namespace ClientDashboard_API.Interfaces.Repositories
         Task<List<BookedSessionSlotViewDto>> GetClientActiveSlotsInRangeAsync(int trainerId, int clientId, DateTime rangeStartUtc, DateTime rangeEndUtc);
         Task<List<BookedSessionSlotViewDto>> GetTrainerBookedSessionSlotsInRangeAsync(int trainerId, DateTime rangeStartUtc, DateTime rangeEndUtc);
         void UpdateBookedSessionSlot(BookedSessionSlot bookedSessionSlot, BookedSessionSlotDto updatedBookedSessionSlot);
+        void UpdateSyncedSlotFromWorkout(BookedSessionSlot syncedSlot, string title, DateTime startUtc, DateTime endUtc);
 
         Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotDto bookedSessionSlotDto);
 

@@ -45,6 +45,13 @@ namespace ClientDashboard_API.Data
             mapper.Map(updatedBookedSessionSlot, bookedSessionSlot);
         }
 
+        public void UpdateSyncedSlotFromWorkout(BookedSessionSlot syncedSlot, string title, DateTime startUtc, DateTime endUtc)
+        {
+            syncedSlot.Title = title;
+            syncedSlot.StartDateTime = startUtc;
+            syncedSlot.EndDateTime = endUtc;
+        }
+
         public async Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotDto bookedSessionSlotDto)
         {
             var bookedSessionSlot = mapper.Map<BookedSessionSlot>(bookedSessionSlotDto);

@@ -131,12 +131,13 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration)
+        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration, DateTime? startUtc = null)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
             existingWorkout.SessionDate = sessionDate;
             existingWorkout.Duration = duration;
-
+            existingWorkout.StartDateTime = startUtc;
+            existingWorkout.EndDateTime = startUtc?.AddMinutes(duration);
         }
 
         public async Task<double?> GetTrainerAverageWorkoutDurationSinceAsync(int trainerId, DateOnly fromDate)
