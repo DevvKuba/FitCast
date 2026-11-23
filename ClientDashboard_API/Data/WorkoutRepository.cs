@@ -173,6 +173,8 @@ namespace ClientDashboard_API.Data
                 CurrentBlockSession = client.CurrentBlockSession,
                 TotalBlockSessions = client.TotalBlockSessions,
                 Duration = (int)(sessionSlot.EndDateTime - sessionSlot.StartDateTime).TotalMinutes,
+                StartDateTime = sessionSlot.StartDateTime,
+                EndDateTime = sessionSlot.EndDateTime,
                 BookedSessionSlotId = sessionSlot.Id
             });
         }

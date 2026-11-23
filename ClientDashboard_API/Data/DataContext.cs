@@ -91,6 +91,14 @@ namespace ClientDashboard_API.Data
                 .Property(s => s.EndDateTime)
                 .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
 
+            builder.Entity<Workout>()
+                .Property(w => w.StartDateTime)
+                .HasConversion(v => v, v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+            builder.Entity<Workout>()
+                .Property(w => w.EndDateTime)
+                .HasConversion(v => v, v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
 
             builder.Entity<Trainer>()
                 .Property(t => t.AverageSessionPrice)

@@ -486,8 +486,14 @@ namespace ClientDashboard_API.Data.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("EndDateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateOnly>("SessionDate")
                         .HasColumnType("date");
+
+                    b.Property<DateTime?>("StartDateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("TotalBlockSessions")
                         .HasColumnType("int");
