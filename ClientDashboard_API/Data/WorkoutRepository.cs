@@ -175,7 +175,7 @@ namespace ClientDashboard_API.Data
                 Duration = (int)(sessionSlot.EndDateTime - sessionSlot.StartDateTime).TotalMinutes,
                 StartDateTime = sessionSlot.StartDateTime,
                 EndDateTime = sessionSlot.EndDateTime,
-                BookedSessionSlotId = sessionSlot.Id
+                BookedSessionSlot = sessionSlot
             });
         }
 

@@ -19,5 +19,7 @@ namespace ClientDashboard_API.DTOs
         public required string SessionDate { get; set; }
 
         public int Duration { get; set; }
+
+        public DateTime? StartDateTime { get; set; } // UTC; when missing the session is placed at 12:00 on SessionDate
     }
 }

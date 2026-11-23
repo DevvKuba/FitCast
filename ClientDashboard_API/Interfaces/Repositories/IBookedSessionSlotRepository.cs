@@ -13,6 +13,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task AddBookingSlotForTrainerAsync(Trainer trainer, BookedSessionSlotDto bookedSessionSlotDto);
 
+        Task<BookedSessionSlot> AddSyncedSlotAsync(int trainerId, int clientId, string title, DateTime startUtc, DateTime endUtc);
+
         Task AddBookedMaterializedSlotsAsync(MaterializedBookedSessionSlotDto sessionSlotDto);
 
         Task UpdateFutureScheduledSlotsToTimeZoneAsync(int trainerId, TimeZoneInfo oldZone, TimeZoneInfo newZone, DateTime fromUtc);

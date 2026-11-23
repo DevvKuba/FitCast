@@ -53,6 +53,21 @@ namespace ClientDashboard_API.Data
             await context.BookedSessionsSlot.AddAsync(bookedSessionSlot);
         }
 
+        public async Task<BookedSessionSlot> AddSyncedSlotAsync(int trainerId, int clientId, string title, DateTime startUtc, DateTime endUtc)
+        {
+            var bookedSessionSlot = new BookedSessionSlot
+            {
+                TrainerId = trainerId,
+                ClientId = clientId,
+                Title = title,
+                StartDateTime = startUtc,
+                EndDateTime = endUtc,
+                Status = SessionStatus.Synced
+            };
+            await context.BookedSessionsSlot.AddAsync(bookedSessionSlot);
+            return bookedSessionSlot;
+        }
+
         public async Task AddBookedMaterializedSlotsAsync(MaterializedBookedSessionSlotDto sessionSlotDto)
         {
             var bookedSessionSlot = mapper.Map<BookedSessionSlot>(sessionSlotDto);

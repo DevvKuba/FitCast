@@ -19,7 +19,7 @@
 
         public DateTime? EndDateTime { get; set; } // UTC
 
-        // set when the nightly session sync created this workout from a calendar slot; null for manually added workouts
+        // the calendar slot this workout belongs to; null for workouts logged before slots were linked
         public int? BookedSessionSlotId { get; set; }
 
         public Client? Client { get; set; } = null!;

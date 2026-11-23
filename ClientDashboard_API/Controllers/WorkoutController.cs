@@ -93,12 +93,47 @@ namespace ClientDashboard_API.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ApiResponseDto<string> { Data = null, Message = "Not authorized to add a workout for this client", Success = false });
             }
 
-            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, DateOnly.Parse(newWorkout.SessionDate));
+            if (client.Trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = $"{client.FirstName}'s associated trainer not found", Success = false });
+            }
 
-            if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
+            if (newWorkout.Duration <= 0)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "A session duration must be provided", Success = false });
+            }
+
+            var trainerZone = TimeZoneInfo.FindSystemTimeZoneById(client.Trainer.TimeZoneId);
+            var nowUtc = DateTime.UtcNow;
+            DateTime startUtc;
+
+            if (newWorkout.StartDateTime.HasValue)
+            {
+                if (newWorkout.StartDateTime.Value.Kind != DateTimeKind.Utc)
+                {
+                    return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Session start time must be provided in UTC", Success = false });
+                }
+                startUtc = newWorkout.StartDateTime.Value;
+            }
+            else
+            {
+                startUtc = TimeZoneInfo.ConvertTimeToUtc(DateOnly.Parse(newWorkout.SessionDate).ToDateTime(new TimeOnly(12, 0)), trainerZone);
+            }
+
+            var sessionDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(startUtc, trainerZone));
+            var todayLocal = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(nowUtc, trainerZone));
+
+            // a future workout would be counted before it happens - those belong on the calendar instead
+            var isInFuture = newWorkout.StartDateTime.HasValue ? startUtc > nowUtc : sessionDate > todayLocal;
+            if (isInFuture)
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = "Workouts can only be added for sessions that have already started", Success = false });
+            }
+
+            var slot = await unitOfWork.BookedSessionSlotRepository.AddSyncedSlotAsync(client.Trainer.Id, client.Id, newWorkout.WorkoutTitle, startUtc, startUtc.AddMinutes(newWorkout.Duration));
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, newWorkout.WorkoutTitle, DateOnly.Parse(newWorkout.SessionDate), newWorkout.Duration);
+            await unitOfWork.WorkoutRepository.AddSyncedWorkoutAsync(client, slot, sessionDate);
 
             if (!await unitOfWork.Complete())
             {
@@ -110,7 +145,7 @@ namespace ClientDashboard_API.Controllers
                 await clientBlockTerminator.CreateAllAdequateEntityReminderAsync(client);
             }
 
-            return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for {newWorkout.ClientName} on {DateOnly.Parse(newWorkout.SessionDate)}", Success = true });
+            return Ok(new ApiResponseDto<string> { Data = newWorkout.ClientName, Message = $"Workout added for {newWorkout.ClientName}", Success = true });
 
         }
 
