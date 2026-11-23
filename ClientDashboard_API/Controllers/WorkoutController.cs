@@ -5,6 +5,7 @@ using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,6 @@ namespace ClientDashboard_API.Controllers
         ICurrentUserAccessor currentUserAccessor
         ) : BaseAPIController
     {
-
         [Authorize(Roles = "Client")]
         [HttpGet("GetClientSpecificWorkouts")]
         public async Task<ActionResult<ApiResponseDto<List<Workout>>>> GetClientSpecificWorkouts([FromQuery] int clientId)
@@ -173,14 +173,18 @@ namespace ClientDashboard_API.Controllers
             }
 
             var trainerZone = TimeZoneInfo.FindSystemTimeZoneById(client.Trainer.TimeZoneId);
-            var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, trainerZone));
+            var nowUtc = DateTime.UtcNow;
+            var today = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(nowUtc, trainerZone));
 
-            var workoutOnTheDay = await unitOfWork.WorkoutRepository.GetClientWorkoutAtDateByIdAsync(client.Id, today);
+            var averageWorkoutMinutes = await unitOfWork.WorkoutRepository.GetTrainerAverageWorkoutDurationSinceAsync(client.Trainer.Id, today.AddDays(-QuickAddSessionHelper.AverageLookbackDays));
+            var endUtc = QuickAddSessionHelper.GetSessionEndUtc(nowUtc);
+            var startUtc = endUtc.AddMinutes(-QuickAddSessionHelper.GetSessionMinutes(averageWorkoutMinutes));
+            var sessionDate = DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(startUtc, trainerZone));
 
-            if (workoutOnTheDay != null) return BadRequest(new ApiResponseDto<string> { Data = null, Message = $"Workout for client {client.FirstName} already exists today", Success = false });
+            var slot = await unitOfWork.BookedSessionSlotRepository.AddSyncedSlotAsync(client.Trainer.Id, client.Id, QuickAddSessionHelper.SessionTitle, startUtc, endUtc);
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
-            await unitOfWork.WorkoutRepository.AddWorkoutAsync(client, $" **{client.FirstName}'s Quick Added Workout **", today, 60);
+            await unitOfWork.WorkoutRepository.AddSyncedWorkoutAsync(client, slot, sessionDate);
 
             if (!await unitOfWork.Complete())
             {

@@ -139,6 +139,16 @@ namespace ClientDashboard_API.Data
 
         }
 
+        public async Task<double?> GetTrainerAverageWorkoutDurationSinceAsync(int trainerId, DateOnly fromDate)
+        {
+            var durations = await context.Workouts
+                .Where(w => w.Client!.TrainerId == trainerId && w.SessionDate >= fromDate && w.Duration > 0)
+                .Select(w => w.Duration)
+                .ToListAsync();
+
+            return durations.Count == 0 ? null : durations.Average();
+        }
+
         public async Task<int> CalculateClientMeanWorkoutDurationAsync(Client client, DateOnly tillDate)
         {
            var workoutsTillDate = await context.Workouts.Where(w => w.SessionDate <= tillDate && w.ClientId == client.Id).ToListAsync();

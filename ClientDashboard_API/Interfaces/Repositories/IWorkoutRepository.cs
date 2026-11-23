@@ -30,6 +30,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<int> CalculateClientMeanWorkoutDurationAsync(Client client, DateOnly tillDate);
 
+        Task<double?> GetTrainerAverageWorkoutDurationSinceAsync(int trainerId, DateOnly fromDate);
+
         void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration);
 
         Task AddWorkoutAsync(Client client, string workoutTitle, DateOnly workoutDate, int? duration);

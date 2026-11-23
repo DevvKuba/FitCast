@@ -3,6 +3,7 @@ using ClientDashboard_API.Authorization;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Enums;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +18,6 @@ namespace ClientDashboard_API.Controllers
         ICurrentUserAccessor currentUserAccessor,
         IAuthorizationService authorizationService) : BaseAPIController
     {
-        private const int MaxRangeDays = 42; // a 6 week month grid
-        private const string SyncedSlotMessage = "This session has been logged as a workout, manage it from Client Workouts";
-
         /// <summary>
         /// Trainer method retrieving their booked session slots starting within the given UTC window (the calendar's visible range)
         /// </summary>
@@ -37,9 +35,9 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = "End of range must be after the start", Success = false });
             }
 
-            if ((toUtc - fromUtc).TotalDays > MaxRangeDays)
+            if ((toUtc - fromUtc).TotalDays > BookedSessionSlotHelper.MaxRangeDays)
             {
-                return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = $"Range cannot be longer than {MaxRangeDays} days", Success = false });
+                return BadRequest(new ApiResponseDto<List<BookedSessionSlotViewDto>> { Data = null, Message = $"Range cannot be longer than {BookedSessionSlotHelper.MaxRangeDays} days", Success = false });
             }
 
             var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
@@ -76,7 +74,7 @@ namespace ClientDashboard_API.Controllers
 
             if (bookedSessionSlot.Status == SessionStatus.Synced)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = BookedSessionSlotHelper.SyncedSlotMessage, Success = false });
             }
 
             var client = await unitOfWork.ClientRepository.GetClientByIdAsync(newBookedSessionSlot.ClientId);
@@ -160,7 +158,7 @@ namespace ClientDashboard_API.Controllers
 
             if (bookedSessionSlot.Status == SessionStatus.Synced)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = BookedSessionSlotHelper.SyncedSlotMessage, Success = false });
             }
 
             unitOfWork.BookedSessionSlotRepository.RemoveBookedSessionSlot(bookedSessionSlot);
@@ -187,7 +185,7 @@ namespace ClientDashboard_API.Controllers
 
             if (bookedSessionSlot.Status == SessionStatus.Synced)
             {
-                return BadRequest(new ApiResponseDto<string> { Data = null, Message = SyncedSlotMessage, Success = false });
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = BookedSessionSlotHelper.SyncedSlotMessage, Success = false });
             }
 
             if (cancelled)
