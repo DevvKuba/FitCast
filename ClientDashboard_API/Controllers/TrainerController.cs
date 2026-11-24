@@ -167,6 +167,7 @@ namespace ClientDashboard_API.Controllers
 
             var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
             var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
+            var paymentTotals = await unitOfWork.PaymentRepository.GetTrainerPaymentTotalsForMonthAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
 
             if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
             {
@@ -176,16 +177,20 @@ namespace ClientDashboard_API.Controllers
                         BaseClients = 0,
                         MonthlyClientSessions = 0,
                         TotalRevenue = 0,
+                        CollectedRevenue = paymentTotals.Collected,
+                        OutstandingRevenue = paymentTotals.Outstanding,
                         TotalWorktimeMinutes = 0,
                         RevenuePerWorkingDay = 0,
                         WeeklySessionsCounts = []
-                    }, 
-                    Message = "Clean state returning, no revenue records for this month", 
-                    Success = true 
+                    },
+                    Message = "Clean state returning, no revenue records for this month",
+                    Success = true
                 });
             }
 
             var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
+            currentMonthAnalytics.CollectedRevenue = paymentTotals.Collected;
+            currentMonthAnalytics.OutstandingRevenue = paymentTotals.Outstanding;
 
             return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
         }
@@ -205,6 +210,10 @@ namespace ClientDashboard_API.Controllers
             }
 
             var monthAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
+
+            var paymentTotals = await unitOfWork.PaymentRepository.GetTrainerPaymentTotalsForMonthAsync(trainer.Id, month, year);
+            monthAnalytics.CollectedRevenue = paymentTotals.Collected;
+            monthAnalytics.OutstandingRevenue = paymentTotals.Outstanding;
 
             return Ok(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
         }

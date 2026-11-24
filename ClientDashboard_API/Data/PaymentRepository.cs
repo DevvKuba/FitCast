@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Records;
 using ClientDashboard_API.Interfaces.Repositories;
 using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,19 @@ namespace ClientDashboard_API.Data
                 .ThenByDescending(p => p.PaymentDate)
                 .ToListAsync();
             return payments;
+        }
+
+        public async Task<PaymentTotals> GetTrainerPaymentTotalsForMonthAsync(int trainerId, int month, int year)
+        {
+            var monthPayments = await context.Payments
+                .Where(p => p.TrainerId == trainerId && p.PaymentDate.Month == month && p.PaymentDate.Year == year)
+                .Select(p => new { p.Amount, p.Confirmed })
+                .ToListAsync();
+
+            var collected = monthPayments.Where(p => p.Confirmed).Sum(p => p.Amount);
+            var outstanding = monthPayments.Where(p => !p.Confirmed).Sum(p => p.Amount);
+
+            return new PaymentTotals(collected, outstanding);
         }
 
         public async Task<List<Payment>> GetAllClientSpecificPaymentsAsync(Client client)

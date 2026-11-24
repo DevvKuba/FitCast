@@ -5,4 +5,6 @@ namespace ClientDashboard_API.Records
     public record WeeklyActivityPattern(Weekdays day, int totalSessions, double multiplier);
 
     public record WeeklySessionsCount(Weekdays day, int totalSessions);
+
+    public record PaymentTotals(decimal Collected, decimal Outstanding);
 }

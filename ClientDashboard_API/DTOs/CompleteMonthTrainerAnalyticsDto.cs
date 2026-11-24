@@ -37,6 +37,10 @@ namespace ClientDashboard_API.DTOs
 
         public decimal TotalRevenue { get; set; }
 
+        public decimal CollectedRevenue { get; set; }
+
+        public decimal OutstandingRevenue { get; set; }
+
         public decimal RevenuePerWorkingDay { get; set; }
 
         public decimal RevenuePerWorkingWeek { get; set; }

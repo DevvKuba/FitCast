@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Records;
 
 namespace ClientDashboard_API.Interfaces.Repositories
 {
@@ -12,6 +13,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
         Task<Payment?> GetPaymentWithRelatedEntitiesById(int id);
 
         Task<List<Payment>> GetAllPaymentsForTrainerAsync(Trainer trainer);
+
+        Task<PaymentTotals> GetTrainerPaymentTotalsForMonthAsync(int trainerId, int month, int year);
 
         Task<List<Payment>> GetAllClientSpecificPaymentsAsync(Client client);
 

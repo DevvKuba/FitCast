@@ -10,6 +10,10 @@ namespace ClientDashboard_API.DTOs
 
         public decimal TotalRevenue { get; set; }
 
+        public decimal CollectedRevenue { get; set; }
+
+        public decimal OutstandingRevenue { get; set; }
+
         public int TotalWorktimeMinutes { get; set; }
 
         public decimal RevenuePerWorkingDay { get; set; }
