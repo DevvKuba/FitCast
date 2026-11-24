@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
 
@@ -10,7 +11,7 @@ namespace ClientDashboard_API.Services
         public async Task<ApiResponseDto<string>> CreatePendingPaymentAsync(Trainer trainer, Client client)
         {
             var blockPrice = client.TotalBlockSessions * trainer.AverageSessionPrice;
-            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, client.TotalBlockSessions ?? 0, blockPrice ?? 0m, DateOnly.FromDateTime(DateTime.Now), false);
+            await unitOfWork.PaymentRepository.AddNewPaymentAsync(trainer, client, client.TotalBlockSessions ?? 0, blockPrice ?? 0m, TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow), false);
             
             if(!await unitOfWork.Complete())
             {

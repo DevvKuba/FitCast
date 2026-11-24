@@ -165,7 +165,8 @@ namespace ClientDashboard_API.Controllers
                 return NotFound(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> {Data = null, Message = "trainer does not exist", Success = false });
             }
 
-            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetCurrentMonthsRevenueRecordsAsync(trainer.Id);
+            var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
+            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
 
             if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
             {

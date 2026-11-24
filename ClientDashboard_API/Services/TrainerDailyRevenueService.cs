@@ -1,5 +1,6 @@
 ﻿using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Interfaces.Repositories;
 using ClientDashboard_API.Interfaces.Services;
@@ -12,20 +13,21 @@ namespace ClientDashboard_API.Services
     {
         public async Task ExecuteTrainerDailyRevenueGatheringAsync(Trainer trainer)
         {
-            var todaysDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            var firstDayOfTodaysMonth = GatherFirstDayOfCurrentMonth(todaysDate);
+            // runs straight after the session sync, so the trainer's yesterday is complete
+            var snapshotDate = TrainerLocalDateHelper.GetYesterday(trainer.TimeZoneId, DateTime.UtcNow);
+            var firstDayOfSnapshotMonth = GatherFirstDayOfCurrentMonth(snapshotDate);
 
-            var totalRevenueToday = await CalculateTotalClientGeneratedRevenueAtDateAsync(trainer, todaysDate);
+            var totalRevenueToday = await CalculateTotalClientGeneratedRevenueAtDateAsync(trainer, snapshotDate);
 
-            var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDatesAsync(trainer, firstDayOfTodaysMonth, todaysDate);
+            var monthlyRevenueThusFar = await CalculateTotalClientGeneratedRevenueBetweenDatesAsync(trainer, firstDayOfSnapshotMonth, snapshotDate);
 
-            var sessionsToday = await unitOfWork.WorkoutRepository.GetClientWorkoutCountForTrainerAtDateAsync(trainer, todaysDate);
+            var sessionsToday = await unitOfWork.WorkoutRepository.GetClientWorkoutCountForTrainerAtDateAsync(trainer, snapshotDate);
 
-            var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFarAsync(trainer, firstDayOfTodaysMonth, todaysDate);
+            var totalSessionsThisMonth = await ReturnMonthlyClientSessionsThusFarAsync(trainer, firstDayOfSnapshotMonth, snapshotDate);
             
-            var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, todaysDate);
+            var newClientsThisMonth = CalculateClientMonthlyDifference(trainer, snapshotDate);
 
-            var totalSessionDuration = await unitOfWork.WorkoutRepository.GetTotalClientSessionDurationAtDateAsync(trainer, todaysDate);
+            var totalSessionDuration = await unitOfWork.WorkoutRepository.GetTotalClientSessionDurationAtDateAsync(trainer, snapshotDate);
 
             var currentActiveClientsList = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
 
@@ -40,7 +42,7 @@ namespace ClientDashboard_API.Services
                 TotalSessionDuration = totalSessionDuration,
                 ActiveClients = currentActiveClientsList.Count,
                 AverageSessionPrice = trainer.AverageSessionPrice ?? 0m,
-                AsOfDate = todaysDate
+                AsOfDate = snapshotDate
             };
 
             if (await unitOfWork.TrainerDailyRevenueRepository.DoesTrainerDailyRevenueRecordExistForDateAsync(trainerInfo.TrainerId, trainerInfo.AsOfDate)) 
