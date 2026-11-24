@@ -20,7 +20,7 @@ namespace ClientDashboard_API.DTOs
 
         public int TotalClientSessions { get; set; }
 
-        public int AverageSessionsPerClient { get; set; }
+        public double AverageSessionsPerClient { get; set; }
 
     }
 }

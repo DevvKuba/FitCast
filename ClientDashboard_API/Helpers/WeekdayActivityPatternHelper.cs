@@ -8,7 +8,7 @@ namespace ClientDashboard_API.Helpers
 {
     public static class WeekdayActivityPatternHelper
     {
-        public static List<WeeklyActivityPattern> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allRevenueRecords, int averageClientSessions)
+        public static List<WeeklyActivityPattern> GetWeeklyActivityPatterns(List<TrainerDailyRevenue> allRevenueRecords, double averageClientSessions)
         {
             if (averageClientSessions == 0) return [];
 
