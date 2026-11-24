@@ -192,6 +192,10 @@ namespace ClientDashboard_API.Controllers
             currentMonthAnalytics.CollectedRevenue = paymentTotals.Collected;
             currentMonthAnalytics.OutstandingRevenue = paymentTotals.Outstanding;
 
+            var lastMonth = trainerToday.AddMonths(-1);
+            var lastMonthRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, lastMonth.Month, lastMonth.Year);
+            currentMonthAnalytics.Comparison = MonthComparisonHelper.CompareMonthToDate(currentMonthsRevenueRecords, lastMonthRecords);
+
             return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> { Data = currentMonthAnalytics, Message = "Successfully retrieved the current month's analytics", Success = true });
         }
 
@@ -214,6 +218,10 @@ namespace ClientDashboard_API.Controllers
             var paymentTotals = await unitOfWork.PaymentRepository.GetTrainerPaymentTotalsForMonthAsync(trainer.Id, month, year);
             monthAnalytics.CollectedRevenue = paymentTotals.Collected;
             monthAnalytics.OutstandingRevenue = paymentTotals.Outstanding;
+
+            var previousMonth = new DateOnly(year, month, 1).AddMonths(-1);
+            var previousMonthRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, previousMonth.Month, previousMonth.Year);
+            monthAnalytics.Comparison = MonthComparisonHelper.CompareWithPreviousMonth(monthRevenueRecords, previousMonthRecords);
 
             return Ok(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
         }

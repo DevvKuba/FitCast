@@ -19,5 +19,7 @@ namespace ClientDashboard_API.DTOs
         public decimal RevenuePerWorkingDay { get; set; }
 
         public List<WeeklySessionsCount> WeeklySessionsCounts { get; set; } = [];
+
+        public MonthComparisonDto? Comparison { get; set; } 
     }
 }

@@ -61,5 +61,7 @@ namespace ClientDashboard_API.DTOs
         public required List<WeeklyActivityPattern> BusiestDays { get; set; }
 
         public required List<WeeklyActivityPattern> LightDays { get; set; }
+
+        public MonthComparisonDto? Comparison { get; set; }
     }
 }

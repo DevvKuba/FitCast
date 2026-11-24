@@ -137,27 +137,9 @@ namespace ClientDashboard_API.Services
 
         private ClientMetricsDto CalculateMonthlyClientChangeRates(List<TrainerDailyRevenue> allRevenueRecords)
         {
-            var orderedRecords = allRevenueRecords.OrderBy(r => r.AsOfDate).ToList();
+            var startingMonthActiveClients = allRevenueRecords.OrderBy(r => r.AsOfDate).First().ActiveClients;
 
-            var startingMonthActiveClients = orderedRecords.First().ActiveClients;
-
-            int totalChurnedClients = 0;
-            int totalAcquiredClients = 0;
-
-            // day-to-day changes in active clients: a rise counts as acquisitions, a drop as churn
-            for (int i = 1; i < orderedRecords.Count; i++)
-            {
-                var change = orderedRecords[i].ActiveClients - orderedRecords[i - 1].ActiveClients;
-
-                if (change > 0)
-                {
-                    totalAcquiredClients += change;
-                }
-                else if (change < 0)
-                {
-                    totalChurnedClients -= change;
-                }
-            }
+            var (totalAcquiredClients, totalChurnedClients) = MonthComparisonHelper.CountClientChanges(allRevenueRecords);
 
             var acquisitionRate = CalculatePercentageOf(totalAcquiredClients, startingMonthActiveClients);
             var churnRate = CalculatePercentageOf(totalChurnedClients, startingMonthActiveClients);
