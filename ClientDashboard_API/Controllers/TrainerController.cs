@@ -199,14 +199,31 @@ namespace ClientDashboard_API.Controllers
 
             var monthRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, month, year);
 
-            if (!unitOfWork.TrainerDailyRevenueRepository.IsFullMonthPresent(monthRevenueRecords))
+            if (monthRevenueRecords.Count == 0)
             {
-                return BadRequest(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = null, Message = "Full month of data not retrieved", Success = false });
+                return NotFound(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = null, Message = "No analytics recorded for that month", Success = false });
             }
 
             var monthAnalytics = fullMonthAnalyticsService.GetAllAnalyticMetrics(monthRevenueRecords);
 
             return Ok(new ApiResponseDto<CompleteMonthTrainerAnalyticsDto> { Data = monthAnalytics, Message = $"Successfully retrieved revenue records for {month}/{year}", Success = true });
+        }
+
+        /// <summary>
+        /// Trainer method listing the past months that have analytics, for the month picker
+        /// </summary>
+        [HttpGet("getTrainerAnalyticsMonths")]
+        public async Task<ActionResult<ApiResponseDto<List<AnalyticsMonthDto>>>> GetTrainerAnalyticsMonthsAsync()
+        {
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+
+            if (trainer == null) return NotFound(new ApiResponseDto<List<AnalyticsMonthDto>> { Data = null, Message = "trainer not found", Success = false });
+
+            var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
+            var firstDayOfCurrentMonth = new DateOnly(trainerToday.Year, trainerToday.Month, 1);
+            var recordedMonths = await unitOfWork.TrainerDailyRevenueRepository.GetRecordedMonthsBeforeAsync(trainer.Id, firstDayOfCurrentMonth);
+
+            return Ok(new ApiResponseDto<List<AnalyticsMonthDto>> { Data = recordedMonths, Message = $"{recordedMonths.Count} months with analytics found", Success = true });
         }
 
         [HttpDelete("deleteTrainer")]

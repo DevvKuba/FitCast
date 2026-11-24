@@ -9,6 +9,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId);
 
+        Task<List<AnalyticsMonthDto>> GetRecordedMonthsBeforeAsync(int trainerId, DateOnly beforeDate);
+
         Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year);
 
         Task<TrainerDailyRevenue?> GetLatestRevenueRecordForTrainerAsync(int trainerId);

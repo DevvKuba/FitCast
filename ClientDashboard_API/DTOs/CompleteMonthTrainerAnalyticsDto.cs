@@ -4,6 +4,12 @@ namespace ClientDashboard_API.DTOs
 {
     public class CompleteMonthTrainerAnalyticsDto
     {
+        // MONTH COVERAGE
+
+        public int RecordedDays { get; set; }
+
+        public bool IsPartialMonth { get; set; }
+
         // CLIENT METRICS
         public int BaseClients { get; set; }
 

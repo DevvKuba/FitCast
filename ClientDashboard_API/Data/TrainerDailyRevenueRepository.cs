@@ -92,6 +92,27 @@ namespace ClientDashboard_API.Data
             return revenueRecordAtDate;
         }
 
+        public async Task<List<AnalyticsMonthDto>> GetRecordedMonthsBeforeAsync(int trainerId, DateOnly beforeDate)
+        {
+            var monthCounts = await context.TrainerDailyRevenue
+                .Where(r => r.TrainerId == trainerId && r.AsOfDate < beforeDate)
+                .GroupBy(r => new { r.AsOfDate.Year, r.AsOfDate.Month })
+                .Select(g => new { g.Key.Year, g.Key.Month, RecordedDays = g.Count() })
+                .ToListAsync();
+
+            return monthCounts
+                .OrderBy(m => m.Year)
+                .ThenBy(m => m.Month)
+                .Select(m => new AnalyticsMonthDto
+                {
+                    Year = m.Year,
+                    Month = m.Month,
+                    RecordedDays = m.RecordedDays,
+                    IsPartial = m.RecordedDays < DateTime.DaysInMonth(m.Year, m.Month)
+                })
+                .ToList();
+        }
+
         public async Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year)
         {
             var monthRecords = await context.TrainerDailyRevenue

@@ -19,8 +19,13 @@ namespace ClientDashboard_API.Services
 
             var worktimeMetrics = GetWorktimeMetrics(allRevenueRecords);
 
+            var monthDate = allRevenueRecords.First().AsOfDate;
+            var daysInMonth = DateTime.DaysInMonth(monthDate.Year, monthDate.Month);
+
             return new CompleteMonthTrainerAnalyticsDto
             {
+                RecordedDays = allRevenueRecords.Count,
+                IsPartialMonth = allRevenueRecords.Count < daysInMonth,
                 BaseClients = clientMetrics.BaseClients,
                 AcquiredClients = clientMetrics.AcquiredClients,
                 AcquisitionPercentage = clientMetrics.AcquisitionPercentage,
