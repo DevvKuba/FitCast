@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, LOCALE_ID, OnInit } from '@angular/core';
+import { CommonModule, formatCurrency, getCurrencySymbol } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeeklyActivityPattern } from '../models/dtos/weekly-activity-pattern';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
@@ -28,6 +28,7 @@ export class TrainerAnalyticsComponent implements OnInit{
   trainerService = inject(TrainerService);
   accountService = inject(AccountService);
   toastService = inject(ToastService);
+  locale = inject(LOCALE_ID);
 
   viewMode: AnalyticsViewMode = 'current';
 
@@ -252,11 +253,50 @@ export class TrainerAnalyticsComponent implements OnInit{
     return { hours, minutes };
   }
 
+  // ---- Month-on-month change indicators ----
+
+  get hasCurrentMonthData(): boolean {
+    return (this.currentMonthAnalyticsData?.recordedDays ?? 0) > 0;
+  }
+
+  // Fewer churned clients is the improvement, so churn passes higherIsBetter = false
+  getChangeColourClass(change: number, higherIsBetter: boolean = true): string {
+    if (change === 0) return 'text-on-surface-variant';
+
+    const isImprovement = higherIsBetter ? change > 0 : change < 0;
+    return isImprovement ? 'text-success-emerald' : 'text-error-rose';
+  }
+
+  getChangeIcon(change: number): string {
+    if (change === 0) return 'pi pi-minus';
+    return change > 0 ? 'pi pi-arrow-up' : 'pi pi-arrow-down';
+  }
+
+  formatCountChange(change: number): string {
+    return this.changeSign(change) + Math.abs(change);
+  }
+
+  formatRevenueChange(change: number): string {
+    const symbol = getCurrencySymbol(this.currencyCode, 'narrow');
+    return this.changeSign(change) + formatCurrency(Math.abs(change), this.locale, symbol, this.currencyCode, '1.0-2');
+  }
+
+  formatWorktimeChange(changeMinutes: number): string {
+    const time = this.convertMinutesToHoursAndMinutes(Math.abs(changeMinutes));
+    return `${this.changeSign(changeMinutes)}${time.hours}h ${time.minutes}m`;
+  }
+
   private selectMonth(index: number): void {
     this.selectedMonthIndex = index;
     const month = this.analyticsMonths[index];
     this.selectedMonthDate = this.toMonthDate(month);
     this.retrieveSpecificMonthAnalytics(month.month, month.year);
+  }
+
+  private changeSign(change: number): string {
+    if (change > 0) return '+';
+    if (change < 0) return '-';
+    return '';
   }
 
   // The API's months are 1-12, JS Date months are 0-11

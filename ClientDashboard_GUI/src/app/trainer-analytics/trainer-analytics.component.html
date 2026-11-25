@@ -39,34 +39,89 @@
 
 	<!-- CURRENT MONTH VIEW -->
 	@if(viewMode === 'current'){
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-gutter-md">
-			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">BASE CLIENTS</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.baseClients}}</span>
-				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Total active roster</p>
-			</p-card>
-			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">MONTHLY SESSIONS</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.monthlyClientSessions}}</span>
-				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Completed this month</p>
-			</p-card>
+		@let currentComparison = currentMonthAnalyticsData.comparison;
+
+		@if(!hasCurrentMonthData){
+			<div class="bg-white p-8 rounded-xl border border-border-subtle text-center">
+				<p class="text-body-base font-bold text-slate-navy">No data yet this month</p>
+				<p class="text-body-sm text-on-surface-variant mt-1">This month's figures appear once its first day has been recorded overnight.</p>
+			</div>
+		} @else {
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-md">
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">BASE CLIENTS</p>
+					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.baseClients}}</span>
+					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Total active roster</p>
+					@if(currentComparison){
+						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.baseClientsChange)">
+							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.baseClientsChange)"></i>
+							{{formatCountChange(currentComparison.baseClientsChange)}} vs same days last month
+						</p>
+					}
+				</p-card>
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">MONTHLY SESSIONS</p>
+					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.monthlyClientSessions}}</span>
+					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Completed this month</p>
+					@if(currentComparison){
+						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.sessionsChange)">
+							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.sessionsChange)"></i>
+							{{formatCountChange(currentComparison.sessionsChange)}} vs same days last month
+						</p>
+					}
+				</p-card>
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL WORKTIME</p>
+					<span class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</span>
+					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Face-to-face active time</p>
+					@if(currentComparison){
+						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.worktimeMinutesChange)">
+							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.worktimeMinutesChange)"></i>
+							{{formatWorktimeChange(currentComparison.worktimeMinutesChange)}} vs same days last month
+						</p>
+					}
+				</p-card>
+				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
+					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
+					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
+				</p-card>
+			</div>
+		}
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-md">
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl border-l-4 border-l-action-royal">
-				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL REVENUE</p>
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">EARNED</p>
 				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.totalRevenue | currency:currencyCode:'symbol':'1.0-2'}}</span>
-				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Gross earnings (MTD)</p>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Value of sessions delivered (MTD)</p>
+				@if(currentComparison){
+					<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.earnedRevenueChange)">
+						<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.earnedRevenueChange)"></i>
+						{{formatRevenueChange(currentComparison.earnedRevenueChange)}} vs same days last month
+					</p>
+				}
 			</p-card>
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL WORKTIME</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</span>
-				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Face-to-face active time</p>
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">COLLECTED</p>
+				<span class="text-kpi-value font-kpi-value text-success-emerald">{{currentMonthAnalyticsData.collectedRevenue | currency:currencyCode:'symbol':'1.0-2'}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Confirmed payments this month</p>
 			</p-card>
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
-				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">OUTSTANDING</p>
+				<span class="text-kpi-value font-kpi-value text-error-rose">{{currentMonthAnalyticsData.outstandingRevenue | currency:currencyCode:'symbol':'1.0-2'}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Unconfirmed payments this month</p>
 			</p-card>
 		</div>
 
+		@if(currentComparison?.comparedMonthIsPartial){
+			<p class="flex items-center gap-2 text-xs text-amber-700">
+				<i class="pi pi-exclamation-triangle text-xs"></i>
+				Last month only has partial data, so these changes may be overstated.
+			</p>
+		}
+	}
+
+	@if(viewMode === 'current' && hasCurrentMonthData){
 		<p-card styleClass="border border-border-subtle shadow-none rounded-xl mt-stack-lg">
 			<div class="flex justify-between items-start mb-10">
 				<div>
@@ -140,6 +195,15 @@
 		@if(completeMonthAnalyticsData == undefined){
 			<app-spinner></app-spinner>
 		} @else {
+			@let pastComparison = completeMonthAnalyticsData.comparison;
+
+			@if(pastComparison?.comparedMonthIsPartial){
+				<p class="flex items-center gap-2 text-xs text-amber-700">
+					<i class="pi pi-exclamation-triangle text-xs"></i>
+					The previous month only has partial data, so these changes may be overstated.
+				</p>
+			}
+
 			<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-md items-start">
 				<!-- Client Metrics -->
 				<div class="lg:col-span-8">
@@ -154,18 +218,42 @@
 						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
 							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Total Active</p>
 							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.baseClients}} <span class="text-body-sm text-success-emerald font-semibold block mt-1">Net +{{completeMonthAnalyticsData.netGrowth}} ({{completeMonthAnalyticsData.netGrowthPercentage}}%)</span></p>
+							@if(pastComparison){
+								<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(pastComparison.baseClientsChange)">
+									<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.baseClientsChange)"></i>
+									{{formatCountChange(pastComparison.baseClientsChange)}} vs previous month
+								</p>
+							}
 						</div>
 						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
 							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Acquisitions</p>
 							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.acquiredClients}} <span class="text-body-sm text-success-emerald font-semibold block mt-1">+{{completeMonthAnalyticsData.acquisitionPercentage}}%</span></p>
+							@if(pastComparison){
+								<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(pastComparison.acquiredClientsChange)">
+									<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.acquiredClientsChange)"></i>
+									{{formatCountChange(pastComparison.acquiredClientsChange)}} vs previous month
+								</p>
+							}
 						</div>
 						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
 							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Churn Rate</p>
 							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.churnedClients}} <span class="text-body-sm text-error-rose font-semibold block mt-1">{{completeMonthAnalyticsData.churnPercentage}}%</span></p>
+							@if(pastComparison){
+								<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(pastComparison.churnedClientsChange, false)">
+									<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.churnedClientsChange)"></i>
+									{{formatCountChange(pastComparison.churnedClientsChange)}} vs previous month
+								</p>
+							}
 						</div>
 						<div class="p-4 bg-surface rounded-lg border border-border-subtle">
-							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Sessions / Client</p>
-							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.averageSessionsPerClient}}</p>
+							<p class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-1">Sessions</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.totalClientSessions}} <span class="text-body-sm text-on-surface-variant font-semibold block mt-1">{{completeMonthAnalyticsData.averageSessionsPerClient}} per client</span></p>
+							@if(pastComparison){
+								<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(pastComparison.sessionsChange)">
+									<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.sessionsChange)"></i>
+									{{formatCountChange(pastComparison.sessionsChange)}} vs previous month
+								</p>
+							}
 						</div>
 					</div>
 					<div class="h-64">
@@ -185,6 +273,12 @@
 							<div>
 								<p class="text-label-caps font-label-caps text-on-surface-variant uppercase">Total Worktime</p>
 								<p class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(completeMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(completeMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</p>
+								@if(pastComparison){
+									<p class="flex items-center gap-1 text-xs font-semibold mt-1" [ngClass]="getChangeColourClass(pastComparison.worktimeMinutesChange)">
+										<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.worktimeMinutesChange)"></i>
+										{{formatWorktimeChange(pastComparison.worktimeMinutesChange)}} vs previous month
+									</p>
+								}
 							</div>
 							<div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center text-primary">
 								<i class="pi pi-history"></i>
@@ -213,21 +307,37 @@
 							<a [routerLink]="['/client-payments']" class="text-body-sm px-4 py-1.5 border border-border-subtle rounded-lg hover:bg-surface transition-colors font-semibold">View Payments</a>
 						</div>
 					</div>
-					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-						<div class="p-4 bg-primary text-on-primary rounded-lg">
-							<p class="text-[10px] font-label-caps opacity-90 uppercase">Total Revenue</p>
-							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.totalRevenue | currency:currencyCode:'symbol':'1.0-2'}}</p>
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+						<div class="p-4 bg-surface border border-border-subtle border-l-4 border-l-action-royal rounded-lg">
+							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Earned</p>
+							<p class="text-kpi-value font-kpi-value text-slate-navy">{{completeMonthAnalyticsData.totalRevenue | currency:currencyCode:'symbol':'1.0-2'}}</p>
+							@if(pastComparison){
+								<p class="flex items-center gap-1 text-xs font-semibold mt-1" [ngClass]="getChangeColourClass(pastComparison.earnedRevenueChange)">
+									<i class="text-[10px]" [ngClass]="getChangeIcon(pastComparison.earnedRevenueChange)"></i>
+									{{formatRevenueChange(pastComparison.earnedRevenueChange)}} vs previous month
+								</p>
+							}
+						</div>
+						<div class="p-4 bg-surface border border-border-subtle rounded-lg">
+							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Collected</p>
+							<p class="text-kpi-value font-kpi-value text-success-emerald">{{completeMonthAnalyticsData.collectedRevenue | currency:currencyCode:'symbol':'1.0-2'}}</p>
+							<p class="text-xs text-on-surface-variant mt-1">Confirmed payments</p>
+						</div>
+						<div class="p-4 bg-surface border border-border-subtle rounded-lg">
+							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Outstanding</p>
+							<p class="text-kpi-value font-kpi-value text-error-rose">{{completeMonthAnalyticsData.outstandingRevenue | currency:currencyCode:'symbol':'1.0-2'}}</p>
+							<p class="text-xs text-on-surface-variant mt-1">Unconfirmed payments</p>
 						</div>
 						<div class="p-4 bg-surface border border-border-subtle rounded-lg">
 							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Avg Session</p>
 							<p class="text-[24px] font-kpi-value text-slate-navy">{{completeMonthAnalyticsData.sessionsPrice | currency:currencyCode:'symbol':'1.0-2'}}</p>
 						</div>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
 						<div class="p-4 bg-surface-container-low rounded-lg flex items-center border border-border-subtle">
 							<i class="pi pi-calendar text-secondary mr-3"></i>
 							<span class="text-body-sm font-bold text-slate-navy">{{completeMonthAnalyticsData.monthlyWorkingDays}} working days recorded</span>
 						</div>
-					</div>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 						<div class="p-4 bg-surface border border-border-subtle rounded-lg flex justify-between">
 							<span class="text-body-sm font-semibold text-on-surface-variant">Revenue per Working Day</span>
 							<span class="text-body-sm font-bold text-slate-navy">{{completeMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>

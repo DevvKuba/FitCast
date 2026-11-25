@@ -1,6 +1,9 @@
 import { WeeklyActivityPattern } from './weekly-activity-pattern';
+import { MonthComparisonDto } from './month-comparison-dto';
 
 export interface CompleteTrainerAnalyticsDto {
+  recordedDays: number;
+  isPartialMonth: boolean;
   baseClients: number;
   acquiredClients: number;
   acquisitionPercentage: number;
@@ -13,6 +16,8 @@ export interface CompleteTrainerAnalyticsDto {
   sessionsPrice: number;
   monthlyWorkingDays: number;
   totalRevenue: number;
+  collectedRevenue: number;
+  outstandingRevenue: number;
   revenuePerWorkingDay: number;
   revenuePerWorkingWeek: number;
   totalWorktimeMinutes: number;
@@ -21,4 +26,5 @@ export interface CompleteTrainerAnalyticsDto {
   allWeekdays: WeeklyActivityPattern[];
   busiestDays: WeeklyActivityPattern[];
   lightDays: WeeklyActivityPattern[];
+  comparison?: MonthComparisonDto | null;
 }
