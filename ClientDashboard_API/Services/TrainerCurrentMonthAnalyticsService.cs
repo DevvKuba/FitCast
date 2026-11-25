@@ -24,6 +24,7 @@ namespace ClientDashboard_API.Services
 
             return new CurrentMonthTrainerAnalyticsDto
             {
+                RecordedDays = currentRevenueRecords.Count,
                 BaseClients = baseClients,
                 MonthlyClientSessions = totalClientSessions,
                 TotalRevenue = totalRevenue,

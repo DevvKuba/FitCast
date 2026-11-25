@@ -4,6 +4,8 @@ namespace ClientDashboard_API.DTOs
 {
     public class CurrentMonthTrainerAnalyticsDto
     {
+        public int RecordedDays { get; set; }
+
         public int BaseClients { get; set; }
 
         public int MonthlyClientSessions { get; set; }
