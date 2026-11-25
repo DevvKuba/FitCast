@@ -21,11 +21,11 @@ namespace ClientDashboard_API.DTOs
         [Range(1, int.MaxValue, ErrorMessage = "A session duration must be provided")]
         public int Duration { get; set; }
 
-        public DateTime? StartDateTime { get; set; } // UTC; when missing the session is placed at 12:00 on SessionDate
+        public required DateTime StartDateTime { get; set; } // UTC; the session date is taken from it in the trainer's zone
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (StartDateTime.HasValue && StartDateTime.Value.Kind != DateTimeKind.Utc)
+            if (StartDateTime.Kind != DateTimeKind.Utc)
             {
                 yield return new ValidationResult("Session start time must be provided in UTC", [nameof(StartDateTime)]);
             }

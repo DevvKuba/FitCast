@@ -99,14 +99,14 @@ namespace ClientDashboard_API.Controllers
             }
 
             var trainerZone = TimeZoneInfo.FindSystemTimeZoneById(client.Trainer.TimeZoneId);
-            var sessionDate = WorkoutSessionTimeHelper.GetSessionDate(newWorkout.StartDateTime, newWorkout.SessionDate, trainerZone);
+            var startUtc = newWorkout.StartDateTime;
+            var sessionDate = WorkoutSessionTimeHelper.GetSessionDate(startUtc, trainerZone);
 
-            if (WorkoutSessionTimeHelper.IsInFuture(newWorkout.StartDateTime, sessionDate, trainerZone, DateTime.UtcNow))
+            if (WorkoutSessionTimeHelper.IsInFuture(startUtc, DateTime.UtcNow))
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutSessionTimeHelper.FutureSessionMessage, Success = false });
             }
 
-            var startUtc = WorkoutSessionTimeHelper.GetManualStartUtc(newWorkout.StartDateTime, sessionDate, trainerZone);
             var slot = await unitOfWork.BookedSessionSlotRepository.AddSyncedSlotAsync(client.Trainer.Id, client.Id, newWorkout.WorkoutTitle, startUtc, startUtc.AddMinutes(newWorkout.Duration));
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
@@ -205,22 +205,22 @@ namespace ClientDashboard_API.Controllers
             }
 
             var trainerZone = TimeZoneInfo.FindSystemTimeZoneById(trainer.TimeZoneId);
-            var sessionDate = WorkoutSessionTimeHelper.GetSessionDate(newWorkoutInfo.StartDateTime, newWorkoutInfo.SessionDate, trainerZone);
-            var startUtc = WorkoutSessionTimeHelper.GetUpdatedStartUtc(newWorkoutInfo.StartDateTime, workout.StartDateTime, sessionDate, trainerZone);
+            var startUtc = newWorkoutInfo.StartDateTime;
+            var sessionDate = WorkoutSessionTimeHelper.GetSessionDate(startUtc, trainerZone);
 
-            if (WorkoutSessionTimeHelper.IsInFuture(startUtc, sessionDate, trainerZone, DateTime.UtcNow))
+            if (WorkoutSessionTimeHelper.IsInFuture(startUtc, DateTime.UtcNow))
             {
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutSessionTimeHelper.FutureSessionMessage, Success = false });
             }
 
             unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, sessionDate, newWorkoutInfo.Duration, startUtc);
 
-            if (workout.BookedSessionSlotId.HasValue && startUtc.HasValue)
+            if (workout.BookedSessionSlotId.HasValue)
             {
                 var linkedSlot = await unitOfWork.BookedSessionSlotRepository.GetTrainerBookedSessionSlotByIdAsync(trainer.Id, workout.BookedSessionSlotId.Value);
                 if (linkedSlot is not null)
                 {
-                    unitOfWork.BookedSessionSlotRepository.UpdateSyncedSlotFromWorkout(linkedSlot, newWorkoutInfo.WorkoutTitle, startUtc.Value, startUtc.Value.AddMinutes(newWorkoutInfo.Duration));
+                    unitOfWork.BookedSessionSlotRepository.UpdateSyncedSlotFromWorkout(linkedSlot, newWorkoutInfo.WorkoutTitle, startUtc, startUtc.AddMinutes(newWorkoutInfo.Duration));
                 }
             }
 
