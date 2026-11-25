@@ -52,7 +52,7 @@
 			</p-card>
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl border-l-4 border-l-action-royal">
 				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL REVENUE</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">£{{currentMonthAnalyticsData.totalRevenue | number:'1.0-2'}}</span>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.totalRevenue | currency:currencyCode:'symbol':'1.0-2'}}</span>
 				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Gross earnings (MTD)</p>
 			</p-card>
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
@@ -62,7 +62,7 @@
 			</p-card>
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
 				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
-				<span class="text-kpi-value font-kpi-value text-slate-navy">£{{currentMonthAnalyticsData.revenuePerWorkingDay | number:'1.0-2'}}</span>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
 				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
 			</p-card>
 		</div>
@@ -83,13 +83,27 @@
 	}
 
 	<!-- PAST MONTH VIEW -->
-	@if(viewMode === 'past'){
+	@if(viewMode === 'past' && !analyticsMonthsLoaded){
+		<app-spinner></app-spinner>
+	}
+	@if(viewMode === 'past' && analyticsMonthsLoaded && analyticsMonths.length === 0){
+		<div class="bg-white p-8 rounded-xl border border-border-subtle text-center">
+			<p class="text-body-base font-bold text-slate-navy">No past months recorded yet</p>
+			<p class="text-body-sm text-on-surface-variant mt-1">Months appear here once a month with recorded days has passed.</p>
+		</div>
+	}
+	@if(viewMode === 'past' && analyticsMonths.length > 0){
 		<div class="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-xl border border-border-subtle">
-			<div class="flex items-center gap-3">
+			<div class="flex flex-wrap items-center gap-3">
 				<span class="text-label-caps font-label-caps text-on-surface-variant">HISTORICAL DATA</span>
 				<div class="h-4 w-[1px] bg-border-subtle mx-2"></div>
 				<div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
-					<button type="button" class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-white hover:shadow-sm transition-all" (click)="goToPreviousMonth()" aria-label="Previous month">
+					<button
+						type="button"
+						class="w-8 h-8 flex items-center justify-center rounded-md text-on-surface-variant hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+						(click)="goToPreviousMonth()"
+						[disabled]="isPreviousMonthDisabled"
+						aria-label="Previous month">
 						<i class="pi pi-chevron-left text-sm"></i>
 					</button>
 					<span class="px-4 py-1.5 text-body-sm font-bold text-primary">{{selectedMonthDate | date:'MMMM yyyy'}}</span>
@@ -102,13 +116,20 @@
 						<i class="pi pi-chevron-right text-sm"></i>
 					</button>
 				</div>
+				@if(selectedMonth?.isPartial){
+					<span class="flex items-center gap-1 text-xs font-semibold text-amber-700">
+						<i class="pi pi-exclamation-triangle text-xs"></i>
+						Partial month: {{selectedMonth?.recordedDays}} of {{selectedMonthTotalDays}} days recorded
+					</span>
+				}
 			</div>
 			<p-datepicker
 				[ngModel]="selectedMonthDate"
 				(onSelect)="onMonthPickerSelect($event)"
 				view="month"
 				dateFormat="MM yy"
-				[maxDate]="maxSelectableMonthDate"
+				[minDate]="firstSelectableMonthDate"
+				[maxDate]="lastSelectableMonthDate"
 				[showIcon]="true"
 				[readonlyInput]="true"
 				placeholder="Jump to month"
@@ -195,11 +216,11 @@
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 						<div class="p-4 bg-primary text-on-primary rounded-lg">
 							<p class="text-[10px] font-label-caps opacity-90 uppercase">Total Revenue</p>
-							<p class="text-kpi-value font-kpi-value">£{{completeMonthAnalyticsData.totalRevenue | number:'1.0-2'}}</p>
+							<p class="text-kpi-value font-kpi-value">{{completeMonthAnalyticsData.totalRevenue | currency:currencyCode:'symbol':'1.0-2'}}</p>
 						</div>
 						<div class="p-4 bg-surface border border-border-subtle rounded-lg">
 							<p class="text-[10px] font-label-caps text-on-surface-variant uppercase">Avg Session</p>
-							<p class="text-[24px] font-kpi-value text-slate-navy">£{{completeMonthAnalyticsData.sessionsPrice | number:'1.0-2'}}</p>
+							<p class="text-[24px] font-kpi-value text-slate-navy">{{completeMonthAnalyticsData.sessionsPrice | currency:currencyCode:'symbol':'1.0-2'}}</p>
 						</div>
 						<div class="p-4 bg-surface-container-low rounded-lg flex items-center border border-border-subtle">
 							<i class="pi pi-calendar text-secondary mr-3"></i>
@@ -209,11 +230,11 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 						<div class="p-4 bg-surface border border-border-subtle rounded-lg flex justify-between">
 							<span class="text-body-sm font-semibold text-on-surface-variant">Revenue per Working Day</span>
-							<span class="text-body-sm font-bold text-slate-navy">£{{completeMonthAnalyticsData.revenuePerWorkingDay | number:'1.0-2'}}</span>
+							<span class="text-body-sm font-bold text-slate-navy">{{completeMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
 						</div>
 						<div class="p-4 bg-surface border border-border-subtle rounded-lg flex justify-between">
 							<span class="text-body-sm font-semibold text-on-surface-variant">Revenue per Working Week</span>
-							<span class="text-body-sm font-bold text-slate-navy">£{{completeMonthAnalyticsData.revenuePerWorkingWeek | number:'1.0-2'}}</span>
+							<span class="text-body-sm font-bold text-slate-navy">{{completeMonthAnalyticsData.revenuePerWorkingWeek | currency:currencyCode:'symbol':'1.0-2'}}</span>
 						</div>
 					</div>
 				</p-card>

@@ -14,6 +14,7 @@ import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-tr
 import { DatePickerModule } from 'primeng/datepicker';
 import { CardModule } from 'primeng/card';
 import { RouterLink } from '@angular/router';
+import { AnalyticsMonthDto } from '../models/dtos/analytics-month-dto';
 
 type AnalyticsViewMode = 'current' | 'past';
 
@@ -33,51 +34,97 @@ export class TrainerAnalyticsComponent implements OnInit{
   currentMonthAnalyticsData: CurrentMonthTrainerAnalyticsDto | undefined;
   completeMonthAnalyticsData : CompleteTrainerAnalyticsDto | undefined;
 
-  // The most recent fully-completed calendar month - the upper bound for past-month selection.
-  readonly maxSelectableMonthDate: Date = this.previousMonthDate(new Date());
-  selectedMonthDate: Date = this.maxSelectableMonthDate;
+  // Past months with recorded analytics, oldest first - the picker and arrows only move between these
+  analyticsMonths: AnalyticsMonthDto[] = [];
+  analyticsMonthsLoaded = false;
+  selectedMonthIndex = -1;
+  selectedMonthDate: Date | null = null;
+
+  currencyCode = 'GBP';
 
   ngOnInit(): void {
    this.retrieveCurrentMonthAnalytics();
+   this.retrieveTrainerCurrency();
   }
 
   setViewMode(mode: AnalyticsViewMode): void {
     this.viewMode = mode;
 
-    if (mode === 'past' && !this.completeMonthAnalyticsData) {
-      this.retrieveSelectedMonthAnalytics();
+    if (mode === 'past' && !this.analyticsMonthsLoaded) {
+      this.retrieveAnalyticsMonths();
     }
   }
 
-  private previousMonthDate(from: Date): Date {
-    return new Date(from.getFullYear(), from.getMonth() - 1, 1); 
-    // - 1 to account for JS Date 0 indexes months
+  get selectedMonth(): AnalyticsMonthDto | null {
+    return this.selectedMonthIndex >= 0 ? this.analyticsMonths[this.selectedMonthIndex] : null;
+  }
+
+  get selectedMonthTotalDays(): number {
+    if (!this.selectedMonth) return 0;
+    return new Date(this.selectedMonth.year, this.selectedMonth.month, 0).getDate();
+  }
+
+  get firstSelectableMonthDate(): Date | null {
+    return this.analyticsMonths.length > 0 ? this.toMonthDate(this.analyticsMonths[0]) : null;
+  }
+
+  get lastSelectableMonthDate(): Date | null {
+    return this.analyticsMonths.length > 0 ? this.toMonthDate(this.analyticsMonths[this.analyticsMonths.length - 1]) : null;
+  }
+
+  get isPreviousMonthDisabled(): boolean {
+    return this.selectedMonthIndex <= 0;
   }
 
   get isNextMonthDisabled(): boolean {
-    return this.selectedMonthDate.getFullYear() === this.maxSelectableMonthDate.getFullYear()
-      && this.selectedMonthDate.getMonth() === this.maxSelectableMonthDate.getMonth();
+    return this.selectedMonthIndex >= this.analyticsMonths.length - 1;
   }
 
   goToPreviousMonth(): void {
-    this.selectedMonthDate = new Date(this.selectedMonthDate.getFullYear(), this.selectedMonthDate.getMonth() - 1, 1);
-    this.retrieveSelectedMonthAnalytics();
+    if (this.isPreviousMonthDisabled) return;
+    this.selectMonth(this.selectedMonthIndex - 1);
   }
 
   goToNextMonth(): void {
     if (this.isNextMonthDisabled) return;
-    this.selectedMonthDate = new Date(this.selectedMonthDate.getFullYear(), this.selectedMonthDate.getMonth() + 1, 1);
-    this.retrieveSelectedMonthAnalytics();
+    this.selectMonth(this.selectedMonthIndex + 1);
   }
 
   onMonthPickerSelect(date: Date): void {
-    this.selectedMonthDate = new Date(date.getFullYear(), date.getMonth(), 1);
-    this.retrieveSelectedMonthAnalytics();
+    const index = this.analyticsMonths.findIndex((month) => month.year === date.getFullYear() && month.month === date.getMonth() + 1);
+
+    if (index === -1) {
+      this.toastService.showNeutral('No analytics recorded', 'No sessions were recorded that month');
+      // Resets the picker back to the month still being shown
+      this.selectedMonthDate = this.selectedMonth ? this.toMonthDate(this.selectedMonth) : null;
+      return;
+    }
+
+    this.selectMonth(index);
   }
 
-  retrieveSelectedMonthAnalytics(): void {
-    this.retrieveSpecificMonthAnalytics(this.selectedMonthDate.getMonth() + 1, this.selectedMonthDate.getFullYear());
-    // the + 1 to send appropriate month int format to API
+  retrieveAnalyticsMonths(): void {
+    this.trainerService.getAnalyticsMonths().subscribe({
+      next: (response) => {
+        this.analyticsMonths = response.data ?? [];
+        this.analyticsMonthsLoaded = true;
+
+        if (this.analyticsMonths.length > 0) {
+          this.selectMonth(this.analyticsMonths.length - 1);
+        }
+      },
+      error: (response) => {
+        this.toastService.showError('Error getting past months', response.error?.message);
+      }
+    })
+  }
+
+  retrieveTrainerCurrency(): void {
+    this.trainerService.retrieveTrainerById().subscribe({
+      next: (response) => {
+        this.currencyCode = response.data?.defaultCurrency || 'GBP';
+      }
+    })
   }
 
   retrieveCurrentMonthAnalytics(){
@@ -203,5 +250,17 @@ export class TrainerAnalyticsComponent implements OnInit{
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
     return { hours, minutes };
+  }
+
+  private selectMonth(index: number): void {
+    this.selectedMonthIndex = index;
+    const month = this.analyticsMonths[index];
+    this.selectedMonthDate = this.toMonthDate(month);
+    this.retrieveSpecificMonthAnalytics(month.month, month.year);
+  }
+
+  // The API's months are 1-12, JS Date months are 0-11
+  private toMonthDate(month: AnalyticsMonthDto): Date {
+    return new Date(month.year, month.month - 1, 1);
   }
 }

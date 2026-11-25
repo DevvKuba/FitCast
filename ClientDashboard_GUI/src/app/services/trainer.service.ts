@@ -5,6 +5,7 @@ import { Observable, ObservableLike, ObservedValueOf } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
+import { AnalyticsMonthDto } from '../models/dtos/analytics-month-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,10 @@ export class TrainerService {
 
   getCurrentMonthsAnalytics() : Observable<ApiResponse<CurrentMonthTrainerAnalyticsDto>> {
     return this.http.get<ApiResponse<CurrentMonthTrainerAnalyticsDto>>(this.baseUrl + `trainer/getTrainerCurrentMonthsAnalytics`);
+  }
+
+  getAnalyticsMonths(): Observable<ApiResponse<AnalyticsMonthDto[]>> {
+    return this.http.get<ApiResponse<AnalyticsMonthDto[]>>(this.baseUrl + `trainer/getTrainerAnalyticsMonths`);
   }
 
   updateTrainerProfile(newProfile: TrainerUpdateDto) : Observable<any>{
