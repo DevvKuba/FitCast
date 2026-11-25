@@ -7,8 +7,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
     {
         Task<List<TrainerDailyRevenue>> GetAllRevenueRecordsForTrainerAsync(int trainerId);
 
-        Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId);
-
         Task<List<AnalyticsMonthDto>> GetRecordedMonthsBeforeAsync(int trainerId, DateOnly beforeDate);
 
         Task<List<TrainerDailyRevenue>> GetSpecificFullMonthRecordsAsync(int trainerId, int month, int year);
@@ -28,8 +26,6 @@ namespace ClientDashboard_API.Interfaces.Repositories
         Task<bool> DoesTrainerDailyRevenueRecordExistForDateAsync(int trainerId, DateOnly date);
 
         Task UpdateTrainerRevenueRecordAtDateAsync(TrainerDailyRevenueDto trainerInfoDto);
-
-        bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords);
 
         Task AddTrainerDailyRevenueDtoRecordAsync(TrainerDailyRevenueDto trainerInfo);
 

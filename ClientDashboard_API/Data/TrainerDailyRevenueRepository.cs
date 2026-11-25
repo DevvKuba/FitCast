@@ -71,16 +71,6 @@ namespace ClientDashboard_API.Data
             return latestRecord;
         }
 
-        public async Task<List<TrainerDailyRevenue>> GetCurrentMonthsRevenueRecordsAsync(int trainerId)
-        {
-            var currentMonthsRecords = await context.TrainerDailyRevenue
-                .Where( r => r.TrainerId == trainerId &&
-                 r.AsOfDate.Month == DateTime.UtcNow.Month && 
-                 r.AsOfDate.Year == DateTime.UtcNow.Year)
-                .ToListAsync();
-
-            return currentMonthsRecords;
-        }
 
         public async Task<TrainerDailyRevenue?> GetRevenueRecordAtDateForTrainer(int trainerId, DateOnly date)
         {
@@ -160,21 +150,6 @@ namespace ClientDashboard_API.Data
             mapper.Map(trainerInfoDto, revenueRecordAtDate);
         }
 
-        public bool IsFullMonthPresent(List<TrainerDailyRevenue> revenueRecords)
-        {
-            if (revenueRecords.Count == 0 || revenueRecords == null) return false;
-
-            var firstRevenueRecord = revenueRecords.First();
-
-            var anyRecordsWithDifferentMonth = revenueRecords
-                .Any(r => r.AsOfDate.Month != firstRevenueRecord.AsOfDate.Month ||
-                firstRevenueRecord.AsOfDate.Year != r.AsOfDate.Year);
-
-            var totalExpectedMonthDayCount = DateTime.DaysInMonth(firstRevenueRecord.AsOfDate.Year, firstRevenueRecord.AsOfDate.Month);
-
-            if (anyRecordsWithDifferentMonth || revenueRecords.Count != totalExpectedMonthDayCount) return false;
-            return true;
-        }
 
         public async Task AddTrainerDailyRevenueDtoRecordAsync(TrainerDailyRevenueDto trainerInfoDto)
         {

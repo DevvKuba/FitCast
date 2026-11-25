@@ -131,7 +131,7 @@ namespace ClientDashboard_API.Data
 
         }
 
-        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration, DateTime? startUtc = null)
+        public void UpdateWorkout(Workout existingWorkout, string workoutTitle, DateOnly sessionDate, int duration, DateTime? startUtc)
         {
             existingWorkout.WorkoutTitle = workoutTitle;
             existingWorkout.SessionDate = sessionDate;
