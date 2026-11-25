@@ -6,5 +6,7 @@ export interface Workout {
   sessionDate: string,
   currentBlockSession?: number,
   totalBlockSessions?: number,
-  duration: number
+  duration: number,
+  startDateTime?: string,
+  endDateTime?: string
 }

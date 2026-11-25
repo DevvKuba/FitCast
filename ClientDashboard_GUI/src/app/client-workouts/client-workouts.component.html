@@ -19,14 +19,26 @@
                     <label for="workout-date">Session Date</label>
                     <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
                 </div>
+                <div class="flex gap-3">
+                    <div class="form-field flex-1">
+                        <label for="session-start">Start Time</label>
+                        <p-datepicker inputId="session-start" [appendTo]="'body'" [(ngModel)]="sessionStartTime" (ngModelChange)="onAddStartTimeChange($event)"
+                            [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+                    </div>
+                    <div class="form-field flex-1">
+                        <label for="session-end">End Time</label>
+                        <p-datepicker inputId="session-end" [appendTo]="'body'" [(ngModel)]="sessionEndTime" (ngModelChange)="onAddEndTimeChange($event)"
+                            [timeOnly]="true" hourFormat="24" [stepMinute]="5" styleClass="w-full" />
+                    </div>
+                </div>
                 <div class="form-field">
-                    <label for="session-duration">Session Duration</label>
-                    <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" id="session-duration" autocomplete="off" />
+                    <label for="session-duration">Session Duration (mins)</label>
+                    <p-inputnumber inputId="duration" [(ngModel)]="workoutDuration" (ngModelChange)="onAddDurationChange($event)" id="session-duration" autocomplete="off" />
                 </div>
             </div>
             <div class="dialog-actions">
                 <p-button label="Cancel" severity="secondary" (click)="addDialogVisible = false" />
-                <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, workoutDuration)" />
+                <p-button label="Save" (click)="addNewWorkout(selectedClient, workoutTitle, sessionDate, sessionStartTime, sessionEndTime, workoutDuration)" />
             </div>
         </p-dialog>
 
@@ -113,6 +125,9 @@
                 <th pSortableColumn="sessionDate" class="font-table-header text-base text-center">
                     Date <p-sortIcon field="sessionDate" />
                 </th>
+                <th pSortableColumn="startDateTime" class="font-table-header text-base text-center">
+                    Session Time <p-sortIcon field="startDateTime" />
+                </th>
                 <th pSortableColumn="duration" class="font-table-header text-base text-center">
                     Duration <p-sortIcon field="duration" />
                 </th>
@@ -166,10 +181,27 @@
                     </p-cellEditor>
                 </td>
                 <td class="workout-td">
+                    <span class="p-column-title">Session Time</span>
+                    <p-cellEditor>
+                        <ng-template #input>
+                            <div class="flex items-center justify-center gap-1">
+                                <p-datepicker [appendTo]="'body'" [(ngModel)]="editedSessionTimes[workout.id].start" (ngModelChange)="onEditStartTimeChange(workout, $event)"
+                                    [timeOnly]="true" hourFormat="24" [stepMinute]="5" inputStyleClass="w-16" />
+                                <span>–</span>
+                                <p-datepicker [appendTo]="'body'" [(ngModel)]="editedSessionTimes[workout.id].end" (ngModelChange)="onEditEndTimeChange(workout, $event)"
+                                    [timeOnly]="true" hourFormat="24" [stepMinute]="5" inputStyleClass="w-16" />
+                            </div>
+                        </ng-template>
+                        <ng-template #output>
+                            {{ formatSessionTimeRange(workout) }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+                <td class="workout-td">
                     <span class="p-column-title">Duration</span>
                     <p-cellEditor>
                         <ng-template #input>
-                            <p-inputnumber [(ngModel)]="workout.duration" styleClass="w-20" inputStyleClass="w-full" />
+                            <p-inputnumber [(ngModel)]="workout.duration" (ngModelChange)="onEditDurationChange(workout, $event)" styleClass="w-20" inputStyleClass="w-full" />
                         </ng-template>
                         <ng-template #output>
                             {{workout.duration + ' mins'}}

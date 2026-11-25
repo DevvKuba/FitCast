@@ -17,7 +17,7 @@ namespace ClientDashboard_API.Data
                     workouts.Add(workout);
                 }
             }
-            workouts = workouts.OrderByDescending(x => x.SessionDate).ToList();
+            workouts = workouts.OrderByDescending(x => x.SessionDate).ThenByDescending(x => x.StartDateTime).ToList();
 
             // to remove the presence of a circular reference
             foreach (Workout workout in workouts)

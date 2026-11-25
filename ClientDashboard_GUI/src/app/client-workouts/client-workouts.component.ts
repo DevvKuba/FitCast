@@ -22,7 +22,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { BookingService } from '../services/booking.service';
 import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
 import { WorkoutAddDto } from '../models/dtos/workout-add-dto';
-import { toDateOnlyString } from '../helpers/date-only-helpers';
+import { parseDateOnly, toDateOnlyString } from '../helpers/date-only-helpers';
+import { addMinutes, atClockTime, combineDateAndTime, minutesBetweenClockTimes } from '../helpers/session-time-helpers';
 
 @Component({
   selector: 'app-client-workouts',
@@ -40,11 +41,14 @@ export class ClientWorkouts implements OnInit {
     selectedClient: { id: number, name: string } = { id: 0, name: "" };
     workoutTitle: string = "";
     sessionDate: Date = new Date();
+    sessionStartTime: Date = atClockTime(new Date(), 12, 0);
+    sessionEndTime: Date = atClockTime(new Date(), 13, 0);
     workoutDuration: number = 60;
     currentUserId: number = 0;
 
     clients: { id: number, name: string }[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
+    editedSessionTimes: { [id: number]: { start: Date, end: Date } } = {};
 
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
@@ -72,21 +76,30 @@ export class ClientWorkouts implements OnInit {
 
     onRowEditInit(workout: Workout) {
         this.clonedWorkouts[workout.id as number] = { ...workout };
+        this.editedSessionTimes[workout.id] = this.getEditableSessionTimes(workout);
     }
 
     onRowEditSave(newWorkout: Workout) {
-        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate !== null
+        const times = this.editedSessionTimes[newWorkout.id];
+        delete this.editedSessionTimes[newWorkout.id];
+
+        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate && times
+            && minutesBetweenClockTimes(times.start, times.end) > 0
             && newWorkout.duration > 0 && newWorkout.id !== null) {
             delete this.clonedWorkouts[newWorkout.id as number];
 
+            const start = combineDateAndTime(parseDateOnly(newWorkout.sessionDate), times.start);
             const updatedInfo = {
                 id: newWorkout.id,
                 workoutTitle: newWorkout.workoutTitle,
                 sessionDate: newWorkout.sessionDate,
-                duration: newWorkout.duration
+                duration: newWorkout.duration,
+                startDateTime: start.toISOString()
             }
             this.workoutService.updateWorkout(updatedInfo).subscribe({
                 next: () => {
+                    newWorkout.startDateTime = start.toISOString();
+                    newWorkout.endDateTime = addMinutes(start, newWorkout.duration).toISOString();
                     this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
                 },
                 error: () => {
@@ -99,6 +112,7 @@ export class ClientWorkouts implements OnInit {
     }
 
     onRowEditCancel(workout: Workout, index: number) {
+        delete this.editedSessionTimes[workout.id];
         if (this.workouts && this.clonedWorkouts[workout.id as number]) {
             this.workouts[index] = this.clonedWorkouts[workout.id as number];
             delete this.clonedWorkouts[workout.id as number];
@@ -119,8 +133,9 @@ export class ClientWorkouts implements OnInit {
     }
 
     // Before adding, checks whether the client already has a calendar session that day, which the nightly sync will log anyway
-    addNewWorkout(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, duration: number | null) {
-        if (!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, duration)) {
+    addNewWorkout(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined,
+        startTime: Date | null, endTime: Date | null, duration: number | null) {
+        if (!this.validateWorkoutAddFields(selectedClient, workoutTitle, sessionDate, startTime, endTime, duration)) {
             return;
         }
 
@@ -129,7 +144,8 @@ export class ClientWorkouts implements OnInit {
             clientName: selectedClient.name,
             clientId: selectedClient.id,
             sessionDate: this.formatDateForApi(sessionDate),
-            duration: duration ?? 0
+            duration: duration ?? 0,
+            startDateTime: combineDateAndTime(sessionDate!, startTime!).toISOString()
         }
 
         this.bookingService.getClientSessionsOnDate(selectedClient.id, toDateOnlyString(sessionDate!)).subscribe({
@@ -194,8 +210,58 @@ export class ClientWorkouts implements OnInit {
         this.deleteWorkoutTitle = workoutTitle;
     }
 
+    // Start and duration move the end time; the end time sets the duration
+    onAddStartTimeChange(start: Date | null) {
+        if (start && this.workoutDuration > 0) {
+            this.sessionEndTime = addMinutes(start, this.workoutDuration);
+        }
+    }
+
+    onAddDurationChange(duration: number | null) {
+        if (this.sessionStartTime && duration && duration > 0) {
+            this.sessionEndTime = addMinutes(this.sessionStartTime, duration);
+        }
+    }
+
+    onAddEndTimeChange(end: Date | null) {
+        if (!end || !this.sessionStartTime) return;
+
+        const minutes = minutesBetweenClockTimes(this.sessionStartTime, end);
+        if (minutes > 0) {
+            this.workoutDuration = minutes;
+        }
+    }
+
+    onEditStartTimeChange(workout: Workout, start: Date | null) {
+        if (start && workout.duration > 0) {
+            this.editedSessionTimes[workout.id].end = addMinutes(start, workout.duration);
+        }
+    }
+
+    onEditDurationChange(workout: Workout, duration: number | null) {
+        const times = this.editedSessionTimes[workout.id];
+        if (times && duration && duration > 0) {
+            times.end = addMinutes(times.start, duration);
+        }
+    }
+
+    onEditEndTimeChange(workout: Workout, end: Date | null) {
+        const times = this.editedSessionTimes[workout.id];
+        if (!end || !times) return;
+
+        const minutes = minutesBetweenClockTimes(times.start, end);
+        if (minutes > 0) {
+            workout.duration = minutes;
+        }
+    }
+
     formatSessionTime(utcDateTime: string): string {
         return new Date(utcDateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    formatSessionTimeRange(workout: Workout): string {
+        if (!workout.startDateTime || !workout.endDateTime) return '–';
+        return `${this.formatSessionTime(workout.startDateTime)} – ${this.formatSessionTime(workout.endDateTime)}`;
     }
 
     formatDateForApi(date: Date | undefined): string {
@@ -216,7 +282,8 @@ export class ClientWorkouts implements OnInit {
         });
     }
 
-    validateWorkoutAddFields(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined, duration: number | null): boolean {
+    validateWorkoutAddFields(selectedClient: { id: number, name: string }, workoutTitle: string, sessionDate: Date | undefined,
+        startTime: Date | null, endTime: Date | null, duration: number | null): boolean {
         if (!selectedClient.id || !selectedClient.name || selectedClient.name.trim() === '') {
             this.toastService.showError('Error adding workout', 'Must select a valid client');
             return false;
@@ -229,6 +296,16 @@ export class ClientWorkouts implements OnInit {
 
         if (!sessionDate) {
             this.toastService.showError('Error adding workout', 'Must provide a session date');
+            return false;
+        }
+
+        if (!startTime || !endTime) {
+            this.toastService.showError('Error adding workout', 'Must provide a start and end time');
+            return false;
+        }
+
+        if (minutesBetweenClockTimes(startTime, endTime) <= 0) {
+            this.toastService.showError('Error adding workout', 'End time must be after the start time');
             return false;
         }
 
@@ -266,5 +343,14 @@ export class ClientWorkouts implements OnInit {
 
     getInitials(clientName: string): string {
         return (clientName?.charAt(0) ?? '').toUpperCase();
+    }
+
+    // Workouts logged before session times existed start at noon, matching the API's default
+    private getEditableSessionTimes(workout: Workout): { start: Date, end: Date } {
+        const start = workout.startDateTime
+            ? new Date(workout.startDateTime)
+            : atClockTime(parseDateOnly(workout.sessionDate), 12, 0);
+        const end = workout.endDateTime ? new Date(workout.endDateTime) : addMinutes(start, workout.duration);
+        return { start: start, end: end };
     }
 }
