@@ -73,6 +73,22 @@ namespace ClientDashboard_API_Tests.ServiceTests
         }
 
         [Fact]
+        public async Task TestCreatePendingPaymentIsDatedInTheTrainersTimeZoneAsync()
+        {
+            var trainer = new Trainer { FirstName = "kiri", Surname = "doe", Role = UserRole.Trainer, AverageSessionPrice = 40m, TimeZoneId = SupportedTimeZones.Auckland };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+            var client = new Client { FirstName = "aroha", Role = UserRole.Client, TrainerId = trainer.Id, TotalBlockSessions = 4 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            await _autoPaymentCreationService.CreatePendingPaymentAsync(trainer, client);
+
+            var payment = await _context.Payments.SingleAsync();
+            Assert.Equal(TrainerLocalDateHelper.GetToday(SupportedTimeZones.Auckland, DateTime.UtcNow), payment.PaymentDate);
+        }
+
+        [Fact]
         public async Task TestCreatePendingPaymentCalculatesBlockPriceCorrectlyAsync()
         {
             // Arrange

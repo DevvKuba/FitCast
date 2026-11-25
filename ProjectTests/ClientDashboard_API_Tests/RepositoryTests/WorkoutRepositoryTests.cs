@@ -418,12 +418,59 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
 
-            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 60);
+            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 60, null);
             await _unitOfWork.Complete();
 
             Assert.Equal("new title", workout.WorkoutTitle);
             Assert.Equal(DateOnly.Parse("20/06/2024"), workout.SessionDate);
             Assert.Equal(60, workout.Duration);
+            Assert.Null(workout.StartDateTime);
+            Assert.Null(workout.EndDateTime);
+        }
+
+        [Fact]
+        public async Task TestUpdateWorkoutSetsStartAndEndFromTheDurationAsync()
+        {
+            var workout = new Workout { ClientName = "rob", WorkoutTitle = "session", SessionDate = new DateOnly(2026, 11, 10), Duration = 45 };
+            await _context.Workouts.AddAsync(workout);
+            await _unitOfWork.Complete();
+            var start = new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc);
+
+            _workoutRepository.UpdateWorkout(workout, "session", new DateOnly(2026, 11, 10), 60, start);
+            await _unitOfWork.Complete();
+
+            Assert.Equal(start, workout.StartDateTime);
+            Assert.Equal(start.AddMinutes(60), workout.EndDateTime);
+        }
+
+        [Fact]
+        public async Task TestGetTrainerAverageWorkoutDurationSinceAsyncAveragesRecentWorkoutsAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, CurrentBlockSession = 1, TotalBlockSessions = 4 };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var fromDate = new DateOnly(2026, 11, 1);
+            await _workoutRepository.AddWorkoutAsync(client, "recent", fromDate.AddDays(2), 40);
+            await _workoutRepository.AddWorkoutAsync(client, "recent", fromDate.AddDays(5), 50);
+            await _workoutRepository.AddWorkoutAsync(client, "too old", fromDate.AddDays(-1), 120);
+            await _workoutRepository.AddWorkoutAsync(client, "no duration", fromDate.AddDays(3), 0);
+            await _unitOfWork.Complete();
+
+            var average = await _workoutRepository.GetTrainerAverageWorkoutDurationSinceAsync(trainer.Id, fromDate);
+
+            Assert.Equal(45, average);
+        }
+
+        [Fact]
+        public async Task TestGetTrainerAverageWorkoutDurationSinceAsyncReturnsNullWithNoWorkoutsAsync()
+        {
+            var average = await _workoutRepository.GetTrainerAverageWorkoutDurationSinceAsync(999, new DateOnly(2026, 11, 1));
+
+            Assert.Null(average);
         }
 
         [Fact]

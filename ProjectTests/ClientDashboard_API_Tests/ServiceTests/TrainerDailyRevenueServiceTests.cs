@@ -57,21 +57,20 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _context.Client.AddRangeAsync(client1, client2);
             await _unitOfWork.Complete();
 
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            var firstDayOfMonth = new DateOnly(today.Year, today.Month, 1);
+            var snapshotDate = TrainerLocalDateHelper.GetYesterday(SupportedTimeZones.London, DateTime.UtcNow); // the snapshot covers the trainer's local yesterday
+            var firstDayOfMonth = new DateOnly(snapshotDate.Year, snapshotDate.Month, 1);
 
-            // Each client trains exactly once today. A client cannot have two workouts on the
-            // same date (system invariant), so today always contributes one session per client.
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Today", today, 45);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Today", today, 50);
+            // Each client trains once on the snapshot day, so it contributes one session per client.
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "alice - Snapshot Day", snapshotDate, 45);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "bob - Snapshot Day", snapshotDate, 50);
 
-            // Add earlier-this-month sessions on distinct days strictly before today, so we never
-            // place two workouts for the same client on the same day. When today is the 1st there
-            // are no earlier days, so month-to-date correctly equals today's figures.
+            // Add earlier-this-month sessions on distinct days strictly before the snapshot day, so the snapshot day's
+            // counts stay at one per client. When the snapshot day is the 1st there
+            // are no earlier days, so month-to-date correctly equals the snapshot day's figures.
 
             var earlierDays = new List<DateOnly>();
 
-            for (var day = today.AddDays(-1); day >= firstDayOfMonth && earlierDays.Count < 2; day = day.AddDays(-1))
+            for (var day = snapshotDate.AddDays(-1); day >= firstDayOfMonth && earlierDays.Count < 2; day = day.AddDays(-1))
             {
                 earlierDays.Add(day);
             }
@@ -100,7 +99,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var record = revenueRecords[0];
             Assert.Equal(trainer.Id, record.TrainerId);
-            Assert.Equal(today, record.AsOfDate);
+            Assert.Equal(snapshotDate, record.AsOfDate);
             Assert.Equal(expectedRevenueToday, record.RevenueToday);
             Assert.Equal(sessionsToday, record.SessionsToday);
             Assert.Equal(expectedMonthlyRevenue, record.MonthlyRevenueThusFar);
@@ -645,8 +644,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             await _context.Client.AddAsync(client1);
             await _unitOfWork.Complete();
 
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "wendy - Morning", today, 45);
+            var snapshotDate = TrainerLocalDateHelper.GetYesterday(SupportedTimeZones.London, DateTime.UtcNow); // the snapshot covers the trainer's local yesterday
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client1, "wendy - Morning", snapshotDate, 45);
             await _unitOfWork.Complete();
 
             var trainerWithClients = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -670,7 +669,7 @@ namespace ClientDashboard_API_Tests.ServiceTests
             };
             await _context.Client.AddAsync(client2);
             await _unitOfWork.Complete();
-            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "xavier - Evening", today, 40);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client2, "xavier - Evening", snapshotDate, 40);
             await _unitOfWork.Complete();
 
             var trainerReloaded = await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id);
@@ -684,12 +683,34 @@ namespace ClientDashboard_API_Tests.ServiceTests
 
             var record = afterSecondRun[0];
             Assert.Equal(trainer.Id, record.TrainerId);
-            Assert.Equal(today, record.AsOfDate);
+            Assert.Equal(snapshotDate, record.AsOfDate);
             // Values reflect the second, fuller computation - proving this is a real update
             // rather than a stale no-op or a silently-ignored second call.
             Assert.Equal(2, record.SessionsToday);
             Assert.Equal(100.00m, record.RevenueToday);
             Assert.Equal(2, record.ActiveClients);
+        }
+
+        [Fact]
+        public async Task TestExecuteTrainerDailyRevenueGatheringRecordsTheTrainersLocalYesterdayAsync()
+        {
+            var trainer = new Trainer { FirstName = "kiri", Surname = "doe", Role = UserRole.Trainer, AverageSessionPrice = 40m, TimeZoneId = SupportedTimeZones.Auckland };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+            var client = new Client { FirstName = "aroha", Role = UserRole.Client, TrainerId = trainer.Id, IsActive = true };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+
+            var snapshotDate = TrainerLocalDateHelper.GetYesterday(SupportedTimeZones.Auckland, DateTime.UtcNow);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "aroha - Snapshot Day", snapshotDate, 60);
+            await _unitOfWork.Complete();
+
+            await _trainerDailyRevenueService.ExecuteTrainerDailyRevenueGatheringAsync((await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id))!);
+
+            var record = await _context.TrainerDailyRevenue.SingleAsync();
+            Assert.Equal(snapshotDate, record.AsOfDate);
+            Assert.Equal(1, record.SessionsToday);
+            Assert.Equal(40m, record.RevenueToday);
         }
     }
 }

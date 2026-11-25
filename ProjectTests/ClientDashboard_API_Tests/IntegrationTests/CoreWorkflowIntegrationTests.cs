@@ -81,7 +81,7 @@ namespace ClientDashboard_API_Tests.IntegrationTests
 
                 var workouts = await dbContext.Workouts.Where(w => w.ClientId == clientId).ToListAsync();
                 workouts.Should().HaveCount(1);
-                workouts[0].WorkoutTitle.Should().Contain("Quick Added Workout");
+                workouts[0].WorkoutTitle.Should().Be("⚡ Quick Added Session");
 
                 var updatedClient = await dbContext.Client.FirstAsync(c => c.Id == clientId);
                 updatedClient.CurrentBlockSession.Should().Be(2);

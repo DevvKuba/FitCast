@@ -4,6 +4,7 @@ using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
 using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
+using ClientDashboard_API.Helpers;
 using ClientDashboard_API_Tests.IntegrationTests.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,9 +105,9 @@ namespace ClientDashboard_API_Tests.IntegrationTests
 
         private static List<TrainerDailyRevenue> BuildPartialCurrentMonthRecords(int trainerId, int daysSoFar, int baseActiveClients, int dailySessions, decimal sessionPrice)
         {
-            // The current month is unfinished, so seed only the first few days of the live UTC month
-            // to mirror what GetCurrentMonthsRevenueRecordsAsync filters on (DateTime.UtcNow month/year).
-            var now = DateTime.UtcNow;
+            // The current month is unfinished, so seed only its first few days, using the trainer's
+            // local month as the current-month endpoint does (the default zone is London).
+            var now = TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow);
             var list = new List<TrainerDailyRevenue>();
             var cumulativeRevenue = 0m;
             var cumulativeSessions = 0;

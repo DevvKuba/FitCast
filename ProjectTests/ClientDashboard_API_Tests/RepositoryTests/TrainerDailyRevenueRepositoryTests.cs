@@ -285,61 +285,30 @@ namespace ClientDashboard_API_Tests.RepositoryTests
         }
 
         [Fact]
-        public void TestIsFullMonthPresentReturnsFalseForEmptyList()
+        public async Task TestGetRecordedMonthsBeforeAsyncListsMonthsOldestFirstWithPartialFlagsAsync()
         {
-            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(new List<TrainerDailyRevenue>());
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
 
-            Assert.False(result);
+            await AddDailyRecordsAsync(trainer.Id, new DateOnly(2026, 10, 1), 31);   // full October
+            await AddDailyRecordsAsync(trainer.Id, new DateOnly(2026, 9, 20), 11);   // last 11 days of September
+            await AddDailyRecordsAsync(trainer.Id, new DateOnly(2026, 11, 1), 5);    // the current month, excluded
+
+            var months = await _trainerDailyRevenueRepository.GetRecordedMonthsBeforeAsync(trainer.Id, new DateOnly(2026, 11, 1));
+
+            Assert.Equal(2, months.Count);
+            Assert.Equal((2026, 9, 11, true), (months[0].Year, months[0].Month, months[0].RecordedDays, months[0].IsPartial));
+            Assert.Equal((2026, 10, 31, false), (months[1].Year, months[1].Month, months[1].RecordedDays, months[1].IsPartial));
         }
 
-        [Fact]
-        public void TestIsFullMonthPresentReturnsFalseForPartialMonth()
+        private async Task AddDailyRecordsAsync(int trainerId, DateOnly firstDay, int days)
         {
-            // Only the first 5 days of a 30-day month
-            var records = new List<TrainerDailyRevenue>();
-            for (int day = 1; day <= 5; day++)
+            for (int i = 0; i < days; i++)
             {
-                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 6, day), AverageSessionPrice = 50.00m });
+                await _context.TrainerDailyRevenue.AddAsync(new TrainerDailyRevenue { TrainerId = trainerId, AsOfDate = firstDay.AddDays(i) });
             }
-
-            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
-
-            Assert.False(result);
-        }
-
-        [Fact]
-        public void TestIsFullMonthPresentReturnsTrueForCompleteMonth()
-        {
-            var daysInJune = DateTime.DaysInMonth(2024, 6);
-            var records = new List<TrainerDailyRevenue>();
-            for (int day = 1; day <= daysInJune; day++)
-            {
-                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 6, day), AverageSessionPrice = 50.00m });
-            }
-
-            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
-
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void TestIsFullMonthPresentReturnsFalseForCrossYearRecordsSharingMonthNumber()
-        {
-            // 15 days from March 2024 + 16 days from March 2025 = 31 records, matching March's
-            // day count, but spanning two different calendar years - not one complete month.
-            var records = new List<TrainerDailyRevenue>();
-            for (int day = 1; day <= 15; day++)
-            {
-                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2024, 3, day), AverageSessionPrice = 50.00m });
-            }
-            for (int day = 16; day <= 31; day++)
-            {
-                records.Add(new TrainerDailyRevenue { TrainerId = 1, AsOfDate = new DateOnly(2025, 3, day), AverageSessionPrice = 50.00m });
-            }
-
-            var result = _trainerDailyRevenueRepository.IsFullMonthPresent(records);
-
-            Assert.False(result);
+            await _unitOfWork.Complete();
         }
     }
 }

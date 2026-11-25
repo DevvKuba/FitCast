@@ -574,6 +574,42 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             var trainerAPayments = await _paymentRepository.GetAllPaymentsForTrainerAsync(trainerA);
             Assert.Single(trainerAPayments);
         }
+
+        [Fact]
+        public async Task TestGetTrainerPaymentTotalsForMonthAsyncSplitsConfirmedAndUnconfirmedAsync()
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer };
+            var otherTrainer = new Trainer { FirstName = "jane", Surname = "doe", Role = UserRole.Trainer };
+            await _context.Trainer.AddRangeAsync(trainer, otherTrainer);
+            await _unitOfWork.Complete();
+
+            await _context.Payments.AddRangeAsync(
+                NewPayment(trainer.Id, 120m, new DateOnly(2026, 11, 3), confirmed: true),
+                NewPayment(trainer.Id, 80m, new DateOnly(2026, 11, 20), confirmed: true),
+                NewPayment(trainer.Id, 200m, new DateOnly(2026, 11, 28), confirmed: false),
+                NewPayment(trainer.Id, 999m, new DateOnly(2026, 10, 31), confirmed: true),  // other month
+                NewPayment(otherTrainer.Id, 500m, new DateOnly(2026, 11, 5), confirmed: true));
+            var hidden = NewPayment(trainer.Id, 300m, new DateOnly(2026, 11, 6), confirmed: true);
+            hidden.IsVisible = false;
+            await _context.Payments.AddAsync(hidden);
+            await _unitOfWork.Complete();
+
+            var totals = await _paymentRepository.GetTrainerPaymentTotalsForMonthAsync(trainer.Id, 11, 2026);
+
+            Assert.Equal(200m, totals.Collected);
+            Assert.Equal(200m, totals.Outstanding);
+        }
+
+        private static Payment NewPayment(int trainerId, decimal amount, DateOnly date, bool confirmed) => new()
+        {
+            TrainerId = trainerId,
+            Amount = amount,
+            Currency = "GBP",
+            NumberOfSessions = 4,
+            PaymentDate = date,
+            Confirmed = confirmed
+        };
+
     }
 }
 

@@ -76,6 +76,8 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(client.Id, workout.ClientId);
             Assert.Equal("Strength Session", workout.WorkoutTitle);
             Assert.Equal(45, workout.Duration);
+            Assert.Equal(slot.StartDateTime, workout.StartDateTime);
+            Assert.Equal(slot.EndDateTime, workout.EndDateTime);
             Assert.Equal(3, workout.CurrentBlockSession);
             Assert.Equal(3, (await _context.Client.SingleAsync()).CurrentBlockSession);
         }

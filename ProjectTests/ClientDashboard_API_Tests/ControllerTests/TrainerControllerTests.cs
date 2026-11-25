@@ -395,6 +395,56 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
+        public async Task TestGetSpecificMonthAnalyticsReturnsAPartialMonthWithPaymentTotalsAndComparisonAsync()
+        {
+            var (trainer, _) = await SeedTrainerWithClientAsync();
+            await SeedRevenueRecordsAsync(trainer.Id, new DateOnly(2026, 9, 1), 30);
+            await SeedRevenueRecordsAsync(trainer.Id, new DateOnly(2026, 10, 18), 14); // a partial month
+            await _context.Payments.AddRangeAsync(
+                new Payment { TrainerId = trainer.Id, Amount = 150m, Currency = "GBP", NumberOfSessions = 3, PaymentDate = new DateOnly(2026, 10, 20), Confirmed = true },
+                new Payment { TrainerId = trainer.Id, Amount = 90m, Currency = "GBP", NumberOfSessions = 2, PaymentDate = new DateOnly(2026, 10, 25), Confirmed = false });
+            await _unitOfWork.Complete();
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _trainerController.GetSpecificMonthsAnalytics(10, 2026);
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<CompleteMonthTrainerAnalyticsDto>;
+
+            Assert.NotNull(response!.Data);
+            Assert.Equal(150m, response.Data.CollectedRevenue);
+            Assert.Equal(90m, response.Data.OutstandingRevenue);
+            Assert.NotNull(response.Data.Comparison);
+        }
+
+        [Fact]
+        public async Task TestGetSpecificMonthAnalyticsReturnsNotFoundForAMonthWithNoDataAsync()
+        {
+            var (trainer, _) = await SeedTrainerWithClientAsync();
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _trainerController.GetSpecificMonthsAnalytics(10, 2026);
+
+            Assert.IsType<NotFoundObjectResult>(result.Result);
+        }
+
+        [Fact]
+        public async Task TestGetTrainerAnalyticsMonthsListsPastMonthsOnlyAsync()
+        {
+            var (trainer, _) = await SeedTrainerWithClientAsync();
+            var trainerToday = TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow);
+            var firstOfThisMonth = new DateOnly(trainerToday.Year, trainerToday.Month, 1);
+            await SeedRevenueRecordsAsync(trainer.Id, firstOfThisMonth.AddMonths(-2), 3);
+            await SeedRevenueRecordsAsync(trainer.Id, firstOfThisMonth, 1); // the current month is left out
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _trainerController.GetTrainerAnalyticsMonthsAsync();
+            var response = (result.Result as OkObjectResult)!.Value as ApiResponseDto<List<AnalyticsMonthDto>>;
+
+            var month = Assert.Single(response!.Data!);
+            Assert.Equal(firstOfThisMonth.AddMonths(-2).Month, month.Month);
+            Assert.True(month.IsPartial);
+        }
+
+        [Fact]
         public async Task TestDeleteTrainerReturnsNotFoundForUnknownTrainerAsync()
         {
             AuthenticateAsTrainer(999);
@@ -478,6 +528,23 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.True(await _context.Trainer.AnyAsync(t => t.Id == otherTrainer.Id));
             Assert.True(await _context.Client.AnyAsync(c => c.Id == otherClient.Id));
         }
+
+        private async Task SeedRevenueRecordsAsync(int trainerId, DateOnly firstDay, int days)
+        {
+            for (int i = 0; i < days; i++)
+            {
+                await _context.TrainerDailyRevenue.AddAsync(new TrainerDailyRevenue
+                {
+                    TrainerId = trainerId,
+                    AsOfDate = firstDay.AddDays(i),
+                    ActiveClients = 5,
+                    SessionsToday = 2,
+                    RevenueToday = 100m,
+                    TotalSessionDuration = 120,
+                    AverageSessionPrice = 50m
+                });
+            }
+            await _unitOfWork.Complete();
+        }
     }
 }
-
