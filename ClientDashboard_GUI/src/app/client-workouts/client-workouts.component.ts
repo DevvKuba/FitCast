@@ -48,7 +48,7 @@ export class ClientWorkouts implements OnInit {
 
     clients: { id: number, name: string }[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
-    editedSessionTimes: { [id: number]: { start: Date, end: Date } } = {};
+    editedSessionTimes: { [id: number]: { start: Date | null, end: Date | null } } = {};
 
     deleteWorkoutId: number = 0;
     deleteWorkoutTitle: string = "";
@@ -83,7 +83,7 @@ export class ClientWorkouts implements OnInit {
         const times = this.editedSessionTimes[newWorkout.id];
         delete this.editedSessionTimes[newWorkout.id];
 
-        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate && times
+        if (newWorkout.workoutTitle.length !== 0 && newWorkout.sessionDate && times && times.start && times.end
             && minutesBetweenClockTimes(times.start, times.end) > 0
             && newWorkout.duration > 0 && newWorkout.id !== null) {
             delete this.clonedWorkouts[newWorkout.id as number];
@@ -240,14 +240,14 @@ export class ClientWorkouts implements OnInit {
 
     onEditDurationChange(workout: Workout, duration: number | null) {
         const times = this.editedSessionTimes[workout.id];
-        if (times && duration && duration > 0) {
+        if (times && times.start && duration && duration > 0) {
             times.end = addMinutes(times.start, duration);
         }
     }
 
     onEditEndTimeChange(workout: Workout, end: Date | null) {
         const times = this.editedSessionTimes[workout.id];
-        if (!end || !times) return;
+        if (!end || !times || !times.start) return;
 
         const minutes = minutesBetweenClockTimes(times.start, end);
         if (minutes > 0) {
@@ -273,6 +273,7 @@ export class ClientWorkouts implements OnInit {
 
         return `${year}/${month}/${day}`;
     }
+
 
     gatherClientNames() {
         this.clientService.gatherClientNames(this.currentUserId).subscribe({
@@ -345,11 +346,13 @@ export class ClientWorkouts implements OnInit {
         return (clientName?.charAt(0) ?? '').toUpperCase();
     }
 
-    // Workouts logged before session times existed start at noon, matching the API's default
-    private getEditableSessionTimes(workout: Workout): { start: Date, end: Date } {
-        const start = workout.startDateTime
-            ? new Date(workout.startDateTime)
-            : atClockTime(parseDateOnly(workout.sessionDate), 12, 0);
+    // Workouts logged before session times existed start with empty pickers for the trainer to fill in
+    private getEditableSessionTimes(workout: Workout): { start: Date | null, end: Date | null } {
+        if (!workout.startDateTime) {
+            return { start: null, end: null };
+        }
+
+        const start = new Date(workout.startDateTime);
         const end = workout.endDateTime ? new Date(workout.endDateTime) : addMinutes(start, workout.duration);
         return { start: start, end: end };
     }

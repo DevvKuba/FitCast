@@ -3,5 +3,5 @@ export interface WorkoutUpdateDto {
   workoutTitle: string,
   sessionDate: string,
   duration: number,
-  startDateTime?: string
+  startDateTime: string
 }

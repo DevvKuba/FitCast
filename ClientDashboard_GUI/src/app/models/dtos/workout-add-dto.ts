@@ -4,5 +4,5 @@ export interface WorkoutAddDto {
   clientId: number,
   sessionDate: string,
   duration: number,
-  startDateTime?: string
+  startDateTime: string
 }
