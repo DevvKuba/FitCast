@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DatePicker } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
@@ -63,7 +64,7 @@ interface CalendarSession {
 @Component({
   selector: 'app-calendar',
   imports: [FormsModule, ButtonModule, DatePicker, Dialog, InputTextModule, SelectModule, TextareaModule,
-    SelectButtonModule, DrawerModule, BookingSeriesPanelComponent],
+    SelectButtonModule, DrawerModule, BookingSeriesPanelComponent, RouterLink],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -82,6 +83,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   // Times are shown in the device's time zone (browser), not the trainer's profile zone
   browserTimeZoneId = Intl.DateTimeFormat().resolvedOptions().timeZone;
   trainerTimeZoneId = '';
+  calendarSyncEnabled = true;
 
   weekStart: Date = this.getMondayOf(new Date());
   weekPickerVisible = false;
@@ -130,7 +132,7 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadWeek();
-    this.retrieveTrainerTimeZone();
+    this.retrieveTrainerSettings();
     this.retrieveClients();
 
     // keeps the current-time line moving
@@ -198,10 +200,11 @@ export class CalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  retrieveTrainerTimeZone(): void {
+  retrieveTrainerSettings(): void {
     this.trainerService.retrieveTrainerById().subscribe({
       next: (response) => {
         this.trainerTimeZoneId = response.data?.timeZoneId ?? '';
+        this.calendarSyncEnabled = response.data?.calendarSyncEnabled ?? true;
       }
     });
   }

@@ -167,6 +167,13 @@
 		</div>
 	</div>
 
+	@if (!calendarSyncEnabled) {
+		<p class="flex items-center gap-2 text-xs text-amber-700">
+			<i class="pi pi-exclamation-circle text-xs"></i>
+			<span>Calendar sync is off: finished sessions aren't logged as workouts. <a routerLink="/trainer-profile" class="font-semibold underline">Turn it on in your profile</a></span>
+		</p>
+	}
+
 	<!-- Only shown when the device is in a different zone to the trainer's schedule zone -->
 	@if (showTimeZoneNote) {
 		<p class="flex items-center gap-2 text-xs text-on-surface-variant">
