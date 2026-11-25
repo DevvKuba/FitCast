@@ -233,7 +233,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 ClientId = client.Id,
                 SessionDate = "19/06/2025",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -258,7 +259,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "nonexistent",
                 ClientId = 999,
                 SessionDate = "19/06/2025",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
             };
 
             var result = await _workoutController.AddNewManualClientWorkoutAsync(workoutDto);
@@ -287,7 +289,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientName = "rob",
                 ClientId = client.Id,
                 SessionDate = "19/06/2025",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
             };
 
             AuthenticateAsTrainer(otherTrainer.Id);
@@ -330,7 +333,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = workout.Id,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -355,7 +359,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = 999,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
             };
 
             var result = await _workoutController.UpdateWorkoutDetailsAsync(updateDto);
@@ -394,7 +399,8 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 Id = workout.Id,
                 WorkoutTitle = "new title",
                 SessionDate = "20/06/2024",
-                Duration = 60
+                Duration = 60,
+                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
             };
 
             AuthenticateAsTrainer(otherTrainer.Id);
@@ -546,15 +552,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestManualAddWithoutStartTimePlacesSessionAtNoonLocalTimeAsync()
+        public async Task TestManualAddTakesTheSessionDateFromTheStartInTheTrainersZoneAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
             AuthenticateAsTrainer(trainer.Id);
 
-            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "19/06/2025", 60, null));
+            // 23:30 UTC on 18 June is 00:30 on the 19th in London (UTC+1)
+            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "18/06/2025", 60, new DateTime(2025, 6, 18, 23, 30, 0, DateTimeKind.Utc)));
 
-            // London is UTC+1 in June, so 12:00 local is 11:00 UTC
-            Assert.Equal(new DateTime(2025, 6, 19, 11, 0, 0, DateTimeKind.Utc), (await _context.Workouts.SingleAsync()).StartDateTime);
+            Assert.Equal(new DateOnly(2025, 6, 19), (await _context.Workouts.SingleAsync()).SessionDate);
         }
 
         [Fact]
@@ -569,18 +575,6 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.False(await _context.Workouts.AnyAsync());
             Assert.False(await _context.BookedSessionsSlot.AnyAsync());
-        }
-
-        [Fact]
-        public async Task TestManualAddReturnsBadRequestForAFutureDateWithoutStartAsync()
-        {
-            var (trainer, client) = await SeedTrainerAndClientAsync();
-            AuthenticateAsTrainer(trainer.Id);
-
-            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, DateTime.UtcNow.AddDays(3).ToString("dd/MM/yyyy"), 60, null));
-
-            Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.False(await _context.Workouts.AnyAsync());
         }
 
         [Fact]
@@ -666,33 +660,20 @@ namespace ClientDashboard_API_Tests.ControllerTests
         }
 
         [Fact]
-        public async Task TestUpdateWorkoutWithoutStartTimeKeepsTheClockTimeOnTheNewDateAsync()
-        {
-            var (trainer, client) = await SeedTrainerAndClientAsync();
-            var (workout, slot) = await SeedSyncedWorkoutAsync(trainer, client, new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc));
-            AuthenticateAsTrainer(trainer.Id);
-
-            await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "session", "12/11/2026", 60, null));
-
-            var movedStart = new DateTime(2026, 11, 12, 9, 0, 0, DateTimeKind.Utc); // London is UTC+0 in November
-            Assert.Equal(movedStart, workout.StartDateTime);
-            Assert.Equal(movedStart, slot.StartDateTime);
-        }
-
-        [Fact]
-        public async Task TestUpdateWorkoutLoggedBeforeSessionTimesStaysWithoutTimesAsync()
+        public async Task TestUpdateWorkoutLoggedBeforeSessionTimesGainsTheGivenTimesAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
             var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "old", SessionDate = new DateOnly(2025, 6, 19), Duration = 60 };
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
+            var start = new DateTime(2025, 6, 20, 9, 0, 0, DateTimeKind.Utc);
             AuthenticateAsTrainer(trainer.Id);
 
-            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "old", "20/06/2025", 45, null));
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "old", "20/06/2025", 45, start));
 
             Assert.IsType<OkObjectResult>(result.Result);
-            Assert.Null(workout.StartDateTime);
-            Assert.Null(workout.EndDateTime);
+            Assert.Equal(start, workout.StartDateTime);
+            Assert.Equal(start.AddMinutes(45), workout.EndDateTime);
             Assert.Equal(new DateOnly(2025, 6, 20), workout.SessionDate);
         }
 
@@ -731,7 +712,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             return (await _context.Workouts.SingleAsync(), slot);
         }
 
-        private static WorkoutAddDto ManualAddDto(Client client, string sessionDate, int duration, DateTime? startUtc) => new()
+        private static WorkoutAddDto ManualAddDto(Client client, string sessionDate, int duration, DateTime startUtc) => new()
         {
             WorkoutTitle = "workout",
             ClientName = client.FirstName,
@@ -741,7 +722,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             StartDateTime = startUtc
         };
 
-        private static WorkoutUpdateDto UpdateDto(int workoutId, string title, string sessionDate, int duration, DateTime? startUtc) => new()
+        private static WorkoutUpdateDto UpdateDto(int workoutId, string title, string sessionDate, int duration, DateTime startUtc) => new()
         {
             Id = workoutId,
             WorkoutTitle = title,

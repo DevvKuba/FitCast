@@ -418,14 +418,12 @@ namespace ClientDashboard_API_Tests.RepositoryTests
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
 
-            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 60, null);
+            _workoutRepository.UpdateWorkout(workout, "new title", DateOnly.Parse("20/06/2024"), 60, new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc));
             await _unitOfWork.Complete();
 
             Assert.Equal("new title", workout.WorkoutTitle);
             Assert.Equal(DateOnly.Parse("20/06/2024"), workout.SessionDate);
             Assert.Equal(60, workout.Duration);
-            Assert.Null(workout.StartDateTime);
-            Assert.Null(workout.EndDateTime);
         }
 
         [Fact]

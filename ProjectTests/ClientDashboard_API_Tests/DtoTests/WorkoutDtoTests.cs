@@ -14,12 +14,6 @@ namespace ClientDashboard_API_Tests.DtoTests
             Assert.Empty(ValidationErrors(AddDto(60, StartUtc)));
         }
 
-        [Fact]
-        public void WorkoutAddDto_PassesWithoutAStart()
-        {
-            Assert.Empty(ValidationErrors(AddDto(60, null)));
-        }
-
         [Theory]
         [InlineData(0)]
         [InlineData(-15)]
@@ -47,7 +41,7 @@ namespace ClientDashboard_API_Tests.DtoTests
         [Fact]
         public void WorkoutUpdateDto_FailsWithoutAPositiveDuration()
         {
-            var error = Assert.Single(ValidationErrors(UpdateDto(0, null)));
+            var error = Assert.Single(ValidationErrors(UpdateDto(0, StartUtc)));
             Assert.Equal("A session duration must be provided", error.ErrorMessage);
         }
 
@@ -65,7 +59,7 @@ namespace ClientDashboard_API_Tests.DtoTests
             return results;
         }
 
-        private static WorkoutAddDto AddDto(int duration, DateTime? startUtc) => new()
+        private static WorkoutAddDto AddDto(int duration, DateTime startUtc) => new()
         {
             WorkoutTitle = "session",
             ClientName = "rob",
@@ -75,7 +69,7 @@ namespace ClientDashboard_API_Tests.DtoTests
             StartDateTime = startUtc
         };
 
-        private static WorkoutUpdateDto UpdateDto(int duration, DateTime? startUtc) => new()
+        private static WorkoutUpdateDto UpdateDto(int duration, DateTime startUtc) => new()
         {
             Id = 1,
             WorkoutTitle = "session",

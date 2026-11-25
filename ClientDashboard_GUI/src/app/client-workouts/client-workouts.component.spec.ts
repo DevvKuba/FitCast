@@ -22,8 +22,9 @@ describe('ClientWorkouts', () => {
     sessionDate: '2026-04-14',
     currentBlockSession: 2,
     totalBlockSessions: 8,
-    exerciseCount: 7,
-    duration: 60
+    duration: 60,
+    startDateTime: '2026-04-14T09:00:00.000Z',
+    endDateTime: '2026-04-14T10:00:00.000Z'
   };
 
   beforeEach(async () => {
@@ -109,14 +110,16 @@ describe('ClientWorkouts', () => {
     });
 
     it('onRowEditSave sends the editable fields only, not the read-only session counts', () => {
-      component.onRowEditSave({ ...workoutRow });
+      const row = { ...workoutRow };
+      component.onRowEditInit(row);
+      component.onRowEditSave(row);
 
       expect(workoutServiceSpy.updateWorkout).toHaveBeenCalledWith({
         id: workoutRow.id,
         workoutTitle: workoutRow.workoutTitle,
         sessionDate: workoutRow.sessionDate,
-        exerciseCount: workoutRow.exerciseCount,
-        duration: workoutRow.duration
+        duration: workoutRow.duration,
+        startDateTime: workoutRow.startDateTime!
       });
     });
   });

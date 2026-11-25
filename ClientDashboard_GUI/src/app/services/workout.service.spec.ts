@@ -63,7 +63,7 @@ describe('WorkoutService', () => {
         clientName: 'Sam',
         clientId: 5,
         sessionDate: '2026-04-14',
-        exerciseCount: 6,
+        startDateTime: '2026-04-14T09:00:00.000Z',
         duration: 60
       };
 
@@ -102,7 +102,7 @@ describe('WorkoutService', () => {
         id: 3,
         workoutTitle: 'Updated Session',
         sessionDate: '2026-04-13',
-        exerciseCount: 7,
+        startDateTime: '2026-04-13T17:30:00.000Z',
         duration: 55
       };
 
