@@ -63,6 +63,8 @@ namespace ClientDashboard_API.Services
                 }
             }
             await unitOfWork.Complete();
+
+            await RefreshEditableSnapshotsAsync(trainer, snapshotDate);
         }
 
         public async Task<decimal> CalculateTotalClientGeneratedRevenueAtDateAsync(Trainer trainer, DateOnly dateForSessions)
@@ -109,6 +111,19 @@ namespace ClientDashboard_API.Services
         {
             var firstDayOfGivenMonth = new DateOnly(currentDate.Year, currentDate.Month, 1);
             return firstDayOfGivenMonth;
+        }
+
+        // Workouts inside the edit window can still change, so every snapshot in it is rebuilt each night.
+        // The window is taken from the snapshot date, so the night after the last grace day still closes the previous month.
+        private async Task RefreshEditableSnapshotsAsync(Trainer trainer, DateOnly snapshotDate)
+        {
+            var fromDate = WorkoutEditWindowHelper.GetEarliestEditableDate(snapshotDate);
+
+            var snapshots = await unitOfWork.TrainerDailyRevenueRepository.GetTrainerRecordsBetweenDatesAsync(trainer.Id, fromDate, snapshotDate);
+            var workouts = await unitOfWork.WorkoutRepository.GetTrainerWorkoutsBetweenDatesIgnoringQueryFiltersAsync(trainer.Id, fromDate, snapshotDate);
+
+            DailyRevenueSnapshotHelper.RefreshFromWorkouts(snapshots, workouts);
+            await unitOfWork.Complete();
         }
     }
 }

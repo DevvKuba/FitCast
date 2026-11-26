@@ -16,26 +16,23 @@ namespace ClientDashboard_API.Helpers
             {
                 var dayWorkouts = monthWorkouts.Where(w => w.SessionDate == day).ToList();
 
+                // Recorded days keep the price and active client count of their snapshot, matching the nightly refresh
+                var snapshot = monthSnapshots.FirstOrDefault(s => s.AsOfDate == day);
+                var dayPrice = snapshot?.AverageSessionPrice ?? sessionPrice;
+
                 records.Add(new TrainerDailyRevenue
                 {
                     TrainerId = trainerId,
                     AsOfDate = day,
                     SessionsToday = dayWorkouts.Count,
-                    RevenueToday = dayWorkouts.Count * sessionPrice,
+                    RevenueToday = dayWorkouts.Count * dayPrice,
                     TotalSessionDuration = dayWorkouts.Sum(w => w.Duration),
-                    ActiveClients = GetActiveClientsOnDay(day, monthSnapshots, currentActiveClients),
-                    AverageSessionPrice = sessionPrice
+                    ActiveClients = snapshot?.ActiveClients ?? currentActiveClients,
+                    AverageSessionPrice = dayPrice
                 });
             }
 
             return records;
-        }
-
-        // Past active client counts can't be rebuilt from workouts, so recorded days keep their snapshot's count
-        private static int GetActiveClientsOnDay(DateOnly day, List<TrainerDailyRevenue> monthSnapshots, int currentActiveClients)
-        {
-            var snapshot = monthSnapshots.FirstOrDefault(s => s.AsOfDate == day);
-            return snapshot?.ActiveClients ?? currentActiveClients;
         }
     }
 }

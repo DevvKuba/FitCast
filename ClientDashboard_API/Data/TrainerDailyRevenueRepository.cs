@@ -114,6 +114,14 @@ namespace ClientDashboard_API.Data
             return monthRecords;
         }
 
+        public async Task<List<TrainerDailyRevenue>> GetTrainerRecordsBetweenDatesAsync(int trainerId, DateOnly fromDate, DateOnly toDate)
+        {
+            return await context.TrainerDailyRevenue
+                .Where(r => r.TrainerId == trainerId && r.AsOfDate >= fromDate && r.AsOfDate <= toDate)
+                .OrderBy(r => r.AsOfDate)
+                .ToListAsync();
+        }
+
         public List<TrainerDailyRevenue> GetRecordsForFullMonths(List<TrainerDailyRevenue> revenueRecords)
         {
             return revenueRecords
