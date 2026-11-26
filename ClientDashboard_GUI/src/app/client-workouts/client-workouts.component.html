@@ -17,7 +17,7 @@
                 </div>
                 <div class="form-field">
                     <label for="workout-date">Session Date</label>
-                    <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" />
+                    <p-datepicker [appendTo]="'body'" [(ngModel)]="sessionDate" dateFormat="dd/mm/yy" [minDate]="earliestEditableDate" [maxDate]="today" />
                 </div>
                 <div class="flex gap-3">
                     <div class="form-field flex-1">
@@ -173,6 +173,8 @@
                             <input
                                 pInputText type="date"
                                 class="w-full max-w-40"
+                                [min]="earliestEditableDateString"
+                                [max]="todayString"
                                 [(ngModel)]= "workout.sessionDate" />
                         </ng-template>
                         <ng-template #output>
@@ -211,8 +213,11 @@
                 <td class="workout-td action-column">
                     <span class="p-column-title">Actions</span>
                     <div class="flex items-center justify-center gap-2">
+                        @if (!editing && isLocked(workout)) {
+                            <i class="pi pi-lock text-on-surface-variant p-2" pTooltip="This workout's month is closed, so its analytics are final" tooltipPosition="left"></i>
+                        }
                         <button
-                            *ngIf="!editing"
+                            *ngIf="!editing && !isLocked(workout)"
                             pButton
                             pRipple
                             type="button"

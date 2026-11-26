@@ -19,16 +19,18 @@ import { ToastService } from '../services/toast.service';
 import { NotificationService } from '../services/notification.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { TooltipModule } from 'primeng/tooltip';
 import { BookingService } from '../services/booking.service';
 import { BookedSessionSlotViewDto } from '../models/dtos/booked-session-slot-view-dto';
 import { WorkoutAddDto } from '../models/dtos/workout-add-dto';
 import { parseDateOnly, toDateOnlyString } from '../helpers/date-only-helpers';
 import { addMinutes, atClockTime, combineDateAndTime, minutesBetweenClockTimes } from '../helpers/session-time-helpers';
+import { getEarliestEditableDate, isWorkoutDateLocked } from '../helpers/workout-edit-window-helpers';
 
 @Component({
   selector: 'app-client-workouts',
   imports: [TableModule, CommonModule, ButtonModule, SpinnerComponent, Toast, InputTextModule,
-     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, IconFieldModule, InputIconModule],
+     Dialog, FormsModule, AutoCompleteModule, DatePicker, InputNumberModule, IconFieldModule, InputIconModule, TooltipModule],
   templateUrl: './client-workouts.component.html',
   providers: [MessageService],
   styleUrl: './client-workouts.component.css'
@@ -45,6 +47,12 @@ export class ClientWorkouts implements OnInit {
     sessionEndTime: Date = atClockTime(new Date(), 13, 0);
     workoutDuration: number = 60;
     currentUserId: number = 0;
+
+    // Workouts before this date belong to a closed month, so they can't be added, edited or removed
+    today: Date = new Date();
+    earliestEditableDate: Date = getEarliestEditableDate(this.today);
+    earliestEditableDateString: string = toDateOnlyString(this.earliestEditableDate);
+    todayString: string = toDateOnlyString(this.today);
 
     clients: { id: number, name: string }[] = [];
     clonedWorkouts: { [s: string]: Workout } = {};
@@ -102,8 +110,9 @@ export class ClientWorkouts implements OnInit {
                     newWorkout.endDateTime = addMinutes(start, newWorkout.duration).toISOString();
                     this.toastService.showSuccess('Updated Correctly', `Successfully updated ${newWorkout.clientName}'s workout details`);
                 },
-                error: () => {
-                    this.toastService.showError('Unsuccessful Update', `Workout: ${newWorkout.workoutTitle} not updated`);
+                error: (response) => {
+                    this.toastService.showError('Unsuccessful Update', response.error?.message ?? `Workout: ${newWorkout.workoutTitle} not updated`);
+                    this.displayWorkouts();
                 }
             })
         } else {
@@ -257,6 +266,10 @@ export class ClientWorkouts implements OnInit {
 
     formatSessionTime(utcDateTime: string): string {
         return new Date(utcDateTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    isLocked(workout: Workout): boolean {
+        return isWorkoutDateLocked(parseDateOnly(workout.sessionDate), this.today);
     }
 
     formatSessionTimeRange(workout: Workout): string {
