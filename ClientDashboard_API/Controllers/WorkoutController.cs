@@ -107,6 +107,12 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutSessionTimeHelper.FutureSessionMessage, Success = false });
             }
 
+            var trainerToday = TrainerLocalDateHelper.GetToday(client.Trainer.TimeZoneId, DateTime.UtcNow);
+            if (WorkoutEditWindowHelper.IsLocked(sessionDate, trainerToday))
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutEditWindowHelper.LockedWorkoutMessage, Success = false });
+            }
+
             var slot = await unitOfWork.BookedSessionSlotRepository.AddSyncedSlotAsync(client.Trainer.Id, client.Id, newWorkout.WorkoutTitle, startUtc, startUtc.AddMinutes(newWorkout.Duration));
 
             unitOfWork.ClientRepository.UpdateAddingClientCurrentSessionAsync(client);
@@ -213,6 +219,12 @@ namespace ClientDashboard_API.Controllers
                 return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutSessionTimeHelper.FutureSessionMessage, Success = false });
             }
 
+            var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
+            if (WorkoutEditWindowHelper.IsLocked(workout.SessionDate, trainerToday) || WorkoutEditWindowHelper.IsLocked(sessionDate, trainerToday))
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutEditWindowHelper.LockedWorkoutMessage, Success = false });
+            }
+
             unitOfWork.WorkoutRepository.UpdateWorkout(workout, newWorkoutInfo.WorkoutTitle, sessionDate, newWorkoutInfo.Duration, startUtc);
 
             if (workout.BookedSessionSlotId.HasValue)
@@ -256,6 +268,18 @@ namespace ClientDashboard_API.Controllers
             if (workout.Client is null)
             {
                 return NotFound(new ApiResponseDto<string> { Data = null, Message = $"client doesn't exist", Success = false });
+            }
+
+            var trainer = await unitOfWork.TrainerRepository.GetTrainerByIdAsync(currentUserAccessor.GetUserId());
+            if (trainer is null)
+            {
+                return NotFound(new ApiResponseDto<string> { Data = null, Message = "Trainer not found", Success = false });
+            }
+
+            var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
+            if (WorkoutEditWindowHelper.IsLocked(workout.SessionDate, trainerToday))
+            {
+                return BadRequest(new ApiResponseDto<string> { Data = null, Message = WorkoutEditWindowHelper.LockedWorkoutMessage, Success = false });
             }
 
             if (workout.BookedSessionSlotId is not null)
