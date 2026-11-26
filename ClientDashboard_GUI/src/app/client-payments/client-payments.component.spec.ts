@@ -109,24 +109,44 @@ describe('ClientPaymentsComponent', () => {
     });
   });
 
-  describe('last 30 days filter', () => {
-    it('displayedPayments returns every payment when the toggle is off', () => {
-      component.payments = [paymentRow, { ...paymentRow, id: 2, paymentDate: '2020-01-01' }];
-      component.last30DaysOnly = false;
+  describe('month filter', () => {
+    const april = { ...paymentRow, id: 2, paymentDate: '2026-04-30' };
+    const may = { ...paymentRow, id: 3, paymentDate: '2026-05-01' };
+
+    it('displayedPayments returns every payment when All is selected', () => {
+      component.payments = [april, may];
+      component.showAllPayments();
 
       expect(component.displayedPayments.length).toBe(2);
     });
 
-    it('displayedPayments only keeps payments from the last 30 days when toggled on', () => {
-      const recent = { ...paymentRow, id: 2, paymentDate: new Date().toISOString() };
-      const old = { ...paymentRow, id: 3, paymentDate: '2020-01-01' };
-      component.payments = [recent, old];
-      component.last30DaysOnly = true;
+    it('displayedPayments only keeps the selected month, including its last day', () => {
+      component.payments = [april, may];
+      component.onPaymentMonthSelect(new Date(2026, 3, 18));
 
       const displayed = component.displayedPayments;
 
       expect(displayed.length).toBe(1);
       expect(displayed[0].id).toBe(2);
+    });
+
+    it('the month arrows step one month at a time', () => {
+      component.payments = [april, may];
+      component.onPaymentMonthSelect(new Date(2026, 3, 1));
+
+      component.goToNextPaymentMonth();
+      expect(component.displayedPayments.map(p => p.id)).toEqual([3]);
+
+      component.goToPreviousPaymentMonth();
+      expect(component.displayedPayments.map(p => p.id)).toEqual([2]);
+    });
+
+    it('Month starts from the current month', () => {
+      const today = new Date();
+
+      component.showCurrentPaymentMonth();
+
+      expect(component.selectedPaymentMonth).toEqual(new Date(today.getFullYear(), today.getMonth(), 1));
     });
   });
 

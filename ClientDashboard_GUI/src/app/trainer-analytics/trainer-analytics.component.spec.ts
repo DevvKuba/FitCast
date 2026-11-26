@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { WeekDays } from '../enums/weekdays';
 import { CompleteTrainerAnalyticsDto } from '../models/dtos/complete-trainer-analytics-dto';
 import { CurrentMonthTrainerAnalyticsDto } from '../models/dtos/current-month-trainer-analytics-dto';
+import { AnalyticsMonthDto } from '../models/dtos/analytics-month-dto';
 import { AccountService } from '../services/account.service';
 import { ToastService } from '../services/toast.service';
 import { TrainerService } from '../services/trainer.service';
@@ -19,6 +20,8 @@ describe('TrainerAnalyticsComponent', () => {
     baseClients: 12,
     monthlyClientSessions: 72,
     totalRevenue: 2880,
+    collectedRevenue: 2400,
+    outstandingRevenue: 480,
     totalWorktimeMinutes: 4320,
     revenuePerWorkingDay: 144,
     weeklySessionsCounts: [
@@ -28,6 +31,8 @@ describe('TrainerAnalyticsComponent', () => {
   };
 
   const sampleCompleteMonth: CompleteTrainerAnalyticsDto = {
+    recordedDays: 31,
+    isPartialMonth: false,
     baseClients: 12,
     acquiredClients: 4,
     acquisitionPercentage: 33,
@@ -40,6 +45,8 @@ describe('TrainerAnalyticsComponent', () => {
     sessionsPrice: 40,
     monthlyWorkingDays: 20,
     totalRevenue: 2880,
+    collectedRevenue: 2400,
+    outstandingRevenue: 480,
     revenuePerWorkingDay: 144,
     revenuePerWorkingWeek: 720,
     totalWorktimeMinutes: 4320,
@@ -54,10 +61,18 @@ describe('TrainerAnalyticsComponent', () => {
     lightDays: [{ day: WeekDays.Sun, totalSessions: 5, multiplier: 0.9 }]
   };
 
+  // Oldest first, as the API returns them; September is only partly recorded
+  const sampleMonths: AnalyticsMonthDto[] = [
+    { year: 2026, month: 9, recordedDays: 12, isPartial: true },
+    { year: 2026, month: 10, recordedDays: 31, isPartial: false }
+  ];
+
   beforeEach(async () => {
     trainerServiceSpy = jasmine.createSpyObj<TrainerService>('TrainerService', [
       'getCurrentMonthsAnalytics',
-      'getSpecificMonthAnalytics'
+      'getSpecificMonthAnalytics',
+      'getAnalyticsMonths',
+      'retrieveTrainerById'
     ]);
     trainerServiceSpy.getCurrentMonthsAnalytics.and.returnValue(
       of({ success: true, message: 'ok', data: sampleCurrentMonth })
@@ -65,12 +80,18 @@ describe('TrainerAnalyticsComponent', () => {
     trainerServiceSpy.getSpecificMonthAnalytics.and.returnValue(
       of({ success: true, message: 'ok', data: sampleCompleteMonth })
     );
+    trainerServiceSpy.getAnalyticsMonths.and.returnValue(
+      of({ success: true, message: 'ok', data: sampleMonths })
+    );
+    trainerServiceSpy.retrieveTrainerById.and.returnValue(
+      of({ success: true, message: 'ok', data: { defaultCurrency: 'EUR' } })
+    );
 
     accountServiceMock = {
       currentUser: jasmine.createSpy('currentUser').and.returnValue({ id: 22 })
     };
 
-    toastServiceSpy = jasmine.createSpyObj<ToastService>('ToastService', ['showError']);
+    toastServiceSpy = jasmine.createSpyObj<ToastService>('ToastService', ['showError', 'showNeutral']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -92,53 +113,108 @@ describe('TrainerAnalyticsComponent', () => {
       expect(component.viewMode).toBe('current');
     });
 
-    it('fetches specific-month data the first time it switches to past', () => {
+    it('loads the recorded months and opens the latest one the first time it switches to past', () => {
       component.setViewMode('past');
 
-      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalledWith(
-        component.selectedMonthDate.getMonth() + 1,
-        component.selectedMonthDate.getFullYear()
-      );
+      expect(trainerServiceSpy.getAnalyticsMonths).toHaveBeenCalledTimes(1);
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalledWith(10, 2026);
       expect(component.completeMonthAnalyticsData).toEqual(sampleCompleteMonth);
     });
 
-    it('does not re-fetch past-month data on a second switch once already loaded', () => {
+    it('does not reload the months on a second switch once already loaded', () => {
       component.setViewMode('past');
+      trainerServiceSpy.getAnalyticsMonths.calls.reset();
       trainerServiceSpy.getSpecificMonthAnalytics.calls.reset();
 
       component.setViewMode('current');
       component.setViewMode('past');
 
+      expect(trainerServiceSpy.getAnalyticsMonths).not.toHaveBeenCalled();
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
+    });
+
+    it('selects no month when nothing has been recorded yet', () => {
+      trainerServiceSpy.getAnalyticsMonths.and.returnValue(of({ success: true, message: 'ok', data: [] }));
+
+      component.setViewMode('past');
+
+      expect(component.analyticsMonthsLoaded).toBeTrue();
+      expect(component.selectedMonth).toBeNull();
       expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
     });
   });
 
   describe('month navigation', () => {
-    it('selectedMonthDate defaults to the most recent fully-completed month', () => {
-      const now = new Date();
-      const expected = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-
-      expect(component.selectedMonthDate.getFullYear()).toBe(expected.getFullYear());
-      expect(component.selectedMonthDate.getMonth()).toBe(expected.getMonth());
+    beforeEach(() => {
+      component.setViewMode('past');
+      trainerServiceSpy.getSpecificMonthAnalytics.calls.reset();
     });
 
-    it('disables moving to the next month once at the max selectable month', () => {
+    it('disables the next arrow on the latest recorded month', () => {
       expect(component.isNextMonthDisabled).toBeTrue();
+      expect(component.isPreviousMonthDisabled).toBeFalse();
     });
 
-    it('goToPreviousMonth steps back a month and refetches', () => {
-      const before = component.selectedMonthDate;
-
+    it('goToPreviousMonth moves to the previous recorded month and refetches', () => {
       component.goToPreviousMonth();
 
-      expect(component.selectedMonthDate.getTime()).toBeLessThan(before.getTime());
-      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalled();
+      expect(component.selectedMonth).toEqual(sampleMonths[0]);
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalledWith(9, 2026);
+      expect(component.isPreviousMonthDisabled).toBeTrue();
     });
 
-    it('goToNextMonth is a no-op when already at the max selectable month', () => {
+    it('goToNextMonth is a no-op on the latest recorded month', () => {
       component.goToNextMonth();
 
       expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
+    });
+
+    it('picking a month without analytics keeps the current month and says so', () => {
+      component.onMonthPickerSelect(new Date(2026, 7, 1));
+
+      expect(toastServiceSpy.showNeutral).toHaveBeenCalled();
+      expect(component.selectedMonth).toEqual(sampleMonths[1]);
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).not.toHaveBeenCalled();
+    });
+
+    it('picking a recorded month loads it', () => {
+      component.onMonthPickerSelect(new Date(2026, 8, 15));
+
+      expect(trainerServiceSpy.getSpecificMonthAnalytics).toHaveBeenCalledWith(9, 2026);
+    });
+
+    it('reports how many of a partial month\'s days were recorded', () => {
+      component.goToPreviousMonth();
+
+      expect(component.selectedMonth?.isPartial).toBeTrue();
+      expect(component.selectedMonthTotalDays).toBe(30);
+    });
+  });
+
+  describe('change indicators', () => {
+    it('colours rises green, drops red and no change neutral', () => {
+      expect(component.getChangeColourClass(3)).toBe('text-success-emerald');
+      expect(component.getChangeColourClass(-2)).toBe('text-error-rose');
+      expect(component.getChangeColourClass(0)).toBe('text-on-surface-variant');
+    });
+
+    it('reverses the colours for churn, where fewer is better', () => {
+      expect(component.getChangeColourClass(-1, false)).toBe('text-success-emerald');
+      expect(component.getChangeColourClass(2, false)).toBe('text-error-rose');
+    });
+
+    it('formats counts, revenue and worktime with a sign', () => {
+      expect(component.formatCountChange(3)).toBe('+3');
+      expect(component.formatCountChange(-2)).toBe('-2');
+      expect(component.formatRevenueChange(-120)).toBe('-£120');
+      expect(component.formatWorktimeChange(135)).toBe('+2h 15m');
+    });
+
+    it('uses the trainer\'s currency once it has loaded', () => {
+      component.retrieveTrainerCurrency();
+
+      expect(component.currencyCode).toBe('EUR');
+      expect(component.formatRevenueChange(50)).toBe('+€50');
     });
   });
 

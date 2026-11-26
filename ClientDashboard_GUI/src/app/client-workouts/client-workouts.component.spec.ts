@@ -5,7 +5,9 @@ import { ClientService } from '../services/client.service';
 import { NotificationService } from '../services/notification.service';
 import { ToastService } from '../services/toast.service';
 import { WorkoutService } from '../services/workout.service';
+import { BookingService } from '../services/booking.service';
 import { Workout } from '../models/workout';
+import { toDateOnlyString } from '../helpers/date-only-helpers';
 
 import { ClientWorkouts } from './client-workouts.component';
 
@@ -13,6 +15,7 @@ describe('ClientWorkouts', () => {
   let component: ClientWorkouts;
   let fixture: ComponentFixture<ClientWorkouts>;
   let workoutServiceSpy: jasmine.SpyObj<WorkoutService>;
+  let toastServiceSpy: jasmine.SpyObj<ToastService>;
 
   const workoutRow: Workout = {
     id: 1,
@@ -48,13 +51,15 @@ describe('ClientWorkouts', () => {
         { provide: AccountService, useValue: { currentUser: jasmine.createSpy('currentUser').and.returnValue({ id: 13 }) } },
         { provide: ClientService, useValue: jasmine.createSpyObj<ClientService>('ClientService', ['gatherClientNames']) },
         { provide: ToastService, useValue: jasmine.createSpyObj<ToastService>('ToastService', ['showSuccess', 'showError', 'showNeutral']) },
-        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['refreshUnreadCount']) }
+        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['refreshUnreadCount']) },
+        { provide: BookingService, useValue: jasmine.createSpyObj<BookingService>('BookingService', ['getClientSessionsOnDate']) }
       ]
     })
     .compileComponents();
 
     const clientService = TestBed.inject(ClientService) as jasmine.SpyObj<ClientService>;
     clientService.gatherClientNames.and.returnValue(of([]));
+    toastServiceSpy = TestBed.inject(ToastService) as jasmine.SpyObj<ToastService>;
 
     fixture = TestBed.createComponent(ClientWorkouts);
     component = fixture.componentInstance;
@@ -121,6 +126,61 @@ describe('ClientWorkouts', () => {
         duration: workoutRow.duration,
         startDateTime: workoutRow.startDateTime!
       });
+    });
+
+    it('moving the start keeps the duration by moving the end', () => {
+      const row = { ...workoutRow };
+      component.onRowEditInit(row);
+      const newStart = new Date(2026, 3, 14, 7, 30);
+
+      component.onEditStartTimeChange(row, newStart);
+
+      expect(component.editedSessionTimes[row.id].end).toEqual(new Date(2026, 3, 14, 8, 30));
+    });
+
+    it('moving the end updates the duration', () => {
+      const row = { ...workoutRow };
+      component.onRowEditInit(row);
+      const start = component.editedSessionTimes[row.id].start!;
+      const end = new Date(start.getTime() + 45 * 60000);
+
+      component.onEditEndTimeChange(row, end);
+
+      expect(row.duration).toBe(45);
+    });
+
+    it('starts workouts logged before session times with empty pickers', () => {
+      const row = { ...workoutRow, startDateTime: undefined, endDateTime: undefined };
+
+      component.onRowEditInit(row);
+
+      expect(component.editedSessionTimes[row.id]).toEqual({ start: null, end: null });
+      expect(component.formatSessionTimeRange(row)).toBe('–');
+    });
+  });
+
+  describe('edit window lock', () => {
+    it('locks workouts from a closed month', () => {
+      const closed = new Date();
+      closed.setMonth(closed.getMonth() - 3);
+
+      expect(component.isLocked({ ...workoutRow, sessionDate: toDateOnlyString(closed) })).toBeTrue();
+    });
+
+    it('keeps today\'s workouts editable', () => {
+      expect(component.isLocked({ ...workoutRow, sessionDate: toDateOnlyString(new Date()) })).toBeFalse();
+    });
+  });
+
+  describe('add workout validation', () => {
+    it('rejects an end time that is not after the start', () => {
+      const start = new Date(2026, 3, 14, 10, 0);
+      const end = new Date(2026, 3, 14, 9, 0);
+
+      component.addNewWorkout({ id: 8, name: 'Alex' }, 'Push Day', new Date(), start, end, 60);
+
+      expect(toastServiceSpy.showError).toHaveBeenCalledWith('Error adding workout', 'End time must be after the start time');
+      expect(workoutServiceSpy.addWorkout).not.toHaveBeenCalled();
     });
   });
 

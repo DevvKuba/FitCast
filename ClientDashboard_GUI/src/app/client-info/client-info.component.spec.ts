@@ -5,6 +5,7 @@ import { ClientService } from '../services/client.service';
 import { NotificationService } from '../services/notification.service';
 import { ToastService } from '../services/toast.service';
 import { WorkoutService } from '../services/workout.service';
+import { BookingService } from '../services/booking.service';
 import { Client } from '../models/client';
 
 import { ClientInfoComponent } from './client-info.component';
@@ -50,7 +51,8 @@ describe('ClientInfoComponent', () => {
         { provide: ClientService, useValue: clientServiceSpy },
         { provide: WorkoutService, useValue: jasmine.createSpyObj<WorkoutService>('WorkoutService', ['quickAddWorkout']) },
         { provide: ToastService, useValue: jasmine.createSpyObj<ToastService>('ToastService', ['showSuccess', 'showError']) },
-        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['refreshUnreadCount']) }
+        { provide: NotificationService, useValue: jasmine.createSpyObj<NotificationService>('NotificationService', ['refreshUnreadCount']) },
+        { provide: BookingService, useValue: jasmine.createSpyObj<BookingService>('BookingService', ['getClientSessionsOnDate']) }
       ]
     })
     .compileComponents();

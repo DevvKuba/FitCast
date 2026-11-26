@@ -78,7 +78,8 @@ describe('RegisterComponent', () => {
         clientId: null,
         clientsTrainerId: null,
         password: 'secret1',
-        confirmPassword: 'secret1'
+        confirmPassword: 'secret1',
+        timeZoneId: component.timeZoneId
       });
       expect(component.verifyEmailDialogVisible).toBeTrue();
     });
