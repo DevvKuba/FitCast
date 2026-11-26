@@ -23,6 +23,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { TrainerService } from '../services/trainer.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { parseDateOnly } from '../helpers/date-only-helpers';
 
 @Component({
   selector: 'app-client-payments',
@@ -63,7 +64,8 @@ export class ClientPaymentsComponent implements OnInit {
   payments : Payment[] | null = null;
   clonedPayments: { [s: string]: Payment } = {};
 
-  last30DaysOnly: boolean = false;
+  // The first of the month being shown, or null to show every payment
+  selectedPaymentMonth: Date | null = null;
 
   ngOnInit(): void {
     this.currentUserId = this.accountService.currentUser()?.id ?? 0;
@@ -83,11 +85,36 @@ export class ClientPaymentsComponent implements OnInit {
 
     get displayedPayments(): Payment[] {
       if (!this.payments) return [];
-      if (!this.last30DaysOnly) return this.payments;
+      if (!this.selectedPaymentMonth) return this.payments;
 
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 30);
-      return this.payments.filter((payment) => new Date(payment.paymentDate) >= cutoff);
+      const month = this.selectedPaymentMonth;
+      return this.payments.filter((payment) => {
+        const paymentDate = parseDateOnly(payment.paymentDate);
+        return paymentDate.getFullYear() === month.getFullYear() && paymentDate.getMonth() === month.getMonth();
+      });
+    }
+
+    showAllPayments(): void {
+      this.selectedPaymentMonth = null;
+    }
+
+    showCurrentPaymentMonth(): void {
+      const today = new Date();
+      this.selectedPaymentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    }
+
+    onPaymentMonthSelect(date: Date): void {
+      this.selectedPaymentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    goToPreviousPaymentMonth(): void {
+      if (!this.selectedPaymentMonth) return;
+      this.selectedPaymentMonth = new Date(this.selectedPaymentMonth.getFullYear(), this.selectedPaymentMonth.getMonth() - 1, 1);
+    }
+
+    goToNextPaymentMonth(): void {
+      if (!this.selectedPaymentMonth) return;
+      this.selectedPaymentMonth = new Date(this.selectedPaymentMonth.getFullYear(), this.selectedPaymentMonth.getMonth() + 1, 1);
     }
 
     onRowEditInit(payment: Payment) {

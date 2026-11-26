@@ -131,7 +131,38 @@
                         <input class="w-full" pInputText type="text" (input)="dt1.filterGlobal(($any($event.target)).value, 'contains')" placeholder="Search client name" />
                     </p-iconfield>
                     <div class="flex items-center gap-2">
-                        <p-togglebutton [(ngModel)]="last30DaysOnly" onLabel="Last 30 Days" offLabel="Last 30 Days" onIcon="pi pi-calendar" offIcon="pi pi-calendar" [style]="{ 'font-size': '0.875rem' }" />
+                        <div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+                            <button
+                                type="button"
+                                class="px-3 h-8 rounded-md text-body-sm font-semibold transition-all"
+                                [class.bg-white]="!selectedPaymentMonth"
+                                [class.shadow-sm]="!selectedPaymentMonth"
+                                [class.text-primary]="!selectedPaymentMonth"
+                                [class.text-on-surface-variant]="selectedPaymentMonth"
+                                (click)="showAllPayments()">All</button>
+                            <button
+                                type="button"
+                                class="px-3 h-8 rounded-md text-body-sm font-semibold transition-all"
+                                [class.bg-white]="selectedPaymentMonth"
+                                [class.shadow-sm]="selectedPaymentMonth"
+                                [class.text-primary]="selectedPaymentMonth"
+                                [class.text-on-surface-variant]="!selectedPaymentMonth"
+                                (click)="showCurrentPaymentMonth()">Month</button>
+                        </div>
+                        @if (selectedPaymentMonth) {
+                            <div class="flex items-center gap-1">
+                                <p-button type="button" icon="pi pi-chevron-left" (click)="goToPreviousPaymentMonth()" text rounded severity="secondary" ariaLabel="Previous month" />
+                                <p-datepicker
+                                    [ngModel]="selectedPaymentMonth"
+                                    (onSelect)="onPaymentMonthSelect($event)"
+                                    view="month"
+                                    dateFormat="MM yy"
+                                    [readonlyInput]="true"
+                                    [appendTo]="'body'"
+                                    styleClass="w-36" />
+                                <p-button type="button" icon="pi pi-chevron-right" (click)="goToNextPaymentMonth()" text rounded severity="secondary" ariaLabel="Next month" />
+                            </div>
+                        }
                         <p-button
                             type="button"
                             icon="pi pi-cog"
