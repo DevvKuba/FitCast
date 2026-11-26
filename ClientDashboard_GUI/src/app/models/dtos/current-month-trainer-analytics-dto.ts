@@ -2,7 +2,6 @@ import { WeeklySessionsCount } from './weekly-sessions-count';
 import { MonthComparisonDto } from './month-comparison-dto';
 
 export interface CurrentMonthTrainerAnalyticsDto {
-  recordedDays: number;
   baseClients: number;
   monthlyClientSessions: number;
   totalRevenue: number;

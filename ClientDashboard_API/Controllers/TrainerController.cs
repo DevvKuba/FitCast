@@ -166,27 +166,15 @@ namespace ClientDashboard_API.Controllers
             }
 
             var trainerToday = TrainerLocalDateHelper.GetToday(trainer.TimeZoneId, DateTime.UtcNow);
-            var currentMonthsRevenueRecords = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
+            var firstDayOfMonth = new DateOnly(trainerToday.Year, trainerToday.Month, 1);
+
+            var monthWorkouts = await unitOfWork.WorkoutRepository.GetTrainerWorkoutsBetweenDatesIgnoringQueryFiltersAsync(trainer.Id, firstDayOfMonth, trainerToday);
+            var monthSnapshots = await unitOfWork.TrainerDailyRevenueRepository.GetSpecificFullMonthRecordsAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
+            var activeClients = await unitOfWork.TrainerRepository.GetTrainerActiveClientsAsync(trainer);
             var paymentTotals = await unitOfWork.PaymentRepository.GetTrainerPaymentTotalsForMonthAsync(trainer.Id, trainerToday.Month, trainerToday.Year);
 
-            if (currentMonthsRevenueRecords.Count == 0 || currentMonthsRevenueRecords == null)
-            {
-                return Ok(new ApiResponseDto<CurrentMonthTrainerAnalyticsDto> {
-                    Data = new CurrentMonthTrainerAnalyticsDto
-                    {
-                        BaseClients = 0,
-                        MonthlyClientSessions = 0,
-                        TotalRevenue = 0,
-                        CollectedRevenue = paymentTotals.Collected,
-                        OutstandingRevenue = paymentTotals.Outstanding,
-                        TotalWorktimeMinutes = 0,
-                        RevenuePerWorkingDay = 0,
-                        WeeklySessionsCounts = []
-                    },
-                    Message = "Clean state returning, no revenue records for this month",
-                    Success = true
-                });
-            }
+            var currentMonthsRevenueRecords = CurrentMonthRecordsHelper.BuildLiveRecords(trainer.Id, firstDayOfMonth, trainerToday, monthWorkouts,
+                monthSnapshots, activeClients.Count, trainer.AverageSessionPrice ?? 0m);
 
             var currentMonthAnalytics = currentMonthAnalyticsService.GetCurrentMonthsAnalyticMetrics(currentMonthsRevenueRecords);
             currentMonthAnalytics.CollectedRevenue = paymentTotals.Collected;

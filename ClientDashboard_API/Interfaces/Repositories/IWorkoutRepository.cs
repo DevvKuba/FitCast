@@ -10,6 +10,8 @@ namespace ClientDashboard_API.Interfaces.Repositories
 
         Task<List<Workout>> GetAllWorkoutsAssociatedWithTrainerIgnoringQueryFiltersAsync(Trainer trainer);
 
+        Task<List<Workout>> GetTrainerWorkoutsBetweenDatesIgnoringQueryFiltersAsync(int trainerId, DateOnly fromDate, DateOnly toDate);
+
         Task<Workout?> GetWorkoutByIdAsync(int id);
 
         Task<Workout?> GetWorkoutByIdWithClientAsync(int id);

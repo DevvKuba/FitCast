@@ -41,53 +41,46 @@
 	@if(viewMode === 'current'){
 		@let currentComparison = currentMonthAnalyticsData.comparison;
 
-		@if(!hasCurrentMonthData){
-			<div class="bg-white p-8 rounded-xl border border-border-subtle text-center">
-				<p class="text-body-base font-bold text-slate-navy">No data yet this month</p>
-				<p class="text-body-sm text-on-surface-variant mt-1">This month's figures appear once its first day has been recorded overnight.</p>
-			</div>
-		} @else {
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-md">
-				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">BASE CLIENTS</p>
-					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.baseClients}}</span>
-					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Total active roster</p>
-					@if(currentComparison){
-						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.baseClientsChange)">
-							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.baseClientsChange)"></i>
-							{{formatCountChange(currentComparison.baseClientsChange)}} vs same days last month
-						</p>
-					}
-				</p-card>
-				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">MONTHLY SESSIONS</p>
-					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.monthlyClientSessions}}</span>
-					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Completed this month</p>
-					@if(currentComparison){
-						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.sessionsChange)">
-							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.sessionsChange)"></i>
-							{{formatCountChange(currentComparison.sessionsChange)}} vs same days last month
-						</p>
-					}
-				</p-card>
-				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL WORKTIME</p>
-					<span class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</span>
-					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Face-to-face active time</p>
-					@if(currentComparison){
-						<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.worktimeMinutesChange)">
-							<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.worktimeMinutesChange)"></i>
-							{{formatWorktimeChange(currentComparison.worktimeMinutesChange)}} vs same days last month
-						</p>
-					}
-				</p-card>
-				<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
-					<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
-					<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
-					<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
-				</p-card>
-			</div>
-		}
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-md">
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">BASE CLIENTS</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.baseClients}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Total active roster</p>
+				@if(currentComparison){
+					<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.baseClientsChange)">
+						<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.baseClientsChange)"></i>
+						{{formatCountChange(currentComparison.baseClientsChange)}} vs same days last month
+					</p>
+				}
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">MONTHLY SESSIONS</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.monthlyClientSessions}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Completed this month</p>
+				@if(currentComparison){
+					<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.sessionsChange)">
+						<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.sessionsChange)"></i>
+						{{formatCountChange(currentComparison.sessionsChange)}} vs same days last month
+					</p>
+				}
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">TOTAL WORKTIME</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).hours}}h {{convertMinutesToHoursAndMinutes(currentMonthAnalyticsData.totalWorktimeMinutes).minutes}}m</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Face-to-face active time</p>
+				@if(currentComparison){
+					<p class="flex items-center gap-1 text-xs font-semibold mt-2" [ngClass]="getChangeColourClass(currentComparison.worktimeMinutesChange)">
+						<i class="text-[10px]" [ngClass]="getChangeIcon(currentComparison.worktimeMinutesChange)"></i>
+						{{formatWorktimeChange(currentComparison.worktimeMinutesChange)}} vs same days last month
+					</p>
+				}
+			</p-card>
+			<p-card styleClass="border border-border-subtle shadow-none rounded-xl">
+				<p class="text-label-caps font-label-caps text-on-surface-variant mb-2">REV / WORKING DAY</p>
+				<span class="text-kpi-value font-kpi-value text-slate-navy">{{currentMonthAnalyticsData.revenuePerWorkingDay | currency:currencyCode:'symbol':'1.0-2'}}</span>
+				<p class="text-body-sm text-on-surface-variant mt-2 opacity-70">Efficiency per shift</p>
+			</p-card>
+		</div>
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-md">
 			<p-card styleClass="border border-border-subtle shadow-none rounded-xl border-l-4 border-l-action-royal">
@@ -119,9 +112,7 @@
 				Last month only has partial data, so these changes may be overstated.
 			</p>
 		}
-	}
 
-	@if(viewMode === 'current' && hasCurrentMonthData){
 		<p-card styleClass="border border-border-subtle shadow-none rounded-xl mt-stack-lg">
 			<div class="flex justify-between items-start mb-10">
 				<div>

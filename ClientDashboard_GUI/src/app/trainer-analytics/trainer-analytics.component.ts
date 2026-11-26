@@ -255,10 +255,6 @@ export class TrainerAnalyticsComponent implements OnInit{
 
   // ---- Month-on-month change indicators ----
 
-  get hasCurrentMonthData(): boolean {
-    return (this.currentMonthAnalyticsData?.recordedDays ?? 0) > 0;
-  }
-
   // Fewer churned clients is the improvement, so churn passes higherIsBetter = false
   getChangeColourClass(change: number, higherIsBetter: boolean = true): string {
     if (change === 0) return 'text-on-surface-variant';

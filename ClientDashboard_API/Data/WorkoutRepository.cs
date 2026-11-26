@@ -67,6 +67,15 @@ namespace ClientDashboard_API.Data
             return allAssociatedClients.SelectMany(c => c.Workouts).ToList();
         }
 
+        // Includes workouts of deleted clients, matching what the nightly revenue snapshot counts
+        public async Task<List<Workout>> GetTrainerWorkoutsBetweenDatesIgnoringQueryFiltersAsync(int trainerId, DateOnly fromDate, DateOnly toDate)
+        {
+            return await context.Workouts
+                .IgnoreQueryFilters()
+                .Where(w => w.Client!.TrainerId == trainerId && w.SessionDate >= fromDate && w.SessionDate <= toDate)
+                .ToListAsync();
+        }
+
         public async Task<int> GetClientWorkoutCountForTrainerAtDateAsync(Trainer trainer, DateOnly workoutDate)
         {
             var totalWorkouts = await context.Workouts.
