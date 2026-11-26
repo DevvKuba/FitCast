@@ -51,10 +51,11 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             response.Should().NotBeNull();
             response!.Success.Should().BeTrue();
             response.Data.Should().NotBeNull();
-            response.Data!.BaseClients.Should().BeGreaterThan(0);
-            response.Data.MonthlyClientSessions.Should().BeGreaterThan(0);
-            response.Data.TotalRevenue.Should().BeGreaterThan(0);
-            response.Data.RevenuePerWorkingDay.Should().BeGreaterThan(0);
+            // Today's workouts have no snapshot yet, so they only show if the month is built live
+            response.Data!.BaseClients.Should().Be(1);
+            response.Data.MonthlyClientSessions.Should().Be(2);
+            response.Data.TotalRevenue.Should().Be(100m);
+            response.Data.RevenuePerWorkingDay.Should().Be(100m);
         }
 
         private async Task<int> SeedTrainerWithRevenueHistoryAsync()
@@ -97,44 +98,18 @@ namespace ClientDashboard_API_Tests.IntegrationTests
             dbContext.Trainer.Add(trainer);
             await dbContext.SaveChangesAsync();
 
-            dbContext.TrainerDailyRevenue.AddRange(BuildPartialCurrentMonthRecords(trainer.Id, daysSoFar: 10, baseActiveClients: 12, dailySessions: 3, sessionPrice: 50m));
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, IsActive = true };
+            dbContext.Client.Add(client);
+            await dbContext.SaveChangesAsync();
+
+            // The trainer's local today, as the current-month endpoint uses (the default zone is London)
+            var today = TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow);
+            dbContext.Workouts.AddRange(
+                new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "morning", SessionDate = today, Duration = 60 },
+                new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "evening", SessionDate = today, Duration = 45 });
             await dbContext.SaveChangesAsync();
 
             return trainer.Id;
-        }
-
-        private static List<TrainerDailyRevenue> BuildPartialCurrentMonthRecords(int trainerId, int daysSoFar, int baseActiveClients, int dailySessions, decimal sessionPrice)
-        {
-            // The current month is unfinished, so seed only its first few days, using the trainer's
-            // local month as the current-month endpoint does (the default zone is London).
-            var now = TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow);
-            var list = new List<TrainerDailyRevenue>();
-            var cumulativeRevenue = 0m;
-            var cumulativeSessions = 0;
-
-            for (var day = 1; day <= daysSoFar; day++)
-            {
-                var date = new DateOnly(now.Year, now.Month, day);
-                var revenueToday = dailySessions * sessionPrice;
-
-                cumulativeRevenue += revenueToday;
-                cumulativeSessions += dailySessions;
-
-                list.Add(new TrainerDailyRevenue
-                {
-                    TrainerId = trainerId,
-                    RevenueToday = revenueToday,
-                    MonthlyRevenueThusFar = cumulativeRevenue,
-                    SessionsToday = dailySessions,
-                    TotalSessionsThisMonth = cumulativeSessions,
-                    NewClientsThisMonth = 1,
-                    ActiveClients = baseActiveClients,
-                    AverageSessionPrice = sessionPrice,
-                    AsOfDate = date
-                });
-            }
-
-            return list;
         }
 
         private static List<TrainerDailyRevenue> BuildMonthRecords(int trainerId, int year, int month, int baseActiveClients, int dailySessionIncrement, decimal sessionPrice)

@@ -232,9 +232,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 WorkoutTitle = "workout 1",
                 ClientName = "rob",
                 ClientId = client.Id,
-                SessionDate = "19/06/2025",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -258,9 +258,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 WorkoutTitle = "workout 1",
                 ClientName = "nonexistent",
                 ClientId = 999,
-                SessionDate = "19/06/2025",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             var result = await _workoutController.AddNewManualClientWorkoutAsync(workoutDto);
@@ -288,9 +288,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 WorkoutTitle = "workout 1",
                 ClientName = "rob",
                 ClientId = client.Id,
-                SessionDate = "19/06/2025",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2025, 6, 19, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             AuthenticateAsTrainer(otherTrainer.Id);
@@ -322,7 +322,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientId = client.Id,
                 ClientName = "rob",
                 WorkoutTitle = "old title",
-                SessionDate = DateOnly.Parse("19/06/2024"),
+                SessionDate = RecentLocalDate(2),
                 Duration = 45
             };
             await _context.Workouts.AddAsync(workout);
@@ -332,9 +332,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 Id = workout.Id,
                 WorkoutTitle = "new title",
-                SessionDate = "20/06/2024",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             AuthenticateAsTrainer(trainer.Id);
@@ -347,7 +347,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
 
             var savedWorkout = await _context.Workouts.FindAsync(workout.Id);
             Assert.Equal("new title", savedWorkout!.WorkoutTitle);
-            Assert.Equal(DateOnly.Parse("20/06/2024"), savedWorkout.SessionDate);
+            Assert.Equal(RecentLocalDate(1), savedWorkout.SessionDate);
             Assert.Equal(60, savedWorkout.Duration);
         }
 
@@ -358,9 +358,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 Id = 999,
                 WorkoutTitle = "new title",
-                SessionDate = "20/06/2024",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             var result = await _workoutController.UpdateWorkoutDetailsAsync(updateDto);
@@ -388,7 +388,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientId = client.Id,
                 ClientName = "rob",
                 WorkoutTitle = "old title",
-                SessionDate = DateOnly.Parse("19/06/2024"),
+                SessionDate = RecentLocalDate(2),
                 Duration = 45
             };
             await _context.Workouts.AddAsync(workout);
@@ -398,9 +398,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             {
                 Id = workout.Id,
                 WorkoutTitle = "new title",
-                SessionDate = "20/06/2024",
+                SessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy"),
                 Duration = 60,
-                StartDateTime = new DateTime(2024, 6, 20, 9, 0, 0, DateTimeKind.Utc)
+                StartDateTime = StartUtcOn(RecentLocalDate(1), 9)
             };
 
             AuthenticateAsTrainer(otherTrainer.Id);
@@ -432,7 +432,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientId = client.Id,
                 ClientName = "rob",
                 WorkoutTitle = "workout 1",
-                SessionDate = DateOnly.Parse("19/06/2024"),
+                SessionDate = RecentLocalDate(1),
                 Duration = 60
             };
             await _context.Workouts.AddAsync(workout);
@@ -479,7 +479,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
                 ClientId = client.Id,
                 ClientName = "rob",
                 WorkoutTitle = "workout 1",
-                SessionDate = DateOnly.Parse("19/06/2024"),
+                SessionDate = RecentLocalDate(1),
                 Duration = 60
             };
             await _context.Workouts.AddAsync(workout);
@@ -509,12 +509,12 @@ namespace ClientDashboard_API_Tests.ControllerTests
             await _context.Client.AddAsync(client);
             await _unitOfWork.Complete();
 
-            var start = new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc);
+            var start = StartUtcOn(RecentLocalDate(1), 9);
             var slot = new BookedSessionSlot { TrainerId = trainer.Id, ClientId = client.Id, Title = "session", StartDateTime = start, EndDateTime = start.AddHours(1), Status = SessionStatus.Synced };
             await _context.BookedSessionsSlot.AddAsync(slot);
             await _unitOfWork.Complete();
 
-            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "session", SessionDate = new DateOnly(2026, 11, 10), Duration = 60, BookedSessionSlotId = slot.Id };
+            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "session", SessionDate = RecentLocalDate(1), Duration = 60, BookedSessionSlotId = slot.Id };
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
 
@@ -531,10 +531,10 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestManualAddWithStartTimeCreatesSyncedSlotAndLinkedWorkoutAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
-            var start = new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc);
+            var start = StartUtcOn(RecentLocalDate(1), 9);
             AuthenticateAsTrainer(trainer.Id);
 
-            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "10/11/2026", 45, start));
+            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, start.ToString("dd/MM/yyyy"), 45, start));
 
             Assert.IsType<OkObjectResult>(result.Result);
             var slot = await _context.BookedSessionsSlot.SingleAsync();
@@ -547,7 +547,7 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Assert.Equal(slot.Id, workout.BookedSessionSlotId);
             Assert.Equal(start, workout.StartDateTime);
             Assert.Equal(start.AddMinutes(45), workout.EndDateTime);
-            Assert.Equal(new DateOnly(2026, 11, 10), workout.SessionDate);
+            Assert.Equal(RecentLocalDate(1), workout.SessionDate);
             Assert.Equal(1, (await _context.Client.SingleAsync()).CurrentBlockSession);
         }
 
@@ -555,12 +555,16 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestManualAddTakesTheSessionDateFromTheStartInTheTrainersZoneAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
+            trainer.TimeZoneId = SupportedTimeZones.Auckland;
+            await _unitOfWork.Complete();
             AuthenticateAsTrainer(trainer.Id);
 
-            // 23:30 UTC on 18 June is 00:30 on the 19th in London (UTC+1)
-            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "18/06/2025", 60, new DateTime(2025, 6, 18, 23, 30, 0, DateTimeKind.Utc)));
+            // Auckland is always ahead of UTC, so 23:30 UTC is already the next day there
+            var utcDay = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-3);
+            var start = utcDay.ToDateTime(new TimeOnly(23, 30), DateTimeKind.Utc);
+            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, utcDay.ToString("dd/MM/yyyy"), 60, start));
 
-            Assert.Equal(new DateOnly(2025, 6, 19), (await _context.Workouts.SingleAsync()).SessionDate);
+            Assert.Equal(utcDay.AddDays(1), (await _context.Workouts.SingleAsync()).SessionDate);
         }
 
         [Fact]
@@ -583,8 +587,9 @@ namespace ClientDashboard_API_Tests.ControllerTests
             var (trainer, client) = await SeedTrainerAndClientAsync();
             AuthenticateAsTrainer(trainer.Id);
 
-            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "10/11/2026", 60, new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc)));
-            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, "10/11/2026", 60, new DateTime(2026, 11, 10, 17, 0, 0, DateTimeKind.Utc)));
+            var sessionDate = RecentLocalDate(1).ToString("dd/MM/yyyy");
+            await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, sessionDate, 60, StartUtcOn(RecentLocalDate(1), 9)));
+            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, sessionDate, 60, StartUtcOn(RecentLocalDate(1), 17)));
 
             Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(2, await _context.Workouts.CountAsync());
@@ -645,15 +650,15 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestUpdateWorkoutWithStartTimeMovesTheLinkedSlotAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
-            var (workout, slot) = await SeedSyncedWorkoutAsync(trainer, client, new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc));
-            var newStart = new DateTime(2026, 11, 11, 14, 0, 0, DateTimeKind.Utc);
+            var (workout, slot) = await SeedSyncedWorkoutAsync(trainer, client, StartUtcOn(RecentLocalDate(2), 9));
+            var newStart = StartUtcOn(RecentLocalDate(1), 14);
             AuthenticateAsTrainer(trainer.Id);
 
-            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "renamed", "11/11/2026", 30, newStart));
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "renamed", RecentLocalDate(1).ToString("dd/MM/yyyy"), 30, newStart));
 
             Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(newStart, workout.StartDateTime);
-            Assert.Equal(new DateOnly(2026, 11, 11), workout.SessionDate);
+            Assert.Equal(RecentLocalDate(1), workout.SessionDate);
             Assert.Equal("renamed", slot.Title);
             Assert.Equal(newStart, slot.StartDateTime);
             Assert.Equal(newStart.AddMinutes(30), slot.EndDateTime);
@@ -663,25 +668,85 @@ namespace ClientDashboard_API_Tests.ControllerTests
         public async Task TestUpdateWorkoutLoggedBeforeSessionTimesGainsTheGivenTimesAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
-            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "old", SessionDate = new DateOnly(2025, 6, 19), Duration = 60 };
+            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "old", SessionDate = RecentLocalDate(2), Duration = 60 };
             await _context.Workouts.AddAsync(workout);
             await _unitOfWork.Complete();
-            var start = new DateTime(2025, 6, 20, 9, 0, 0, DateTimeKind.Utc);
+            var start = StartUtcOn(RecentLocalDate(1), 9);
             AuthenticateAsTrainer(trainer.Id);
 
-            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "old", "20/06/2025", 45, start));
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "old", RecentLocalDate(1).ToString("dd/MM/yyyy"), 45, start));
 
             Assert.IsType<OkObjectResult>(result.Result);
             Assert.Equal(start, workout.StartDateTime);
             Assert.Equal(start.AddMinutes(45), workout.EndDateTime);
-            Assert.Equal(new DateOnly(2025, 6, 20), workout.SessionDate);
+            Assert.Equal(RecentLocalDate(1), workout.SessionDate);
+        }
+
+        [Fact]
+        public async Task TestManualAddReturnsBadRequestForAClosedMonthAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync();
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _workoutController.AddNewManualClientWorkoutAsync(ManualAddDto(client, ClosedMonthDate().ToString("dd/MM/yyyy"), 60, StartUtcOn(ClosedMonthDate(), 9)));
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal(WorkoutEditWindowHelper.LockedWorkoutMessage, (badRequest.Value as ApiResponseDto<string>)!.Message);
+            Assert.False(await _context.Workouts.AnyAsync());
+            Assert.False(await _context.BookedSessionsSlot.AnyAsync());
+        }
+
+        [Fact]
+        public async Task TestUpdateWorkoutReturnsBadRequestForAWorkoutInAClosedMonthAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync();
+            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "old", SessionDate = ClosedMonthDate(), Duration = 60 };
+            await _context.Workouts.AddAsync(workout);
+            await _unitOfWork.Complete();
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "moved out", RecentLocalDate(1).ToString("dd/MM/yyyy"), 60, StartUtcOn(RecentLocalDate(1), 9)));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal("old", workout.WorkoutTitle);
+            Assert.Equal(ClosedMonthDate(), workout.SessionDate);
+        }
+
+        [Fact]
+        public async Task TestUpdateWorkoutReturnsBadRequestWhenMovedIntoAClosedMonthAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync();
+            var originalStart = StartUtcOn(RecentLocalDate(1), 9);
+            var (workout, slot) = await SeedSyncedWorkoutAsync(trainer, client, originalStart);
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _workoutController.UpdateWorkoutDetailsAsync(UpdateDto(workout.Id, "session", ClosedMonthDate().ToString("dd/MM/yyyy"), 60, StartUtcOn(ClosedMonthDate(), 9)));
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal(originalStart, workout.StartDateTime);
+            Assert.Equal(originalStart, slot.StartDateTime);
+        }
+
+        [Fact]
+        public async Task TestDeleteWorkoutReturnsBadRequestForAClosedMonthAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync();
+            var workout = new Workout { ClientId = client.Id, ClientName = "rob", WorkoutTitle = "old", SessionDate = ClosedMonthDate(), Duration = 60 };
+            await _context.Workouts.AddAsync(workout);
+            await _unitOfWork.Complete();
+            AuthenticateAsTrainer(trainer.Id);
+
+            var result = await _workoutController.DeleteWorkoutAsync(workout.Id);
+
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.NotNull(await _context.Workouts.FindAsync(workout.Id));
         }
 
         [Fact]
         public async Task TestUpdateWorkoutReturnsBadRequestForAFutureStartAsync()
         {
             var (trainer, client) = await SeedTrainerAndClientAsync();
-            var originalStart = new DateTime(2026, 11, 10, 9, 0, 0, DateTimeKind.Utc);
+            var originalStart = StartUtcOn(RecentLocalDate(1), 9);
             var (workout, slot) = await SeedSyncedWorkoutAsync(trainer, client, originalStart);
             var futureStart = DateTime.UtcNow.AddDays(2);
             AuthenticateAsTrainer(trainer.Id);
@@ -730,5 +795,22 @@ namespace ClientDashboard_API_Tests.ControllerTests
             Duration = duration,
             StartDateTime = startUtc
         };
+
+        // Any of the last 7 days is inside the edit window on whatever date the tests run, since a new month keeps the previous one open for 7 days
+        private static DateOnly RecentLocalDate(int daysAgo)
+        {
+            return TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow).AddDays(-daysAgo);
+        }
+
+        private static DateOnly ClosedMonthDate()
+        {
+            return RecentLocalDate(0).AddMonths(-3);
+        }
+
+        private static DateTime StartUtcOn(DateOnly londonDate, int londonHour)
+        {
+            var london = TimeZoneInfo.FindSystemTimeZoneById(SupportedTimeZones.London);
+            return TimeZoneInfo.ConvertTimeToUtc(londonDate.ToDateTime(new TimeOnly(londonHour, 0)), london);
+        }
     }
 }

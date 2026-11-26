@@ -3,6 +3,7 @@ using ClientDashboard_API.Data;
 using ClientDashboard_API.Dto_s;
 using ClientDashboard_API.DTOs;
 using ClientDashboard_API.Entities;
+using ClientDashboard_API.Entities.ML.NET_Training_Entities;
 using ClientDashboard_API.Enums;
 using ClientDashboard_API.Helpers;
 using ClientDashboard_API.Interfaces.Helpers;
@@ -712,6 +713,64 @@ namespace ClientDashboard_API_Tests.ServiceTests
             Assert.Equal(1, record.SessionsToday);
             Assert.Equal(40m, record.RevenueToday);
         }
+
+        [Fact]
+        public async Task TestExecuteTrainerDailyRevenueGatheringRefreshesAnEarlierSnapshotWithItsOwnPriceAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync(sessionPrice: 50m);
+            var snapshotDate = TrainerLocalDateHelper.GetYesterday(SupportedTimeZones.London, DateTime.UtcNow);
+            var earlierDay = snapshotDate.AddDays(-1); // always inside the edit window taken from the snapshot date
+
+            await _context.TrainerDailyRevenue.AddAsync(EmptySnapshot(trainer.Id, earlierDay, sessionPrice: 40m, activeClients: 5));
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "logged late", earlierDay, 60);
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "logged late", earlierDay, 30);
+            await _unitOfWork.Complete();
+
+            await _trainerDailyRevenueService.ExecuteTrainerDailyRevenueGatheringAsync((await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id))!);
+
+            var refreshed = await _context.TrainerDailyRevenue.SingleAsync(r => r.AsOfDate == earlierDay);
+            Assert.Equal(2, refreshed.SessionsToday);
+            Assert.Equal(80m, refreshed.RevenueToday); // the day's recorded price, not the trainer's new one
+            Assert.Equal(90, refreshed.TotalSessionDuration);
+            Assert.Equal(5, refreshed.ActiveClients);
+        }
+
+        [Fact]
+        public async Task TestExecuteTrainerDailyRevenueGatheringLeavesSnapshotsBeforeTheEditWindowAsync()
+        {
+            var (trainer, client) = await SeedTrainerAndClientAsync(sessionPrice: 50m);
+            var closedDay = TrainerLocalDateHelper.GetToday(SupportedTimeZones.London, DateTime.UtcNow).AddMonths(-3);
+
+            await _context.TrainerDailyRevenue.AddAsync(EmptySnapshot(trainer.Id, closedDay, sessionPrice: 50m, activeClients: 1));
+            await _unitOfWork.WorkoutRepository.AddWorkoutAsync(client, "closed month", closedDay, 60);
+            await _unitOfWork.Complete();
+
+            await _trainerDailyRevenueService.ExecuteTrainerDailyRevenueGatheringAsync((await _unitOfWork.TrainerRepository.GetTrainerByIdAsync(trainer.Id))!);
+
+            var untouched = await _context.TrainerDailyRevenue.SingleAsync(r => r.AsOfDate == closedDay);
+            Assert.Equal(0, untouched.SessionsToday);
+            Assert.Equal(0m, untouched.RevenueToday);
+        }
+
+        private async Task<(Trainer Trainer, Client Client)> SeedTrainerAndClientAsync(decimal sessionPrice)
+        {
+            var trainer = new Trainer { FirstName = "john", Surname = "doe", Role = UserRole.Trainer, AverageSessionPrice = sessionPrice, TimeZoneId = SupportedTimeZones.London };
+            await _context.Trainer.AddAsync(trainer);
+            await _unitOfWork.Complete();
+
+            var client = new Client { FirstName = "rob", Role = UserRole.Client, TrainerId = trainer.Id, IsActive = true };
+            await _context.Client.AddAsync(client);
+            await _unitOfWork.Complete();
+            return (trainer, client);
+        }
+
+        private static TrainerDailyRevenue EmptySnapshot(int trainerId, DateOnly date, decimal sessionPrice, int activeClients) => new()
+        {
+            TrainerId = trainerId,
+            AsOfDate = date,
+            AverageSessionPrice = sessionPrice,
+            ActiveClients = activeClients
+        };
     }
 }
 
